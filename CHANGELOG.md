@@ -8,6 +8,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ## 2026-02-14
 
+### Added
+
+- **SEO-friendly job slugs** — public job URLs now use human-readable slugs instead of UUIDs (e.g. `/jobs/senior-software-engineer-a1b2c3d4` instead of `/jobs/a1b2c3d4-...`)
+- **Custom slug support** — recruiters can optionally set a custom slug when creating or editing a job; defaults to auto-generated from job title
+- **Slug utility** — `server/utils/slugify.ts` with `generateJobSlug(title, id, customSlug?)` function, auto-imported by Nitro
+- **Migration** — `0002_kind_inertia.sql` adds `slug` column to `job` table with unique constraint and backfills existing rows
+
+### Changed
+
+- **Public API routes** — `GET /api/public/jobs/:id` and `POST /api/public/jobs/:id/apply` replaced by slug-based routes (`/api/public/jobs/:slug` and `/api/public/jobs/:slug/apply`)
+- **Public pages** — `app/pages/jobs/[id]/` renamed to `app/pages/jobs/[slug]/` (detail, apply, confirmation)
+- **Job list links** — public job board now links to `/jobs/<slug>` instead of `/jobs/<id>`
+- **Dashboard application link** — "Copy Application Link" now generates slug-based URLs
+- **Job create/update APIs** — `POST /api/jobs` generates slug on creation; `PATCH /api/jobs/:id` regenerates slug when title or slug changes
+- **Zod schemas** — `createJobSchema` and `updateJobSchema` now accept optional `slug` field
+
 ### Fixed
 
 - **Honeypot bypass** — removed `z.string().max(0)` from honeypot schema that caused Zod to reject bot submissions with 422 instead of silently discarding them; honeypot validation now handled at runtime only

@@ -6,11 +6,11 @@ definePageMeta({
 })
 
 const route = useRoute()
-const jobId = route.params.id as string
+const jobSlug = route.params.slug as string
 
 // Optionally fetch job title for a nicer confirmation
-const { data: job } = useFetch(`/api/public/jobs/${jobId}`, {
-  key: `public-job-confirm-${jobId}`,
+const { data: job } = useFetch(`/api/public/jobs/${jobSlug}`, {
+  key: `public-job-confirm-${jobSlug}`,
 })
 
 useSeoMeta({

@@ -38,6 +38,7 @@ export const job = pgTable('job', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
   description: text('description'),
   location: text('location'),
   type: jobTypeEnum('type').notNull().default('full_time'),

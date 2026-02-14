@@ -9,17 +9,18 @@ export default defineEventHandler(async (event) => {
   const { id } = await getValidatedRouterParams(event, idParamSchema.parse)
   const body = await readValidatedBody(event, updateJobSchema.parse)
 
+  // Fetch existing job — needed for status transition check and slug regeneration
+  const existing = await db.query.job.findFirst({
+    where: and(eq(job.id, id), eq(job.organizationId, orgId)),
+    columns: { status: true, title: true, slug: true },
+  })
+
+  if (!existing) {
+    throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
   // Validate status transition if status is being changed
   if (body.status) {
-    const existing = await db.query.job.findFirst({
-      where: and(eq(job.id, id), eq(job.organizationId, orgId)),
-      columns: { status: true },
-    })
-
-    if (!existing) {
-      throw createError({ statusCode: 404, statusMessage: 'Not found' })
-    }
-
     const allowed = JOB_STATUS_TRANSITIONS[existing.status] ?? []
     if (!allowed.includes(body.status)) {
       throw createError({
@@ -29,11 +30,15 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Regenerate slug when title or custom slug changes
+  const updates: Record<string, unknown> = { ...body, updatedAt: new Date() }
+  delete (updates as any).slug // remove raw slug from spread — we set it explicitly below
+  if (body.title || body.slug) {
+    updates.slug = generateJobSlug(body.title ?? existing.title, id, body.slug)
+  }
+
   const [updated] = await db.update(job)
-    .set({
-      ...body,
-      updatedAt: new Date(),
-    })
+    .set(updates)
     .where(and(eq(job.id, id), eq(job.organizationId, orgId)))
     .returning()
 

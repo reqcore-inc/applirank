@@ -7,9 +7,15 @@ export default defineEventHandler(async (event) => {
 
   const body = await readValidatedBody(event, createJobSchema.parse)
 
+  // Generate a deterministic ID upfront so we can build the slug
+  const jobId = crypto.randomUUID()
+  const slug = generateJobSlug(body.title, jobId, body.slug)
+
   const [created] = await db.insert(job).values({
+    id: jobId,
     organizationId: orgId,
     title: body.title,
+    slug,
     description: body.description,
     location: body.location,
     type: body.type,

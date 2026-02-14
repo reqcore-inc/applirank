@@ -152,7 +152,7 @@ function formatDate(dateStr: string) {
       <NuxtLink
         v-for="j in jobs"
         :key="j.id"
-        :to="`/jobs/${j.id}`"
+        :to="`/jobs/${j.slug}`"
         class="block rounded-lg border border-surface-200 bg-white px-5 py-4 hover:border-surface-300 hover:shadow-sm transition-all group"
       >
         <div class="flex items-start justify-between gap-4">

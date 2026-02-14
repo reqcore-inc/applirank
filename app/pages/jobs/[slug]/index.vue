@@ -6,11 +6,11 @@ definePageMeta({
 })
 
 const route = useRoute()
-const jobId = route.params.id as string
+const jobSlug = route.params.slug as string
 
 const { data: job, status: fetchStatus, error: fetchError } = useFetch(
-  `/api/public/jobs/${jobId}`,
-  { key: `public-job-detail-${jobId}` },
+  `/api/public/jobs/${jobSlug}`,
+  { key: `public-job-detail-${jobSlug}` },
 )
 
 useSeoMeta({
@@ -95,7 +95,7 @@ function formatDate(dateStr: string) {
           Interested in this role? Apply now and we'll review your application.
         </p>
         <NuxtLink
-          :to="`/jobs/${job.id}/apply`"
+          :to="`/jobs/${job.slug}/apply`"
           class="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-brand-600 px-5 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
         >
           Apply Now
@@ -138,7 +138,7 @@ function formatDate(dateStr: string) {
       <!-- Bottom Apply CTA -->
       <div class="text-center">
         <NuxtLink
-          :to="`/jobs/${job.id}/apply`"
+          :to="`/jobs/${job.slug}/apply`"
           class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
         >
           Apply for this position

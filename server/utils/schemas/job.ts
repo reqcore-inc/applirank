@@ -10,6 +10,8 @@ export const createJobSchema = z.object({
   description: z.string().optional(),
   location: z.string().optional(),
   type: z.enum(['full_time', 'part_time', 'contract', 'internship']).default('full_time'),
+  /** Optional custom slug — if omitted, generated from title */
+  slug: z.string().max(80).optional(),
 })
 
 /** Schema for updating an existing job (all fields optional, includes status) */

@@ -47,6 +47,7 @@ export default defineEventHandler(async (event) => {
       columns: {
         id: true,
         title: true,
+        slug: true,
         description: true,
         location: true,
         type: true,

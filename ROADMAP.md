@@ -135,8 +135,8 @@ Recruiters can configure custom questions per job. Applicants can apply through 
 - [x] API: `PATCH /api/jobs/:id/questions/:questionId` — update question
 - [x] API: `DELETE /api/jobs/:id/questions/:questionId` — delete question
 - [x] API: `PUT /api/jobs/:id/questions/reorder` — bulk reorder questions
-- [x] API: `GET /api/public/jobs/:id` — public job detail + custom questions (no auth)
-- [x] API: `POST /api/public/jobs/:id/apply` — public application submission (no auth)
+- [x] API: `GET /api/public/jobs/:slug` — public job detail + custom questions (no auth)
+- [x] API: `POST /api/public/jobs/:slug/apply` — public application submission (no auth)
 - [x] Candidate auto-creation with email deduplication on submission
 - [x] Application record creation linking candidate → job
 - [x] Question response storage per application
@@ -146,8 +146,8 @@ Recruiters can configure custom questions per job. Applicants can apply through 
 - [x] Component: `DynamicField.vue` — renders questions as form fields (8 types)
 - [x] Integration: Application Form section on job detail page
 - [x] Shareable application link (shown when job status is `open`)
-- [x] Page: Public application form (`app/pages/jobs/[id]/apply.vue`)
-- [x] Page: Submission confirmation (`app/pages/jobs/[id]/confirmation.vue`)
+- [x] Page: Public application form (`app/pages/jobs/[slug]/apply.vue`)
+- [x] Page: Submission confirmation (`app/pages/jobs/[slug]/confirmation.vue`)
 - [x] Layout: Public layout for unauthenticated pages (`app/layouts/public.vue`)
 - [x] Anti-spam: honeypot field on submission form
 - [x] Zod validation schemas for questions and public applications
@@ -155,8 +155,11 @@ Recruiters can configure custom questions per job. Applicants can apply through 
 #### Sub-milestone 7b: Public Job Board ✅
 
 - [x] Public job listing page — browse open jobs, no auth required (`app/pages/jobs/index.vue`)
-- [x] Public job detail page — view description, requirements, location (`app/pages/jobs/[id].vue`)
+- [x] Public job detail page — view description, requirements, location (`app/pages/jobs/[slug]/index.vue`)
 - [x] API: `GET /api/public/jobs` — list open jobs (no auth)
+- [x] SEO-friendly slug-based URLs for public job pages (e.g. `/jobs/senior-engineer-a1b2c3d4`)
+- [x] Custom slug support — recruiters can set a custom slug, defaults to job title
+- [x] Slug auto-generated from title + short UUID on job creation, regenerated on title/slug update
 - [ ] Resume file upload to MinIO during submission (depends on Milestone 6)
 - [ ] Rate limiting on public submission endpoint (tracked in Milestone 13)
 

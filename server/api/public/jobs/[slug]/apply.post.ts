@@ -1,20 +1,20 @@
 import { eq, and, asc } from 'drizzle-orm'
 import { job, candidate, application, jobQuestion, questionResponse } from '../../../../database/schema'
-import { publicApplicationSchema, publicJobIdSchema } from '../../../../utils/schemas/publicApplication'
+import { publicApplicationSchema, publicJobSlugSchema } from '../../../../utils/schemas/publicApplication'
 
 /**
- * POST /api/public/jobs/:id/apply
+ * POST /api/public/jobs/:slug/apply
  * Public application submission endpoint. No auth required.
  *
  * Flow:
- * 1. Validate the job exists and is open
+ * 1. Validate the job exists and is open (resolve by slug)
  * 2. Validate all required custom questions are answered
  * 3. Upsert candidate (deduplicate by email within the org)
  * 4. Create application linking candidate → job
  * 5. Store question responses
  */
 export default defineEventHandler(async (event) => {
-  const { id: jobId } = await getValidatedRouterParams(event, publicJobIdSchema.parse)
+  const { slug } = await getValidatedRouterParams(event, publicJobSlugSchema.parse)
   const body = await readValidatedBody(event, publicApplicationSchema.parse)
 
   // Honeypot check — if the hidden `website` field is filled, silently reject
@@ -24,9 +24,9 @@ export default defineEventHandler(async (event) => {
     return { success: true }
   }
 
-  // 1. Fetch the job and verify it's open
+  // 1. Fetch the job by slug and verify it's open
   const existingJob = await db.query.job.findFirst({
-    where: and(eq(job.id, jobId), eq(job.status, 'open')),
+    where: and(eq(job.slug, slug), eq(job.status, 'open')),
     columns: { id: true, organizationId: true },
   })
 
@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const orgId = existingJob.organizationId
+  const jobId = existingJob.id
 
   // 2. Fetch required questions and validate responses
   const questions = await db.query.jobQuestion.findMany({

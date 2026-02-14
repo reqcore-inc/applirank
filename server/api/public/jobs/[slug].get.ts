@@ -1,20 +1,21 @@
 import { eq, and, asc } from 'drizzle-orm'
 import { job } from '../../../database/schema'
-import { publicJobIdSchema } from '../../../utils/schemas/publicApplication'
+import { publicJobSlugSchema } from '../../../utils/schemas/publicApplication'
 
 /**
- * GET /api/public/jobs/:id
- * Returns job details + custom questions for an open job.
+ * GET /api/public/jobs/:slug
+ * Returns job details + custom questions for an open job, resolved by slug.
  * No auth required — this is the public-facing endpoint for applicants.
  */
 export default defineEventHandler(async (event) => {
-  const { id } = await getValidatedRouterParams(event, publicJobIdSchema.parse)
+  const { slug } = await getValidatedRouterParams(event, publicJobSlugSchema.parse)
 
   const result = await db.query.job.findFirst({
-    where: and(eq(job.id, id), eq(job.status, 'open')),
+    where: and(eq(job.slug, slug), eq(job.status, 'open')),
     columns: {
       id: true,
       title: true,
+      slug: true,
       description: true,
       location: true,
       type: true,

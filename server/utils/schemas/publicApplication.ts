@@ -26,7 +26,12 @@ export const publicApplicationSchema = z.object({
   website: z.string().optional(),
 })
 
-/** Route param for public job ID */
+/** Route param for public job slug */
+export const publicJobSlugSchema = z.object({
+  slug: z.string().min(1),
+})
+
+/** Route param for public job ID (legacy, used internally) */
 export const publicJobIdSchema = z.object({
   id: z.string().min(1),
 })

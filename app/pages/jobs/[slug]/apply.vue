@@ -6,12 +6,12 @@ definePageMeta({
 })
 
 const route = useRoute()
-const jobId = route.params.id as string
+const jobSlug = route.params.slug as string
 
 // Fetch public job data (no auth needed)
 const { data: job, status: fetchStatus, error: fetchError } = useFetch(
-  `/api/public/jobs/${jobId}`,
-  { key: `public-job-${jobId}` },
+  `/api/public/jobs/${jobSlug}`,
+  { key: `public-job-${jobSlug}` },
 )
 
 useSeoMeta({
@@ -82,7 +82,7 @@ async function handleSubmit() {
       })
       .map(([questionId, value]) => ({ questionId, value }))
 
-    await $fetch(`/api/public/jobs/${jobId}/apply`, {
+    await $fetch(`/api/public/jobs/${jobSlug}/apply`, {
       method: 'POST',
       body: {
         firstName: form.value.firstName.trim(),
@@ -94,7 +94,7 @@ async function handleSubmit() {
       },
     })
 
-    await navigateTo(`/jobs/${jobId}/confirmation`)
+    await navigateTo(`/jobs/${jobSlug}/confirmation`)
   } catch (err: any) {
     submitError.value = err.data?.statusMessage ?? 'Something went wrong. Please try again.'
   } finally {
@@ -139,7 +139,7 @@ const typeLabels: Record<string, string> = {
     <template v-else-if="job">
       <!-- Back to job detail -->
       <NuxtLink
-        :to="`/jobs/${jobId}`"
+        :to="`/jobs/${jobSlug}`"
         class="inline-flex items-center gap-1 text-sm text-surface-500 hover:text-surface-700 transition-colors mb-6"
       >
         <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>

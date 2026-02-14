@@ -168,7 +168,7 @@ const typeLabels: Record<string, string> = {
 const requestUrl = useRequestURL()
 const applicationUrl = computed(() => {
   const base = `${requestUrl.protocol}//${requestUrl.host}`
-  return `${base}/jobs/${jobId}/apply`
+  return `${base}/jobs/${job.value?.slug ?? jobId}/apply`
 })
 
 const linkCopied = ref(false)

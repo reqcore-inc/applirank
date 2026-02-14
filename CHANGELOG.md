@@ -6,6 +6,34 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## 2026-02-14
+
+### Fixed
+
+- **Honeypot bypass** — removed `z.string().max(0)` from honeypot schema that caused Zod to reject bot submissions with 422 instead of silently discarding them; honeypot validation now handled at runtime only
+- **Candidate data overwrite** — public `apply.post.ts` no longer unconditionally overwrites existing candidate `firstName`/`lastName`/`phone`; now only backfills empty fields to prevent data corruption via re-application
+- **Application ID leak** — public apply response no longer exposes the internal `applicationId`
+- **Reorder atomicity** — question reorder endpoint now runs inside a database transaction instead of `Promise.all` to prevent partial reorder on failure
+- **Unbounded applications eager-load** — `GET /api/jobs/:id` now limits eager-loaded applications to 100 with explicit column selection instead of loading all columns for all applications
+
+---
+
+## 2026-02-15
+
+### Added
+
+- **Public job board** (`app/pages/jobs/index.vue`) — browse all open positions with search, type filter, and pagination (no auth required)
+- **Public job detail page** (`app/pages/jobs/[id].vue`) — view full job description, requirements, and "Apply Now" CTA (no auth required)
+- **API: `GET /api/public/jobs`** — lists open jobs with pagination, search (title/location), and type filter
+- Zod validation schema `publicJobsQuerySchema` for public job listing query params
+- "Open Positions" navbar link on landing page
+- "View Open Positions" CTA button in landing page hero section
+- "Back to job details" link on application form page
+- "Browse more positions" button on application confirmation page
+- Cross-linked navigation flow: Landing → Job Board → Job Detail → Apply → Confirmation → Job Board
+
+---
+
 ## 2026-02-15
 
 ### Added

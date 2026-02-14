@@ -10,7 +10,12 @@ export default defineEventHandler(async (event) => {
 
   const result = await db.query.job.findFirst({
     where: and(eq(job.id, id), eq(job.organizationId, orgId)),
-    with: { applications: true },
+    with: {
+      applications: {
+        columns: { id: true, candidateId: true, status: true, createdAt: true },
+        limit: 100,
+      },
+    },
   })
 
   if (!result) {

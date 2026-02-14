@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Pencil, Trash2, MapPin, Clock, Calendar } from 'lucide-vue-next'
+import { ArrowLeft, Pencil, Trash2, MapPin, Clock, Calendar, Link2, ClipboardCopy, FileText } from 'lucide-vue-next'
 import { z } from 'zod'
 
 definePageMeta({
@@ -161,6 +161,29 @@ const typeLabels: Record<string, string> = {
   internship: 'Internship',
 }
 
+// ─────────────────────────────────────────────
+// Application link
+// ─────────────────────────────────────────────
+
+const requestUrl = useRequestURL()
+const applicationUrl = computed(() => {
+  const base = `${requestUrl.protocol}//${requestUrl.host}`
+  return `${base}/jobs/${jobId}/apply`
+})
+
+const linkCopied = ref(false)
+
+async function copyApplicationLink() {
+  try {
+    await navigator.clipboard.writeText(applicationUrl.value)
+    linkCopied.value = true
+    setTimeout(() => { linkCopied.value = false }, 2000)
+  } catch {
+    // Fallback for non-HTTPS contexts
+    alert(applicationUrl.value)
+  }
+}
+
 const typeOptions = [
   { value: 'full_time', label: 'Full-time' },
   { value: 'part_time', label: 'Part-time' },
@@ -289,7 +312,7 @@ const typeOptions = [
         </div>
 
         <!-- Applications count -->
-        <div class="rounded-lg border border-surface-200 bg-white p-5">
+        <div class="rounded-lg border border-surface-200 bg-white p-5 mb-4">
           <h2 class="text-sm font-semibold text-surface-700 mb-1">Applications</h2>
           <p class="text-2xl font-bold text-surface-900">
             {{ job.applications?.length ?? 0 }}
@@ -297,6 +320,44 @@ const typeOptions = [
           <p class="text-xs text-surface-400 mt-1">
             Application management coming in a future milestone.
           </p>
+        </div>
+
+        <!-- Shareable application link (only when job is open) -->
+        <div v-if="job.status === 'open'" class="rounded-lg border border-brand-200 bg-brand-50 p-5 mb-4">
+          <div class="flex items-center gap-2 mb-2">
+            <Link2 class="size-4 text-brand-600" />
+            <h2 class="text-sm font-semibold text-brand-700">Application Link</h2>
+          </div>
+          <p class="text-xs text-surface-600 mb-3">
+            Share this link with candidates so they can apply to this position.
+          </p>
+          <div class="flex items-center gap-2">
+            <input
+              type="text"
+              readonly
+              :value="applicationUrl"
+              class="flex-1 rounded-lg border border-brand-200 bg-white px-3 py-1.5 text-sm text-surface-700 select-all"
+            />
+            <button
+              class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
+              @click="copyApplicationLink"
+            >
+              <ClipboardCopy class="size-3.5" />
+              {{ linkCopied ? 'Copied!' : 'Copy' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Application Form Questions -->
+        <div class="rounded-lg border border-surface-200 bg-white p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <FileText class="size-4 text-surface-500" />
+            <h2 class="text-sm font-semibold text-surface-700">Application Form Questions</h2>
+          </div>
+          <p class="text-xs text-surface-400 mb-4">
+            Customize the questions applicants must answer when applying. All applications include name, email, and phone by default.
+          </p>
+          <JobQuestions :job-id="jobId" />
         </div>
       </div>
 

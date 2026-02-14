@@ -28,7 +28,17 @@ server/
 │   ├── jobs/
 │   │   ├── index.get.ts     # GET /api/jobs
 │   │   ├── index.post.ts    # POST /api/jobs
-│   │   └── [id].get.ts      # GET /api/jobs/:id
+│   │   ├── [id].get.ts      # GET /api/jobs/:id
+│   │   ├── [id].patch.ts    # PATCH /api/jobs/:id
+│   │   ├── [id].delete.ts   # DELETE /api/jobs/:id
+│   │   └── [id]/            # ⚠️ MUST match param name of sibling [id].*.ts files
+│   │       └── questions/   # Custom question management per job
+│   ├── public/              # Unauthenticated endpoints (no requireAuth)
+│   │   └── jobs/
+│   │       ├── index.get.ts  # GET /api/public/jobs (list open jobs)
+│   │       ├── [id].get.ts   # GET /api/public/jobs/:id
+│   │       └── [id]/
+│   │           └── apply.post.ts # POST /api/public/jobs/:id/apply
 │   └── candidates/
 │       └── ...
 ├── routes/                  # Non-API routes (no /api/ prefix)
@@ -60,6 +70,8 @@ server/
 - Method suffix in filename (`.get.ts`, `.post.ts`, `.patch.ts`, `.delete.ts`) restricts the HTTP method.
 - No suffix = handler receives ALL methods.
 - `[param]` for dynamic segments, `[...slug]` for catch-all.
+- **CRITICAL**: When a dynamic segment has both leaf files (`[id].get.ts`) AND a subdirectory (`[id]/`), the param name MUST be the same. Using `[id].get.ts` alongside `[jobId]/` causes 404 errors.
+- **Public endpoints**: Place unauthenticated API routes under `server/api/public/` to separate them from authenticated routes.
 
 ---
 
@@ -725,4 +737,5 @@ const { session, orgId } = event.context
 | Modify tables in `server/database/schema/auth.ts` | Better Auth manages these schemas | Only change auth config in `server/utils/auth.ts` |
 | Import from wrong Drizzle driver | Project uses `postgres` (postgres.js) only | `import { drizzle } from 'drizzle-orm/postgres-js'` |
 | Create handler without method suffix in filename | Handler receives ALL HTTP methods — ambiguous | Use `.get.ts`, `.post.ts`, `.patch.ts`, `.delete.ts` |
+| Use different param names for sibling files and dirs (`[id].get.ts` + `[jobId]/`) | Nitro creates competing dynamic segments → 404 | Use the same param name: `[id].get.ts` + `[id]/` |
 | Set `updatedAt` to `new Date()` in `.values()` on insert | `defaultNow()` handles insert; `.set()` needs explicit update | Only set `updatedAt: new Date()` in `.set()` (update) |

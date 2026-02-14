@@ -425,16 +425,27 @@ export function useSidebar() {
 ```
 app/pages/
 ├── index.vue               → /           (public landing page — dark theme, no auth required)
-├── login.vue               → /login
-├── register.vue            → /register
+├── auth/
+│   ├── sign-in.vue         → /auth/sign-in
+│   └── sign-up.vue         → /auth/sign-up
 ├── dashboard/
 │   ├── index.vue           → /dashboard
-│   ├── settings.vue        → /dashboard/settings
 │   └── jobs/
 │       ├── index.vue       → /dashboard/jobs
 │       ├── new.vue         → /dashboard/jobs/new
 │       └── [id].vue        → /dashboard/jobs/:id
+├── jobs/                                     (public job board — no auth, `public` layout)
+│   ├── index.vue           → /jobs           (browse open positions)
+│   └── [id]/
+│       ├── index.vue       → /jobs/:id       (job detail)
+│       ├── apply.vue       → /jobs/:id/apply (application form)
+│       └── confirmation.vue→ /jobs/:id/confirmation
+├── onboarding/
+│   └── create-org.vue      → /onboarding/create-org
 └── [...slug].vue           → catch-all 404
+
+⚠️ **Routing rule**: If a directory `[id]/` exists with child routes, do NOT also
+create `[id].vue` — Nuxt treats the file as a parent layout. Use `[id]/index.vue` instead.
 ```
 
 ### Page meta
@@ -479,8 +490,10 @@ if (error.value) {
 
 ```
 app/layouts/
-├── default.vue      # Public pages (landing, login)
-└── dashboard.vue    # Authenticated app shell (sidebar, header)
+├── default.vue      # Default (landing, login)
+├── auth.vue         # Auth pages (sign-in, sign-up) — centered card layout
+├── dashboard.vue    # Authenticated app shell (sidebar, header)
+└── public.vue       # Public-facing pages (job board, apply form) — simple header/footer
 ```
 
 ### Layout component pattern

@@ -11,6 +11,8 @@
 
 **Phase 1, Milestone 4: Candidate Management** — Build full CRUD for candidates with deduplication.
 
+> **Recently completed**: Milestone 7b (Public Job Board) — Applicants can now browse open positions, view job details, and apply from a public job board.
+
 ---
 
 ## Phase 1: MVP — A Working ATS
@@ -119,7 +121,46 @@ Upload and manage resumes/cover letters via MinIO.
 - [ ] Resume upload component on candidate detail page
 - [ ] Document list on candidate detail page
 
-### Milestone 7: Dashboard (not started)
+### Milestone 7: Public Job Board & Application Form (in progress)
+
+Public-facing pages where applicants can discover open jobs and submit applications.
+
+#### Sub-milestone 7a: Custom Application Forms & Public Submission ✅
+
+Recruiters can configure custom questions per job. Applicants can apply through a public form.
+
+- [x] Schema: `jobQuestion` and `questionResponse` tables with `question_type` enum
+- [x] API: `GET /api/jobs/:id/questions` — list custom questions (org-scoped)
+- [x] API: `POST /api/jobs/:id/questions` — add question to a job
+- [x] API: `PATCH /api/jobs/:id/questions/:questionId` — update question
+- [x] API: `DELETE /api/jobs/:id/questions/:questionId` — delete question
+- [x] API: `PUT /api/jobs/:id/questions/reorder` — bulk reorder questions
+- [x] API: `GET /api/public/jobs/:id` — public job detail + custom questions (no auth)
+- [x] API: `POST /api/public/jobs/:id/apply` — public application submission (no auth)
+- [x] Candidate auto-creation with email deduplication on submission
+- [x] Application record creation linking candidate → job
+- [x] Question response storage per application
+- [x] Composable: `useJobQuestions()` — CRUD for questions
+- [x] Component: `QuestionForm.vue` — create/edit question form
+- [x] Component: `JobQuestions.vue` — question list manager with reorder
+- [x] Component: `DynamicField.vue` — renders questions as form fields (8 types)
+- [x] Integration: Application Form section on job detail page
+- [x] Shareable application link (shown when job status is `open`)
+- [x] Page: Public application form (`app/pages/jobs/[id]/apply.vue`)
+- [x] Page: Submission confirmation (`app/pages/jobs/[id]/confirmation.vue`)
+- [x] Layout: Public layout for unauthenticated pages (`app/layouts/public.vue`)
+- [x] Anti-spam: honeypot field on submission form
+- [x] Zod validation schemas for questions and public applications
+
+#### Sub-milestone 7b: Public Job Board ✅
+
+- [x] Public job listing page — browse open jobs, no auth required (`app/pages/jobs/index.vue`)
+- [x] Public job detail page — view description, requirements, location (`app/pages/jobs/[id].vue`)
+- [x] API: `GET /api/public/jobs` — list open jobs (no auth)
+- [ ] Resume file upload to MinIO during submission (depends on Milestone 6)
+- [ ] Rate limiting on public submission endpoint (tracked in Milestone 13)
+
+### Milestone 8: Dashboard (not started)
 
 At-a-glance overview for recruiters.
 
@@ -133,7 +174,7 @@ At-a-glance overview for recruiters.
 
 Goal: AI helps recruiters find the best candidates — transparently.
 
-### Milestone 8: Resume Parsing
+### Milestone 9: Resume Parsing
 
 - [ ] PDF text extraction service
 - [ ] Structured data extraction (contact, experience, education, skills → JSON)
@@ -141,7 +182,7 @@ Goal: AI helps recruiters find the best candidates — transparently.
 - [ ] Display parsed resume on candidate detail page
 - [ ] Auto-fill candidate fields from parsed resume
 
-### Milestone 9: AI Candidate Ranking (Glass Box)
+### Milestone 10: AI Candidate Ranking (Glass Box)
 
 - [ ] Ranking criteria schema (configurable per job)
 - [ ] AI matching engine (job requirements ↔ candidate skills)
@@ -156,13 +197,13 @@ Goal: AI helps recruiters find the best candidates — transparently.
 
 Goal: Teams can work together on hiring decisions.
 
-### Milestone 10: Team Collaboration
+### Milestone 11: Team Collaboration
 
 - [ ] Comments/notes on applications (threaded)
 - [ ] Activity log per candidate/job
 - [ ] Role-based permissions (recruiter, hiring manager, admin)
 
-### Milestone 11: Communication
+### Milestone 12: Communication
 
 - [ ] Interview scheduling
 - [ ] Email templates for candidate outreach
@@ -174,7 +215,7 @@ Goal: Teams can work together on hiring decisions.
 
 Goal: Ready for real teams to self-host in production.
 
-### Milestone 12: Hardening
+### Milestone 13: Hardening
 
 - [ ] Production Docker Compose / deployment guide
 - [ ] HTTPS/TLS configuration
@@ -195,6 +236,8 @@ Goal: Ready for real teams to self-host in production.
 | 2. Auth UI & Navigation | 2026-02-14 |
 | 2.5. Public Landing Page | 2026-02-14 |
 | 3. Job Management | 2026-02-14 |
+| 7a. Custom Application Forms & Public Submission | 2026-02-14 |
+| 7b. Public Job Board | 2026-02-14 |
 
 ---
 

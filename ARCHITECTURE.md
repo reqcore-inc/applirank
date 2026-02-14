@@ -37,7 +37,13 @@ applirank/
 │       └── auth-client.ts        # Better Auth Vue client
 ├── server/                       # Nitro server (at project root)
 │   ├── api/                      # API routes (/api/*)
-│   │   └── auth/[...all].ts      # Better Auth catch-all
+│   │   ├── auth/[...all].ts      # Better Auth catch-all
+│   │   ├── jobs/                 # Authenticated job CRUD + questions
+│   │   │   ├── [id].get.ts       # GET /api/jobs/:id
+│   │   │   └── [id]/questions/   # Custom question management
+│   │   └── public/jobs/          # Unauthenticated public job board
+│   │       ├── index.get.ts      # GET /api/public/jobs (list open jobs)
+│   │       └── [id].get.ts       # GET /api/public/jobs/:id
 │   ├── database/
 │   │   ├── schema/               # Drizzle ORM table definitions
 │   │   │   ├── app.ts            # Domain tables (job, candidate, etc.)
@@ -147,6 +153,18 @@ organization (Better Auth)
 ```
 
 All domain tables belong to exactly one organization. Candidates are deduplicated within each org by email (`uniqueIndex(organizationId, email)`).
+
+### 7. Nitro Route Parameter Consistency
+
+When a dynamic segment (e.g., `[id]`) has both leaf files (`[id].get.ts`) and a subdirectory (`[id]/questions/`), both **must** use the same parameter name. Using `[id].get.ts` alongside `[jobId]/questions/` causes Nitro's router to fail with 404 errors because it creates two competing dynamic segments at the same level.
+
+### 8. Nuxt Page Route Nesting
+
+When a page file `pages/[id].vue` and a directory `pages/[id]/` coexist, Nuxt treats the file as a **parent layout** for nested routes in the directory. If you want sibling routes instead, place the "index" page inside the directory as `pages/[id]/index.vue`.
+
+### 9. Public vs Authenticated Routes
+
+Public-facing endpoints live under `server/api/public/` and require no authentication. They only expose data for resources in an `open` state (e.g., jobs). Public pages live under `app/pages/jobs/` and use the `public` layout.
 
 ## Security Boundaries
 

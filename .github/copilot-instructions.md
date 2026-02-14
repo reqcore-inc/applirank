@@ -40,10 +40,18 @@ Applirank is a lean, open-source ATS designed to return power to the employer. W
 ```
 app/              # Client-side source (components, pages, composables, etc.)
 server/           # Nitro server code (api/, routes/, utils/, middleware/)
+  api/public/     # Unauthenticated endpoints (public job board, apply)
   utils/env.ts    # Runtime env validation — all env vars validated with Zod
 public/           # Static assets
 docker-compose.yml
 ```
+
+### Public vs Authenticated Routes
+
+- **Authenticated API**: `server/api/jobs/`, `server/api/candidates/` — require `requireAuth(event)`
+- **Public API**: `server/api/public/jobs/` — no auth, only exposes open jobs
+- **Public pages**: `app/pages/jobs/` — job board, job detail, application form (uses `public` layout)
+- **Dashboard pages**: `app/pages/dashboard/` — recruiter UI (uses `dashboard` layout, requires auth)
 
 ## Critical Patterns
 
@@ -156,6 +164,10 @@ Use **npm** (lockfile is `package-lock.json`).
 ### Documentation
 - Use JSDoc `/** */` comments for exported functions and complex types
 - Add section-separator comments in schema files: `// ─────────────────`
+
+### Nitro Route Conventions (CRITICAL)
+- Dynamic param names MUST be consistent within the same path level. If `server/api/jobs/[id].get.ts` uses `[id]`, then subdirectories must also use `[id]/` (NOT `[jobId]/`). Mismatched param names cause 404 errors.
+- Public pages using both `pages/[id].vue` (file) and `pages/[id]/` (directory) will conflict. Use `pages/[id]/index.vue` inside the directory instead.
 
 ### What NOT to do
 - Don't use `pg` or `@neondatabase/serverless` — use `postgres` (postgres.js)

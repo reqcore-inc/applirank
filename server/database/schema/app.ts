@@ -3,6 +3,7 @@ import {
   text,
   timestamp,
   integer,
+  boolean,
   jsonb,
   pgEnum,
   index,
@@ -21,6 +22,10 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'new', 'screening', 'interview', 'offer', 'hired', 'rejected',
 ])
 export const documentTypeEnum = pgEnum('document_type', ['resume', 'cover_letter', 'other'])
+export const questionTypeEnum = pgEnum('question_type', [
+  'short_text', 'long_text', 'single_select', 'multi_select',
+  'number', 'date', 'url', 'checkbox',
+])
 
 // ─────────────────────────────────────────────
 // ATS Domain Tables — ALL scoped by organizationId
@@ -101,12 +106,57 @@ export const document = pgTable('document', {
 ]))
 
 // ─────────────────────────────────────────────
+// Custom Application Form Questions
+// ─────────────────────────────────────────────
+
+/**
+ * Custom questions configured by the recruiter for a specific job.
+ * These appear on the public application form alongside the standard fields.
+ * `options` is only used for `single_select` and `multi_select` types.
+ */
+export const jobQuestion = pgTable('job_question', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  jobId: text('job_id').notNull().references(() => job.id, { onDelete: 'cascade' }),
+  type: questionTypeEnum('type').notNull().default('short_text'),
+  label: text('label').notNull(),
+  description: text('description'),
+  required: boolean('required').notNull().default(false),
+  options: jsonb('options').$type<string[]>(),
+  displayOrder: integer('display_order').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('job_question_organization_id_idx').on(t.organizationId),
+  index('job_question_job_id_idx').on(t.jobId),
+]))
+
+/**
+ * Applicant responses to custom questions, stored per application.
+ * `value` is stored as JSONB to support different response types
+ * (string, string[], number, boolean).
+ */
+export const questionResponse = pgTable('question_response', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  applicationId: text('application_id').notNull().references(() => application.id, { onDelete: 'cascade' }),
+  questionId: text('question_id').notNull().references(() => jobQuestion.id, { onDelete: 'cascade' }),
+  value: jsonb('value').$type<string | string[] | number | boolean>().notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ([
+  index('question_response_organization_id_idx').on(t.organizationId),
+  index('question_response_application_id_idx').on(t.applicationId),
+  index('question_response_question_id_idx').on(t.questionId),
+]))
+
+// ─────────────────────────────────────────────
 // Relations
 // ─────────────────────────────────────────────
 
 export const jobRelations = relations(job, ({ one, many }) => ({
   organization: one(organization, { fields: [job.organizationId], references: [organization.id] }),
   applications: many(application),
+  questions: many(jobQuestion),
 }))
 
 export const candidateRelations = relations(candidate, ({ one, many }) => ({
@@ -115,13 +165,25 @@ export const candidateRelations = relations(candidate, ({ one, many }) => ({
   documents: many(document),
 }))
 
-export const applicationRelations = relations(application, ({ one }) => ({
+export const applicationRelations = relations(application, ({ one, many }) => ({
   organization: one(organization, { fields: [application.organizationId], references: [organization.id] }),
   candidate: one(candidate, { fields: [application.candidateId], references: [candidate.id] }),
   job: one(job, { fields: [application.jobId], references: [job.id] }),
+  responses: many(questionResponse),
 }))
 
 export const documentRelations = relations(document, ({ one }) => ({
   organization: one(organization, { fields: [document.organizationId], references: [organization.id] }),
   candidate: one(candidate, { fields: [document.candidateId], references: [candidate.id] }),
+}))
+
+export const jobQuestionRelations = relations(jobQuestion, ({ one }) => ({
+  organization: one(organization, { fields: [jobQuestion.organizationId], references: [organization.id] }),
+  job: one(job, { fields: [jobQuestion.jobId], references: [job.id] }),
+}))
+
+export const questionResponseRelations = relations(questionResponse, ({ one }) => ({
+  organization: one(organization, { fields: [questionResponse.organizationId], references: [organization.id] }),
+  application: one(application, { fields: [questionResponse.applicationId], references: [application.id] }),
+  question: one(jobQuestion, { fields: [questionResponse.questionId], references: [jobQuestion.id] }),
 }))

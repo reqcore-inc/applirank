@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   ArrowRight,
+  Briefcase,
   Database,
   ScanEye,
   UsersRound,
@@ -48,6 +49,12 @@ useHead({
         </NuxtLink>
 
         <div class="flex items-center gap-2">
+          <NuxtLink
+            to="/jobs"
+            class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:inline-flex"
+          >
+            Open Positions
+          </NuxtLink>
           <a
             href="https://github.com/applirank/applirank"
             target="_blank"
@@ -132,15 +139,13 @@ useHead({
             Get started free
             <ArrowRight class="h-3.5 w-3.5" />
           </NuxtLink>
-          <a
-            href="https://github.com/applirank/applirank"
-            target="_blank"
-            rel="noopener noreferrer"
+          <NuxtLink
+            to="/jobs"
             class="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-surface-300 transition hover:border-white/[0.2] hover:bg-white/[0.06] hover:text-white"
           >
-            <Github class="h-4 w-4" />
-            View on GitHub
-          </a>
+            <Briefcase class="h-4 w-4" />
+            View Open Positions
+          </NuxtLink>
         </div>
 
         <!-- Terminal -->

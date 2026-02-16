@@ -21,6 +21,7 @@ import {
   Hammer,
   Telescope,
   Quote,
+  Play,
 } from 'lucide-vue-next'
 
 useSeoMeta({
@@ -40,6 +41,33 @@ useHead({
     style: 'background-color: #09090b;',
   },
 })
+
+// ─────────────────────────────────────────────
+// One-click demo login
+// ─────────────────────────────────────────────
+const isDemoLoading = ref(false)
+
+async function tryDemo() {
+  isDemoLoading.value = true
+  try {
+    const result = await authClient.signIn.email({
+      email: 'demo@applirank.com',
+      password: 'demo1234',
+    })
+    if (result.error) {
+      // Fallback: send to sign-in page if demo account doesn't exist
+      await navigateTo('/auth/sign-in')
+      return
+    }
+    await navigateTo('/dashboard')
+  }
+  catch {
+    await navigateTo('/auth/sign-in')
+  }
+  finally {
+    isDemoLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -143,6 +171,15 @@ useHead({
         </p>
 
         <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <button
+            :disabled="isDemoLoading"
+            class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.25)] transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(99,102,241,0.35)] disabled:opacity-60 disabled:cursor-not-allowed"
+            @click="tryDemo"
+          >
+            <Play v-if="!isDemoLoading" class="h-3.5 w-3.5" />
+            <div v-else class="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            {{ isDemoLoading ? 'Launching…' : 'Try live demo' }}
+          </button>
           <NuxtLink
             to="/auth/sign-up"
             class="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#09090b] shadow-[0_0_20px_rgba(255,255,255,0.1)] transition hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
@@ -150,14 +187,8 @@ useHead({
             Get started free
             <ArrowRight class="h-3.5 w-3.5" />
           </NuxtLink>
-          <NuxtLink
-            to="/jobs"
-            class="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-surface-300 transition hover:border-white/[0.2] hover:bg-white/[0.06] hover:text-white"
-          >
-            <Briefcase class="h-4 w-4" />
-            View Open Positions
-          </NuxtLink>
         </div>
+        <p class="mt-3 text-xs text-surface-500">No sign-up needed — instant access with sample data</p>
 
         <!-- Terminal -->
         <div class="mx-auto mt-14 max-w-lg">

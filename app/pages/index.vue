@@ -55,11 +55,19 @@ async function tryDemo() {
       password: 'demo1234',
     })
     if (result.error) {
-      // Fallback: send to sign-in page if demo account doesn't exist
       await navigateTo('/auth/sign-in')
       return
     }
-    await navigateTo('/dashboard')
+
+    // Activate the demo org before navigating
+    const orgsResult = await authClient.organization.list()
+    const orgs = orgsResult.data
+    if (orgs && orgs.length > 0) {
+      await authClient.organization.setActive({ organizationId: orgs[0].id })
+    }
+
+    // Hard navigation to avoid hydration mismatches between dark landing and light dashboard
+    window.location.href = '/dashboard'
   }
   catch {
     await navigateTo('/auth/sign-in')

@@ -45,17 +45,286 @@ Most recruiting software holds your candidate data hostage behind per-seat prici
 
 ## Quick Start
 
+> **TL;DR for experienced developers:**
+> ```bash
+> git clone https://github.com/applirank/applirank.git && cd applirank
+> cp .env.example .env          # then edit passwords (see below)
+> docker compose up -d           # start Postgres + MinIO
+> npm install && npm run dev     # app → http://localhost:3000
+> ```
+
+---
+
+### Prerequisites
+
+You need three tools installed: **Git**, **Node.js** (v20+), and **Docker Desktop** (or Docker Engine). Pick your operating system below and follow every step — even if you've never used a terminal before.
+
+<details>
+<summary><strong>🐧 Linux (Ubuntu / Debian)</strong></summary>
+
+Open a terminal (`Ctrl + Alt + T`).
+
+**1. Install Git**
+
+```bash
+sudo apt update && sudo apt install -y git
+```
+
+Verify: `git --version` → should print something like `git version 2.x.x`.
+
+**2. Install Node.js 22 (LTS)**
+
+The version in your distro's default repos is often outdated. Use the official NodeSource installer:
+
+```bash
+# Download and run the NodeSource setup script for Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+
+Verify:
+```bash
+node --version   # should print v22.x.x or higher
+npm --version    # should print 10.x.x or higher
+```
+
+**3. Install Docker Engine + Docker Compose**
+
+```bash
+# Install Docker's official GPG key and repository
+sudo apt install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+Allow your user to run Docker without `sudo` (log out and back in after this):
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+> **Important:** Log out and log back in (or reboot) for the group change to take effect.
+
+Verify:
+```bash
+docker --version          # Docker version 27.x.x
+docker compose version    # Docker Compose version v2.x.x
+```
+
+> **Debian users:** Replace `ubuntu` with `debian` in the repository URL above. For other distros, see [Docker's official install docs](https://docs.docker.com/engine/install/).
+
+</details>
+
+<details>
+<summary><strong>🍎 macOS</strong></summary>
+
+Open **Terminal** (press `Cmd + Space`, type "Terminal", hit Enter).
+
+**1. Install Homebrew** (macOS package manager)
+
+If you don't have Homebrew yet:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Follow the on-screen instructions. When it finishes, it may ask you to run two commands to add Homebrew to your PATH — **run those commands**.
+
+Verify: `brew --version`
+
+**2. Install Git**
+
+macOS may have Git pre-installed. Check with `git --version`. If it's not installed or prompts you to install Xcode command-line tools, either accept that prompt or run:
+
+```bash
+brew install git
+```
+
+**3. Install Node.js 22 (LTS)**
+
+```bash
+brew install node@22
+```
+
+If Homebrew tells you to add it to your PATH, follow those instructions. Then verify:
+
+```bash
+node --version   # v22.x.x or higher
+npm --version    # 10.x.x or higher
+```
+
+**4. Install Docker Desktop**
+
+```bash
+brew install --cask docker
+```
+
+After installation, **open Docker Desktop** from your Applications folder (or Spotlight: `Cmd + Space` → "Docker"). Wait until the Docker icon in the menu bar shows a steady state (not "starting…").
+
+> **First time?** Docker Desktop may ask for your password and to enable some system extensions — accept these prompts.
+
+Verify:
+```bash
+docker --version          # Docker version 27.x.x
+docker compose version    # Docker Compose version v2.x.x
+```
+
+</details>
+
+<details>
+<summary><strong>🪟 Windows</strong></summary>
+
+**1. Install Git**
+
+Download and run the Git installer from [git-scm.com/downloads/win](https://git-scm.com/downloads/win). During installation:
+- Accept all default options
+- When asked about the default editor, pick whichever you prefer (Notepad is fine)
+- When asked about adjusting your PATH, choose **"Git from the command line and also from 3rd-party software"** (the recommended option)
+
+**2. Install Node.js 22 (LTS)**
+
+Download the Windows installer (`.msi`) from [nodejs.org](https://nodejs.org) — pick the **LTS** version (22.x.x). During installation:
+- Accept the defaults
+- Check the box for **"Automatically install the necessary tools"** if prompted
+
+**3. Install Docker Desktop**
+
+Download Docker Desktop from [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/). During installation:
+- ✅ Check **"Use WSL 2 instead of Hyper-V"** (recommended)
+- If prompted, install the **WSL 2 Linux kernel update** — follow the link Docker gives you, download and install it, then continue
+- **Restart your computer** when asked
+
+After restarting:
+1. Open **Docker Desktop** from the Start menu
+2. Accept the terms of service
+3. Wait until Docker says "Docker Desktop is running" in the bottom-left
+
+> **Troubleshooting WSL 2:** If Docker complains about WSL 2, open PowerShell as Administrator and run:
+> ```powershell
+> wsl --install
+> ```
+> Then restart your computer and try again.
+
+**4. Open a terminal**
+
+For all remaining steps, use **Git Bash** (installed with Git) or **PowerShell**. To open Git Bash: right-click on your Desktop → "Open Git Bash Here".
+
+Verify everything is installed:
+```bash
+git --version            # git version 2.x.x
+node --version           # v22.x.x
+npm --version            # 10.x.x
+docker --version         # Docker version 27.x.x
+docker compose version   # Docker Compose version v2.x.x
+```
+
+</details>
+
+---
+
+### Step-by-step installation
+
+Once you have Git, Node.js, and Docker installed and running, follow these steps in your terminal.
+
+**1. Clone the repository**
+
 ```bash
 git clone https://github.com/applirank/applirank.git
 cd applirank
-cp .env.example .env          # configure your environment
-docker compose up -d           # start Postgres + MinIO
-npm install && npm run dev     # app at http://localhost:3000
 ```
 
-Migrations run automatically on startup. That's it.
+**2. Create your environment file**
 
-### Seed demo data
+```bash
+cp .env.example .env
+```
+
+Now open the `.env` file in any text editor and replace the placeholder values. Here's what each variable does:
+
+```env
+# ── Database (used by Docker Compose to create the Postgres container) ──
+DB_USER=admin
+DB_PASSWORD=pick-a-strong-password        # ← change this
+DB_NAME=applirank
+
+# ── Database connection string (used by the app — must match the above) ──
+DATABASE_URL=postgresql://admin:pick-a-strong-password@localhost:5432/applirank
+
+# ── Object Storage (used by Docker Compose for the MinIO container) ──
+STORAGE_USER=admin
+STORAGE_PASSWORD=pick-another-password     # ← change this (min 8 characters)
+
+# ── Object Storage (used by the app — must match the above) ──
+S3_ENDPOINT=http://localhost:9000
+S3_ACCESS_KEY=admin                        # ← same as STORAGE_USER
+S3_SECRET_KEY=pick-another-password        # ← same as STORAGE_PASSWORD
+S3_BUCKET=applirank
+
+# ── Auth ──
+BETTER_AUTH_SECRET=generate-a-random-secret-at-least-32-chars
+BETTER_AUTH_URL=http://localhost:3000
+```
+
+> **How to generate a random secret** for `BETTER_AUTH_SECRET`:
+> ```bash
+> # macOS / Linux
+> openssl rand -base64 32
+>
+> # Windows (PowerShell)
+> [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Max 256 }) -as [byte[]])
+> ```
+> Copy the output and paste it as the value of `BETTER_AUTH_SECRET`.
+
+> **Important:** The `DB_PASSWORD` must match the password in `DATABASE_URL`, and `STORAGE_PASSWORD` must match `S3_SECRET_KEY`. If they don't match, the app can't connect to the database or file storage.
+
+**3. Start the infrastructure**
+
+```bash
+docker compose up -d
+```
+
+This downloads and starts three containers in the background:
+- **PostgreSQL 16** — the database (port 5432)
+- **MinIO** — file storage for resumes/documents (ports 9000 + 9001)
+- **Adminer** — a web-based database viewer (port 8080, optional)
+
+Wait about 10–15 seconds for everything to start. You can check status with:
+
+```bash
+docker compose ps
+```
+
+All three services should show `running` (or `healthy`).
+
+**4. Install dependencies and start the app**
+
+```bash
+npm install
+npm run dev
+```
+
+The first run will:
+1. Install all JavaScript packages (~30 seconds)
+2. Run database migrations automatically
+3. Create the S3 storage bucket automatically
+4. Start the dev server
+
+**5. Open the app**
+
+Open your browser and go to **[http://localhost:3000](http://localhost:3000)**. You should see the Applirank landing page. Click **Get Started** to create your account and organization.
+
+---
+
+### Seed demo data (optional)
 
 To populate your local instance with realistic sample data (5 jobs, 30 candidates, 65+ applications across all pipeline stages):
 
@@ -63,29 +332,53 @@ To populate your local instance with realistic sample data (5 jobs, 30 candidate
 npm run db:seed
 ```
 
-This creates a demo user (`demo@applirank.com` / `demo1234`) with a pre-configured organization.
+This creates a demo user you can sign in with:
+- **Email:** `demo@applirank.com`
+- **Password:** `demo1234`
 
-### Environment Variables
+---
 
-```env
-# Database
-DB_USER=applirank
-DB_PASSWORD=your-secure-password
-DB_NAME=applirank
-DATABASE_URL=postgresql://applirank:your-secure-password@localhost:5432/applirank
+### Useful local URLs
 
-# Auth
-BETTER_AUTH_SECRET=your-secret-at-least-32-characters-long
-BETTER_AUTH_URL=http://localhost:3000
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **App** | [http://localhost:3000](http://localhost:3000) | Applirank application |
+| **Adminer** | [http://localhost:8080](http://localhost:8080) | Database browser (System: PostgreSQL, Server: `db`, use your `DB_USER`/`DB_PASSWORD`) |
+| **MinIO Console** | [http://localhost:9001](http://localhost:9001) | File storage admin (use your `STORAGE_USER`/`STORAGE_PASSWORD`) |
 
-# Object Storage (MinIO)
-STORAGE_USER=minioadmin
-STORAGE_PASSWORD=minioadmin
-S3_ENDPOINT=http://localhost:9000
-S3_ACCESS_KEY=minioadmin
-S3_SECRET_KEY=minioadmin
-S3_BUCKET=applirank
+---
+
+### Stopping and restarting
+
+```bash
+# Stop everything (keeps your data)
+docker compose down
+
+# Start again later
+docker compose up -d
+npm run dev
 ```
+
+To **delete all data** and start fresh:
+
+```bash
+docker compose down -v    # -v removes the database and file storage volumes
+docker compose up -d
+npm run dev               # migrations will re-create the tables
+```
+
+---
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `docker: command not found` | Docker isn't installed or not in your PATH. Re-check the install steps above. On Windows, make sure Docker Desktop is running. |
+| `docker compose` fails | Make sure Docker Desktop is **running** (check the system tray / menu bar icon). On Linux, make sure you logged out and back in after adding your user to the `docker` group. |
+| Port 5432 already in use | You have another PostgreSQL instance running. Stop it first, or change the port in `docker-compose.yml`. |
+| `npm run dev` shows database connection errors | Make sure Docker containers are running (`docker compose ps`). Check that `DATABASE_URL` in `.env` matches `DB_USER`, `DB_PASSWORD`, and `DB_NAME`. |
+| `EACCES permission denied` on npm install (macOS/Linux) | Don't use `sudo npm install`. Fix npm permissions: [docs.npmjs.com/resolving-eacces-permissions-errors](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) |
+| MinIO / S3 errors | Check that `S3_ACCESS_KEY` matches `STORAGE_USER` and `S3_SECRET_KEY` matches `STORAGE_PASSWORD` in your `.env`. |
 
 ## Tech Stack
 
@@ -159,14 +452,6 @@ Applirank is actively developed. Here's what's next:
 | 🔮 Planned | AI candidate ranking (Glass Box — shows matching logic), team collaboration, email notifications, candidate portal |
 
 See the full [Roadmap](ROADMAP.md) and [Product Vision](PRODUCT.md).
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and guidelines.
-
-## License
-
-[Elastic License 2.0](LICENSE) — free to use and self-host. See the license file for details.
 
 ## Contributing
 

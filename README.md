@@ -6,7 +6,7 @@
 
 [Live Demo](https://demo.applirank.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/applirank/applirank/issues/new)
 
-[![License: ELv2](https://img.shields.io/badge/License-ELv2-blue.svg)](LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
 </div>
 
@@ -291,8 +291,8 @@ See the full [Roadmap](ROADMAP.md) and [Product Vision](PRODUCT.md).
 
 ## Contributing
 
-Applirank is in early development and contributions are welcome. Check the [Roadmap](ROADMAP.md) for unchecked tasks in the current focus milestone — those are the best places to start.
+Applirank is in early development and contributions are welcome. Check [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow, DCO sign-off requirements, and submission guidelines.
 
 ## License
 
-[Elastic License 2.0](LICENSE) — free to use, self-host, and modify. You may not offer Applirank as a managed service to third parties. See [LICENSE](LICENSE) for full terms.
+Licensed under the [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE).

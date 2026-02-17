@@ -324,8 +324,8 @@ async function tryDemo() {
 
             <p>
               I want to change that. I'm building a tool that is
-              <span class="font-semibold text-white">100% free and rooted in open source</span>
-              &mdash; like Grafana or PostHog, but for hiring.
+              <span class="font-semibold text-white">100% AGPL-3.0 open source</span>
+              &mdash; in the same transparent spirit as Grafana or PostHog, but for hiring.
             </p>
 
             <p>

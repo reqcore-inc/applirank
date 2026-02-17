@@ -1,0 +1,32 @@
+name: Question
+description: Ask a usage, setup, or architecture question
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What do you want to know?
+      placeholder: How do I ...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What are you trying to achieve?
+      placeholder: I'm trying to deploy / customize / debug ...
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried
+      description: Share docs/steps/issues you've already checked.
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment (optional)
+      placeholder: OS, Node version, Docker version, browser

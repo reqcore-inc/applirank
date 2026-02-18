@@ -465,6 +465,9 @@ export function useSidebar() {
 app/pages/
 ├── index.vue               → /           (public landing page — dark theme, no auth required)
 ├── roadmap.vue             → /roadmap    (public roadmap — horizontal timeline, dark theme)
+├── blog/
+│   ├── index.vue           → /blog       (blog listing — dark theme)
+│   └── [...slug].vue       → /blog/:slug (blog article detail — dark theme, prose)
 ├── auth/
 │   ├── sign-in.vue         → /auth/sign-in
 │   └── sign-up.vue         → /auth/sign-up
@@ -644,7 +647,13 @@ useSeoMeta({
   title: 'Dashboard — Applirank',
   description: 'Manage your recruitment pipeline',
   ogTitle: 'Dashboard — Applirank',
+  ogDescription: 'Manage your recruitment pipeline',
+  ogType: 'website',
   ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Dashboard — Applirank',
+  twitterDescription: 'Manage your recruitment pipeline',
+  robots: 'noindex, nofollow', // Required for private pages
 })
 
 // ✅ useHead for non-SEO head tags
@@ -667,6 +676,73 @@ import { useHead, useSeoMeta } from '#imports'
 
 // ❌ Works but not recommended
 import { useHead } from '@unhead/vue'
+```
+
+### SEO & Structured Data (`@nuxtjs/seo`)
+
+Applirank uses `@nuxtjs/seo` which auto-imports composables for structured data. No manual imports needed.
+
+**Every public page** must include full OG + Twitter Card meta:
+```ts
+useSeoMeta({
+  title: 'Page Title',
+  description: 'Page description',
+  ogTitle: 'Page Title',
+  ogDescription: 'Page description',
+  ogType: 'website',
+  ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Page Title',
+  twitterDescription: 'Page description',
+})
+```
+
+**Private pages** (dashboard, auth, onboarding) must block indexing:
+```ts
+useSeoMeta({ robots: 'noindex, nofollow' })
+```
+
+**JSON-LD structured data** — use auto-imported composables from `@nuxtjs/seo`:
+```ts
+// Landing page
+useSchemaOrg([
+  defineOrganization({ name: 'Applirank', url: 'https://applirank.com' }),
+  defineWebSite({ name: 'Applirank' }),
+  defineWebPage({ name: 'Page title' }),
+])
+
+// Job detail page
+useSchemaOrg([defineJobPosting({ title, description, datePosted, ... })])
+
+// Blog article
+useSchemaOrg([defineArticle({ headline, datePublished, author, ... })])
+```
+
+### Blog Content (`@nuxt/content` v3)
+
+Blog posts are queried via auto-imported `queryCollection()`:
+```ts
+// Listing
+const { data: posts } = await useAsyncData('blog-posts', () =>
+  queryCollection('blog').order('date', 'DESC').all(),
+)
+
+// Detail
+const { data: post } = await useAsyncData(`blog-${slug}`, () =>
+  queryCollection('blog').path(`/blog/${slug}`).first(),
+)
+```
+
+Render content with the `<ContentRenderer>` component (auto-imported by `@nuxt/content`):
+```vue
+<ContentRenderer v-if="post" :value="post" />
+```
+
+Use `@tailwindcss/typography` prose classes for styled content:
+```vue
+<div class="prose prose-invert prose-lg max-w-none">
+  <ContentRenderer :value="post" />
+</div>
 ```
 
 ---
@@ -1052,9 +1128,9 @@ import { ArrowRight, Database, ShieldCheck } from 'lucide-vue-next'
 
 ---
 
-## 18. Landing Page Patterns
+## 18. Landing Page & Public Page Patterns
 
-The public landing page (`app/pages/index.vue`) is a standalone dark-mode marketing page. The roadmap page (`app/pages/roadmap.vue`) uses the same dark aesthetic with a horizontal-scrolling card timeline. These patterns apply when building similar public pages.
+The public landing page (`app/pages/index.vue`) is a standalone dark-mode marketing page. The roadmap page (`app/pages/roadmap.vue`) and blog pages (`app/pages/blog/`) use the same dark aesthetic. These patterns apply when building similar public pages.
 
 ### Dark page in a light-mode app
 

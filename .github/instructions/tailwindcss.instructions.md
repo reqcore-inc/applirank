@@ -39,6 +39,7 @@ export default defineNuxtConfig({
 
 The Tailwind entry point is `app/assets/css/main.css`. This is where:
 - Tailwind is imported (`@import "tailwindcss"`)
+- Plugins are loaded (`@plugin "@tailwindcss/typography"`)
 - Custom theme variables are defined (`@theme { ... }`)
 - Custom base styles, components, and utilities are added (`@layer`)
 
@@ -46,7 +47,23 @@ The Tailwind entry point is `app/assets/css/main.css`. This is where:
 app/
 └── assets/
     └── css/
-        └── main.css    # Tailwind entry point — @import "tailwindcss" + @theme
+        └── main.css    # Tailwind entry point — @import "tailwindcss" + @plugin + @theme
+```
+
+### Typography plugin
+
+The `@tailwindcss/typography` plugin provides `prose` classes for rendering Markdown content (blog articles). Loaded via `@plugin` in the CSS entry point:
+
+```css
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+```
+
+Used in blog article pages for styled content rendering:
+```vue
+<div class="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-brand-400">
+  <ContentRenderer :value="post" />
+</div>
 ```
 
 ### What NOT to do

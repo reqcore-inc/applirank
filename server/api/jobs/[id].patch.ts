@@ -48,6 +48,12 @@ export default defineEventHandler(async (event) => {
       location: job.location,
       type: job.type,
       status: job.status,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      salaryCurrency: job.salaryCurrency,
+      salaryUnit: job.salaryUnit,
+      remoteStatus: job.remoteStatus,
+      validThrough: job.validThrough,
       createdAt: job.createdAt,
       updatedAt: job.updatedAt,
     })

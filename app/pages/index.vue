@@ -25,13 +25,38 @@ import {
 } from 'lucide-vue-next'
 
 useSeoMeta({
-  title: 'Applirank — The Sovereign Recruitment Engine',
+  title: 'Open-Source Applicant Tracking System — Self-Hosted ATS',
   description:
-    'Open-source ATS that gives you full ownership of your hiring data. Transparent AI, no per-seat pricing, self-hosted privacy.',
-  ogTitle: 'Applirank — The Sovereign Recruitment Engine',
+    'Applirank is a free, open-source ATS you can self-host. Transparent AI candidate ranking, no per-seat pricing, and full data ownership. The best Greenhouse & Lever alternative.',
+  ogTitle: 'Applirank — Open-Source Applicant Tracking System',
   ogDescription:
-    'Open-source ATS with auditable AI, zero per-seat fees, and full data ownership. Self-host on your own infrastructure.',
+    'Free, self-hosted ATS with auditable AI, zero per-seat fees, and full data ownership. Deploy on your own infrastructure in minutes.',
+  ogType: 'website',
+  ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Applirank — Open-Source Applicant Tracking System',
+  twitterDescription:
+    'Self-hosted ATS with transparent AI, no per-seat pricing, and full data ownership.',
 })
+
+// ─── Schema.org: Organization + WebSite ──────────────
+useSchemaOrg([
+  defineOrganization({
+    name: 'Applirank',
+    url: 'https://applirank.com',
+    logo: 'https://applirank.com/og-image.png',
+    sameAs: ['https://github.com/applirank/applirank'],
+    description: 'Open-source applicant tracking system with transparent AI and full data ownership.',
+  }),
+  defineWebSite({
+    name: 'Applirank',
+    description: 'Open-source applicant tracking system with transparent AI, no per-seat pricing, and full data ownership.',
+  }),
+  defineWebPage({
+    name: 'Applirank — Open-Source Applicant Tracking System',
+    description: 'Free, self-hosted ATS with auditable AI, zero per-seat fees, and full data ownership.',
+  }),
+])
 
 const { data: session } = await authClient.useSession(useFetch)
 
@@ -102,6 +127,12 @@ async function tryDemo() {
           >
             Roadmap
           </NuxtLink>
+          <NuxtLink
+            to="/blog"
+            class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:inline-flex"
+          >
+            Blog
+          </NuxtLink>
           <a
             href="https://github.com/applirank/applirank"
             target="_blank"
@@ -169,13 +200,13 @@ async function tryDemo() {
         </a>
 
         <h1 class="text-[clamp(2.25rem,5vw,4rem)] leading-[1.08] font-extrabold tracking-tight">
-          The recruitment engine<br />
+          The open&#8209;source ATS<br />
           <span class="bg-gradient-to-r from-brand-400 via-brand-300 to-accent-400 bg-clip-text text-transparent">you actually own</span>
         </h1>
 
         <p class="mx-auto mt-6 max-w-xl text-base leading-relaxed text-surface-400 sm:text-lg sm:leading-relaxed">
-          Open-source ATS with transparent AI, zero per-seat fees,
-          and full data sovereignty. Your candidates, your infra, your rules.
+          Self-hosted applicant tracking system with transparent AI ranking,
+          zero per-seat fees, and full data sovereignty. Your candidates, your infra, your rules.
         </p>
 
         <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -346,7 +377,7 @@ async function tryDemo() {
             </div>
             <div>
               <div class="text-sm font-semibold text-white">The Applirank Team</div>
-              <div class="text-[13px] text-surface-500">Building the sovereign recruitment engine</div>
+              <div class="text-[13px] text-surface-500">Building the open-source applicant tracking system</div>
             </div>
           </div>
         </div>
@@ -602,6 +633,9 @@ async function tryDemo() {
         <div class="flex gap-6 text-[13px] text-surface-500">
           <NuxtLink to="/roadmap" class="transition hover:text-white">
             Roadmap
+          </NuxtLink>
+          <NuxtLink to="/blog" class="transition hover:text-white">
+            Blog
           </NuxtLink>
           <a
             href="https://github.com/applirank/applirank"

@@ -7,6 +7,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Sign In — Applirank',
   description: 'Sign in to your Applirank account',
+  robots: 'noindex, nofollow',
 })
 
 const email = ref('')

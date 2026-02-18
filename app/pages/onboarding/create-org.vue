@@ -9,6 +9,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Create Organization — Applirank',
   description: 'Create your organization to start recruiting',
+  robots: 'noindex, nofollow',
 })
 
 const { orgs, isOrgsLoading, switchOrg, createOrg } = useCurrentOrg()

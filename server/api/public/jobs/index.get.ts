@@ -51,11 +51,27 @@ export default defineEventHandler(async (event) => {
         description: true,
         location: true,
         type: true,
+        salaryMin: true,
+        salaryMax: true,
+        salaryCurrency: true,
+        salaryUnit: true,
+        remoteStatus: true,
         createdAt: true,
+      },
+      with: {
+        organization: {
+          columns: { name: true },
+        },
       },
     }),
     db.$count(job, where),
   ])
 
-  return { data, total, page: query.page, limit: query.limit }
+  // Flatten org name into each job object
+  const flatData = data.map(({ organization: org, ...j }) => ({
+    ...j,
+    organizationName: org?.name ?? null,
+  }))
+
+  return { data: flatData, total, page: query.page, limit: query.limit }
 })

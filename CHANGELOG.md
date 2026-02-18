@@ -6,6 +6,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## 2026-02-18
+
+### Added
+
+- **Organic SEO foundation** — `@nuxtjs/seo` (Sitemap, Robots, Schema.org, SEO Utils, Site Config) and `@nuxt/content` v3 (Markdown blog engine with typed collections)
+- **Dynamic sitemap** — all open job postings auto-included via `/api/__sitemap__/urls`
+- **Robots directives** — `/dashboard/`, `/auth/`, `/api/`, `/onboarding/` blocked from crawling; `noindex` on auth, onboarding, apply, and confirmation pages
+- **JSON-LD structured data** — `JobPosting` on job detail (salary, location, remote, employment type), `Organization` + `WebSite` + `WebPage` on landing page, `Article` on blog posts
+- **Job SEO fields** — `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit`, `remoteStatus`, `validThrough` added to job schema and all CRUD endpoints
+- **Full OG + Twitter Card meta** on all public pages (landing, job board, job detail, roadmap, blog)
+- **Blog** — listing page, article detail page with `@tailwindcss/typography` prose styling, seed article "Self-Hosted vs Cloud ATS: Pros, Cons, and When to Switch"
+- **ISR route rules** — `/jobs/**` (3600s stale-while-revalidate), prerender for `/`, `/roadmap`, `/blog/**`
+- **SVG favicon** — purple rounded rect with white "A"
+
+### Changed
+
+- **Landing page H1** — from "The recruitment engine you actually own" to "The open-source ATS you actually own" for keyword targeting
+- **Landing page meta description** — optimized for "open source ATS", "self-hosted", "applicant tracking system" keywords
+- **Public job API** — now joins organization table to expose `organizationName` for JSON-LD `hiringOrganization`
+- **Navigation** — "Blog" link added to landing page navbar/footer and roadmap page navbar
+
+---
+
 ## 2026-02-16
 
 ### Added

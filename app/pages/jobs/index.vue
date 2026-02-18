@@ -6,10 +6,18 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Open Positions — Applirank',
-  description: 'Browse open job positions and apply directly. Find your next career opportunity.',
-  ogTitle: 'Open Positions — Applirank',
-  ogDescription: 'Browse open job positions and apply directly.',
+  title: 'Open Positions — Job Board',
+  description:
+    'Browse open job positions on Applirank and apply directly. Find your next career opportunity with companies that value transparency.',
+  ogTitle: 'Open Positions — Applirank Job Board',
+  ogDescription:
+    'Browse open job positions and apply directly. Powered by the open-source ATS you actually own.',
+  ogType: 'website',
+  ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Open Positions — Applirank Job Board',
+  twitterDescription:
+    'Browse open job positions and apply directly.',
 })
 
 // ─────────────────────────────────────────────

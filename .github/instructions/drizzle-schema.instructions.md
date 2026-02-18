@@ -329,10 +329,19 @@ Use these when typing function parameters or composable return types. Do NOT man
 ### Domain tables (in `app.ts`)
 | Table | Key columns | Unique constraints |
 |-------|------------|-------------------|
-| `job` | `organizationId`, `title`, `description`, `location`, `type`, `status` | — |
+| `job` | `organizationId`, `title`, `description`, `location`, `type`, `status`, `slug`, `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit`, `remoteStatus`, `validThrough` | `slug` |
 | `candidate` | `organizationId`, `firstName`, `lastName`, `email`, `phone` | `(organizationId, email)` |
 | `application` | `organizationId`, `candidateId`, `jobId`, `status`, `score`, `notes` | — |
 | `document` | `organizationId`, `candidateId`, `type`, `storageKey`, `originalFilename`, `mimeType`, `sizeBytes`, `parsedContent` | `storageKey` |
+| `jobQuestion` | `organizationId`, `jobId`, `label`, `fieldType`, `required`, `placeholder`, `helpText`, `options`, `validationRules`, `displayOrder` | — |
+| `questionResponse` | `organizationId`, `applicationId`, `jobQuestionId`, `value` | — |
+
+The `job` table includes SEO-relevant fields:
+- `salaryMin`, `salaryMax` (integer) — salary range for JSON-LD `baseSalary`
+- `salaryCurrency` (text, e.g., `USD`) — ISO 4217 currency code
+- `salaryUnit` (text, enum: `YEAR`/`MONTH`/`HOUR`) — pay period
+- `remoteStatus` (text, enum: `remote`/`hybrid`/`onsite`) — maps to Schema.org `jobLocationType`
+- `validThrough` (timestamp) — job posting expiry date for JSON-LD
 
 ### Auth tables (in `auth.ts` — DO NOT MODIFY)
 `user`, `session`, `account`, `verification`, `organization`, `member`, `invitation`

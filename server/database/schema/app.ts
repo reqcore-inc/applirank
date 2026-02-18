@@ -43,6 +43,14 @@ export const job = pgTable('job', {
   location: text('location'),
   type: jobTypeEnum('type').notNull().default('full_time'),
   status: jobStatusEnum('status').notNull().default('draft'),
+  // ── SEO / Rich Results fields ──
+  salaryMin: integer('salary_min'),
+  salaryMax: integer('salary_max'),
+  salaryCurrency: text('salary_currency'),
+  salaryUnit: text('salary_unit'),
+  remoteStatus: text('remote_status'),
+  validThrough: timestamp('valid_through'),
+  // ── Timestamps ──
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ([

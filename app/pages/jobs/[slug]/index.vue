@@ -13,11 +13,119 @@ const { data: job, status: fetchStatus, error: fetchError } = useFetch(
   { key: `public-job-detail-${jobSlug}` },
 )
 
+// ─────────────────────────────────────────────
+// SEO — Meta tags (title, description, OG, Twitter)
+// ─────────────────────────────────────────────
+
 useSeoMeta({
-  title: computed(() => job.value ? `${job.value.title} — Applirank` : 'Job Details — Applirank'),
-  description: computed(() => job.value?.description?.slice(0, 160) ?? 'View job details and apply'),
-  ogTitle: computed(() => job.value?.title ?? 'Job Details'),
-  ogDescription: computed(() => job.value?.description?.slice(0, 160) ?? 'View job details and apply'),
+  title: computed(() => job.value ? `${job.value.title} — Hiring Now` : 'Job Details — Applirank'),
+  description: computed(() => {
+    if (!job.value) return 'View job details and apply'
+    const loc = job.value.location ? ` in ${job.value.location}` : ''
+    const org = job.value.organizationName ? ` at ${job.value.organizationName}` : ''
+    return `Apply for ${job.value.title}${org}${loc}. ${job.value.description?.slice(0, 120) ?? ''}`.trim()
+  }),
+  ogTitle: computed(() => job.value ? `${job.value.title} — Hiring Now` : 'Job Details'),
+  ogDescription: computed(() => {
+    if (!job.value) return 'View job details and apply'
+    const org = job.value.organizationName ? ` at ${job.value.organizationName}` : ''
+    return `Apply for ${job.value.title}${org}. ${job.value.location ?? 'Remote'}.`
+  }),
+  ogType: 'website',
+  ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: computed(() => job.value?.title ?? 'Job Details'),
+  twitterDescription: computed(() => {
+    if (!job.value) return 'View job details and apply'
+    return `Apply for ${job.value.title}. ${job.value.location ?? 'Remote'}.`
+  }),
+})
+
+// ─────────────────────────────────────────────
+// SEO — JSON-LD JobPosting structured data (Google Jobs)
+// ─────────────────────────────────────────────
+
+/** Map internal job type to schema.org employmentType */
+function mapEmploymentType(type: string): string {
+  const map: Record<string, string> = {
+    full_time: 'FULL_TIME',
+    part_time: 'PART_TIME',
+    contract: 'CONTRACTOR',
+    internship: 'INTERN',
+  }
+  return map[type] || 'OTHER'
+}
+
+// Build the JobPosting JSON-LD reactively
+watchEffect(() => {
+  if (!job.value) return
+
+  const j = job.value
+  const posting: Record<string, unknown> = {
+    '@type': 'JobPosting',
+    'title': j.title,
+    'description': j.description ?? j.title,
+    'datePosted': j.createdAt,
+    'employmentType': mapEmploymentType(j.type),
+    'directApply': true,
+  }
+
+  // Hiring organization
+  if (j.organizationName) {
+    posting.hiringOrganization = {
+      '@type': 'Organization',
+      'name': j.organizationName,
+      ...(j.organizationLogo ? { logo: j.organizationLogo } : {}),
+    }
+  }
+
+  // Job location
+  if (j.location) {
+    posting.jobLocation = {
+      '@type': 'Place',
+      'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': j.location,
+      },
+    }
+  }
+
+  // Remote work
+  if (j.remoteStatus === 'remote') {
+    posting.jobLocationType = 'TELECOMMUTE'
+    posting.applicantLocationRequirements = {
+      '@type': 'Country',
+      'name': 'Anywhere',
+    }
+  }
+
+  // Valid through
+  if (j.validThrough) {
+    posting.validThrough = new Date(j.validThrough).toISOString()
+  }
+
+  // Salary (baseSalary)
+  if (j.salaryMin || j.salaryMax) {
+    const value: Record<string, unknown> = { '@type': 'QuantitativeValue' }
+    if (j.salaryMin && j.salaryMax) {
+      value.minValue = j.salaryMin
+      value.maxValue = j.salaryMax
+    } else if (j.salaryMin) {
+      value.value = j.salaryMin
+    } else if (j.salaryMax) {
+      value.value = j.salaryMax
+    }
+    if (j.salaryUnit) {
+      value.unitText = j.salaryUnit
+    }
+    posting.baseSalary = {
+      '@type': 'MonetaryAmount',
+      'currency': j.salaryCurrency || 'USD',
+      'value': value,
+    }
+  }
+
+  useSchemaOrg([posting])
 })
 
 const typeLabels: Record<string, string> = {
@@ -33,6 +141,16 @@ function formatDate(dateStr: string) {
     day: 'numeric',
     year: 'numeric',
   })
+}
+
+/** Format salary for display */
+function formatSalary(min?: number | null, max?: number | null, currency?: string | null, unit?: string | null): string | null {
+  if (!min && !max) return null
+  const cur = currency || 'USD'
+  const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v)
+  const unitLabel = unit ? `/${unit.toLowerCase().replace('year', 'yr').replace('month', 'mo').replace('hour', 'hr')}` : ''
+  if (min && max) return `${fmt(min)} – ${fmt(max)}${unitLabel}`
+  return `${fmt(min || max!)}${unitLabel}`
 }
 </script>
 
@@ -81,6 +199,9 @@ function formatDate(dateStr: string) {
           <span v-if="job.location" class="inline-flex items-center gap-1.5">
             <MapPin class="size-4" />
             {{ job.location }}
+          </span>
+          <span v-if="formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit)" class="inline-flex items-center gap-1.5 font-medium text-success-600 dark:text-success-400">
+            {{ formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit) }}
           </span>
           <span class="inline-flex items-center gap-1.5">
             <Calendar class="size-4" />

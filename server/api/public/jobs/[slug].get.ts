@@ -1,10 +1,11 @@
 import { eq, and, asc } from 'drizzle-orm'
-import { job } from '../../../database/schema'
+import { job, organization } from '../../../database/schema'
 import { publicJobSlugSchema } from '../../../utils/schemas/publicApplication'
 
 /**
  * GET /api/public/jobs/:slug
  * Returns job details + custom questions for an open job, resolved by slug.
+ * Includes organization name for SEO structured data (Google Jobs).
  * No auth required — this is the public-facing endpoint for applicants.
  */
 export default defineEventHandler(async (event) => {
@@ -20,9 +21,21 @@ export default defineEventHandler(async (event) => {
       location: true,
       type: true,
       status: true,
+      salaryMin: true,
+      salaryMax: true,
+      salaryCurrency: true,
+      salaryUnit: true,
+      remoteStatus: true,
+      validThrough: true,
       createdAt: true,
     },
     with: {
+      organization: {
+        columns: {
+          name: true,
+          logo: true,
+        },
+      },
       questions: {
         orderBy: (q, { asc }) => [asc(q.displayOrder), asc(q.createdAt)],
         columns: {
@@ -42,5 +55,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Job not found' })
   }
 
-  return result
+  // Flatten organization name into the response for SEO consumers
+  const { organization: org, ...jobData } = result
+  return {
+    ...jobData,
+    organizationName: org?.name ?? null,
+    organizationLogo: org?.logo ?? null,
+  }
 })

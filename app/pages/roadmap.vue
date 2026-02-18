@@ -26,12 +26,18 @@ import {
 } from 'lucide-vue-next'
 
 useSeoMeta({
-  title: 'Applirank — Roadmap',
+  title: 'Product Roadmap — Open-Source ATS Development',
   description:
-    'See what we\'ve shipped, what we\'re building, and where we\'re headed. The Applirank public product roadmap.',
-  ogTitle: 'Applirank — Roadmap',
+    'See what we\'ve shipped, what we\'re building, and where we\'re headed. Follow the transparent Applirank product roadmap.',
+  ogTitle: 'Applirank Roadmap — Open-Source ATS Development',
   ogDescription:
     'Follow the Applirank product roadmap — transparent progress on the open-source ATS you actually own.',
+  ogType: 'website',
+  ogImage: '/og-image.png',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Applirank Product Roadmap',
+  twitterDescription:
+    'Transparent progress updates on the open-source ATS you actually own.',
 })
 
 useHead({
@@ -379,6 +385,12 @@ const upcomingItems = computed(() => items.filter(item => item.status !== 'shipp
             class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-white transition sm:inline-flex"
           >
             Roadmap
+          </NuxtLink>
+          <NuxtLink
+            to="/blog"
+            class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:inline-flex"
+          >
+            Blog
           </NuxtLink>
           <a
             href="https://github.com/applirank/applirank"

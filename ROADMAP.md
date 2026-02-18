@@ -287,6 +287,26 @@ Goal: Ready for real teams to self-host in production.
 - [ ] CI/CD pipeline
 - [ ] README rewrite with screenshots
 
+### Milestone 14: Organic SEO ✅
+
+- [x] `@nuxtjs/seo` integration — Sitemap, Robots, Schema.org, SEO Utils, Site Config
+- [x] `@nuxt/content` v3 — Markdown blog engine with typed collections
+- [x] Dynamic sitemap — auto-includes all open job postings (`/api/__sitemap__/urls`)
+- [x] Robots — block `/dashboard/`, `/auth/`, `/api/`, `/onboarding/` from crawling
+- [x] JSON-LD `JobPosting` schema on public job detail page (title, salary, location, remote, employment type)
+- [x] JSON-LD `Organization` + `WebSite` + `WebPage` on landing page
+- [x] JSON-LD `Article` schema on blog posts
+- [x] Job schema SEO fields — `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit`, `remoteStatus`, `validThrough`
+- [x] Public API exposes organization name for job listings (for `hiringOrganization` in JSON-LD)
+- [x] Full OG + Twitter Card meta on all public pages (landing, job board, job detail, roadmap, blog)
+- [x] `noindex` on private pages (auth, onboarding, apply form, confirmation)
+- [x] ISR route rules — `/jobs/**` (3600s), prerender `/`, `/roadmap`, `/blog/**`
+- [x] Landing page H1 + copy optimized for "open source ATS" / "applicant tracking system" keywords
+- [x] Blog seed article: "Self-Hosted vs Cloud ATS: Pros, Cons, and When to Switch"
+- [x] Blog listing + detail pages with dark theme, navigation links
+- [x] `@tailwindcss/typography` for styled `prose` content rendering
+- [x] SVG favicon
+
 ---
 
 ## Completed Milestones
@@ -304,6 +324,7 @@ Goal: Ready for real teams to self-host in production.
 | 5. Applications & Pipeline | 2026-02-14 |
 | 6. Document Storage | 2026-02-15 |
 | 8. Dashboard | 2026-02-15 |
+| 14. Organic SEO | 2026-02-18 |
 
 ---
 

@@ -5,7 +5,35 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  modules: ['@nuxtjs/seo', '@nuxt/content'],
+
   css: ['~/assets/css/main.css'],
+
+  // ─────────────────────────────────────────────
+  // Site config — shared across all SEO modules
+  // ─────────────────────────────────────────────
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'https://applirank.com',
+    name: 'Applirank',
+    description: 'Open-source applicant tracking system with transparent AI, no per-seat pricing, and full data ownership. Self-host on your own infrastructure.',
+    defaultLocale: 'en',
+  },
+
+  // ─────────────────────────────────────────────
+  // Global <head> — lang, title template, favicon
+  // ─────────────────────────────────────────────
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+      titleTemplate: '%s — Applirank',
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      ],
+      meta: [
+        { name: 'theme-color', content: '#09090b' },
+      ],
+    },
+  },
 
   runtimeConfig: {
     public: {
@@ -19,6 +47,59 @@ export default defineNuxtConfig({
   vite: {
     // @ts-expect-error - Vite version mismatch between @tailwindcss/vite and Nuxt's bundled Vite
     plugins: [tailwindcss()],
+  },
+
+  // ─────────────────────────────────────────────
+  // Robots — block crawlers from authenticated/API routes
+  // ─────────────────────────────────────────────
+  robots: {
+    disallow: ['/dashboard/', '/auth/', '/api/', '/onboarding/'],
+  },
+
+  // ─────────────────────────────────────────────
+  // Sitemap — include dynamic public job pages
+  // ─────────────────────────────────────────────
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+  },
+
+  // ─────────────────────────────────────────────
+  // Schema.org — default organization identity
+  // ─────────────────────────────────────────────
+  schemaOrg: {
+    identity: {
+      type: 'Organization',
+      name: 'Applirank',
+      url: 'https://applirank.com',
+      logo: 'https://applirank.com/og-image.png',
+      sameAs: ['https://github.com/applirank/applirank'],
+    },
+  },
+
+  // ─────────────────────────────────────────────
+  // OG Image — disable automatic generation (we use static images)
+  // ─────────────────────────────────────────────
+  ogImage: {
+    enabled: false,
+  },
+
+  // ─────────────────────────────────────────────
+  // Route rules — prerender/ISR for public pages
+  // ─────────────────────────────────────────────
+  routeRules: {
+    '/': { prerender: true },
+    '/roadmap': { prerender: true },
+    '/blog': { prerender: true },
+    '/blog/**': { prerender: true },
+    '/jobs': { isr: 3600 },
+    '/jobs/**': { isr: 3600 },
+  },
+
+  // ─────────────────────────────────────────────
+  // Nuxt Content — blog collection
+  // ─────────────────────────────────────────────
+  content: {
+    // content.config.ts handles collection definitions
   },
 
   nitro: {

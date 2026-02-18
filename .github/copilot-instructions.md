@@ -12,12 +12,14 @@ Suggest to update these documents if you find any incomplete or conflicting info
 Applirank is a **Nuxt 4** full-stack application using the `app/` directory structure. Key technology choices:
 
 - **Framework**: Nuxt 4 (`app/` is `srcDir`, `server/` stays at project root)
-- **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin (NOT `@nuxtjs/tailwindcss`)
+- **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin (NOT `@nuxtjs/tailwindcss`), `@tailwindcss/typography` for prose content
 - **Icons**: `lucide-vue-next` — tree-shakeable, consistent icon library
 - **Database**: PostgreSQL 16 via **Drizzle ORM** + `postgres` (postgres.js) driver
 - **Auth**: **Better Auth** with organization plugin (manual integration via catch-all route)
 - **Object Storage**: MinIO (S3-compatible), accessed via S3 API
 - **Validation**: Zod v4
+- **SEO**: `@nuxtjs/seo` umbrella module (Sitemap, Robots, Schema.org, SEO Utils, Site Config)
+- **Content**: `@nuxt/content` v3 — Markdown blog with typed collections (`content.config.ts`)
 - **Infrastructure**: Docker Compose for local Postgres, MinIO, and Adminer
 - **Deployment**: Hetzner Cloud CX23 VPS, Caddy reverse proxy, Cloudflare CDN, systemd
 
@@ -43,13 +45,17 @@ app/              # Client-side source (components, pages, composables, etc.)
 server/           # Nitro server code (api/, routes/, utils/, middleware/)
   api/public/     # Unauthenticated endpoints (public job board, apply)
   api/documents/  # Document download/preview (server-proxied streaming)
+  api/__sitemap__/ # Dynamic sitemap source for @nuxtjs/seo
   utils/env.ts    # Runtime env validation — all env vars validated with Zod
   utils/slugify.ts # URL slug generation for public job pages
   utils/rateLimit.ts # IP-based sliding window rate limiter
   utils/s3.ts      # MinIO/S3 client and file operations
   utils/requireAuth.ts # Auth guard utility (throws 401/403)
   utils/schemas/   # Shared Zod validation schemas (document, job, candidate, etc.)
+content/          # Markdown content (@nuxt/content v3 source)
+  blog/           # Blog articles (*.md with frontmatter)
 public/           # Static assets
+content.config.ts # Nuxt Content collection definitions
 docker-compose.yml
 ```
 
@@ -76,6 +82,7 @@ The `dashboard` layout (`app/layouts/dashboard.vue`) provides only the sidebar +
 - **Public API**: `server/api/public/jobs/` — no auth, only exposes open jobs, uses slug-based URLs
 - **Public pages**: `app/pages/jobs/` — job board, job detail, application form (uses `public` layout)
 - **Public standalone pages**: `app/pages/index.vue` (landing), `app/pages/roadmap.vue` (roadmap) — dark theme, no layout
+- **Blog pages**: `app/pages/blog/index.vue` (listing), `app/pages/blog/[...slug].vue` (article detail) — dark theme, no layout, uses `@nuxt/content` v3 `queryCollection` API
 - **Dashboard pages**: `app/pages/dashboard/` — recruiter UI (uses `dashboard` layout, requires auth)
 
 ### URL Slugs (Public Job Pages)
@@ -155,9 +162,9 @@ import { ArrowRight, Database, ShieldCheck } from 'lucide-vue-next'
 - Use `class="size-N"` for sizing (Tailwind `size-4`, `size-5`, `size-6`)
 - For brand logos (Nuxt, PostgreSQL, etc.) use inline SVG — Lucide doesn't include brand icons
 
-## Design System — Landing Page & Roadmap Dark Theme
+## Design System — Landing Page, Roadmap & Blog Dark Theme
 
-The public landing page (`app/pages/index.vue`) and roadmap page (`app/pages/roadmap.vue`) use a dark aesthetic inspired by Linear/Resend/Raycast:
+The public landing page (`app/pages/index.vue`), roadmap page (`app/pages/roadmap.vue`), and blog pages (`app/pages/blog/`) use a dark aesthetic inspired by Linear/Resend/Raycast:
 
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -207,6 +214,26 @@ Use **npm** (lockfile is `package-lock.json`).
 ### Documentation
 - Use JSDoc `/** */` comments for exported functions and complex types
 - Add section-separator comments in schema files: `// ─────────────────`
+
+### SEO & Structured Data
+- `@nuxtjs/seo` provides auto-generated sitemap, robots, and schema.org — configured in `nuxt.config.ts`
+- Dynamic sitemap source at `server/api/__sitemap__/urls.ts` — queries all open jobs
+- Every public page must have `useSeoMeta()` with `title`, `description`, `ogTitle`, `ogDescription`, `ogType`, `ogImage`, `twitterCard`, `twitterTitle`, `twitterDescription`
+- Private pages (dashboard, auth, onboarding) must include `robots: 'noindex, nofollow'` in `useSeoMeta()`
+- Job detail pages use `useSchemaOrg([defineJobPosting({...})])` for Google Jobs rich results
+- Landing page uses `useSchemaOrg([defineOrganization({...}), defineWebSite({...}), defineWebPage({...})])`
+- Blog articles use `useSchemaOrg([defineArticle({...})])` with headline, author, datePublished
+- `useSchemaOrg`, `defineOrganization`, `defineWebSite`, `defineWebPage`, `defineArticle`, `defineJobPosting` are auto-imported by `@nuxtjs/seo`
+- Job table includes SEO-relevant columns: `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit` (YEAR/MONTH/HOUR), `remoteStatus` (remote/hybrid/onsite), `validThrough`
+
+### Blog Content (`@nuxt/content` v3)
+- Blog articles are Markdown files in `content/blog/` with YAML frontmatter (`title`, `description`, `date`, `author`, `image`, `tags`)
+- Collection schema is defined in `content.config.ts` with `defineCollection()` — includes typed fields via Zod
+- Use `queryCollection('blog')` to query blog posts (auto-imported by `@nuxt/content`)
+- Blog listing: `queryCollection('blog').order('date', 'DESC').all()`
+- Blog detail: `queryCollection('blog').path(slugPath).first()`
+- Render content with `<ContentRenderer :value="post" />`
+- Blog pages use the dark theme (same as landing/roadmap) — no layout, standalone
 
 ### Nitro Route Conventions (CRITICAL)
 - Dynamic param names MUST be consistent within the same path level. If `server/api/jobs/[id].get.ts` uses `[id]`, then subdirectories must also use `[id]/` (NOT `[jobId]/`). Mismatched param names cause 404 errors.

@@ -43,7 +43,8 @@ By supporting local-first storage (MinIO) and local AI models (Ollama), Appliran
 - [x] Candidate management (per-org candidate pool with deduplication by email)
 - [x] Application tracking (link candidates to jobs, status workflow)
 - [x] Document storage (resumes, cover letters via MinIO/S3)
-- [ ] Dashboard with pipeline overview
+- [x] Dashboard with pipeline overview
+- [x] Organic SEO (sitemap, robots, JSON-LD structured data, blog content engine)
 
 ### Phase 2 — Intelligence
 - [ ] Resume parsing (PDF → structured JSON)

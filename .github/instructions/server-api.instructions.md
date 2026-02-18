@@ -39,6 +39,8 @@ server/
 │   │       ├── [slug].get.ts # GET /api/public/jobs/:slug
 │   │       └── [slug]/
 │   │           └── apply.post.ts # POST /api/public/jobs/:slug/apply
+│   ├── __sitemap__/         # Dynamic sitemap source for @nuxtjs/seo
+│   │   └── urls.ts          # Returns all open job URLs for sitemap
 │   └── candidates/
 │       └── ...
 ├── routes/                  # Non-API routes (no /api/ prefix)
@@ -72,6 +74,8 @@ server/
 - `[param]` for dynamic segments, `[...slug]` for catch-all.
 - **CRITICAL**: When a dynamic segment has both leaf files (`[id].get.ts`) AND a subdirectory (`[id]/`), the param name MUST be the same. Using `[id].get.ts` alongside `[jobId]/` causes 404 errors.
 - **Public endpoints**: Place unauthenticated API routes under `server/api/public/` to separate them from authenticated routes.
+- **Sitemap source**: `server/api/__sitemap__/urls.ts` returns dynamic URLs for the `@nuxtjs/seo` sitemap module. This endpoint queries all open jobs and returns `{ loc, lastmod }` objects.
+- **Public job API**: The public job endpoints (`/api/public/jobs`) join the `organization` table to expose `organizationName` in responses. This is used for JSON-LD `hiringOrganization` on the frontend. The `organizationId` itself is never exposed.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: 'Design System & Visual Language'
 description: 'Landing page dark theme patterns, icon conventions (lucide-vue-next), glow effects, glass-morphism, and brand identity for Applirank'
-applyTo: 'app/pages/index.vue,app/components/**,app/layouts/**'
+applyTo: 'app/pages/index.vue,app/pages/roadmap.vue,app/pages/blog/**,app/components/**,app/layouts/**'
 ---
 
 # Design System — Visual Language & Patterns
@@ -57,9 +57,9 @@ Keep inline brand SVGs compact (single `<svg>` with `<path>`). Wrap in a contain
 
 ---
 
-## 2. Landing Page & Roadmap — Dark Theme
+## 2. Landing Page, Roadmap & Blog — Dark Theme
 
-The public landing page (`app/pages/index.vue`) and roadmap page (`app/pages/roadmap.vue`) establish the brand identity. Both use the same dark aesthetic.
+The public landing page (`app/pages/index.vue`), roadmap page (`app/pages/roadmap.vue`), and blog pages (`app/pages/blog/`) establish the brand identity. All use the same dark aesthetic.
 
 ### Color palette
 

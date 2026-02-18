@@ -9,12 +9,14 @@ import {
 } from '@aws-sdk/client-s3'
 
 // ─────────────────────────────────────────────
-// S3-compatible client for MinIO document storage
+// S3-compatible client for document storage
 // ─────────────────────────────────────────────
 
 /**
- * S3-compatible client configured for MinIO.
- * Uses `forcePathStyle: true` which is required for MinIO.
+ * S3-compatible client configured for MinIO (local dev) or Railway Buckets (production).
+ * `forcePathStyle` is controlled by `S3_FORCE_PATH_STYLE` env var:
+ * - `true` (default) — required for MinIO (path-style URLs)
+ * - `false` — required for Railway Buckets / AWS S3 (virtual-hosted-style URLs)
  * Credentials come from validated env vars — never hardcoded.
  */
 export const s3Client = new S3Client({
@@ -24,7 +26,7 @@ export const s3Client = new S3Client({
     accessKeyId: env.S3_ACCESS_KEY,
     secretAccessKey: env.S3_SECRET_KEY,
   },
-  forcePathStyle: true,
+  forcePathStyle: env.S3_FORCE_PATH_STYLE,
 })
 
 /** The configured bucket name from env */

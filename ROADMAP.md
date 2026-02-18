@@ -271,10 +271,10 @@ Goal: Ready for real teams to self-host in production.
 
 ### Milestone 13: Hardening
 
-- [x] Production deployment — Hetzner CX23 VPS, Caddy reverse proxy, systemd service, deploy script
-- [x] HTTPS/TLS — Caddy auto-TLS + Cloudflare CDN (Full strict SSL)
+- [x] Production deployment — Railway (managed Nuxt service, Railway PostgreSQL, Railway Storage Buckets)
+- [x] HTTPS/TLS — Railway auto-TLS + Cloudflare CDN (Full strict SSL)
 - [x] DNS + CDN — Cloudflare Free plan with DDoS protection and AI bot blocking
-- [ ] Backup & restore (Postgres + MinIO)
+- [ ] Backup & restore (Postgres + S3 bucket)
 - [x] Rate limiting — in-memory sliding window (`server/utils/rateLimit.ts`), applied to public apply endpoint
 - [x] Global security headers — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-XSS-Protection`, `Permissions-Policy` via Nitro route rules
 - [x] Private S3 bucket policy enforcement on startup (deny anonymous access)

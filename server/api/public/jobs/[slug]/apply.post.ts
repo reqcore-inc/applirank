@@ -203,7 +203,15 @@ export default defineEventHandler(async (event) => {
 
     // Validate MIME from magic bytes (not Content-Type header)
     const detectedType = await fileTypeFromBuffer(file.data)
-    const mimeType = detectedType?.mime ?? file.type
+    let mimeType = detectedType?.mime
+
+    // file-type can't detect legacy .doc (OLE2 compound documents) — validate magic bytes manually
+    if (!mimeType) {
+      const OLE2_MAGIC = Buffer.from([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])
+      if (file.data.length >= 8 && Buffer.compare(file.data.subarray(0, 8), OLE2_MAGIC) === 0) {
+        mimeType = 'application/msword'
+      }
+    }
 
     if (!mimeType || !ALLOWED_MIME_TYPES.includes(mimeType as typeof ALLOWED_MIME_TYPES[number])) {
       throw createError({

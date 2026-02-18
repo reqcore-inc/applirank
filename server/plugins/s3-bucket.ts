@@ -1,8 +1,20 @@
 /**
  * Ensures the S3 bucket exists and is configured as private on startup.
  * Runs after migrations plugin. Idempotent — safe to run repeatedly.
+ *
+ * On managed providers (Railway Buckets, AWS S3), buckets are pre-provisioned
+ * and always private — bucket creation and policy management are skipped.
+ * This is detected via S3_FORCE_PATH_STYLE=false (managed providers use
+ * virtual-hosted-style URLs).
  */
 export default defineNitroPlugin(async () => {
+  // Managed S3 providers (Railway Buckets, AWS S3) pre-provision buckets
+  // and enforce privacy at the platform level — skip bucket initialization
+  if (!env.S3_FORCE_PATH_STYLE) {
+    console.log(`[Applirank] S3 bucket "${S3_BUCKET}" — managed provider detected, skipping initialization`)
+    return
+  }
+
   try {
     await ensureBucketExists()
     console.log(`[Applirank] S3 bucket "${S3_BUCKET}" is ready`)

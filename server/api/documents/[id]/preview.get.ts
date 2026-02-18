@@ -67,15 +67,25 @@ export default defineEventHandler(async (event) => {
   // Stream the PDF directly through the server (same-origin for iframe)
   const encodedFilename = encodeURIComponent(doc.originalFilename)
 
-  setResponseHeaders(event, {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/pdf',
-    'Content-Disposition': `inline; filename="${encodedFilename}"`,
+    // RFC 5987: ASCII fallback + UTF-8 extended filename for international characters
+    'Content-Disposition': `inline; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`,
     'Cache-Control': 'private, no-store',
     // Override global DENY — allow same-origin framing for preview iframe
     'X-Frame-Options': 'SAMEORIGIN',
     // Prevent MIME type sniffing
     'X-Content-Type-Options': 'nosniff',
-  })
+    // Restrictive CSP — prevent a malicious PDF from loading external resources
+    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'",
+  }
+
+  // Forward Content-Length from S3 so browsers can render the PDF efficiently
+  if (s3Response.ContentLength) {
+    headers['Content-Length'] = String(s3Response.ContentLength)
+  }
+
+  setResponseHeaders(event, headers)
 
   // Stream the S3 body to the response
   return s3Response.Body.transformToWebStream()

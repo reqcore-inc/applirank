@@ -6,6 +6,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## 2026-02-19
+
+### Changed
+
+- **Deployment platform migration** — migrated from Hetzner VPS (Caddy + systemd) to Railway (managed Nuxt service, Railway PostgreSQL, Railway Storage Buckets)
+- **S3 path style now configurable** — `S3_FORCE_PATH_STYLE` env var controls path-style vs virtual-hosted-style S3 URLs (MinIO vs Railway Buckets/AWS S3)
+- **S3 bucket plugin** — skips bucket initialization on managed providers (Railway/AWS) where buckets are pre-provisioned
+- **`.env.example`** — expanded with full documentation, Railway-specific variable references, and all env vars
+
+### Added
+
+- **`start` script in `package.json`** — `node .output/server/index.mjs` for Railway Nixpacks detection
+
+---
+
 ## 2026-02-18
 
 ### Added

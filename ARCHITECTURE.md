@@ -2,7 +2,7 @@
 
 ## Overview
 
-Applirank is a **Nuxt 4** full-stack application following a monolithic architecture with clear separation between client (`app/`) and server (`server/`) code. The system is designed for **self-hosted deployment** on a VPS with Docker Compose for infrastructure services.
+Applirank is a **Nuxt 4** full-stack application following a monolithic architecture with clear separation between client (`app/`) and server (`server/`) code. The system supports both **managed deployment** on Railway and **self-hosted deployment** via Docker Compose.
 
 ## Technology Stack
 
@@ -15,14 +15,13 @@ Applirank is a **Nuxt 4** full-stack application following a monolithic architec
 | ORM | Drizzle ORM + postgres.js | Type-safe database access |
 | Authentication | Better Auth | User management, sessions, OAuth |
 | Multi-Tenancy | Better Auth Organization plugin | Org-based data isolation |
-| Object Storage | MinIO (S3-compatible) | Resume/document storage |
+| Object Storage | S3-compatible (Railway Buckets / MinIO) | Resume/document storage |
 | Validation | Zod v4 | Schema validation (server + client) |
 | SEO | `@nuxtjs/seo` (Sitemap, Robots, Schema.org, SEO Utils, Site Config) | Search engine optimization, structured data |
 | Content | `@nuxt/content` v3 | Markdown blog engine with typed collections |
-| Infrastructure | Docker Compose | Local dev + self-hosted deployment |
-| Reverse Proxy | Caddy | Auto-HTTPS, reverse proxy to Nitro |
+| Infrastructure | Docker Compose (local dev) | Local Postgres, MinIO, Adminer |
+| Hosting | Railway | Managed platform (auto-build, auto-deploy) |
 | CDN | Cloudflare (Free) | DNS, DDoS protection, edge caching |
-| Hosting | Hetzner Cloud (CX23) | 2 vCPU, 4GB RAM, Ubuntu 24.04 |
 
 ## Directory Structure
 
@@ -120,42 +119,26 @@ applirank/
                       │ HTTPS
 ┌─────────────────────┼───────────────────────────────┐
 │  Cloudflare CDN     │                                │
-│  • DNS + DDoS protection                            │
-│  • Edge caching + SSL termination                   │
+│  • DNS (CNAME → Railway domain)                     │
+│  • DDoS protection, edge caching                    │
 │  • AI bot blocking                                  │
 └─────────────────────┼───────────────────────────────┘
                       │ HTTPS
 ┌─────────────────────┼───────────────────────────────┐
-│  Hetzner VPS (Ubuntu 24.04)                          │
+│  Railway Project                                     │
 │  ┌──────────────────▼───────────────────────────┐   │
-│  │  Caddy (reverse proxy, auto-TLS)              │   │
-│  │  :80 / :443 → 127.0.0.1:3000                 │   │
-│  └──────────────────┬───────────────────────────┘   │
-│  ┌──────────────────▼───────────────────────────┐   │
-│  │  Nitro Server (:3000)                         │   │
-│  │  ┌──────────────────────────────────────┐     │   │
-│  │  │  API Routes (server/api/)             │     │   │
-│  │  │  • Auth guard: requireAuth(event)     │     │   │
-│  │  │  • Validation: Zod v4 schemas         │     │   │
-│  │  │  • Org scoping: activeOrganizationId  │     │   │
-│  │  └────┬──────────────────┬───────────────┘     │   │
-│  │       │                  │                     │   │
-│  │  ┌────▼────┐    ┌───────▼────────┐             │   │
-│  │  │ Drizzle │    │  Better Auth   │             │   │
-│  │  │  ORM    │    │  (sessions,    │             │   │
-│  │  │         │    │   orgs, users) │             │   │
-│  │  └────┬────┘    └───────┬────────┘             │   │
-│  └───────┼─────────────────┼──────────────────────┘   │
-│          │                 │                           │
-│  ┌───────▼─────────────────▼───────────────────────┐  │
-│  │  Docker Compose Infrastructure                   │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐       │  │
-│  │  │ Postgres │  │  MinIO   │  │ Adminer  │       │  │
-│  │  │  :5432   │  │  :9000   │  │  :8080   │       │  │
-│  │  │          │  │  :9001   │  │          │       │  │
-│  │  └──────────┘  └──────────┘  └──────────┘       │  │
-│  └─────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────┘
+│  │  Nuxt Service (auto-built from GitHub)        │   │
+│  │  Build: npm run build                         │   │
+│  │  Start: node .output/server/index.mjs         │   │
+│  │  PORT: $PORT (Railway-provided)               │   │
+│  └──────────┬───────────────────┬───────────────┘   │
+│             │ private network   │ S3 API             │
+│  ┌──────────▼──────┐   ┌───────▼────────────────┐   │
+│  │  PostgreSQL     │   │  Storage Bucket        │   │
+│  │  (Railway DB)   │   │  (S3-compatible)       │   │
+│  │  $DATABASE_URL  │   │  $S3_ENDPOINT          │   │
+│  └─────────────────┘   └────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Key Architectural Decisions
@@ -197,12 +180,12 @@ During server-side rendering, browser cookies are not automatically forwarded to
 
 ### 6. File Storage & Document Security
 
-Documents (resumes, cover letters) are stored in MinIO, an S3-compatible object store. Each document record in Postgres stores a `storageKey` (the S3 object key) while the actual file binary lives in MinIO. This separates metadata from blob storage.
+Documents (resumes, cover letters) are stored in an S3-compatible object store (Railway Storage Buckets in production, MinIO for local development). Each document record in Postgres stores a `storageKey` (the S3 object key) while the actual file binary lives in the bucket. This separates metadata from blob storage.
 
 Document access is **always server-proxied** — both download and preview endpoints stream file bytes through the authenticated Nitro server. Presigned S3 URLs are never exposed to clients, preventing URL sharing or leakage of sensitive candidate data.
 
 Key security measures:
-- **Private bucket policy**: Any public bucket policy is deleted on every startup (`server/plugins/s3-bucket.ts`), ensuring the bucket stays private (MinIO buckets with no policy deny anonymous access by default)
+- **Private bucket policy**: Railway Buckets are private by default. For MinIO (local dev), any public bucket policy is deleted on every startup (`server/plugins/s3-bucket.ts`)
 - **Filename sanitization**: All user-provided filenames are sanitized via `sanitizeFilename()` before storage, preventing path traversal, XSS, and filesystem exploits
 - **MIME validation**: Upload endpoints validate file types using magic bytes (`file-type` package), not just the `Content-Type` header
 - **Per-candidate document limits**: Max 20 documents per candidate, enforced on public apply endpoint
@@ -210,6 +193,7 @@ Key security measures:
 - **Preview restricted to PDF**: Only `application/pdf` files can be previewed inline; DOC/DOCX (which can contain macros) must be downloaded
 - **Cache headers**: `Cache-Control: private, no-store` on both download and preview
 - **X-Frame-Options**: Global `DENY` with `SAMEORIGIN` override for the preview endpoint only
+- **S3 path style**: Configurable via `S3_FORCE_PATH_STYLE` env var — `true` for MinIO (path-style URLs), `false` for Railway Buckets / AWS S3 (virtual-hosted-style URLs)
 
 ## Data Model
 
@@ -218,7 +202,7 @@ organization (Better Auth)
 ├── job (draft → open → closed → archived)
 │   └── application (new → screening → interview → offer → hired/rejected)
 │       └── candidate
-│           └── document (resume, cover_letter — stored in MinIO)
+│           └── document (resume, cover_letter — stored in S3-compatible bucket)
 └── member (user ↔ organization with role)
 ```
 
@@ -278,34 +262,40 @@ Blog articles are Markdown files in `content/blog/` powered by `@nuxt/content` v
 | Environment secrets | Validated at startup, never exposed to client |
 ## Deployment Architecture
 
-Applirank runs on a single **Hetzner Cloud CX23** VPS (2 vCPU, 4GB RAM, Ubuntu 24.04) with **Cloudflare** as CDN/DNS:
+Applirank runs on **Railway** with **Cloudflare** as CDN/DNS:
 
 | Component | Role |
 |-----------|------|
 | Cloudflare (Free) | DNS, DDoS protection, SSL edge termination, AI bot blocking |
-| Caddy | Reverse proxy with auto-TLS, listens on :80/:443 |
-| Node.js (Nitro) | SSR app on :3000 (localhost only) |
-| Docker Compose | Postgres + MinIO (localhost only) |
-| systemd | Process manager — auto-restarts app on crash/reboot |
-| UFW | Firewall — only ports 22, 80, 443 open |
+| Railway Service | Nuxt SSR app (auto-built from GitHub via Nixpacks) |
+| Railway PostgreSQL | Managed Postgres database with automatic backups |
+| Railway Storage Bucket | S3-compatible object storage for documents |
 
 ### Deploy Workflow
 
 ```bash
-# From local machine after pushing to GitHub:
-ssh -i ~/.ssh/hetzner deploy@<server-ip> '~/deploy.sh'
+# Push to main branch — Railway auto-builds and deploys
+git push origin main
 
-# deploy.sh runs: git pull → npm install → npm run build → systemctl restart
+# Build: npm run build (detected from package.json)
+# Start: node .output/server/index.mjs
 ```
 
-### Key Files on Server
+### Environment Variables on Railway
 
-| File | Purpose |
-|------|--------|
-| `/home/deploy/applirank/.env` | Environment variables (loaded by systemd) |
-| `/etc/systemd/system/applirank.service` | systemd unit file |
-| `/etc/caddy/Caddyfile` | Caddy reverse proxy config |
-| `/home/deploy/deploy.sh` | One-command deploy script |
+Variables are configured in the Railway dashboard or via `railway variables`. Service-to-service references use Railway's template syntax:
+
+| Variable | Source |
+|----------|--------|
+| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` |
+| `S3_ENDPOINT` | `${{Bucket.ENDPOINT}}` |
+| `S3_ACCESS_KEY` | `${{Bucket.ACCESS_KEY_ID}}` |
+| `S3_SECRET_KEY` | `${{Bucket.SECRET_ACCESS_KEY}}` |
+| `S3_BUCKET` | `${{Bucket.BUCKET}}` |
+| `S3_REGION` | `${{Bucket.REGION}}` |
+| `S3_FORCE_PATH_STYLE` | `false` |
+| `BETTER_AUTH_SECRET` | Manual (sealed) |
+| `BETTER_AUTH_URL` | `https://applirank.com` |
 ## Local Development Services
 
 | Service | URL | Purpose |

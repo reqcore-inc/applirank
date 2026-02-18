@@ -21,7 +21,7 @@ Applirank is a **Nuxt 4** full-stack application using the `app/` directory stru
 - **SEO**: `@nuxtjs/seo` umbrella module (Sitemap, Robots, Schema.org, SEO Utils, Site Config)
 - **Content**: `@nuxt/content` v3 — Markdown blog with typed collections (`content.config.ts`)
 - **Infrastructure**: Docker Compose for local Postgres, MinIO, and Adminer
-- **Deployment**: Hetzner Cloud CX23 VPS, Caddy reverse proxy, Cloudflare CDN, systemd
+- **Deployment**: Railway (managed platform — auto-build from GitHub, Railway PostgreSQL, Railway Storage Buckets), Cloudflare CDN
 
 ## Product Vision: The Sovereign Recruitment Engine
 

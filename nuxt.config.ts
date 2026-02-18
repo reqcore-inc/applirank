@@ -117,6 +117,7 @@ export default defineNuxtConfig({
       '/api/documents/*/preview': {
         headers: {
           'X-Frame-Options': 'SAMEORIGIN',
+          'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'",
         },
       },
     },

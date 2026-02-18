@@ -58,12 +58,20 @@ export default defineEventHandler(async (event) => {
   // Stream the file directly through the server — no presigned URLs exposed
   const encodedFilename = encodeURIComponent(doc.originalFilename)
 
-  setResponseHeaders(event, {
+  const headers: Record<string, string> = {
     'Content-Type': doc.mimeType,
-    'Content-Disposition': `attachment; filename="${encodedFilename}"`,
+    // RFC 5987: ASCII fallback + UTF-8 extended filename for international characters
+    'Content-Disposition': `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`,
     'Cache-Control': 'private, no-store',
     'X-Content-Type-Options': 'nosniff',
-  })
+  }
+
+  // Forward Content-Length from S3 so browsers can show download progress
+  if (s3Response.ContentLength) {
+    headers['Content-Length'] = String(s3Response.ContentLength)
+  }
+
+  setResponseHeaders(event, headers)
 
   // Stream the S3 body to the response
   return s3Response.Body.transformToWebStream()

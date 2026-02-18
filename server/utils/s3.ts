@@ -12,25 +12,40 @@ import {
 // S3-compatible client for document storage
 // ─────────────────────────────────────────────
 
+let _s3Client: S3Client | undefined
+
 /**
- * S3-compatible client configured for MinIO (local dev) or Railway Buckets (production).
+ * Lazily-initialized S3-compatible client for MinIO (local dev) or Railway Buckets (production).
+ * The client is created on first access — not at import time — so build-time
+ * prerendering doesn't crash when S3 env vars aren't available.
+ *
  * `forcePathStyle` is controlled by `S3_FORCE_PATH_STYLE` env var:
  * - `true` (default) — required for MinIO (path-style URLs)
  * - `false` — required for Railway Buckets / AWS S3 (virtual-hosted-style URLs)
- * Credentials come from validated env vars — never hardcoded.
  */
-export const s3Client = new S3Client({
-  endpoint: env.S3_ENDPOINT,
-  region: env.S3_REGION,
-  credentials: {
-    accessKeyId: env.S3_ACCESS_KEY,
-    secretAccessKey: env.S3_SECRET_KEY,
-  },
-  forcePathStyle: env.S3_FORCE_PATH_STYLE,
-})
+export function getS3Client(): S3Client {
+  if (!_s3Client) {
+    _s3Client = new S3Client({
+      endpoint: env.S3_ENDPOINT,
+      region: env.S3_REGION,
+      credentials: {
+        accessKeyId: env.S3_ACCESS_KEY,
+        secretAccessKey: env.S3_SECRET_KEY,
+      },
+      forcePathStyle: env.S3_FORCE_PATH_STYLE,
+    })
+  }
+  return _s3Client
+}
 
-/** The configured bucket name from env */
-export const S3_BUCKET = env.S3_BUCKET
+/** @deprecated Use `getS3Client()` — kept for backward compatibility */
+export const s3Client = new Proxy({} as S3Client, {
+  get(_, prop: string | symbol) {
+    const instance = getS3Client()
+    const value = (instance as unknown as Record<string | symbol, unknown>)[prop]
+    return typeof value === 'function' ? (value as Function).bind(instance) : value
+  },
+})
 
 /**
  * Upload a file to S3/MinIO.
@@ -44,9 +59,9 @@ export async function uploadToS3(
   body: Buffer | Uint8Array,
   contentType: string,
 ): Promise<void> {
-  await s3Client.send(
+  await getS3Client().send(
     new PutObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: env.S3_BUCKET,
       Key: key,
       Body: body,
       ContentType: contentType,
@@ -61,9 +76,9 @@ export async function uploadToS3(
  * @param key - The storage key of the object to delete
  */
 export async function deleteFromS3(key: string): Promise<void> {
-  await s3Client.send(
+  await getS3Client().send(
     new DeleteObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: env.S3_BUCKET,
       Key: key,
     }),
   )
@@ -75,7 +90,7 @@ export async function deleteFromS3(key: string): Promise<void> {
  */
 export async function bucketExists(): Promise<boolean> {
   try {
-    await s3Client.send(new HeadBucketCommand({ Bucket: S3_BUCKET }))
+    await getS3Client().send(new HeadBucketCommand({ Bucket: env.S3_BUCKET }))
     return true
   } catch {
     return false
@@ -92,7 +107,7 @@ export async function bucketExists(): Promise<boolean> {
  */
 export async function ensureBucketExists(): Promise<void> {
   if (!(await bucketExists())) {
-    await s3Client.send(new CreateBucketCommand({ Bucket: S3_BUCKET }))
+    await getS3Client().send(new CreateBucketCommand({ Bucket: env.S3_BUCKET }))
   }
 
   // Always enforce private policy (idempotent)
@@ -110,8 +125,8 @@ export async function ensureBucketExists(): Promise<void> {
  */
 async function enforcePrivateBucketPolicy(): Promise<void> {
   try {
-    await s3Client.send(
-      new DeleteBucketPolicyCommand({ Bucket: S3_BUCKET }),
+    await getS3Client().send(
+      new DeleteBucketPolicyCommand({ Bucket: env.S3_BUCKET }),
     )
   } catch (error: unknown) {
     // Ignore "no policy exists" errors — that's the desired state

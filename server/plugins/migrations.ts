@@ -2,6 +2,8 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import { db } from '../utils/db'
 
 export default defineNitroPlugin(async () => {
+  // Skip during build-time prerendering — database isn't available
+  if (import.meta.prerender) return
   // Advisory lock ID — prevents concurrent migration runs across instances.
   // The lock is automatically released when the transaction/session ends.
   const MIGRATION_LOCK_ID = 123456789

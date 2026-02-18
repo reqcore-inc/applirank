@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
   // Fetch the object from S3
   const s3Response = await s3Client.send(
     new GetObjectCommand({
-      Bucket: S3_BUCKET,
+      Bucket: env.S3_BUCKET,
       Key: doc.storageKey,
     }),
   )

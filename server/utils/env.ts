@@ -30,6 +30,11 @@ const envSchema = z.object({
  */
 export const env = new Proxy({} as z.infer<typeof envSchema>, {
   get(_, prop: string) {
+    // During build-time prerendering, env vars aren't available.
+    // Return safe defaults so the prerenderer can boot without crashing.
+    if (import.meta.prerender) {
+      return ''
+    }
     // Parse once on first access, then cache for all subsequent reads
     const parsed = (globalThis as Record<string, unknown>).__env ??= envSchema.parse(process.env)
     return (parsed as Record<string, unknown>)[prop]

@@ -17,6 +17,18 @@ export default defineEventHandler(async (event) => {
     with: {
       candidate: {
         columns: { id: true, firstName: true, lastName: true, email: true, phone: true },
+        with: {
+          documents: {
+            columns: {
+              id: true,
+              type: true,
+              originalFilename: true,
+              mimeType: true,
+              createdAt: true,
+            },
+            orderBy: (document, { desc }) => [desc(document.createdAt)],
+          },
+        },
       },
       job: {
         columns: { id: true, title: true, status: true, slug: true },

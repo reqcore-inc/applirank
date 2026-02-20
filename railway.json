@@ -1,0 +1,19 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "deploy": {
+    "preDeployCommand": [
+      "npm run db:migrate"
+    ],
+    "startCommand": "npm run start"
+  },
+  "environments": {
+    "pr": {
+      "deploy": {
+        "preDeployCommand": [
+          "npm run db:migrate",
+          "npm run db:seed:pr"
+        ]
+      }
+    }
+  }
+}

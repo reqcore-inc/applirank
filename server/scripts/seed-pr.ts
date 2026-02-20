@@ -28,11 +28,15 @@ const PR_ORG_NAME = 'Applirank PR Demo'
 const PR_ORG_SLUG = 'applirank-pr-demo'
 const DEFAULT_PASSWORD = process.env.PR_SEED_PASSWORD ?? 'demo1234'
 const railwayEnvironmentName = process.env.RAILWAY_ENVIRONMENT_NAME?.toLowerCase() ?? ''
+const railwayPublicDomain = process.env.RAILWAY_PUBLIC_DOMAIN?.toLowerCase() ?? ''
 const forceSeed = process.env.SEED_PR_DEMO === 'true'
 const isLikelyPrEnvironment =
   railwayEnvironmentName.startsWith('pr')
+  || railwayEnvironmentName.includes('pr-')
+  || railwayEnvironmentName.includes('pull request')
   || railwayEnvironmentName.includes('pull-request')
   || railwayEnvironmentName.includes('preview')
+  || railwayPublicDomain.includes('-pr-')
 
 const client = postgres(DATABASE_URL, { max: 1 })
 const db = drizzle(client, { schema })
@@ -113,7 +117,11 @@ async function seedPrEnvironment() {
   console.log('🌱 Seeding PR environment data...')
 
   if (!forceSeed && !isLikelyPrEnvironment) {
-    console.log(`ℹ️ Skipping PR seed outside PR environments (RAILWAY_ENVIRONMENT_NAME='${railwayEnvironmentName || 'unknown'}').`)
+    console.log(
+      `ℹ️ Skipping PR seed outside PR environments `
+      + `(RAILWAY_ENVIRONMENT_NAME='${railwayEnvironmentName || 'unknown'}', `
+      + `RAILWAY_PUBLIC_DOMAIN='${railwayPublicDomain || 'unknown'}').`
+    )
     return
   }
 

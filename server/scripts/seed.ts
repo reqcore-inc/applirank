@@ -2,7 +2,7 @@
  * Seeds the database with realistic demo data for Applirank.
  *
  * Creates:
- * - 1 demo user (demo@applirank.com / demo1234)
+ * - 1 demo user (configured via DEMO_EMAIL + DEMO_PASSWORD)
  * - 1 organization ("Applirank Demo")
  * - 5 jobs with varying statuses
  * - 30 candidates
@@ -11,7 +11,7 @@
  * - Question responses on applications
  *
  * Usage: npx tsx server/scripts/seed.ts
- * Requires DATABASE_URL in .env (loaded via dotenv or shell env).
+ * Requires DATABASE_URL and DEMO_PASSWORD in .env (loaded via dotenv or shell env).
  *
  * Idempotent — checks if demo org exists before running.
  */
@@ -32,8 +32,18 @@ if (!DATABASE_URL) {
   process.exit(1)
 }
 
-const DEMO_EMAIL = 'demo@applirank.com'
-const DEMO_PASSWORD = 'demo1234'
+const DEMO_EMAIL = process.env.DEMO_EMAIL?.trim() || 'demo@applirank.com'
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD?.trim()
+if (!DEMO_PASSWORD) {
+  console.error('DEMO_PASSWORD is required. Set it in .env or export it.')
+  process.exit(1)
+}
+
+if (DEMO_PASSWORD.length < 12) {
+  console.error('DEMO_PASSWORD must be at least 12 characters.')
+  process.exit(1)
+}
+
 const DEMO_ORG_NAME = 'Applirank Demo'
 const DEMO_ORG_SLUG = 'applirank-demo'
 
@@ -508,7 +518,7 @@ async function seed() {
   console.log(`\n🎉 Seed complete!`)
   console.log(`\n   Sign in with:`)
   console.log(`   Email:    ${DEMO_EMAIL}`)
-  console.log(`   Password: ${DEMO_PASSWORD}`)
+  console.log(`   Password: (value from DEMO_PASSWORD env var)`)
   console.log(`\n   Then select "${DEMO_ORG_NAME}" as your organization.`)
 
   await client.end()

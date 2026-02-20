@@ -46,6 +46,10 @@ export default defineNuxtConfig({
     public: {
       /** When set, the dashboard shows a read-only demo banner for this org slug */
       demoOrgSlug: process.env.DEMO_ORG_SLUG || '',
+      /** Optional one-click demo login email for landing page CTA */
+      demoEmail: process.env.NUXT_PUBLIC_DEMO_EMAIL || '',
+      /** Optional one-click demo login password for landing page CTA */
+      demoPassword: process.env.NUXT_PUBLIC_DEMO_PASSWORD || '',
       /** Whether in-app feedback via GitHub Issues is enabled */
       feedbackEnabled: !!(process.env.GITHUB_FEEDBACK_TOKEN && process.env.GITHUB_FEEDBACK_REPO),
       /** Giscus comments widget configuration */

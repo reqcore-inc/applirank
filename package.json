@@ -16,7 +16,7 @@
     "db:seed": "npx tsx --env-file=.env server/scripts/seed.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.993.0",
+    "@aws-sdk/client-s3": "^3.994.0",
     "@giscus/vue": "^3.1.1",
     "@nuxt/content": "^3.11.2",
     "@nuxtjs/seo": "^3.4.0",
@@ -31,7 +31,7 @@
     "postgres": "^3.4.8",
     "tailwindcss": "^4.2.0",
     "vue": "^3.5.28",
-    "vue-router": "^5.0.2",
+    "vue-router": "^5.0.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {

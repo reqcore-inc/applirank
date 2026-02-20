@@ -59,6 +59,10 @@ useSchemaOrg([
 ])
 
 const { data: session } = await authClient.useSession(useFetch)
+const runtimeConfig = useRuntimeConfig()
+const demoEmail = runtimeConfig.public.demoEmail?.trim()
+const demoPassword = runtimeConfig.public.demoPassword?.trim()
+const hasDemoCredentials = computed(() => Boolean(demoEmail && demoPassword))
 
 /** Override the light body background for the dark landing page */
 useHead({
@@ -73,11 +77,16 @@ useHead({
 const isDemoLoading = ref(false)
 
 async function tryDemo() {
+  if (!hasDemoCredentials.value) {
+    await navigateTo('/auth/sign-in')
+    return
+  }
+
   isDemoLoading.value = true
   try {
     const result = await authClient.signIn.email({
-      email: 'demo@applirank.com',
-      password: 'demo1234',
+      email: demoEmail!,
+      password: demoPassword!,
     })
     if (result.error) {
       await navigateTo('/auth/sign-in')
@@ -218,13 +227,13 @@ async function tryDemo() {
 
         <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <button
-            :disabled="isDemoLoading"
+            :disabled="isDemoLoading || !hasDemoCredentials"
             class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.25)] transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(99,102,241,0.35)] disabled:opacity-60 disabled:cursor-not-allowed"
             @click="tryDemo"
           >
             <Play v-if="!isDemoLoading" class="h-3.5 w-3.5" />
             <div v-else class="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            {{ isDemoLoading ? 'Launching…' : 'Try live demo' }}
+            {{ isDemoLoading ? 'Launching…' : hasDemoCredentials ? 'Try live demo' : 'Demo unavailable' }}
           </button>
           <NuxtLink
             to="/auth/sign-up"
@@ -234,7 +243,8 @@ async function tryDemo() {
             <ArrowRight class="h-3.5 w-3.5" />
           </NuxtLink>
         </div>
-        <p class="mt-3 text-xs text-surface-500">No sign-up needed — instant access with sample data</p>
+        <p v-if="hasDemoCredentials" class="mt-3 text-xs text-surface-500">No sign-up needed — instant access with sample data</p>
+        <p v-else class="mt-3 text-xs text-surface-500">Demo login is not configured in this environment</p>
 
         <!-- Terminal -->
         <div class="mx-auto mt-14 max-w-lg">

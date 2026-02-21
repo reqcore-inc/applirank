@@ -42,7 +42,7 @@
     "tsx": "^4.21.0"
   },
   "overrides": {
-    "fast-xml-parser": "5.3.6",
+    "fast-xml-parser": "5.3.7",
     "tar": "7.5.9",
     "minimatch": "10.2.2",
     "readdir-glob": "2.0.2"

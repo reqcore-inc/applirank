@@ -15,10 +15,15 @@ const emptyToUndefined = z.preprocess(
  * Production and long-lived environments must provide explicit BETTER_AUTH_URL.
  */
 export function isRailwayPreviewEnvironment(environmentName?: string): boolean {
-  const name = environmentName?.toLowerCase() ?? ''
+  const name = environmentName?.toLowerCase().trim() ?? ''
+
+  if (!name) return false
+
+  // Never treat production as preview.
+  if (name === 'production' || name === 'prod') return false
 
   return (
-    name.startsWith('pr')
+    /^pr(?:-|\d)/.test(name)
     || name.includes('pr-')
     || name.includes('pull request')
     || name.includes('pull-request')

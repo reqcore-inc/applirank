@@ -25,8 +25,8 @@ setInterval(() => {
 
 /** GitHub issue label mapping by feedback type. */
 const LABEL_MAP = {
-  bug: ['bug'],
-  feature: ['enhancement'],
+  bug: ['bug', 'source:in-app'],
+  feature: ['enhancement', 'source:in-app'],
 } as const
 
 /**
@@ -78,21 +78,84 @@ export default defineEventHandler(async (event) => {
   const typeEmoji = body.type === 'bug' ? '🐛' : '💡'
   const typeLabel = body.type === 'bug' ? 'Bug Report' : 'Feature Request'
 
+  const reporterRows = [
+    ...(body.includeReporterContext ? [`| **Reporter** | ${userName} |`] : []),
+    ...(body.includeEmail ? [`| **Email** | ${userEmail} |`] : []),
+    ...(body.includeReporterContext && body.currentUrl ? [`| **Page** | ${body.currentUrl} |`] : []),
+    `| **Submitted** | ${new Date().toISOString()} |`,
+  ]
+
+  const diagnosticsRows = body.diagnostics
+    ? [
+        `| **User Agent** | ${body.diagnostics.userAgent ?? 'Not shared'} |`,
+        `| **Language** | ${body.diagnostics.language ?? 'Not shared'} |`,
+        `| **Platform** | ${body.diagnostics.platform ?? 'Not shared'} |`,
+        `| **Timezone** | ${body.diagnostics.timezone ?? 'Not shared'} |`,
+        `| **Viewport** | ${body.diagnostics.viewport ?? 'Not shared'} |`,
+        `| **Screen** | ${body.diagnostics.screen ?? 'Not shared'} |`,
+      ]
+    : []
+
+  const screenshotSection =
+    body.includeScreenshot && body.screenshotDataUrl
+      ? [
+          '### Screenshot Context',
+          '',
+          `Filename: ${body.screenshotFileName ?? 'screenshot.jpg'}`,
+          '',
+          '<details>',
+          '<summary>Screenshot data URL (base64)</summary>',
+          '',
+          '```text',
+          body.screenshotDataUrl,
+          '```',
+          '</details>',
+          '',
+        ]
+      : []
+
   const issueBody = [
     `## ${typeEmoji} ${typeLabel}`,
     '',
+    '### Summary',
+    '',
     body.description,
     '',
+    ...(body.type === 'bug'
+      ? [
+          '### Bug Reproduction',
+          '',
+          `- Steps to reproduce: ${body.bugContext?.stepsToReproduce?.trim() || '_not provided_'}`,
+          `- Expected result: ${body.bugContext?.expectedResult?.trim() || '_not provided_'}`,
+          `- Actual result: ${body.bugContext?.actualResult?.trim() || '_not provided_'}`,
+          '',
+        ]
+      : [
+          '### Feature Context',
+          '',
+          `- User problem: ${body.featureContext?.userProblem?.trim() || '_not provided_'}`,
+          `- Desired workflow: ${body.featureContext?.desiredWorkflow?.trim() || '_not provided_'}`,
+          `- Expected impact: ${body.featureContext?.expectedImpact?.trim() || '_not provided_'}`,
+          '',
+        ]),
+    ...screenshotSection,
     '---',
     '',
     '### Reporter Context',
     '',
     `| Field | Value |`,
     `|-------|-------|`,
-    `| **Reporter** | ${userName} |`,
-    `| **Email** | ${userEmail} |`,
-    ...(body.currentUrl ? [`| **Page** | ${body.currentUrl} |`] : []),
-    `| **Submitted** | ${new Date().toISOString()} |`,
+    ...reporterRows,
+    ...(diagnosticsRows.length > 0
+      ? [
+          '',
+          '### Technical Context',
+          '',
+          `| Field | Value |`,
+          `|-------|-------|`,
+          ...diagnosticsRows,
+        ]
+      : []),
     '',
     '_Submitted via in-app feedback_',
   ].join('\n')

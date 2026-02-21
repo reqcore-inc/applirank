@@ -46,6 +46,10 @@ export default defineNuxtConfig({
     public: {
       /** When set, the dashboard shows a read-only demo banner for this org slug */
       demoOrgSlug: process.env.DEMO_ORG_SLUG || '',
+      /** Public live-demo account email used to prefill sign-in */
+      liveDemoEmail: process.env.DEMO_EMAIL || 'demo@applirank.com',
+      /** Public live-demo secret used to prefill sign-in */
+      liveDemoSecret: process.env.DEMO_PASSWORD || '',
       /** Whether in-app feedback via GitHub Issues is enabled */
       feedbackEnabled: !!(process.env.GITHUB_FEEDBACK_TOKEN && process.env.GITHUB_FEEDBACK_REPO),
     },

@@ -66,42 +66,6 @@ useHead({
     style: 'background-color: #09090b;',
   },
 })
-
-// ─────────────────────────────────────────────
-// One-click demo login
-// ─────────────────────────────────────────────
-const isDemoLoading = ref(false)
-
-async function tryDemo() {
-  isDemoLoading.value = true
-  try {
-    const result = await authClient.signIn.email({
-      email: 'demo@applirank.com',
-      password: 'demo1234',
-    })
-    if (result.error) {
-      await navigateTo('/auth/sign-in')
-      return
-    }
-
-    // Activate the demo org before navigating
-    const orgsResult = await authClient.organization.list()
-    const orgs = orgsResult.data
-    const firstOrg = orgs?.[0]
-    if (firstOrg) {
-      await authClient.organization.setActive({ organizationId: firstOrg.id })
-    }
-
-    // Hard navigation to avoid hydration mismatches between dark landing and light dashboard
-    window.location.href = '/dashboard'
-  }
-  catch {
-    await navigateTo('/auth/sign-in')
-  }
-  finally {
-    isDemoLoading.value = false
-  }
-}
 </script>
 
 <template>
@@ -211,15 +175,13 @@ async function tryDemo() {
         </p>
 
         <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <button
-            :disabled="isDemoLoading"
-            class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.25)] transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(99,102,241,0.35)] disabled:opacity-60 disabled:cursor-not-allowed"
-            @click="tryDemo"
+          <NuxtLink
+            to="/auth/sign-in?live=1"
+            class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.25)] transition hover:bg-brand-400 hover:shadow-[0_0_30px_rgba(99,102,241,0.35)]"
           >
-            <Play v-if="!isDemoLoading" class="h-3.5 w-3.5" />
-            <div v-else class="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            {{ isDemoLoading ? 'Launching…' : 'Try live demo' }}
-          </button>
+            <Play class="h-3.5 w-3.5" />
+            Try live demo
+          </NuxtLink>
           <NuxtLink
             to="/auth/sign-up"
             class="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#09090b] shadow-[0_0_20px_rgba(255,255,255,0.1)] transition hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"

@@ -14,6 +14,13 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const isLoading = ref(false)
+const route = useRoute()
+const config = useRuntimeConfig()
+
+if (route.query.live === '1') {
+  email.value = config.public.liveDemoEmail
+  password.value = config.public.liveDemoSecret
+}
 
 async function handleSignIn() {
   error.value = ''

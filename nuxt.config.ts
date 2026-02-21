@@ -1,6 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
 
+const railwayEnvironmentName = process.env.RAILWAY_ENVIRONMENT_NAME?.toLowerCase() ?? ''
+const railwayPublicDomain = process.env.RAILWAY_PUBLIC_DOMAIN?.toLowerCase() ?? ''
+const isRailwayPreview =
+  railwayEnvironmentName.startsWith('pr')
+  || railwayEnvironmentName.includes('pr-')
+  || railwayEnvironmentName.includes('pull request')
+  || railwayEnvironmentName.includes('pull-request')
+  || railwayEnvironmentName.includes('preview')
+  || railwayPublicDomain.includes('-pr-')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -46,6 +56,17 @@ export default defineNuxtConfig({
     public: {
       /** When set, the dashboard shows a read-only demo banner for this org slug */
       demoOrgSlug: process.env.DEMO_ORG_SLUG || '',
+      /** Public live-demo account email used to prefill sign-in */
+      liveDemoEmail:
+        process.env.LIVE_DEMO_EMAIL
+        || process.env.DEMO_EMAIL
+        || (isRailwayPreview ? 'pr.user1@applirank.dev' : 'demo@applirank.com'),
+      /** Public live-demo secret used to prefill sign-in */
+      liveDemoSecret:
+        process.env.LIVE_DEMO_SECRET
+        || process.env.PR_SEED_PASSWORD
+        || process.env.DEMO_PASSWORD
+        || 'demo1234',
       /** Whether in-app feedback via GitHub Issues is enabled */
       feedbackEnabled: !!(process.env.GITHUB_FEEDBACK_TOKEN && process.env.GITHUB_FEEDBACK_REPO),
     },

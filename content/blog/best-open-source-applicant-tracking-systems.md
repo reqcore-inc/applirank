@@ -23,7 +23,7 @@ Before comparing individual platforms, it matters to understand why open source 
 
 **Transparency.** You can read the code that handles your candidates. If the system uses AI to rank applicants, you can inspect the scoring logic — a capability the [EU AI Act classifies as essential](https://artificialintelligenceact.eu/) for high-risk AI systems, which includes employment decisions. No black boxes, no opaque algorithms making decisions about people without explanation.
 
-For a deeper analysis of these trade-offs, read our guide on [self-hosted vs cloud ATS: pros, cons, and when to switch](/blog/self-hosted-vs-cloud-ats).
+For a deeper analysis of these trade-offs, read our [self-hosted vs cloud ATS comparison](/blog/self-hosted-vs-cloud-ats).
 
 ## How We Evaluated Each Platform
 

@@ -33,6 +33,7 @@ COPY --from=builder /app/server/database/migrations ./server/database/migrations
 # Seed script support — copies node_modules, package.json, and server source
 # so `docker compose exec app npm run db:seed` works inside the container
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/server ./server
 

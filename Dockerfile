@@ -21,6 +21,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+RUN addgroup -S applirank && adduser -S applirank -G applirank
+
 # .output is fully self-contained (includes content DB, server, public assets)
 COPY --from=builder /app/.output ./.output
 
@@ -28,13 +30,14 @@ COPY --from=builder /app/.output ./.output
 # They must live alongside .output so the path resolves correctly inside the container
 COPY --from=builder /app/server/database/migrations ./server/database/migrations
 
-# Seed script + Railway preDeploy support — copies node_modules, package.json,
-# server source, and drizzle config so `npm run db:push` / `npm run db:seed`
-# work inside the container (required by railway.json preDeployCommand)
+# Seed script support — copies node_modules, package.json, and server source
+# so `docker compose exec app npm run db:seed` works inside the container
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/server ./server
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+
+RUN chown -R applirank:applirank /app
+USER applirank
 
 EXPOSE 3000
 

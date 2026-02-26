@@ -295,7 +295,9 @@ Variables are configured in the Railway dashboard or via `railway variables`. Se
 | `S3_REGION` | `${{Bucket.REGION}}` |
 | `S3_FORCE_PATH_STYLE` | `false` |
 | `BETTER_AUTH_SECRET` | Manual (sealed) |
-| `BETTER_AUTH_URL` | `https://applirank.com` |
+| `BETTER_AUTH_URL` | Production: `https://applirank.com` · PR/preview: `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
+
+For zero manual PR setup, define `BETTER_AUTH_URL` as `https://${{RAILWAY_PUBLIC_DOMAIN}}` in your Railway preview/PR environment (or shared variables scoped to previews).
 ## Local Development Services
 
 | Service | URL | Purpose |

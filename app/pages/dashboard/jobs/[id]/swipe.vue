@@ -159,7 +159,12 @@ type SwipeApplicationDetail = {
   responses: SwipeResponse[]
 }
 
-const currentApplicationId = computed(() => currentSummary.value?.id ?? '')
+const currentApplicationId = ref('')
+
+watch(currentSummary, (summary) => {
+  if (!summary?.id) return
+  currentApplicationId.value = summary.id
+}, { immediate: true })
 
 const {
   data: currentApplication,
@@ -168,17 +173,19 @@ const {
 } = useFetch<SwipeApplicationDetail | null>(
   () => `/api/applications/${currentApplicationId.value}`,
   {
-    key: computed(() => `swipe-application-${currentApplicationId.value || 'none'}`),
+    key: computed(() => `swipe-application-${currentApplicationId.value}`),
     immediate: false,
     headers: useRequestHeaders(['cookie']),
   },
 )
 
+const resolvedCurrentApplication = computed(() => {
+  if (!currentApplication.value) return null
+  return currentApplication.value.id === currentApplicationId.value ? currentApplication.value : null
+})
+
 watch(currentApplicationId, async (id) => {
-  if (!id) {
-    currentApplication.value = null
-    return
-  }
+  if (!id) return
 
   await executeDetailFetch()
 }, { immediate: true })
@@ -531,9 +538,9 @@ const isLoading = computed(() => {
                         <Mail class="size-3.5" />
                         {{ currentSummary.candidateEmail }}
                       </span>
-                      <span v-if="currentApplication?.candidate.phone" class="inline-flex items-center gap-1.5">
+                      <span v-if="resolvedCurrentApplication?.candidate.phone" class="inline-flex items-center gap-1.5">
                         <Phone class="size-3.5" />
-                        {{ currentApplication.candidate.phone }}
+                        {{ resolvedCurrentApplication.candidate.phone }}
                       </span>
                     </div>
                   </div>
@@ -568,28 +575,28 @@ const isLoading = computed(() => {
                 >
                   Documents
                   <span
-                    v-if="currentApplication?.candidate.documents?.length"
+                    v-if="resolvedCurrentApplication?.candidate.documents?.length"
                     class="ml-1 text-xs text-surface-400"
                   >
-                    ({{ currentApplication.candidate.documents.length }})
+                    ({{ resolvedCurrentApplication.candidate.documents.length }})
                   </span>
                 </button>
                 <button
-                  v-if="currentApplication?.responses?.length"
+                  v-if="resolvedCurrentApplication?.responses?.length"
                   class="cursor-pointer px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px"
                   :class="detailTab === 'responses'
                     ? 'border-brand-600 text-brand-600 dark:border-brand-400 dark:text-brand-400'
                     : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300 dark:hover:text-surface-300'"
                   @click="detailTab = 'responses'"
                 >
-                  Responses ({{ currentApplication.responses.length }})
+                  Responses ({{ resolvedCurrentApplication.responses.length }})
                 </button>
               </div>
             </div>
 
             <!-- Detail content -->
             <div class="flex-1 overflow-y-auto bg-surface-50 dark:bg-surface-950 p-6">
-              <div v-if="detailFetchStatus === 'pending'" class="py-8 text-center text-sm text-surface-400">
+              <div v-if="detailFetchStatus === 'pending' && !resolvedCurrentApplication" class="py-8 text-center text-sm text-surface-400">
                 Loading details…
               </div>
 
@@ -614,10 +621,10 @@ const isLoading = computed(() => {
                         {{ currentSummary.candidateEmail }}
                       </dd>
                     </div>
-                    <div v-if="currentApplication?.candidate.phone">
+                    <div v-if="resolvedCurrentApplication?.candidate.phone">
                       <dt class="text-surface-400">Phone</dt>
                       <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                        {{ currentApplication.candidate.phone }}
+                        {{ resolvedCurrentApplication.candidate.phone }}
                       </dd>
                     </div>
                     <div>
@@ -683,9 +690,9 @@ const isLoading = computed(() => {
 
               <!-- DOCUMENTS TAB -->
               <div v-else-if="detailTab === 'documents'" class="space-y-3 max-w-3xl">
-                <div v-if="currentApplication?.candidate.documents?.length" class="space-y-2.5">
+                <div v-if="resolvedCurrentApplication?.candidate.documents?.length" class="space-y-2.5">
                   <div
-                    v-for="doc in currentApplication.candidate.documents"
+                    v-for="doc in resolvedCurrentApplication.candidate.documents"
                     :key="doc.id"
                     class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-surface-200 bg-white px-4 py-3 dark:border-surface-800 dark:bg-surface-900"
                   >
@@ -728,9 +735,9 @@ const isLoading = computed(() => {
 
               <!-- RESPONSES TAB -->
               <div v-else-if="detailTab === 'responses'" class="space-y-3 max-w-3xl">
-                <div v-if="currentApplication?.responses?.length" class="space-y-2.5">
+                <div v-if="resolvedCurrentApplication?.responses?.length" class="space-y-2.5">
                   <div
-                    v-for="response in currentApplication.responses"
+                    v-for="response in resolvedCurrentApplication.responses"
                     :key="response.id"
                     class="rounded-lg border border-surface-200 bg-white p-4 dark:border-surface-800 dark:bg-surface-900"
                   >
@@ -808,13 +815,13 @@ const isLoading = computed(() => {
                   <div class="flex items-center justify-between">
                     <dt class="text-surface-500 dark:text-surface-400">Documents</dt>
                     <dd class="text-surface-700 dark:text-surface-200 text-xs">
-                      {{ currentApplication?.candidate.documents?.length ?? 0 }}
+                      {{ resolvedCurrentApplication?.candidate.documents?.length ?? 0 }}
                     </dd>
                   </div>
                   <div class="flex items-center justify-between">
                     <dt class="text-surface-500 dark:text-surface-400">Responses</dt>
                     <dd class="text-surface-700 dark:text-surface-200 text-xs">
-                      {{ currentApplication?.responses?.length ?? 0 }}
+                      {{ resolvedCurrentApplication?.responses?.length ?? 0 }}
                     </dd>
                   </div>
                 </dl>

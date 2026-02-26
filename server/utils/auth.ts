@@ -21,17 +21,18 @@ function resolveBetterAuthUrl(): string {
     return explicitUrl
   }
 
-  const prNumber = env.RAILWAY_GIT_PR_NUMBER?.trim()
-  if (prNumber) {
-    const previewUrl = `https://applirank-applirank-pr-${prNumber}.up.railway.app`
-    console.info(`[Applirank] Using Railway PR-derived BETTER_AUTH_URL: ${previewUrl}`)
-    return previewUrl
-  }
-
   if (railwayDomain) {
     const previewUrl = `https://${railwayDomain}`
     console.info(`[Applirank] Using Railway public-domain BETTER_AUTH_URL: ${previewUrl}`)
     return previewUrl
+  }
+
+  const prNumber = env.RAILWAY_GIT_PR_NUMBER?.trim()
+  if (prNumber) {
+    console.warn(
+      `[Applirank] Railway PR number detected (${prNumber}) but RAILWAY_PUBLIC_DOMAIN is missing. ` +
+      'Set BETTER_AUTH_URL explicitly or ensure Railway generated domains are enabled.',
+    )
   }
 
   if (explicitUrl) {

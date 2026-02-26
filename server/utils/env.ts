@@ -65,7 +65,11 @@ const envSchema = z
     GITHUB_FEEDBACK_REPO: emptyToUndefined.pipe(z.string().regex(/^[^/]+\/[^/]+$/, 'Must be in "owner/repo" format')).optional(),
   })
   .superRefine((data, ctx) => {
-    const isPreview = isRailwayPreviewEnvironment(data.RAILWAY_ENVIRONMENT_NAME)
+    const hasPreviewDomain = data.RAILWAY_PUBLIC_DOMAIN
+      ? data.RAILWAY_PUBLIC_DOMAIN.toLowerCase().includes('-pr-')
+      : false
+    const hasPrNumber = !!data.RAILWAY_GIT_PR_NUMBER
+    const isPreview = isRailwayPreviewEnvironment(data.RAILWAY_ENVIRONMENT_NAME) || hasPreviewDomain || hasPrNumber
 
     if (!isPreview && !data.BETTER_AUTH_URL) {
       ctx.addIssue({

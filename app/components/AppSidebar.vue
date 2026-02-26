@@ -18,6 +18,7 @@ const userEmail = computed(() => session.value?.user?.email ?? '')
 async function handleSignOut() {
   isSigningOut.value = true
   await authClient.signOut()
+  clearNuxtData()
   await navigateTo('/auth/sign-in')
 }
 

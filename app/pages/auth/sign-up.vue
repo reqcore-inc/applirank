@@ -49,6 +49,7 @@ async function handleSignUp() {
     return
   }
 
+  clearNuxtData()
   await navigateTo('/onboarding/create-org')
 }
 </script>

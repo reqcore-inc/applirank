@@ -43,6 +43,7 @@ async function handleSignIn() {
     return
   }
 
+  clearNuxtData()
   await navigateTo('/dashboard')
 }
 </script>

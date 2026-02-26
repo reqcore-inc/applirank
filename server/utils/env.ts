@@ -39,6 +39,12 @@ const envSchema = z
     DATABASE_URL: z.url(),
     BETTER_AUTH_SECRET: emptyToUndefined.pipe(z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters')),
     BETTER_AUTH_URL: emptyToUndefined.pipe(z.url()).optional(),
+    /** Comma-separated list of additional trusted origins for Better Auth CSRF checks. */
+    BETTER_AUTH_TRUSTED_ORIGINS: emptyToUndefined
+      .pipe(z.string())
+      .transform(value => value.split(',').map(origin => origin.trim()).filter(Boolean))
+      .optional()
+      .default([]),
     /** Railway environment metadata for PR/preview detection. */
     RAILWAY_ENVIRONMENT_NAME: emptyToUndefined.optional(),
     /** PR number provided by Railway for GitHub-triggered deployments. */
@@ -65,7 +71,11 @@ const envSchema = z
     GITHUB_FEEDBACK_REPO: emptyToUndefined.pipe(z.string().regex(/^[^/]+\/[^/]+$/, 'Must be in "owner/repo" format')).optional(),
   })
   .superRefine((data, ctx) => {
-    const isPreview = isRailwayPreviewEnvironment(data.RAILWAY_ENVIRONMENT_NAME)
+    const hasPreviewDomain = data.RAILWAY_PUBLIC_DOMAIN
+      ? data.RAILWAY_PUBLIC_DOMAIN.toLowerCase().includes('-pr-')
+      : false
+    const hasPrNumber = !!data.RAILWAY_GIT_PR_NUMBER
+    const isPreview = isRailwayPreviewEnvironment(data.RAILWAY_ENVIRONMENT_NAME) || hasPreviewDomain || hasPrNumber
 
     if (!isPreview && !data.BETTER_AUTH_URL) {
       ctx.addIssue({
@@ -105,7 +115,7 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
           `Ensure these variables are set in your Railway service (Settings → Variables).\n` +
           `Required: DATABASE_URL, BETTER_AUTH_SECRET, S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET\n` +
           `Required outside Railway PR/preview environments: BETTER_AUTH_URL\n` +
-          `Optional: S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG\n`,
+          `Optional: BETTER_AUTH_TRUSTED_ORIGINS, S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG\n`,
         )
         throw result.error
       }

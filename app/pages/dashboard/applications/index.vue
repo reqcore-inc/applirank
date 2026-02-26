@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileText, ChevronsUpDown, ChevronUp, ChevronDown, SlidersHorizontal, X, Check } from 'lucide-vue-next'
+import { FileText, Search, X, ChevronDown, Briefcase, Mail, Clock } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -13,107 +13,133 @@ useSeoMeta({
 
 const router = useRouter()
 
-// ── Status filter (multi-select) ──────────────────────────────────────────────
+// ── Search ────────────────────────────────────────────────────────────────────
+
+const searchInput = ref('')
+const debouncedSearch = ref('')
+
+let debounceTimer: ReturnType<typeof setTimeout>
+watch(searchInput, (val) => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    debouncedSearch.value = val.trim().toLowerCase()
+  }, 250)
+})
+
+// ── Status filter ─────────────────────────────────────────────────────────────
 
 const STATUS_OPTIONS = ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'] as const
 type Status = typeof STATUS_OPTIONS[number]
 
-// useState persists across navigation within the same session
-const selectedStatuses = useState<Status[]>('app-filter-statuses', () => [])
-const scoreMin = useState<number | undefined>('app-filter-score-min', () => undefined)
-const scoreMax = useState<number | undefined>('app-filter-score-max', () => undefined)
-const visibleCols = useState('app-visible-cols', () => ({
-  job: true,
-  score: true,
-  status: true,
-  createdAt: true,
-}))
+const activeStatus = useState<Status | undefined>('app-filter-status', () => undefined)
 
-const statusFilter = computed(() =>
-  selectedStatuses.value.length === 1 ? selectedStatuses.value[0] : undefined,
-)
+const statusFilter = computed(() => activeStatus.value)
 
 const { applications, total, fetchStatus, error, refresh } = useApplications({
   status: statusFilter,
 })
 
-function toggleStatus(s: Status) {
-  if (selectedStatuses.value.includes(s)) {
-    selectedStatuses.value = selectedStatuses.value.filter(x => x !== s)
+// ── Job filter (client-side) ──────────────────────────────────────────────────
+
+const activeJobId = ref<string | undefined>(undefined)
+const jobDropdownOpen = ref(false)
+const jobDropdownRef = ref<HTMLElement | null>(null)
+
+const uniqueJobs = computed(() => {
+  const map = new Map<string, string>()
+  for (const app of applications.value) {
+    if (!map.has(app.jobId)) map.set(app.jobId, app.jobTitle)
   }
-  else {
-    selectedStatuses.value = [...selectedStatuses.value, s]
-  }
-}
-
-// ── Column picker panel ───────────────────────────────────────────────────────
-
-const panelOpen = ref(false)
-const panelRef = ref<HTMLElement | null>(null)
-
-function handleOutsideClick(e: MouseEvent) {
-  if (panelRef.value && !panelRef.value.contains(e.target as Node)) {
-    panelOpen.value = false
-  }
-}
-onMounted(() => document.addEventListener('mousedown', handleOutsideClick))
-onUnmounted(() => document.removeEventListener('mousedown', handleOutsideClick))
-
-const activeFilterCount = computed(() => {
-  let n = selectedStatuses.value.length
-  if (scoreMin.value != null) n++
-  if (scoreMax.value != null) n++
-  return n
+  return Array.from(map, ([id, title]) => ({ id, title })).sort((a, b) => a.title.localeCompare(b.title))
 })
+
+function handleJobDropdownOutside(e: MouseEvent) {
+  if (jobDropdownRef.value && !jobDropdownRef.value.contains(e.target as Node)) {
+    jobDropdownOpen.value = false
+  }
+}
+onMounted(() => document.addEventListener('mousedown', handleJobDropdownOutside))
+onUnmounted(() => document.removeEventListener('mousedown', handleJobDropdownOutside))
 
 // ── Sorting ───────────────────────────────────────────────────────────────────
 
-type SortKey = 'candidate' | 'job' | 'score' | 'status' | 'createdAt'
-type SortDir = 'asc' | 'desc'
+type SortOption = 'newest' | 'oldest' | 'score-high' | 'score-low' | 'name-az' | 'name-za'
+const activeSort = useState<SortOption>('app-sort', () => 'newest')
+const sortDropdownOpen = ref(false)
+const sortDropdownRef = ref<HTMLElement | null>(null)
 
-const sortKey = useState<SortKey>('app-sort-key', () => 'score')
-const sortDir = useState<SortDir>('app-sort-dir', () => 'desc')
+const sortOptions: { value: SortOption, label: string }[] = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'score-high', label: 'Score: high to low' },
+  { value: 'score-low', label: 'Score: low to high' },
+  { value: 'name-az', label: 'Name: A → Z' },
+  { value: 'name-za', label: 'Name: Z → A' },
+]
 
-function toggleSort(key: SortKey) {
-  if (sortKey.value === key) {
-    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
-  }
-  else {
-    sortKey.value = key
-    sortDir.value = key === 'score' ? 'desc' : 'asc'
+const activeSortLabel = computed(() => sortOptions.find(o => o.value === activeSort.value)?.label ?? 'Newest first')
+
+function handleSortDropdownOutside(e: MouseEvent) {
+  if (sortDropdownRef.value && !sortDropdownRef.value.contains(e.target as Node)) {
+    sortDropdownOpen.value = false
   }
 }
+onMounted(() => document.addEventListener('mousedown', handleSortDropdownOutside))
+onUnmounted(() => document.removeEventListener('mousedown', handleSortDropdownOutside))
 
-const sorted = computed(() => {
-  return [...applications.value]
-    .filter((app) => {
-      if (selectedStatuses.value.length > 1 && !selectedStatuses.value.includes(app.status as Status)) return false
-      if (scoreMin.value != null && (app.score ?? 0) < scoreMin.value) return false
-      if (scoreMax.value != null && (app.score ?? 0) > scoreMax.value) return false
-      return true
-    })
-    .sort((a, b) => {
-      let cmp = 0
-      switch (sortKey.value) {
-        case 'candidate':
-          cmp = `${a.candidateFirstName} ${a.candidateLastName}`.localeCompare(`${b.candidateFirstName} ${b.candidateLastName}`)
-          break
-        case 'job':
-          cmp = a.jobTitle.localeCompare(b.jobTitle)
-          break
-        case 'score':
-          cmp = (a.score ?? -1) - (b.score ?? -1)
-          break
-        case 'status':
-          cmp = a.status.localeCompare(b.status)
-          break
-        case 'createdAt':
-          cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          break
-      }
-      return sortDir.value === 'asc' ? cmp : -cmp
-    })
+// ── Filtered + sorted list ────────────────────────────────────────────────────
+
+const filteredApplications = computed(() => {
+  let list = [...applications.value]
+
+  // Job filter
+  if (activeJobId.value) {
+    list = list.filter(app => app.jobId === activeJobId.value)
+  }
+
+  // Search filter (client-side)
+  if (debouncedSearch.value) {
+    const q = debouncedSearch.value
+    list = list.filter(app =>
+      `${app.candidateFirstName} ${app.candidateLastName}`.toLowerCase().includes(q)
+      || app.candidateEmail.toLowerCase().includes(q)
+      || app.jobTitle.toLowerCase().includes(q),
+    )
+  }
+
+  // Sort
+  list.sort((a, b) => {
+    switch (activeSort.value) {
+      case 'newest':
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      case 'oldest':
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      case 'score-high':
+        return (b.score ?? -1) - (a.score ?? -1)
+      case 'score-low':
+        return (a.score ?? -1) - (b.score ?? -1)
+      case 'name-az':
+        return `${a.candidateFirstName} ${a.candidateLastName}`.localeCompare(`${b.candidateFirstName} ${b.candidateLastName}`)
+      case 'name-za':
+        return `${b.candidateFirstName} ${b.candidateLastName}`.localeCompare(`${a.candidateFirstName} ${a.candidateLastName}`)
+      default:
+        return 0
+    }
+  })
+
+  return list
 })
+
+const hasActiveFilters = computed(() =>
+  activeStatus.value != null || activeJobId.value != null || debouncedSearch.value.length > 0,
+)
+
+function clearAllFilters() {
+  activeStatus.value = undefined
+  activeJobId.value = undefined
+  searchInput.value = ''
+  debouncedSearch.value = ''
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -128,10 +154,27 @@ function timeAgo(date: string | Date) {
   return new Date(date).toLocaleDateString()
 }
 
+function candidateInitials(first: string, last: string) {
+  return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
+}
+
+function initialsColor(name: string) {
+  const colors = [
+    'bg-brand-100 text-brand-700 dark:bg-brand-900 dark:text-brand-300',
+    'bg-info-100 text-info-700 dark:bg-info-900 dark:text-info-300',
+    'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300',
+    'bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300',
+    'bg-danger-100 text-danger-700 dark:bg-danger-900 dark:text-danger-300',
+  ]
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return colors[Math.abs(hash) % colors.length]
+}
+
 function scoreClass(score: number) {
-  if (score >= 75) return 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-400'
-  if (score >= 40) return 'bg-warning-50 text-warning-700 dark:bg-warning-950 dark:text-warning-400'
-  return 'bg-danger-50 text-danger-700 dark:bg-danger-950 dark:text-danger-400'
+  if (score >= 75) return 'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950 dark:text-success-400 dark:ring-success-800'
+  if (score >= 40) return 'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950 dark:text-warning-400 dark:ring-warning-800'
+  return 'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950 dark:text-danger-400 dark:ring-danger-800'
 }
 
 const statusBadgeClasses: Record<string, string> = {
@@ -143,6 +186,15 @@ const statusBadgeClasses: Record<string, string> = {
   rejected: 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400',
 }
 
+const statusDotClasses: Record<string, string> = {
+  new: 'bg-brand-500',
+  screening: 'bg-info-500',
+  interview: 'bg-warning-500',
+  offer: 'bg-success-500',
+  hired: 'bg-success-600',
+  rejected: 'bg-surface-400 dark:bg-surface-500',
+}
+
 const statusLabels: Record<Status, string> = {
   new: 'New',
   screening: 'Screening',
@@ -150,12 +202,6 @@ const statusLabels: Record<Status, string> = {
   offer: 'Offer',
   hired: 'Hired',
   rejected: 'Rejected',
-}
-
-function clearFilters() {
-  selectedStatuses.value = []
-  scoreMin.value = undefined
-  scoreMax.value = undefined
 }
 </script>
 
@@ -171,152 +217,124 @@ function clearFilters() {
       </div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="flex items-center gap-3 mb-4">
-      <!-- Column / filter picker -->
-      <div ref="panelRef" class="relative">
+    <!-- Search bar -->
+    <div class="relative mb-4">
+      <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-surface-400" />
+      <input
+        v-model="searchInput"
+        type="text"
+        placeholder="Search by candidate name, email, or job title…"
+        class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-10 pr-3 py-2.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+      />
+    </div>
+
+    <!-- Filter bar -->
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <!-- Job dropdown filter -->
+      <div ref="jobDropdownRef" class="relative">
         <button
-          class="inline-flex items-center gap-2 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:border-surface-300 dark:hover:border-surface-700 transition-colors"
-          @click="panelOpen = !panelOpen"
+          class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-colors"
+          :class="activeJobId
+            ? 'border-brand-300 dark:border-brand-700 bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400'
+            : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-300 hover:border-surface-300 dark:hover:border-surface-700'"
+          @click="jobDropdownOpen = !jobDropdownOpen"
         >
-          <SlidersHorizontal class="size-4" />
-          View
-          <span
-            v-if="activeFilterCount > 0"
-            class="inline-flex items-center justify-center size-4 rounded-full bg-brand-500 text-white text-[10px] font-semibold"
-          >
-            {{ activeFilterCount }}
-          </span>
+          <Briefcase class="size-3.5" />
+          {{ activeJobId ? uniqueJobs.find(j => j.id === activeJobId)?.title ?? 'Job' : 'Job' }}
+          <ChevronDown class="size-3.5" />
         </button>
-
-        <!-- Dropdown panel -->
         <div
-          v-if="panelOpen"
-          class="absolute left-0 top-full mt-2 z-20 w-72 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-lg p-4 space-y-5"
+          v-if="jobDropdownOpen"
+          class="absolute left-0 top-full mt-1 z-20 w-64 max-h-56 overflow-y-auto rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-lg py-1"
         >
-          <!-- Columns -->
-          <div>
-            <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wide mb-2">Columns</p>
-            <div class="space-y-1.5">
-              <label
-                v-for="col in ([
-                  { key: 'job', label: 'Job' },
-                  { key: 'score', label: 'Score' },
-                  { key: 'status', label: 'Status' },
-                  { key: 'createdAt', label: 'Applied' },
-                ] as const)"
-                :key="col.key"
-                class="flex items-center gap-2.5 cursor-pointer select-none group"
-              >
-                <input type="checkbox" class="sr-only" :checked="visibleCols[col.key]" @change="visibleCols[col.key] = !visibleCols[col.key]" />
-                <span
-                  class="size-4 shrink-0 rounded border flex items-center justify-center transition-colors"
-                  :class="visibleCols[col.key]
-                    ? 'bg-brand-500 border-brand-500'
-                    : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600'"
-                >
-                  <Check v-if="visibleCols[col.key]" class="size-3 text-white" :stroke-width="3" />
-                </span>
-                <span class="text-sm text-surface-700 dark:text-surface-300 group-hover:text-surface-900 dark:group-hover:text-surface-100 transition-colors">
-                  {{ col.label }}
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div class="border-t border-surface-100 dark:border-surface-800" />
-
-          <!-- Filter by status -->
-          <div>
-            <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wide mb-2">Filter by Status</p>
-            <div class="space-y-1.5">
-              <label
-                v-for="s in STATUS_OPTIONS"
-                :key="s"
-                class="flex items-center gap-2.5 cursor-pointer select-none group"
-              >
-                <input type="checkbox" class="sr-only" :checked="selectedStatuses.includes(s)" @change="toggleStatus(s)" />
-                <span
-                  class="size-4 shrink-0 rounded border flex items-center justify-center transition-colors"
-                  :class="selectedStatuses.includes(s)
-                    ? 'bg-brand-500 border-brand-500'
-                    : 'bg-white dark:bg-surface-800 border-surface-300 dark:border-surface-600'"
-                >
-                  <Check v-if="selectedStatuses.includes(s)" class="size-3 text-white" :stroke-width="3" />
-                </span>
-                <span
-                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
-                  :class="statusBadgeClasses[s]"
-                >
-                  {{ statusLabels[s] }}
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div class="border-t border-surface-100 dark:border-surface-800" />
-
-          <!-- Score range -->
-          <div>
-            <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wide mb-2">Score Range</p>
-            <div class="flex items-center gap-2">
-              <input
-                v-model.number="scoreMin"
-                type="number"
-                min="0"
-                max="100"
-                placeholder="Min"
-                class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-              <span class="text-surface-400 text-xs shrink-0">to</span>
-              <input
-                v-model.number="scoreMax"
-                type="number"
-                min="0"
-                max="100"
-                placeholder="Max"
-                class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-            </div>
-          </div>
-
-          <!-- Clear -->
           <button
-            v-if="activeFilterCount > 0"
-            class="inline-flex items-center gap-1.5 text-xs text-surface-400 hover:text-danger-600 transition-colors"
-            @click="clearFilters"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+            :class="!activeJobId ? 'text-brand-600 font-medium' : 'text-surface-700 dark:text-surface-300'"
+            @click="activeJobId = undefined; jobDropdownOpen = false"
           >
-            <X class="size-3" />
-            Clear filters
+            All jobs
+          </button>
+          <button
+            v-for="j in uniqueJobs"
+            :key="j.id"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors truncate"
+            :class="activeJobId === j.id ? 'text-brand-600 font-medium' : 'text-surface-700 dark:text-surface-300'"
+            @click="activeJobId = j.id; jobDropdownOpen = false"
+          >
+            {{ j.title }}
           </button>
         </div>
       </div>
 
-      <!-- Active filter pills -->
-      <template v-if="selectedStatuses.length > 0">
-        <span
-          v-for="s in selectedStatuses"
+      <!-- Status filter tabs -->
+      <div class="flex items-center gap-1">
+        <button
+          class="rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
+          :class="!activeStatus
+            ? 'bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900'
+            : 'bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'"
+          @click="activeStatus = undefined"
+        >
+          All
+        </button>
+        <button
+          v-for="s in STATUS_OPTIONS"
           :key="s"
-          class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium capitalize cursor-pointer"
-          :class="statusBadgeClasses[s]"
-          @click="toggleStatus(s as Status)"
+          class="rounded-full px-3 py-1.5 text-xs font-medium capitalize transition-colors"
+          :class="activeStatus === s
+            ? 'bg-surface-900 text-white dark:bg-surface-100 dark:text-surface-900'
+            : 'bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'"
+          @click="activeStatus = activeStatus === s ? undefined : s"
         >
           {{ statusLabels[s] }}
-          <X class="size-2.5" />
-        </span>
-      </template>
-      <span
-        v-if="scoreMin != null || scoreMax != null"
-        class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 cursor-pointer"
-        @click="scoreMin = undefined; scoreMax = undefined"
+        </button>
+      </div>
+
+      <!-- Clear all -->
+      <button
+        v-if="hasActiveFilters"
+        class="inline-flex items-center gap-1 text-xs text-surface-400 hover:text-danger-600 transition-colors ml-auto"
+        @click="clearAllFilters"
       >
-        Score {{ scoreMin ?? '0' }}–{{ scoreMax ?? '100' }}
-        <X class="size-2.5" />
-      </span>
+        <X class="size-3" />
+        Clear filters
+      </button>
+    </div>
+
+    <!-- Results bar -->
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide">
+        {{ filteredApplications.length }} application{{ filteredApplications.length === 1 ? '' : 's' }}
+      </p>
+
+      <!-- Sort dropdown -->
+      <div ref="sortDropdownRef" class="relative">
+        <button
+          class="inline-flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
+          @click="sortDropdownOpen = !sortDropdownOpen"
+        >
+          {{ activeSortLabel }}
+          <ChevronDown class="size-3" />
+        </button>
+        <div
+          v-if="sortDropdownOpen"
+          class="absolute right-0 top-full mt-1 z-20 w-48 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-lg py-1"
+        >
+          <button
+            v-for="opt in sortOptions"
+            :key="opt.value"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+            :class="activeSort === opt.value ? 'text-brand-600 font-medium' : 'text-surface-700 dark:text-surface-300'"
+            @click="activeSort = opt.value; sortDropdownOpen = false"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
+    <div v-if="fetchStatus === 'pending'" class="text-center py-16 text-surface-400">
       Loading applications…
     </div>
 
@@ -329,10 +347,10 @@ function clearFilters() {
       <button class="underline ml-1" @click="refresh()">Retry</button>
     </div>
 
-    <!-- Empty -->
+    <!-- Empty state -->
     <div
       v-else-if="applications.length === 0"
-      class="rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-12 text-center"
+      class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-16 text-center"
     >
       <FileText class="size-10 text-surface-300 dark:text-surface-600 mx-auto mb-3" />
       <h3 class="text-base font-semibold text-surface-700 dark:text-surface-200 mb-1">No applications yet</h3>
@@ -341,110 +359,89 @@ function clearFilters() {
       </p>
     </div>
 
-    <!-- Table -->
-    <div v-else class="rounded-lg border border-surface-200 dark:border-surface-800 overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-900">
-            <!-- Candidate always visible -->
-            <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
-              <button
-                class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors"
-                @click="toggleSort('candidate')"
-              >
-                Candidate
-                <ChevronUp v-if="sortKey === 'candidate' && sortDir === 'asc'" class="size-3" />
-                <ChevronDown v-else-if="sortKey === 'candidate' && sortDir === 'desc'" class="size-3" />
-                <ChevronsUpDown v-else class="size-3 opacity-40" />
-              </button>
-            </th>
-            <th v-if="visibleCols.job" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
-              <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('job')">
-                Job
-                <ChevronUp v-if="sortKey === 'job' && sortDir === 'asc'" class="size-3" />
-                <ChevronDown v-else-if="sortKey === 'job' && sortDir === 'desc'" class="size-3" />
-                <ChevronsUpDown v-else class="size-3 opacity-40" />
-              </button>
-            </th>
-            <th v-if="visibleCols.score" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
-              <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('score')">
-                Score
-                <ChevronUp v-if="sortKey === 'score' && sortDir === 'asc'" class="size-3" />
-                <ChevronDown v-else-if="sortKey === 'score' && sortDir === 'desc'" class="size-3" />
-                <ChevronsUpDown v-else class="size-3 opacity-40" />
-              </button>
-            </th>
-            <th v-if="visibleCols.status" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
-              <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('status')">
-                Status
-                <ChevronUp v-if="sortKey === 'status' && sortDir === 'asc'" class="size-3" />
-                <ChevronDown v-else-if="sortKey === 'status' && sortDir === 'desc'" class="size-3" />
-                <ChevronsUpDown v-else class="size-3 opacity-40" />
-              </button>
-            </th>
-            <th v-if="visibleCols.createdAt" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
-              <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('createdAt')">
-                Applied
-                <ChevronUp v-if="sortKey === 'createdAt' && sortDir === 'asc'" class="size-3" />
-                <ChevronDown v-else-if="sortKey === 'createdAt' && sortDir === 'desc'" class="size-3" />
-                <ChevronsUpDown v-else class="size-3 opacity-40" />
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-surface-100 dark:divide-surface-800 bg-white dark:bg-surface-950">
-          <!-- No results after filtering -->
-          <tr v-if="sorted.length === 0">
-            <td
-              :colspan="1 + Object.values(visibleCols).filter(Boolean).length"
-              class="px-4 py-10 text-center text-sm text-surface-400"
-            >
-              No applications match the current filters.
-            </td>
-          </tr>
-          <tr
-            v-for="app in sorted"
-            :key="app.id"
-            class="hover:bg-surface-50 dark:hover:bg-surface-900 cursor-pointer transition-colors group"
-            @click="router.push(`/dashboard/applications/${app.id}`)"
-          >
-            <td class="px-4 py-3 font-medium text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors whitespace-nowrap">
-              {{ app.candidateFirstName }} {{ app.candidateLastName }}
-            </td>
-            <td v-if="visibleCols.job" class="px-4 py-3 text-surface-600 dark:text-surface-300 max-w-[220px] truncate">
-              {{ app.jobTitle }}
-            </td>
-            <td v-if="visibleCols.score" class="px-4 py-3">
-              <span
-                v-if="app.score != null"
-                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums"
-                :class="scoreClass(app.score)"
-              >
-                {{ app.score }}%
-              </span>
-              <span v-else class="text-surface-300 dark:text-surface-600 text-xs">—</span>
-            </td>
-            <td v-if="visibleCols.status" class="px-4 py-3">
-              <span
-                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
-                :class="statusBadgeClasses[app.status] ?? 'bg-surface-100 text-surface-600'"
-              >
-                {{ app.status }}
-              </span>
-            </td>
-            <td v-if="visibleCols.createdAt" class="px-4 py-3 text-surface-400 whitespace-nowrap text-xs">
-              {{ timeAgo(app.createdAt) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- No results after filtering -->
+    <div
+      v-else-if="filteredApplications.length === 0"
+      class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-12 text-center"
+    >
+      <Search class="size-8 text-surface-300 dark:text-surface-600 mx-auto mb-3" />
+      <h3 class="text-base font-semibold text-surface-700 dark:text-surface-200 mb-1">No matching applications</h3>
+      <p class="text-sm text-surface-500 dark:text-surface-400 mb-3">
+        Try adjusting your search or filters.
+      </p>
+      <button
+        class="text-sm text-brand-600 hover:text-brand-700 font-medium transition-colors"
+        @click="clearAllFilters"
+      >
+        Clear all filters
+      </button>
+    </div>
 
-      <!-- Footer -->
-      <div class="px-4 py-3 border-t border-surface-100 dark:border-surface-800 bg-surface-50 dark:bg-surface-900">
-        <p class="text-xs text-surface-400">
-          {{ sorted.length }} of {{ total }} application{{ total === 1 ? '' : 's' }}
-        </p>
-      </div>
+    <!-- Application cards -->
+    <div v-else class="space-y-2">
+      <NuxtLink
+        v-for="app in filteredApplications"
+        :key="app.id"
+        :to="`/dashboard/applications/${app.id}`"
+        class="flex items-start gap-4 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-4 py-4 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm transition-all group"
+      >
+        <!-- Avatar -->
+        <div
+          class="size-10 shrink-0 rounded-full flex items-center justify-center text-sm font-semibold select-none"
+          :class="initialsColor(`${app.candidateFirstName} ${app.candidateLastName}`)"
+        >
+          {{ candidateInitials(app.candidateFirstName, app.candidateLastName) }}
+        </div>
+
+        <!-- Info -->
+        <div class="min-w-0 flex-1">
+          <!-- Row 1: name + badges -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors truncate">
+              {{ app.candidateFirstName }} {{ app.candidateLastName }}
+            </h3>
+            <!-- Status badge -->
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium capitalize"
+              :class="statusBadgeClasses[app.status] ?? 'bg-surface-100 text-surface-600'"
+            >
+              <span class="size-1.5 rounded-full" :class="statusDotClasses[app.status] ?? 'bg-surface-400'" />
+              {{ statusLabels[app.status as Status] ?? app.status }}
+            </span>
+            <!-- Score badge -->
+            <span
+              v-if="app.score != null"
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ring-1 ring-inset"
+              :class="scoreClass(app.score)"
+            >
+              {{ app.score }}%
+            </span>
+          </div>
+
+          <!-- Row 2: job title -->
+          <div class="flex items-center gap-1.5 mt-1 text-sm text-surface-600 dark:text-surface-300">
+            <Briefcase class="size-3.5 shrink-0 text-surface-400" />
+            <span class="truncate">{{ app.jobTitle }}</span>
+          </div>
+
+          <!-- Row 3: email + time -->
+          <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-400">
+            <span class="inline-flex items-center gap-1">
+              <Mail class="size-3" />
+              {{ app.candidateEmail }}
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <Clock class="size-3" />
+              {{ timeAgo(app.createdAt) }}
+            </span>
+          </div>
+        </div>
+      </NuxtLink>
+
+      <!-- Footer count -->
+      <p class="text-xs text-surface-400 pt-2">
+        Showing {{ filteredApplications.length }} of {{ total }} application{{ total === 1 ? '' : 's' }}
+      </p>
     </div>
   </div>
 </template>

@@ -6,6 +6,22 @@ import * as schema from '../database/schema'
 type Auth = ReturnType<typeof betterAuth>
 let _auth: Auth | undefined
 
+function resolveTrustedOrigins(baseUrl: string): string[] {
+  const configuredOrigins = env.BETTER_AUTH_TRUSTED_ORIGINS
+  const baseOrigin = new URL(baseUrl)
+  const isLocalBase = baseOrigin.hostname === 'localhost' || baseOrigin.hostname === '127.0.0.1'
+  const defaultDevOrigins = (import.meta.dev || isLocalBase)
+    ? [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+      ]
+    : []
+
+  return Array.from(new Set([baseOrigin.origin, ...configuredOrigins, ...defaultDevOrigins]))
+}
+
 function resolveBetterAuthUrl(): string {
   const explicitUrl = env.BETTER_AUTH_URL?.trim()
   const railwayDomain = env.RAILWAY_PUBLIC_DOMAIN?.trim()
@@ -21,17 +37,18 @@ function resolveBetterAuthUrl(): string {
     return explicitUrl
   }
 
-  const prNumber = env.RAILWAY_GIT_PR_NUMBER?.trim()
-  if (prNumber) {
-    const previewUrl = `https://applirank-applirank-pr-${prNumber}.up.railway.app`
-    console.info(`[Applirank] Using Railway PR-derived BETTER_AUTH_URL: ${previewUrl}`)
-    return previewUrl
-  }
-
   if (railwayDomain) {
     const previewUrl = `https://${railwayDomain}`
     console.info(`[Applirank] Using Railway public-domain BETTER_AUTH_URL: ${previewUrl}`)
     return previewUrl
+  }
+
+  const prNumber = env.RAILWAY_GIT_PR_NUMBER?.trim()
+  if (prNumber) {
+    console.warn(
+      `[Applirank] Railway PR number detected (${prNumber}) but RAILWAY_PUBLIC_DOMAIN is missing. ` +
+      'Set BETTER_AUTH_URL explicitly or ensure Railway generated domains are enabled.',
+    )
   }
 
   if (explicitUrl) {
@@ -52,8 +69,11 @@ function resolveBetterAuthUrl(): string {
  */
 function getAuth(): Auth {
   if (!_auth) {
+    const baseURL = resolveBetterAuthUrl()
+
     _auth = betterAuth({
-      baseURL: resolveBetterAuthUrl(),
+      baseURL,
+      trustedOrigins: resolveTrustedOrigins(baseURL),
       database: drizzleAdapter(db, {
         provider: 'pg',
         schema,

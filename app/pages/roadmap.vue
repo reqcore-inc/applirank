@@ -404,6 +404,12 @@ const upcomingItems = computed(() => items.filter(item => item.status !== 'shipp
             Roadmap
           </NuxtLink>
           <NuxtLink
+            to="/catalog"
+            class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:inline-flex"
+          >
+            Features
+          </NuxtLink>
+          <NuxtLink
             to="/blog"
             class="hidden rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:inline-flex"
           >

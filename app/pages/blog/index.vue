@@ -39,6 +39,7 @@ const { data: posts } = await useAsyncData('blog-posts', () =>
         <NuxtLink to="/" class="text-[15px] font-semibold tracking-tight">Applirank</NuxtLink>
         <div class="flex items-center gap-5 text-[13px] text-white/60">
           <NuxtLink to="/roadmap" class="transition hover:text-white">Roadmap</NuxtLink>
+          <NuxtLink to="/catalog" class="transition hover:text-white">Features</NuxtLink>
           <NuxtLink to="/blog" class="text-white transition">Blog</NuxtLink>
           <a
             href="https://github.com/joachimhorsworthy/applirank"

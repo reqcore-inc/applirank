@@ -70,6 +70,10 @@ export default defineNuxtConfig({
         || 'demo1234',
       /** Whether in-app feedback via GitHub Issues is enabled */
       feedbackEnabled: !!(process.env.GITHUB_FEEDBACK_TOKEN && process.env.GITHUB_FEEDBACK_REPO),
+      /** Giscus GitHub repository node ID (required for the comments widget) */
+      giscusRepoId: process.env.NUXT_PUBLIC_GISCUS_REPO_ID || '',
+      /** Giscus GitHub Discussions category node ID (required for the comments widget) */
+      giscusCategoryId: process.env.NUXT_PUBLIC_GISCUS_CATEGORY_ID || '',
     },
   },
 
@@ -120,6 +124,7 @@ export default defineNuxtConfig({
     '/roadmap': { prerender: true },
     '/blog': { prerender: true },
     '/blog/**': { prerender: true },
+    '/catalog': { prerender: true },
     '/jobs': { isr: 3600 },
     '/jobs/**': { isr: 3600 },
   },

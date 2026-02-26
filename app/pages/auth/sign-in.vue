@@ -43,7 +43,7 @@ async function handleSignIn() {
     return
   }
 
-  await navigateTo('/dashboard')
+  await navigateTo('/dashboard', { external: true })
 }
 </script>
 

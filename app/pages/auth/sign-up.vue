@@ -49,7 +49,7 @@ async function handleSignUp() {
     return
   }
 
-  await navigateTo('/onboarding/create-org')
+  await navigateTo('/onboarding/create-org', { external: true })
 }
 </script>
 

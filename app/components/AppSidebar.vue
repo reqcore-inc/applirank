@@ -18,7 +18,7 @@ const userEmail = computed(() => session.value?.user?.email ?? '')
 async function handleSignOut() {
   isSigningOut.value = true
   await authClient.signOut()
-  await navigateTo('/auth/sign-in')
+  await navigateTo('/auth/sign-in', { external: true })
 }
 
 const navItems = [

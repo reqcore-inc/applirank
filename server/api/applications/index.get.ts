@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
   const where = and(...conditions)
 
-  const [data, total] = await Promise.all([
+  const [data, countResult] = await Promise.all([
     db
       .select({
         id: application.id,
@@ -64,8 +64,15 @@ export default defineEventHandler(async (event) => {
       .orderBy(desc(application.createdAt))
       .limit(query.limit)
       .offset(offset),
-    db.$count(application, where),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(application)
+      .innerJoin(candidate, eq(candidate.id, application.candidateId))
+      .innerJoin(job, eq(job.id, application.jobId))
+      .where(where),
   ])
+
+  const total = countResult[0]?.count ?? 0
 
   return { data, total, page: query.page, limit: query.limit }
 })

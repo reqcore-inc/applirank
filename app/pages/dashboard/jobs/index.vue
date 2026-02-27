@@ -16,11 +16,13 @@ const router = useRouter()
 
 // Sync statusFilter with ?status= query param
 const validStatuses = ['draft', 'open', 'closed', 'archived'] as const
-const initialStatus = validStatuses.includes(route.query.status as any)
-  ? (route.query.status as string)
-  : undefined
-const statusFilter = ref<string | undefined>(initialStatus)
+type Status = (typeof validStatuses)[number]
 
+const isValidStatus = (value: unknown): value is Status =>
+  typeof value === 'string' && (validStatuses as readonly string[]).includes(value)
+
+const initialStatus = isValidStatus(route.query.status) ? route.query.status : undefined
+const statusFilter = ref<Status | undefined>(initialStatus)
 // Sync viewMode with ?view= query param
 const initialView = route.query.view === 'gallery' ? 'gallery' : 'list'
 const viewMode = ref<'list' | 'gallery'>(initialView)

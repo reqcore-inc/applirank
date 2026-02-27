@@ -4,5 +4,27 @@
     "selectLanguage": "Chọn ngôn ngữ",
     "save": "Lưu",
     "cancel": "Hủy"
+  },
+  "home": {
+    "nav": {
+      "features": "Features",
+      "openPositions": "Open Positions",
+      "roadmap": "Roadmap",
+      "blog": "Blog",
+      "github": "GitHub",
+      "dashboard": "Dashboard",
+      "logIn": "Log in",
+      "signUp": "Sign up"
+    },
+    "badge": "Open Source and Self-Hosted",
+    "hero": {
+      "titleLine1": "The hiring system",
+      "titleHighlight": "you actually own",
+      "subtitleLine1": "Purpose-built for recruiting teams who refuse per-seat pricing.",
+      "subtitleLine2": "Designed for the self-hosted era.",
+      "ctaDemo": "Try live demo",
+      "ctaStart": "Get started free",
+      "hint": "No sign-up needed - instant access with sample data"
+    }
   }
 }

@@ -4,5 +4,27 @@
     "selectLanguage": "Velg språk",
     "save": "Lagre",
     "cancel": "Avbryt"
+  },
+  "home": {
+    "nav": {
+      "features": "Funksjoner",
+      "openPositions": "Åpne stillinger",
+      "roadmap": "Fremdriftsplan",
+      "blog": "Blogg",
+      "github": "GitHub",
+      "dashboard": "Kontrollpanel",
+      "logIn": "Logg inn",
+      "signUp": "Registrer deg"
+    },
+    "badge": "Åpen kildekode og egendrift",
+    "hero": {
+      "titleLine1": "Rekrutteringssystemet",
+      "titleHighlight": "du faktisk eier",
+      "subtitleLine1": "Formål bygget for rekruttering av grupper som nekter pris per sete.",
+      "subtitleLine2": "Designet for den selvbetjente eraen.",
+      "ctaDemo": "Prøv live demo",
+      "ctaStart": "Kom i gang gratis",
+      "hint": "Ingen registrering nødvendig - enkel tilgang med eksempeldata"
+    }
   }
 }

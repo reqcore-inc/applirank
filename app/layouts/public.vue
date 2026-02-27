@@ -6,6 +6,7 @@
         <NuxtLink :to="$localePath('/')" class="text-lg font-bold text-surface-900 dark:text-surface-100">
           Reqcore
         </NuxtLink>
+        <LanguageSwitcher />
       </div>
     </header>
 

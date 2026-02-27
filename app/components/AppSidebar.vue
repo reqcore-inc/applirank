@@ -96,6 +96,10 @@ function isActiveTab(to: string, exact: boolean) {
         <span class="text-lg font-bold text-surface-900 dark:text-surface-100">Reqcore</span>
       </NuxtLink>
 
+      <div class="px-2">
+        <LanguageSwitcher />
+      </div>
+
       <!-- Org Switcher -->
       <div>
         <OrgSwitcher />

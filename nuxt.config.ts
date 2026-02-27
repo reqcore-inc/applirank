@@ -10,6 +10,7 @@ const i18nLocales = [
   { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
   { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
   { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json' },
+  { code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json' },
 ]
 
 const localizedPublicRouteRules = Object.fromEntries(

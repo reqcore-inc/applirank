@@ -7,24 +7,24 @@
   },
   "home": {
     "nav": {
-      "features": "Features",
-      "openPositions": "Open Positions",
-      "roadmap": "Roadmap",
-      "blog": "Blog",
+      "features": "Funksjoner",
+      "openPositions": "Åpne stillinger",
+      "roadmap": "Fremdriftsplan",
+      "blog": "Blogg",
       "github": "GitHub",
-      "dashboard": "Dashboard",
-      "logIn": "Log in",
-      "signUp": "Sign up"
+      "dashboard": "Kontrollpanel",
+      "logIn": "Logg inn",
+      "signUp": "Registrer deg"
     },
-    "badge": "Open Source and Self-Hosted",
+    "badge": "Åpen kildekode og egendrift",
     "hero": {
-      "titleLine1": "The hiring system",
-      "titleHighlight": "you actually own",
-      "subtitleLine1": "Purpose-built for recruiting teams who refuse per-seat pricing.",
-      "subtitleLine2": "Designed for the self-hosted era.",
-      "ctaDemo": "Try live demo",
-      "ctaStart": "Get started free",
-      "hint": "No sign-up needed - instant access with sample data"
+      "titleLine1": "Rekrutteringssystemet",
+      "titleHighlight": "du faktisk eier",
+      "subtitleLine1": "Formål bygget for rekruttering av grupper som nekter pris per sete.",
+      "subtitleLine2": "Designet for den selvbetjente eraen.",
+      "ctaDemo": "Prøv live demo",
+      "ctaStart": "Kom i gang gratis",
+      "hint": "Ingen registrering nødvendig - enkel tilgang med eksempeldata"
     }
   }
 }

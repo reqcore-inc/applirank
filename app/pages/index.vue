@@ -73,6 +73,14 @@ useHead({
   bodyAttrs: {
     style: 'background-color: #09090b;',
   },
+  link: [
+    {
+      rel: 'preload',
+      as: 'image',
+      href: '/eagle-mascot-logo-128.png',
+      fetchpriority: 'high',
+    },
+  ],
 })
 
 // ─── Scroll-triggered fade-in refs ───────────────────
@@ -91,7 +99,16 @@ const ctaRef = useScrollFade()
     <nav class="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#09090b]/80 backdrop-blur-xl">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <NuxtLink :to="$localePath('/')" class="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-white">
-          <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-7 w-7 object-contain" />
+          <img
+            src="/eagle-mascot-logo-128.png"
+            alt="Reqcore mascot"
+            width="28"
+            height="28"
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
+            class="h-7 w-7 object-contain"
+          />
           Reqcore
         </NuxtLink>
 
@@ -714,7 +731,7 @@ const ctaRef = useScrollFade()
 
           <!-- Separator + attribution -->
           <div class="mt-8 flex items-center gap-4 border-t border-white/[0.06] pt-8">
-            <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-10 w-10 object-contain" />
+            <img src="/eagle-mascot-logo-128.png" alt="Reqcore mascot" class="h-10 w-10 object-contain" />
             <div>
               <div class="text-sm font-semibold text-white">The Reqcore Team</div>
               <div class="text-[13px] text-surface-500">Building the open-source applicant tracking system</div>
@@ -1291,7 +1308,7 @@ const ctaRef = useScrollFade()
       <div class="relative mx-auto max-w-3xl px-6 text-center">
         <div class="mb-8 flex justify-center">
           <img
-            src="/eagle-mascot-logo.png"
+            src="/eagle-mascot-logo-128.png"
             alt="Reqcore mascot"
             class="h-20 w-20 object-contain drop-shadow-[0_0_40px_rgba(59,130,246,0.5)]"
           />
@@ -1328,7 +1345,7 @@ const ctaRef = useScrollFade()
     <footer class="border-t border-white/[0.06] py-8">
       <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
         <div class="flex items-center gap-2 text-[13px] text-surface-500">
-          <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-5 w-5 object-contain" />
+          <img src="/eagle-mascot-logo-128.png" alt="Reqcore mascot" class="h-5 w-5 object-contain" />
           &copy; {{ new Date().getFullYear() }} Reqcore. Open source under AGPL-3.0.
         </div>
         <div class="flex gap-6 text-[13px] text-surface-500">

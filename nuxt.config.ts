@@ -10,6 +10,7 @@ const i18nLocales = [
   { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json' },
   { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json' },
   { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json' },
+  { code: 'nb', language: 'nb-NO', name: 'Norsk Bokmål', file: 'nb.json' },
   { code: 'vi', language: 'vi-VN', name: 'Tiếng Việt', file: 'vi.json' },
 ]
 

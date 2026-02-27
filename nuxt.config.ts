@@ -38,6 +38,8 @@ export default defineNuxtConfig({
       titleTemplate: '%s — Reqcore',
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', href: '/raccoon-reqcore-mascot.png' },
+        { rel: 'apple-touch-icon', href: '/raccoon-reqcore-mascot.png' },
       ],
       meta: [
         { name: 'theme-color', content: '#09090b' },
@@ -105,7 +107,7 @@ export default defineNuxtConfig({
       name: 'Reqcore',
       url: 'https://reqcore.com',
       logo: 'https://reqcore.com/og-image.png',
-      sameAs: ['https://github.com/reqcore/reqcore'],
+      sameAs: ['https://github.com/reqcore-inc/reqcore'],
     },
   },
 

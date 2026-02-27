@@ -42,7 +42,7 @@ const { data: posts } = await useAsyncData('blog-posts', () =>
           <NuxtLink to="/catalog" class="transition hover:text-white">Features</NuxtLink>
           <NuxtLink to="/blog" class="text-white transition">Blog</NuxtLink>
           <a
-            href="https://github.com/joachimhorsworthy/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             class="transition hover:text-white"
           >
@@ -140,7 +140,7 @@ const { data: posts } = await useAsyncData('blog-posts', () =>
           <NuxtLink to="/" class="transition hover:text-white/60">Home</NuxtLink>
           <NuxtLink to="/roadmap" class="transition hover:text-white/60">Roadmap</NuxtLink>
           <a
-            href="https://github.com/joachimhorsworthy/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             class="transition hover:text-white/60"
           >

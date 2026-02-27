@@ -416,7 +416,7 @@ const upcomingItems = computed(() => items.filter(item => item.status !== 'shipp
             Blog
           </NuxtLink>
           <a
-            href="https://github.com/reqcore/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             rel="noopener noreferrer"
             class="hidden items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:flex"
@@ -609,7 +609,7 @@ const upcomingItems = computed(() => items.filter(item => item.status !== 'shipp
 
             <div class="flex flex-1 flex-col items-center justify-center p-10 text-center">
               <a
-                href="https://github.com/reqcore/reqcore"
+                href="https://github.com/reqcore-inc/reqcore"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-1.5 text-[13px] font-medium text-surface-300 transition hover:border-white/[0.15] hover:bg-white/[0.06]"
@@ -771,7 +771,7 @@ const upcomingItems = computed(() => items.filter(item => item.status !== 'shipp
           </p>
           <div class="mt-6 flex flex-col gap-3 sm:flex-row">
             <a
-              href="https://github.com/reqcore/reqcore/issues"
+              href="https://github.com/reqcore-inc/reqcore/issues"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-[13px] font-semibold text-[#09090b] shadow-[0_0_20px_rgba(255,255,255,0.08)] transition hover:bg-white/90"

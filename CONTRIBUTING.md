@@ -11,7 +11,7 @@ Thanks for contributing to Reqcore.
 ## Development Setup
 
 ```bash
-git clone https://github.com/reqcore/reqcore.git
+git clone https://github.com/reqcore-inc/reqcore.git
 cd reqcore
 cp .env.example .env
 docker compose up -d

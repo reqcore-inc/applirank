@@ -4,7 +4,7 @@
 
 **The open-source ATS you own. No per-seat fees. No data lock-in. No secret algorithms.**
 
-[Live Demo](https://demo.reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore/reqcore/issues/new)
+[Live Demo](https://demo.reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
@@ -75,11 +75,11 @@ You should see something like `Docker version 27.x.x`. If you get `command not f
 Clone the repository (this downloads the source code):
 
 ```bash
-git clone https://github.com/reqcore/reqcore.git
+git clone https://github.com/reqcore-inc/reqcore.git
 cd reqcore
 ```
 
-> Don't have `git`? [Download it here](https://git-scm.com/downloads), or [download a ZIP](https://github.com/reqcore/reqcore/archive/refs/heads/main.zip) and unzip it manually.
+> Don't have `git`? [Download it here](https://git-scm.com/downloads), or [download a ZIP](https://github.com/reqcore-inc/reqcore/archive/refs/heads/main.zip) and unzip it manually.
 
 ---
 

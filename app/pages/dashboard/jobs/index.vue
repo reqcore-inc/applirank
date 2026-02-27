@@ -11,8 +11,28 @@ useSeoMeta({
   description: 'Manage your job postings',
 })
 
-const statusFilter = ref<string | undefined>(undefined)
-const viewMode = ref<'list' | 'gallery'>('list')
+const route = useRoute()
+const router = useRouter()
+
+// Sync statusFilter with ?status= query param
+const validStatuses = ['draft', 'open', 'closed', 'archived'] as const
+const initialStatus = validStatuses.includes(route.query.status as any)
+  ? (route.query.status as string)
+  : undefined
+const statusFilter = ref<string | undefined>(initialStatus)
+
+// Sync viewMode with ?view= query param
+const initialView = route.query.view === 'gallery' ? 'gallery' : 'list'
+const viewMode = ref<'list' | 'gallery'>(initialView)
+
+// Keep URL in sync when statusFilter or viewMode change
+watch([statusFilter, viewMode], ([newStatus, newView]) => {
+  const query: Record<string, string> = {}
+  if (newStatus) query.status = newStatus
+  if (newView !== 'list') query.view = newView
+  router.replace({ query })
+})
+
 const { jobs, total, fetchStatus, error, refresh } = useJobs({ status: statusFilter })
 
 const statusTabs = [

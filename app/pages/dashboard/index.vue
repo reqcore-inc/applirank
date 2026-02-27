@@ -264,7 +264,15 @@ const isEmpty = computed(() =>
         <!-- Pipeline breakdown -->
         <div class="lg:col-span-2 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-6">
           <div class="flex items-center justify-between mb-5">
-            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Pipeline Overview</h2>
+            <div class="flex items-center gap-3">
+              <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Pipeline Overview</h2>
+              <span
+                v-if="pipelineTotal > 0"
+                class="inline-flex items-center rounded-full bg-surface-100 dark:bg-surface-800 px-2.5 py-0.5 text-xs font-semibold text-surface-600 dark:text-surface-300"
+              >
+                {{ pipelineTotal }} total
+              </span>
+            </div>
             <NuxtLink
               to="/dashboard/applications"
               class="text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors no-underline"
@@ -273,42 +281,62 @@ const isEmpty = computed(() =>
             </NuxtLink>
           </div>
 
-          <!-- Pipeline bar -->
+          <!-- Pipeline content -->
           <div v-if="pipelineTotal > 0">
-            <div class="flex h-3 rounded-full overflow-hidden bg-surface-100 dark:bg-surface-800 mb-4">
+            <!-- Segmented progress bar -->
+            <div class="flex h-4 rounded-lg overflow-hidden bg-surface-100 dark:bg-surface-800 mb-6 gap-0.5">
               <NuxtLink
                 v-for="segment in pipelineSegments"
                 :key="segment.status"
                 :to="`/dashboard/applications?status=${segment.status}`"
-                :title="`${segment.label}: ${segment.count}`"
-                class="transition-all hover:opacity-80 no-underline"
+                :title="`${segment.label}: ${segment.count} (${segment.pct}%)`"
+                class="transition-all duration-200 hover:opacity-80 hover:scale-y-110 origin-center no-underline first:rounded-l-lg last:rounded-r-lg"
                 :class="segment.bg"
-                :style="{ width: `${Math.max(segment.pct, 2)}%` }"
+                :style="{ width: `${Math.max(segment.pct, 3)}%` }"
               />
             </div>
 
-            <!-- Legend -->
-            <div class="flex flex-wrap gap-x-5 gap-y-2">
+            <!-- Stage cards grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <NuxtLink
                 v-for="(config, status) in applicationStatusConfig"
                 :key="status"
                 :to="`/dashboard/applications?status=${status}`"
-                class="inline-flex items-center gap-2 text-xs no-underline group/legend"
+                class="group/stage relative rounded-lg border border-surface-100 dark:border-surface-800 p-3 hover:border-surface-300 dark:hover:border-surface-600 hover:shadow-sm transition-all no-underline"
               >
-                <span class="size-2.5 rounded-full shrink-0" :class="config.bg" />
-                <span class="text-surface-500 dark:text-surface-400 group-hover/legend:text-surface-700 dark:group-hover/legend:text-surface-200 transition-colors">
-                  {{ config.label }}
-                </span>
-                <span class="font-semibold text-surface-700 dark:text-surface-200">
-                  {{ (pipeline as Record<string, number>)[status] ?? 0 }}
-                </span>
+                <!-- Subtle top accent line -->
+                <div class="absolute inset-x-0 top-0 h-0.5 rounded-t-lg opacity-60 group-hover/stage:opacity-100 transition-opacity" :class="config.bg" />
+
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="rounded-md p-1.5 bg-surface-50 dark:bg-surface-800 group-hover/stage:bg-surface-100 dark:group-hover/stage:bg-surface-700 transition-colors">
+                    <component :is="config.icon" class="size-3.5" :class="config.color" />
+                  </span>
+                  <span class="text-xs font-medium text-surface-500 dark:text-surface-400 group-hover/stage:text-surface-700 dark:group-hover/stage:text-surface-200 transition-colors">
+                    {{ config.label }}
+                  </span>
+                </div>
+
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-lg font-bold text-surface-900 dark:text-surface-100">
+                    {{ (pipeline as Record<string, number>)[status] ?? 0 }}
+                  </span>
+                  <span
+                    v-if="pipelineTotal > 0"
+                    class="text-xs text-surface-400 dark:text-surface-500"
+                  >
+                    {{ Math.round(((pipeline as Record<string, number>)[status] ?? 0) / pipelineTotal * 100) }}%
+                  </span>
+                </div>
               </NuxtLink>
             </div>
           </div>
 
-          <div v-else class="text-center py-6">
-            <Inbox class="size-8 text-surface-300 dark:text-surface-600 mx-auto mb-2" />
-            <p class="text-sm text-surface-400 dark:text-surface-500">No applications in the pipeline yet.</p>
+          <div v-else class="text-center py-8">
+            <div class="rounded-full bg-surface-50 dark:bg-surface-800 p-3 w-fit mx-auto mb-3">
+              <Inbox class="size-6 text-surface-300 dark:text-surface-600" />
+            </div>
+            <p class="text-sm font-medium text-surface-500 dark:text-surface-400 mb-1">No applications yet</p>
+            <p class="text-xs text-surface-400 dark:text-surface-500">Applications will appear here as candidates apply.</p>
           </div>
         </div>
 

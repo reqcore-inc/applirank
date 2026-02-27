@@ -11,6 +11,7 @@ useSeoMeta({
   description: 'Manage applications across all jobs',
 })
 
+const route = useRoute()
 const router = useRouter()
 
 // ── Search ────────────────────────────────────────────────────────────────────
@@ -31,7 +32,26 @@ watch(searchInput, (val) => {
 const STATUS_OPTIONS = ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'] as const
 type Status = typeof STATUS_OPTIONS[number]
 
-const activeStatus = useState<Status | undefined>('app-filter-status', () => undefined)
+const initialAppStatus = STATUS_OPTIONS.includes(route.query.status as any)
+  ? (route.query.status as Status)
+  : undefined
+const activeStatus = useState<Status | undefined>('app-filter-status', () => initialAppStatus)
+// Ensure the state matches the URL on navigation (useState caches across client-side navigations)
+if (initialAppStatus !== undefined) {
+  activeStatus.value = initialAppStatus
+}
+
+// Sync the URL when the status filter changes
+watch(activeStatus, (newStatus) => {
+  const query = { ...route.query }
+  if (newStatus) {
+    query.status = newStatus
+  }
+  else {
+    delete query.status
+  }
+  router.replace({ query })
+})
 
 const statusFilter = computed(() => activeStatus.value)
 

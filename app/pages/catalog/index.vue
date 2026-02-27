@@ -243,7 +243,7 @@ const stats = computed(() => {
             Blog
           </NuxtLink>
           <a
-            href="https://github.com/reqcore/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             rel="noopener noreferrer"
             class="hidden items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white sm:flex"
@@ -538,7 +538,7 @@ const stats = computed(() => {
         <div class="flex items-center gap-2">
           <span>Open source on</span>
           <a
-            href="https://github.com/reqcore/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             class="inline-flex items-center gap-1 text-white/50 hover:text-white transition"
           >

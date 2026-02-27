@@ -42,9 +42,9 @@
     "tsx": "^4.21.0"
   },
   "overrides": {
-    "fast-xml-parser": "5.3.7",
+    "fast-xml-parser": "5.4.1",
     "tar": "7.5.9",
-    "minimatch": "10.2.2",
+    "minimatch": "10.2.4",
     "readdir-glob": "2.0.2",
     "rollup": ">=4.59.0",
     "esbuild": ">=0.25.0"

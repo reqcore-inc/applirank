@@ -2,7 +2,6 @@
 import {
   ArrowRight,
   Briefcase,
-  Database,
   ScanEye,
   UsersRound,
   ShieldCheck,
@@ -90,7 +89,7 @@ const ctaRef = useScrollFade()
     <nav class="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#09090b]/80 backdrop-blur-xl">
       <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <NuxtLink to="/" class="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-white">
-          <span class="flex h-7 w-7 items-center justify-center rounded-md bg-brand-500 text-xs font-black text-white">R</span>
+          <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-7 w-7 object-contain" />
           Reqcore
         </NuxtLink>
 
@@ -416,7 +415,7 @@ const ctaRef = useScrollFade()
             <div class="relative p-7 pb-4">
               <div class="mb-1 flex items-center gap-2.5">
                 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/10 text-brand-400 ring-1 ring-inset ring-brand-500/20">
-                  <Database class="h-4 w-4" :stroke-width="1.75" />
+                  <img src="/database-icon.png" alt="Database" class="h-4 w-4 object-contain" />
                 </div>
                 <h3 class="text-[15px] font-semibold text-white">Ownership over Access</h3>
               </div>
@@ -444,7 +443,7 @@ const ctaRef = useScrollFade()
                 <div class="overflow-hidden rounded-t-lg border border-b-0 border-white/[0.06] bg-white/[0.02]">
                   <div class="border-b border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
                     <div class="flex items-center gap-1.5">
-                      <Database class="h-2.5 w-2.5 text-brand-400" :stroke-width="2" />
+                      <img src="/database-icon.png" alt="Database" class="h-2.5 w-2.5 object-contain" />
                       <span class="text-[10px] font-semibold text-surface-300">candidates</span>
                     </div>
                   </div>
@@ -713,9 +712,7 @@ const ctaRef = useScrollFade()
 
           <!-- Separator + attribution -->
           <div class="mt-8 flex items-center gap-4 border-t border-white/[0.06] pt-8">
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">
-              R
-            </div>
+            <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-10 w-10 object-contain" />
             <div>
               <div class="text-sm font-semibold text-white">The Reqcore Team</div>
               <div class="text-[13px] text-surface-500">Building the open-source applicant tracking system</div>
@@ -1126,7 +1123,7 @@ const ctaRef = useScrollFade()
             <div class="tech-card-border" />
             <div class="relative flex items-start gap-4 p-6">
               <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#336791]/10 ring-1 ring-inset ring-[#336791]/20 transition-all duration-300 group-hover:bg-[#336791]/15 group-hover:ring-[#336791]/30 group-hover:shadow-[0_0_20px_rgba(51,103,145,0.1)]">
-                <Database class="h-5 w-5 text-[#5B9BD5]" :stroke-width="1.5" />
+                <img src="/database-icon.png" alt="Database" class="h-5 w-5 object-contain" />
               </div>
               <div class="min-w-0">
                 <h3 class="text-[15px] font-semibold text-white">PostgreSQL</h3>
@@ -1290,6 +1287,13 @@ const ctaRef = useScrollFade()
       </div>
 
       <div class="relative mx-auto max-w-3xl px-6 text-center">
+        <div class="mb-8 flex justify-center">
+          <img
+            src="/eagle-mascot-logo.png"
+            alt="Reqcore mascot"
+            class="h-20 w-20 object-contain drop-shadow-[0_0_40px_rgba(59,130,246,0.5)]"
+          />
+        </div>
         <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
           Ready to own your hiring pipeline?
         </h2>
@@ -1322,7 +1326,7 @@ const ctaRef = useScrollFade()
     <footer class="border-t border-white/[0.06] py-8">
       <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
         <div class="flex items-center gap-2 text-[13px] text-surface-500">
-          <span class="flex h-5 w-5 items-center justify-center rounded bg-brand-500 text-[9px] font-black text-white">R</span>
+          <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="h-5 w-5 object-contain" />
           &copy; {{ new Date().getFullYear() }} Reqcore. Open source under AGPL-3.0.
         </div>
         <div class="flex gap-6 text-[13px] text-surface-500">

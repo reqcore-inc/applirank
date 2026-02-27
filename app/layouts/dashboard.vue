@@ -28,7 +28,7 @@ const isDemo = computed(() => {
         <span>
           <strong>Preview mode</strong> — You're exploring with sample data in read-only mode. Changes are disabled.
           <a
-            href="https://github.com/reqcore/reqcore"
+            href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
             rel="noopener noreferrer"
             class="ml-1 font-semibold underline decoration-brand-400/40 underline-offset-2 hover:decoration-brand-400"

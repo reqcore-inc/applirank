@@ -54,7 +54,7 @@ function closeModal() {
             </a>
 
             <a
-              href="https://github.com/reqcore/reqcore"
+              href="https://github.com/reqcore-inc/reqcore"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center rounded-lg border border-surface-300 px-3 py-2 text-sm font-medium text-surface-700 transition-colors hover:bg-surface-50 dark:border-surface-700 dark:text-surface-200 dark:hover:bg-surface-800"

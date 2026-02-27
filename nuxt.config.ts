@@ -59,10 +59,18 @@ export default defineNuxtConfig({
       /** When set, the dashboard shows a read-only demo banner for this org slug */
       demoOrgSlug: process.env.DEMO_ORG_SLUG || (isRailwayPreview ? 'reqcore-demo' : ''),
       /** Public live-demo account email used to prefill sign-in */
-      liveDemoEmail:
-        process.env.LIVE_DEMO_EMAIL
-        || process.env.DEMO_EMAIL
-        || 'demo@reqcore.com',
+      liveDemoEmail: (() => {
+        const email =
+          process.env.LIVE_DEMO_EMAIL
+          || process.env.DEMO_EMAIL
+          || 'demo@reqcore.com'
+        // Guard against stale applirank.com domain from old env vars
+        if (email.endsWith('@applirank.com')) {
+          console.warn('[config] Stale demo email detected (applirank.com domain) — falling back to demo@reqcore.com')
+          return 'demo@reqcore.com'
+        }
+        return email
+      })(),
       /** Public URL for hosted plan upsell CTA shown in preview mode modals */
       hostedPlanUrl: process.env.NUXT_PUBLIC_HOSTED_PLAN_URL || 'https://reqcore.com',
       /** Public live-demo secret used to prefill sign-in */

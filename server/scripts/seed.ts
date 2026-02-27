@@ -50,6 +50,10 @@ const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? 'demo1234'
 const DEMO_ORG_NAME = 'Reqcore Demo'
 const DEMO_ORG_SLUG = 'reqcore-demo'
 
+// Legacy values from the old applirank.com domain — cleaned up on seed
+const LEGACY_DEMO_EMAIL = 'demo@applirank.com'
+const LEGACY_ORG_SLUG = 'applirank-demo'
+
 // ─────────────────────────────────────────────
 // Database connection
 // ─────────────────────────────────────────────
@@ -357,6 +361,38 @@ function generateResponses(jobIndex: number, candidateIndex: number): Record<str
 
 async function seed() {
   console.log('🌱 Seeding Reqcore demo data...\n')
+
+  // ─────────────────────────────────────────────
+  // Clean up legacy applirank.com seed data
+  // ─────────────────────────────────────────────
+  const [legacyOrg] = await db
+    .select({ id: schema.organization.id })
+    .from(schema.organization)
+    .where(eq(schema.organization.slug, LEGACY_ORG_SLUG))
+    .limit(1)
+
+  const [legacyUser] = await db
+    .select({ id: schema.user.id })
+    .from(schema.user)
+    .where(eq(schema.user.email, LEGACY_DEMO_EMAIL))
+    .limit(1)
+
+  if (legacyOrg || legacyUser) {
+    console.log('🧹 Removing legacy applirank.com demo data...')
+
+    if (legacyOrg) {
+      // All child tables (jobs, candidates, applications, members, etc.) have
+      // onDelete: 'cascade' so deleting the org removes everything beneath it.
+      await db.delete(schema.organization).where(eq(schema.organization.id, legacyOrg.id))
+      console.log(`   ✅ Deleted legacy org: ${LEGACY_ORG_SLUG}`)
+    }
+
+    if (legacyUser) {
+      // sessions and accounts also cascade from the user row
+      await db.delete(schema.user).where(eq(schema.user.id, legacyUser.id))
+      console.log(`   ✅ Deleted legacy user: ${LEGACY_DEMO_EMAIL}`)
+    }
+  }
 
   // Check if demo org already exists
   const existingOrg = await db

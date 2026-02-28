@@ -93,21 +93,17 @@ export default defineEventHandler(async (event) => {
 
   const guardedOrgIds = await getDemoOrgIds(demoSlugs)
   if (guardedOrgIds.size === 0) {
-    // In dev or PR/preview environments the demo org may not exist yet
-    // (seed hasn't run, fresh DB, etc.) — pass through silently.
-    // Only surface a hard error in production-like environments where an
-    // explicitly configured DEMO_ORG_SLUG MUST resolve.
-    const isPreview = isRailwayPreviewEnvironment(env.RAILWAY_ENVIRONMENT_NAME)
-    if (!isExplicitlyConfigured || isPreview || import.meta.dev) return
-
-    throw createError({
-      statusCode: 503,
-      statusMessage: 'Demo mode is misconfigured. Please contact support.',
-      data: {
-        code: 'DEMO_GUARD_MISCONFIGURED',
-        message: `None of the configured demo slugs could be resolved: ${demoSlugs.join(', ')}`,
-      },
-    })
+    // None of the configured demo slugs could be resolved to an org in the DB.
+    // This can happen when the demo org hasn't been seeded yet, the slug was
+    // misconfigured, or a new deployment hasn't had its demo data created.
+    // Pass through silently — there is no demo org to protect, so blocking
+    // all writes would break the entire application for every user.
+    if (isExplicitlyConfigured) {
+      console.warn(
+        `[demo-guard] DEMO_ORG_SLUG is set but none of the configured slugs could be resolved: ${demoSlugs.join(', ')}. Demo write-protection is inactive.`,
+      )
+    }
+    return
   }
 
   // Public apply route has no session context, so resolve org by job slug.

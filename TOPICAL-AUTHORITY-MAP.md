@@ -81,7 +81,7 @@ All articles must follow the SEO Skill ([`.agents/skills/seo-skill/SKILL.md`](.a
 - [ ] Zoho Recruit vs open source ATS: ecosystem comparison 🟢
 - [ ] iCIMS vs open source ATS: legacy vs modern 🟢
 - [ ] SmartRecruiters vs open source ATS: enterprise vs DIY 🟢
-- [ ] OpenCATS vs Reqcore: open source ATS head-to-head 🟢
+- [x] OpenCATS vs Reqcore: open source ATS head-to-head 🟢 — [`opencats-vs-reqcore.md`](content/blog/opencats-vs-reqcore.md)
 
 **Supporting — Decision frameworks:**
 - [ ] ATS features that actually matter (and which are bloat) 🟢

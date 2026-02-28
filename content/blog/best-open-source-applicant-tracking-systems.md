@@ -82,7 +82,7 @@ We chose PostgreSQL 16 over MySQL because we needed robust JSON column support f
 | **Status** | Low activity (sporadic updates) |
 | **Repository** | [github.com/opencats/OpenCATS](https://github.com/opencats/OpenCATS) |
 
-OpenCATS is the grandfather of open source applicant tracking. Originally released around 2007, it has been the default recommendation for anyone searching "open source ATS" for over a decade.
+OpenCATS is the grandfather of open source applicant tracking. Originally released around 2007, it has been the default recommendation for anyone searching "open source ATS" for over a decade. For a direct feature breakdown between the most modern and traditional approaches, check out our [OpenCATS vs Reqcore head-to-head comparison](/blog/opencats-vs-reqcore).
 
 **Strengths:**
 

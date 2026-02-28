@@ -6,6 +6,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
 ## 2026-02-22
 
 ### Added
@@ -27,6 +34,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **PR-only seed script** — removed `server/scripts/seed-pr.ts` and the `db:seed:pr` npm script
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-21
 
@@ -43,6 +63,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **Demo env guidance** — `.env.example` demo slug example now matches seeded demo organization slug (`reqcore-demo`) to reduce configuration drift
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-19
 
@@ -58,6 +91,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **`start` script in `package.json`** — `node .output/server/index.mjs` for Railway Nixpacks detection
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-18
 
@@ -81,6 +127,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **Navigation** — "Blog" link added to landing page navbar/footer and roadmap page navbar
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-16
 
@@ -101,6 +160,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **S3 bucket privacy strategy** — instead of setting an explicit deny-all policy (which used AWS-only condition keys), the startup plugin now deletes any existing bucket policy to ensure MinIO's default private behavior
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-15
 
@@ -117,6 +189,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **Roadmap navigation links** — Roadmap link added to landing page navbar and footer
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-15
 
@@ -175,6 +260,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **Scoped CSS** in `AppSidebar.vue` and `dashboard/index.vue` — replaced with Tailwind utilities
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-14
 
@@ -203,6 +301,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - **Unbounded applications eager-load** — `GET /api/jobs/:id` now limits eager-loaded applications to 100 with explicit column selection instead of loading all columns for all applications
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-15
 
@@ -219,6 +330,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - Cross-linked navigation flow: Landing → Job Board → Job Detail → Apply → Confirmation → Job Board
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-15
 
@@ -242,6 +366,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 - Extra scroll space at bottom — added `overflow-hidden` to CTA section to contain decorative glow blob using `translate-y-1/2`
 
 ---
+## 2026-02-28
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
+
+
+
+### Added
+
+- **Blog: OpenCATS vs Reqcore: Open Source ATS Head-to-Head** — Published to `content/blog/opencats-vs-reqcore.md`
+- **Internal link** — added cross-link from `best-open-source-applicant-tracking-systems.md` to new post
 
 ## 2026-02-14
 

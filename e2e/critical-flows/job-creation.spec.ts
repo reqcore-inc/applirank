@@ -30,17 +30,17 @@ test.describe('Job Creation Flow', () => {
     await page.locator('textarea').first().fill(JOB_DESCRIPTION)
     await page.getByLabel('Location').fill(JOB_LOCATION)
 
-    // Click through to step 3 and submit
-    await page.getByRole('button', { name: 'Save & continue' }).click()
+    // Click through to step 3 and submit (scope to form to avoid header duplicate button)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
     // Step 2: Application form — skip (defaults are fine)
-    await page.getByRole('button', { name: 'Save & continue' }).click()
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
     // Step 3: Find candidates — submit
-    await page.getByRole('button', { name: 'Create job' }).click()
+    await page.locator('form').getByRole('button', { name: 'Create job' }).click()
 
     // ── Verify redirect to jobs list ─────────────────────
-    await page.waitForURL('**/dashboard/jobs')
+    await page.waitForURL('**/dashboard/jobs', { waitUntil: 'commit' })
     await expect(page.getByText(JOB_TITLE)).toBeVisible()
 
     // ── Open the job detail page ─────────────────────────

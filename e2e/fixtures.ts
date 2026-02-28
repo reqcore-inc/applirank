@@ -50,13 +50,15 @@ export const test = base.extend<Fixtures>({
     await page.getByLabel('Confirm password').fill(testAccount.password)
     await page.getByRole('button', { name: 'Sign up' }).click()
 
-    // Create org
-    await page.waitForURL('**/onboarding/create-org')
+    // Create org — wait for the form element instead of URL
+    // (Nuxt SPA navigation via History API may not fire the 'load' event
+    //  that waitForURL expects by default)
+    await page.getByLabel('Organization name').waitFor({ state: 'visible', timeout: 30_000 })
     await page.getByLabel('Organization name').fill(testAccount.orgName)
     await page.getByRole('button', { name: 'Create organization' }).click()
 
-    // Wait for redirect to dashboard
-    await page.waitForURL('**/dashboard**')
+    // Wait for redirect to dashboard (use 'commit' for SPA navigation)
+    await page.waitForURL('**/dashboard**', { waitUntil: 'commit' })
 
     await use(page)
   },

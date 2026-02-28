@@ -35,13 +35,13 @@ test.describe('Candidate Application Flow', () => {
     await page.locator('textarea').first().fill(JOB_DESCRIPTION)
     await page.getByLabel('Location').fill(JOB_LOCATION)
 
-    // Step through wizard
-    await page.getByRole('button', { name: 'Save & continue' }).click()
-    await page.getByRole('button', { name: 'Save & continue' }).click()
-    await page.getByRole('button', { name: 'Create job' }).click()
+    // Step through wizard (scope to form to avoid header duplicate button)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
+    await page.locator('form').getByRole('button', { name: 'Create job' }).click()
 
     // Wait for redirect to jobs list and open the job
-    await page.waitForURL('**/dashboard/jobs')
+    await page.waitForURL('**/dashboard/jobs', { waitUntil: 'commit' })
     await page.getByText(JOB_TITLE).first().click()
 
     // Publish the job
@@ -70,7 +70,7 @@ test.describe('Candidate Application Flow', () => {
 
     // Click Apply
     await candidatePage.getByRole('link', { name: /apply/i }).click()
-    await candidatePage.waitForURL(`**/jobs/${jobSlug}/apply`)
+    await candidatePage.waitForURL(`**/jobs/${jobSlug}/apply`, { waitUntil: 'commit' })
 
     // ── Fill in application form ─────────────────────────
     await candidatePage.getByLabel('First name').fill(APPLICANT.firstName)
@@ -82,7 +82,7 @@ test.describe('Candidate Application Flow', () => {
     await candidatePage.getByRole('button', { name: /submit/i }).click()
 
     // ── Verify confirmation page ─────────────────────────
-    await candidatePage.waitForURL(`**/jobs/${jobSlug}/confirmation`)
+    await candidatePage.waitForURL(`**/jobs/${jobSlug}/confirmation`, { waitUntil: 'commit' })
     await expect(candidatePage.getByText('Application Submitted')).toBeVisible()
     await expect(candidatePage.getByText(JOB_TITLE)).toBeVisible()
 

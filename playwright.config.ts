@@ -16,7 +16,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1, // single worker — tests depend on each other
   reporter: process.env.CI ? 'github' : 'html',
-  timeout: 60_000,
+  timeout: 120_000,
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',

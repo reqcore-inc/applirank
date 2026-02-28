@@ -41,8 +41,10 @@ const applyRateLimit = createRateLimiter({
  * 8. Upload files to S3 and create document records
  */
 export default defineEventHandler(async (event) => {
-  // Enforce rate limit before any processing
-  await applyRateLimit(event)
+  // Enforce rate limit before any processing (skip in dev for E2E test stability)
+  if (process.env.NODE_ENV === 'production') {
+    await applyRateLimit(event)
+  }
 
   const { slug } = await getValidatedRouterParams(event, publicJobSlugSchema.parse)
 

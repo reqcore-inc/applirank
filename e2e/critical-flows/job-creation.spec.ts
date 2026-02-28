@@ -23,17 +23,24 @@ test.describe('Job Creation Flow', () => {
 
     // ── Navigate to Create Job ───────────────────────────
     await page.goto('/dashboard/jobs/new')
+    await page.waitForLoadState('networkidle')
     await expect(page.getByRole('heading', { name: 'New Job' })).toBeVisible()
 
     // ── Step 1: Fill in job details ──────────────────────
+    // Wait for the form to be fully hydrated before interacting
+    await page.getByLabel('Job title').waitFor({ state: 'visible', timeout: 15_000 })
     await page.getByLabel('Job title').fill(JOB_TITLE)
     await page.locator('textarea').first().fill(JOB_DESCRIPTION)
     await page.getByLabel('Location').fill(JOB_LOCATION)
 
     // Click through to step 3 and submit (scope to form to avoid header duplicate button)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'attached', timeout: 10_000 })
+    await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
     // Step 2: Application form — skip (defaults are fine)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'attached', timeout: 10_000 })
+    await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
     // Step 3: Find candidates — submit

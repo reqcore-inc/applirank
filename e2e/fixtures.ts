@@ -59,8 +59,32 @@ export const test = base.extend<Fixtures>({
       page.getByRole('button', { name: 'Sign up' }).click(),
     ])
 
-    // Wait for SPA navigation to the onboarding page after sign-up
-    await page.waitForURL('**/onboarding/**', { waitUntil: 'commit', timeout: 30_000 })
+    // After sign-up the app navigates to /onboarding/create-org, but the
+    // auth middleware may not yet recognise the freshly-set session cookie
+    // and redirect to /auth/sign-in instead.  Handle both outcomes.
+    await page.waitForURL(
+      url => url.pathname.includes('/onboarding/') || url.pathname.includes('/auth/sign-in'),
+      { waitUntil: 'commit', timeout: 30_000 },
+    )
+
+    // If we landed on sign-in, explicitly sign in with the new credentials
+    if (page.url().includes('/auth/sign-in')) {
+      await page.waitForLoadState('networkidle')
+      await page.getByLabel('Email').fill(testAccount.email)
+      await page.getByLabel('Password').fill(testAccount.password)
+
+      await Promise.all([
+        page.waitForResponse(
+          resp => resp.url().includes('/api/auth/sign-in') && resp.status() === 200,
+          { timeout: 30_000 },
+        ),
+        page.getByRole('button', { name: 'Sign in' }).click(),
+      ])
+
+      // Sign-in navigates to /dashboard, then require-org middleware
+      // redirects to /onboarding/create-org (user has no org yet)
+      await page.waitForURL('**/onboarding/**', { waitUntil: 'commit', timeout: 30_000 })
+    }
 
     // Wait for the org-creation form to render (loading spinner may show first)
     await page.getByLabel('Organization name').waitFor({ state: 'visible', timeout: 30_000 })

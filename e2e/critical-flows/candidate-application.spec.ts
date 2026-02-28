@@ -25,18 +25,25 @@ const APPLICANT = {
 }
 
 test.describe('Candidate Application Flow', () => {
-  test('candidate can apply to a published job', async ({ authenticatedPage, testAccount, context }) => {
+  test('candidate can apply to a published job', async ({ authenticatedPage, testAccount, browser }) => {
     const page = authenticatedPage
 
     // ── Setup: Create and publish a job ──────────────────
 
     await page.goto('/dashboard/jobs/new')
+    await page.waitForLoadState('networkidle')
+    // Wait for the form to be fully hydrated before interacting
+    await page.getByLabel('Job title').waitFor({ state: 'visible', timeout: 15_000 })
     await page.getByLabel('Job title').fill(JOB_TITLE)
     await page.locator('textarea').first().fill(JOB_DESCRIPTION)
     await page.getByLabel('Location').fill(JOB_LOCATION)
 
     // Step through wizard (scope to form to avoid header duplicate button)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'attached', timeout: 10_000 })
+    await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'attached', timeout: 10_000 })
+    await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
     await page.locator('form').getByRole('button', { name: 'Create job' }).click()
 
@@ -58,19 +65,22 @@ test.describe('Candidate Application Flow', () => {
 
     const jobSlug = jobData.slug
 
-    // ── Candidate flow: Apply in a separate page ─────────
-    // Use a fresh page (no auth cookies) to simulate an anonymous candidate
-    const candidatePage = await context.newPage()
-
-    // Clear cookies for the candidate page so they have no auth session
-    await candidatePage.context().clearCookies()
+    // ── Candidate flow: Apply in a separate browser context ─
+    // Use a fresh context (no auth cookies) to simulate an anonymous candidate
+    const candidateContext = await browser.newContext()
+    const candidatePage = await candidateContext.newPage()
 
     await candidatePage.goto(`/jobs/${jobSlug}`)
+    await candidatePage.waitForLoadState('networkidle')
     await expect(candidatePage.getByRole('heading', { name: JOB_TITLE })).toBeVisible()
 
     // Click Apply (use .first() because the page has both "Apply Now" and "Apply for this position" links)
     await candidatePage.getByRole('link', { name: /apply/i }).first().click()
     await candidatePage.waitForURL(`**/jobs/${jobSlug}/apply`, { waitUntil: 'commit' })
+    await candidatePage.waitForLoadState('networkidle')
+
+    // Wait for the application form to be fully rendered and hydrated
+    await candidatePage.getByRole('button', { name: /submit/i }).waitFor({ state: 'visible', timeout: 15_000 })
 
     // ── Fill in application form ─────────────────────────
     await candidatePage.getByLabel('First name').fill(APPLICANT.firstName)
@@ -78,21 +88,32 @@ test.describe('Candidate Application Flow', () => {
     await candidatePage.getByLabel('Email').fill(APPLICANT.email)
     await candidatePage.getByLabel('Phone').fill(APPLICANT.phone)
 
-    // Submit application
-    await candidatePage.getByRole('button', { name: /submit/i }).click()
+    // Submit application and wait for the API response
+    const [applyResponse] = await Promise.all([
+      candidatePage.waitForResponse(
+        resp => resp.url().includes(`/api/public/jobs/${jobSlug}/apply`) && resp.request().method() === 'POST',
+        { timeout: 30_000 },
+      ),
+      candidatePage.getByRole('button', { name: /submit/i }).click(),
+    ])
+
+    // Verify the API responded successfully (200 or 201)
+    const applyStatus = applyResponse.status()
+    expect(applyStatus, `Apply API returned ${applyStatus}`).toBeGreaterThanOrEqual(200)
+    expect(applyStatus, `Apply API returned ${applyStatus}`).toBeLessThan(300)
 
     // ── Verify confirmation page ─────────────────────────
-    await candidatePage.waitForURL(`**/jobs/${jobSlug}/confirmation`, { waitUntil: 'commit' })
-    await expect(candidatePage.getByText('Application Submitted')).toBeVisible()
+    await candidatePage.waitForURL(`**/jobs/${jobSlug}/confirmation`, { waitUntil: 'commit', timeout: 15_000 })
+    await expect(candidatePage.getByRole('heading', { name: 'Application Submitted!' })).toBeVisible()
     await expect(candidatePage.getByText(JOB_TITLE)).toBeVisible()
 
     await candidatePage.close()
+    await candidateContext.close()
 
     // ── Verify application appears in recruiter dashboard ─
     // Navigate to the job's candidates page
     await page.goto(`/dashboard/jobs/${jobId}/candidates`)
-    await expect(page.getByText(APPLICANT.firstName)).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByText(APPLICANT.lastName)).toBeVisible()
-    await expect(page.getByText(APPLICANT.email)).toBeVisible()
+    await expect(page.getByRole('cell', { name: `${APPLICANT.firstName} ${APPLICANT.lastName}` })).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('cell', { name: APPLICANT.email })).toBeVisible()
   })
 })

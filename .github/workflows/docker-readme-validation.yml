@@ -27,11 +27,13 @@ jobs:
 
       # ── 2. setup.sh ──────────────────────────────────────────────────────────
       - name: Run setup.sh (new-user step 1)
+        id: setup_sh
         run: |
           chmod +x ./setup.sh
           ./setup.sh
 
       - name: Verify .env was generated with all required keys
+        id: env_keys
         run: |
           set -euo pipefail
           required=(
@@ -61,6 +63,7 @@ jobs:
           echo "✅ All required keys present in .env"
 
       - name: Verify STORAGE_PASSWORD and S3_SECRET_KEY match (prevents credential mismatch bug)
+        id: storage_creds
         run: |
           set -euo pipefail
           storage_pass="$(grep '^STORAGE_PASSWORD=' .env | cut -d= -f2-)"
@@ -72,6 +75,7 @@ jobs:
           echo "✅ MinIO credentials are consistent"
 
       - name: Verify BETTER_AUTH_SECRET is at least 32 characters
+        id: auth_secret
         run: |
           set -euo pipefail
           secret="$(grep '^BETTER_AUTH_SECRET=' .env | cut -d= -f2-)"
@@ -83,6 +87,7 @@ jobs:
           echo "✅ BETTER_AUTH_SECRET is ${len} chars"
 
       - name: Verify setup.sh refuses to overwrite existing .env
+        id: env_overwrite
         run: |
           set -euo pipefail
           if ./setup.sh 2>&1; then
@@ -93,9 +98,11 @@ jobs:
 
       # ── 3. docker compose up --build ─────────────────────────────────────────
       - name: Build image and start all services (new-user step 2)
+        id: docker_build
         run: docker compose up --build -d
 
       - name: Wait for db to be healthy
+        id: db_health
         run: |
           set -euo pipefail
           echo "Waiting for db..."
@@ -113,6 +120,7 @@ jobs:
           echo "✅ db is healthy"
 
       - name: Wait for minio to be healthy
+        id: minio_health
         run: |
           set -euo pipefail
           echo "Waiting for minio..."
@@ -130,6 +138,7 @@ jobs:
           echo "✅ minio is healthy"
 
       - name: Wait for app to be reachable on :3000
+        id: app_health
         run: |
           set -euo pipefail
           echo "Waiting for app..."
@@ -153,6 +162,7 @@ jobs:
 
       # ── 4. Startup log assertions ─────────────────────────────────────────────
       - name: Assert DB migrations ran successfully
+        id: db_migrations
         run: |
           set -euo pipefail
           if ! docker compose logs app | grep -q "Database migrations applied successfully"; then
@@ -163,6 +173,7 @@ jobs:
           echo "✅ Migrations applied successfully"
 
       - name: Assert S3 bucket is ready
+        id: s3_bucket
         run: |
           set -euo pipefail
           if ! docker compose logs app | grep -q 'S3 bucket "reqcore" is ready'; then
@@ -174,6 +185,7 @@ jobs:
 
       # ── 5. HTTP smoke tests ───────────────────────────────────────────────────
       - name: HTTP smoke tests
+        id: http_smoke
         run: |
           set -euo pipefail
           fail=0
@@ -202,6 +214,7 @@ jobs:
 
       # ── 6. Seed command (optional step from README) ───────────────────────────
       - name: Seed demo data (docker compose exec app npm run db:seed)
+        id: seed_data
         run: |
           set -euo pipefail
           output="$(docker compose exec app npm run db:seed 2>&1)"
@@ -213,6 +226,7 @@ jobs:
           echo "✅ Seed completed"
 
       - name: Sign in with seeded demo account (auth smoke test)
+        id: seed_signin
         run: |
           set -euo pipefail
           response="$(curl -s -X POST http://localhost:3000/api/auth/sign-in/email \
@@ -234,6 +248,7 @@ jobs:
           echo "✅ Demo account sign-in succeeded"
 
       - name: Seed idempotency — re-running seed must not crash
+        id: seed_idempotent
         run: |
           set -euo pipefail
           output="$(docker compose exec app npm run db:seed 2>&1)"
@@ -246,9 +261,11 @@ jobs:
 
       # ── 7. Adminer --profile tools ────────────────────────────────────────────
       - name: Start Adminer via --profile tools
+        id: adminer_start
         run: docker compose --profile tools up -d adminer
 
       - name: Wait for Adminer to respond on :8080
+        id: adminer_health
         run: |
           set -euo pipefail
           for i in $(seq 20); do
@@ -264,6 +281,7 @@ jobs:
 
       # ── 8. Restart resilience (migrations must be idempotent) ────────────────
       - name: Restart app and verify it comes back clean
+        id: restart_resilience
         run: |
           set -euo pipefail
           docker compose restart app
@@ -287,6 +305,113 @@ jobs:
           echo "✅ Restart handled cleanly — no migration errors"
 
       # ── Always: dump logs on failure ──────────────────────────────────────────
+      - name: Docker Integration Summary
+        if: ${{ !cancelled() }}
+        run: |
+          echo "## Docker Setup Integration Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Simulates the full new-user onboarding: \`setup.sh → docker compose up → seed → smoke tests\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| # | Check | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+
+          row() {
+            local n="$1" name="$2" outcome="$3"
+            local icon="❌"
+            [ "$outcome" = "success" ] && icon="✅"
+            [ "$outcome" = "skipped" ] && icon="⏭️"
+            echo "| $n | $name | $icon |" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          row  1 "Run setup.sh"                      "${{ steps.setup_sh.outcome }}"
+          row  2 ".env has all required keys"         "${{ steps.env_keys.outcome }}"
+          row  3 "Storage credentials match"          "${{ steps.storage_creds.outcome }}"
+          row  4 "Auth secret ≥ 32 chars"             "${{ steps.auth_secret.outcome }}"
+          row  5 "setup.sh refuses overwrite"         "${{ steps.env_overwrite.outcome }}"
+          row  6 "Docker build & start"               "${{ steps.docker_build.outcome }}"
+          row  7 "Database healthy"                   "${{ steps.db_health.outcome }}"
+          row  8 "MinIO healthy"                      "${{ steps.minio_health.outcome }}"
+          row  9 "App reachable on :3000"             "${{ steps.app_health.outcome }}"
+          row 10 "DB migrations applied"              "${{ steps.db_migrations.outcome }}"
+          row 11 "S3 bucket ready"                    "${{ steps.s3_bucket.outcome }}"
+          row 12 "HTTP smoke tests"                   "${{ steps.http_smoke.outcome }}"
+          row 13 "Seed demo data"                     "${{ steps.seed_data.outcome }}"
+          row 14 "Demo account sign-in"               "${{ steps.seed_signin.outcome }}"
+          row 15 "Seed idempotency"                   "${{ steps.seed_idempotent.outcome }}"
+          row 16 "Adminer starts"                     "${{ steps.adminer_start.outcome }}"
+          row 17 "Adminer reachable on :8080"         "${{ steps.adminer_health.outcome }}"
+          row 18 "Restart resilience"                 "${{ steps.restart_resilience.outcome }}"
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Run: \`${{ github.run_id }}\` · Commit: \`${{ github.sha }}\`_" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate JUnit XML report
+        if: ${{ !cancelled() }}
+        run: |
+          # Generate JUnit XML so test results can be consumed by dashboards/reporters
+          cat > docker-integration-results.xml << 'XMLEOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites name="Docker Setup Integration" tests="18">
+            <testsuite name="Setup" tests="5">
+          XMLEOF
+
+          junit_case() {
+            local name="$1" outcome="$2"
+            if [ "$outcome" = "success" ]; then
+              echo "    <testcase name=\"$name\" classname=\"docker-integration\" />" >> docker-integration-results.xml
+            elif [ "$outcome" = "skipped" ]; then
+              echo "    <testcase name=\"$name\" classname=\"docker-integration\"><skipped /></testcase>" >> docker-integration-results.xml
+            else
+              echo "    <testcase name=\"$name\" classname=\"docker-integration\"><failure message=\"Step failed\" /></testcase>" >> docker-integration-results.xml
+            fi
+          }
+
+          junit_case "Run setup.sh"                      "${{ steps.setup_sh.outcome }}"
+          junit_case ".env has all required keys"         "${{ steps.env_keys.outcome }}"
+          junit_case "Storage credentials match"          "${{ steps.storage_creds.outcome }}"
+          junit_case "Auth secret >= 32 chars"            "${{ steps.auth_secret.outcome }}"
+          junit_case "setup.sh refuses overwrite"         "${{ steps.env_overwrite.outcome }}"
+
+          echo "    </testsuite>" >> docker-integration-results.xml
+          echo '    <testsuite name="Infrastructure" tests="4">' >> docker-integration-results.xml
+
+          junit_case "Docker build and start"             "${{ steps.docker_build.outcome }}"
+          junit_case "Database healthy"                   "${{ steps.db_health.outcome }}"
+          junit_case "MinIO healthy"                      "${{ steps.minio_health.outcome }}"
+          junit_case "App reachable on :3000"             "${{ steps.app_health.outcome }}"
+
+          echo "    </testsuite>" >> docker-integration-results.xml
+          echo '    <testsuite name="Startup Assertions" tests="2">' >> docker-integration-results.xml
+
+          junit_case "DB migrations applied"              "${{ steps.db_migrations.outcome }}"
+          junit_case "S3 bucket ready"                    "${{ steps.s3_bucket.outcome }}"
+
+          echo "    </testsuite>" >> docker-integration-results.xml
+          echo '    <testsuite name="Smoke Tests" tests="4">' >> docker-integration-results.xml
+
+          junit_case "HTTP smoke tests"                   "${{ steps.http_smoke.outcome }}"
+          junit_case "Seed demo data"                     "${{ steps.seed_data.outcome }}"
+          junit_case "Demo account sign-in"               "${{ steps.seed_signin.outcome }}"
+          junit_case "Seed idempotency"                   "${{ steps.seed_idempotent.outcome }}"
+
+          echo "    </testsuite>" >> docker-integration-results.xml
+          echo '    <testsuite name="Optional Services" tests="3">' >> docker-integration-results.xml
+
+          junit_case "Adminer starts"                     "${{ steps.adminer_start.outcome }}"
+          junit_case "Adminer reachable on :8080"         "${{ steps.adminer_health.outcome }}"
+          junit_case "Restart resilience"                 "${{ steps.restart_resilience.outcome }}"
+
+          echo "    </testsuite>" >> docker-integration-results.xml
+          echo "  </testsuites>" >> docker-integration-results.xml
+
+      - name: Upload JUnit XML results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: docker-integration-junit
+          path: docker-integration-results.xml
+          retention-days: 30
+
       - name: Dump all service logs
         if: always()
         run: |

@@ -31,16 +31,58 @@ jobs:
         run: npm ci
 
       - name: Run tests (if present)
+        id: tests
         run: npm run test --if-present
 
       - name: Lint (if present)
+        id: lint
         run: npm run lint --if-present
 
       - name: Typecheck
+        id: typecheck
         run: npx nuxi typecheck
 
       - name: Audit dependencies (high severity+)
-        run: npm audit --audit-level=high
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm audit --audit-level=high 2>&1 | tee audit-output.txt
 
       - name: Build
-        run: npm run build
+        id: build
+        run: |
+          start=$(date +%s)
+          npm run build
+          end=$(date +%s)
+          echo "build_duration=$((end - start))" >> "$GITHUB_ENV"
+
+      - name: PR Validation Summary
+        if: ${{ always() && !cancelled() }}
+        run: |
+          echo "## PR Validation Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+
+          status_icon() { [ "$1" = "success" ] && echo "✅" || echo "❌"; }
+
+          echo "| Install dependencies | $(status_icon '${{ steps.tests.outcome != 'skipped' && 'success' || 'failure' }}') |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tests | $(status_icon '${{ steps.tests.outcome }}') ${{ steps.tests.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Lint | $(status_icon '${{ steps.lint.outcome }}') ${{ steps.lint.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Typecheck | $(status_icon '${{ steps.typecheck.outcome }}') ${{ steps.typecheck.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Dependency audit | $(status_icon '${{ steps.audit.outcome }}') ${{ steps.audit.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -f audit-output.txt ] && [ "${{ steps.audit.outcome }}" != "success" ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "<details><summary>Audit details</summary>" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat audit-output.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "</details>" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "| Build | $(status_icon '${{ steps.build.outcome }}') ${{ steps.build.outcome }} (${build_duration:-?}s) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Run: \`${{ github.run_id }}\` · Commit: \`${{ github.sha }}\`_" >> "$GITHUB_STEP_SUMMARY"

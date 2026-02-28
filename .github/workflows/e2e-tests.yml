@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: e2e-${{ github.event.pull_request.number || github.ref }}
@@ -78,6 +79,7 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 30000
 
       - name: Run Playwright tests
+        id: playwright
         run: npx playwright test
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
@@ -98,3 +100,74 @@ jobs:
           name: test-results
           path: test-results/
           retention-days: 14
+
+      # ── Allure Report ──────────────────────────────────────
+      - name: Get previous workflow run ID
+        id: get_previous_run
+        run: |
+          PREVIOUS_RUN_ID=$(gh api \
+            "repos/${{ github.repository }}/actions/workflows/e2e-tests.yml/runs?status=success&per_page=5" \
+            --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }})] | first | .id // empty")
+          echo "run_id=${PREVIOUS_RUN_ID}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true # no previous run on first execution
+
+      - name: Download previous Allure history
+        uses: actions/download-artifact@v4
+        if: steps.get_previous_run.outputs.run_id != ''
+        with:
+          name: allure-history
+          path: allure-results/history
+          run-id: ${{ steps.get_previous_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true # first run won't have history yet
+
+      - name: Generate Allure report
+        if: ${{ !cancelled() }}
+        run: npx allure generate allure-results --clean -o allure-report
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 30
+
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
+
+      - name: Save Allure history for trend tracking
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: allure-history
+          path: allure-report/history/
+          retention-days: 90
+          overwrite: true
+
+      - name: E2E Test Summary
+        if: ${{ !cancelled() }}
+        run: |
+          echo "## E2E Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ steps.playwright.outcome }}" = "success" ]; then
+            echo "✅ **All Playwright tests passed**" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ **Playwright tests failed**" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "| Report | Link |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|--------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Playwright HTML | 📦 Download \`playwright-report\` artifact |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Allure Dashboard | 📦 Download \`allure-report\` artifact or view on [GitHub Pages](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Run: \`${{ github.run_id }}\` · Commit: \`${{ github.sha }}\`_" >> "$GITHUB_STEP_SUMMARY"

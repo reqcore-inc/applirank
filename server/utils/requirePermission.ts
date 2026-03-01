@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { statements } from '../../shared/permissions'
+import type { statements } from '~~/shared/permissions'
 
 /**
  * Permission descriptor — maps a resource to the actions being requested.

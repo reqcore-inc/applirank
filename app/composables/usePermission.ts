@@ -1,4 +1,4 @@
-import type { statements } from '../../shared/permissions'
+import type { statements } from '~~/shared/permissions'
 
 /**
  * Permission descriptor — same shape as the server-side PermissionRequest.

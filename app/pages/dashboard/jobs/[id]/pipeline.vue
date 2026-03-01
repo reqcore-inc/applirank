@@ -47,14 +47,7 @@ const columns = [
   { key: 'rejected', label: 'Rejected', color: 'surface' },
 ] as const
 
-const STATUS_TRANSITIONS: Record<string, string[]> = {
-  new: ['screening', 'interview', 'rejected'],
-  screening: ['interview', 'offer', 'rejected'],
-  interview: ['offer', 'rejected'],
-  offer: ['hired', 'rejected'],
-  hired: [],
-  rejected: ['new'],
-}
+import { APPLICATION_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 function getColumnApps(status: string) {
   return applications.value.filter((a: any) => a.status === status)
@@ -153,7 +146,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
               :candidate-email="app.candidateEmail"
               :created-at="app.createdAt"
               :score="app.score"
-              :allowed-transitions="STATUS_TRANSITIONS[app.status] ?? []"
+              :allowed-transitions="APPLICATION_STATUS_TRANSITIONS[app.status] ?? []"
               :is-transitioning="transitioningId === app.id"
               @transition="handleTransition(app.id, $event)"
             />

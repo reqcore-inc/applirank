@@ -1,6 +1,6 @@
 import { createAuthClient } from 'better-auth/vue'
 import { organizationClient } from 'better-auth/client/plugins'
-import { ac, owner, admin, member } from '../../shared/permissions'
+import { ac, owner, admin, member } from '~~/shared/permissions'
 
 export const authClient = createAuthClient({
   plugins: [

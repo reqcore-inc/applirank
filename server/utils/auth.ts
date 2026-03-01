@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
-import { ac, owner, admin, member } from '../../shared/permissions'
+import { ac, owner, admin, member } from '~~/shared/permissions'
 import * as schema from '../database/schema'
 
 type Auth = ReturnType<typeof betterAuth>

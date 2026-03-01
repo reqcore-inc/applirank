@@ -62,6 +62,7 @@
     "readdir-glob": "2.0.2",
     "rollup": ">=4.59.0",
     "esbuild": ">=0.25.0",
-    "serialize-javascript": ">=7.0.3"
+    "serialize-javascript": ">=7.0.3",
+    "underscore": ">=1.13.6"
   }
 }

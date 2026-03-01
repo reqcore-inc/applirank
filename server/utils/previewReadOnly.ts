@@ -1,4 +1,4 @@
-const PREVIEW_READ_ONLY_MESSAGE = 'Preview mode — this action is disabled. Deploy your own instance to get full access.'
+const PREVIEW_READ_ONLY_MESSAGE = 'This is a read-only demo so you can explore the interface. Editing is disabled here, but it\'s fully unlocked when you self-host.'
 
 export function createPreviewReadOnlyError() {
   return createError({

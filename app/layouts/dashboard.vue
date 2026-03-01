@@ -26,13 +26,13 @@ const isDemo = computed(() => {
       >
         <Eye class="size-4 shrink-0" />
         <span>
-          <strong>Preview mode</strong> — You're exploring with sample data in read-only mode. Changes are disabled.
+          <strong>Live demo</strong> — Explore freely with sample data. Editing is disabled here.
           <a
-            href="https://github.com/reqcore-inc/reqcore"
+            href="https://github.com/reqcore-inc/reqcore#quick-start"
             target="_blank"
             rel="noopener noreferrer"
             class="ml-1 font-semibold underline decoration-brand-400/40 underline-offset-2 hover:decoration-brand-400"
-          >Deploy your own instance →</a>
+          >Deploy your own free instance →</a>
         </span>
       </div>
       <slot />

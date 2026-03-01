@@ -108,8 +108,6 @@ export default defineNuxtConfig({
         }
         return email
       })(),
-      /** Public URL for hosted plan upsell CTA shown in preview mode modals */
-      hostedPlanUrl: process.env.NUXT_PUBLIC_HOSTED_PLAN_URL || 'https://reqcore.com',
       /** Public live-demo secret used to prefill sign-in */
       liveDemoSecret:
         process.env.LIVE_DEMO_SECRET

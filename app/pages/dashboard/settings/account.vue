@@ -4,10 +4,7 @@ import {
   KeyRound, Mail, Calendar,
 } from 'lucide-vue-next'
 
-definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth', 'require-org'],
-})
+definePageMeta({})
 
 useSeoMeta({
   title: 'Account Settings — Reqcore',
@@ -127,37 +124,15 @@ function getInitials(name: string | undefined): string {
 
 <template>
   <div class="mx-auto max-w-2xl">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">
-        Organization Settings
+    <!-- Page title -->
+    <div class="mb-6">
+      <h1 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
+        Account
       </h1>
-      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-        Manage your organization's profile and configuration.
+      <p class="text-sm text-surface-500 dark:text-surface-400 mt-0.5">
+        Manage your personal profile and security settings.
       </p>
     </div>
-
-    <!-- Settings navigation tabs -->
-    <nav class="flex gap-1 mb-8 border-b border-surface-200 dark:border-surface-800">
-      <NuxtLink
-        :to="$localePath('/dashboard/settings')"
-        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-surface-500 dark:text-surface-400 border-transparent hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300 dark:hover:border-surface-600"
-      >
-        General
-      </NuxtLink>
-      <NuxtLink
-        :to="$localePath('/dashboard/settings/members')"
-        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-surface-500 dark:text-surface-400 border-transparent hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300 dark:hover:border-surface-600"
-      >
-        Members
-      </NuxtLink>
-      <NuxtLink
-        :to="$localePath('/dashboard/settings/account')"
-        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-brand-600 dark:text-brand-400 border-brand-500"
-      >
-        Account
-      </NuxtLink>
-    </nav>
 
     <!-- Profile section -->
     <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">

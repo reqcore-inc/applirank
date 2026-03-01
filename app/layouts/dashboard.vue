@@ -15,7 +15,7 @@ const isDemo = computed(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen">
+  <div class="flex h-screen">
     <AppSidebar />
     <PreviewUpsellModal v-if="isUpsellOpen" @close="closeUpsell" />
     <main class="flex-1 overflow-y-auto bg-surface-50 dark:bg-surface-950 px-6 py-8">

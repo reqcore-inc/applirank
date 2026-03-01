@@ -118,14 +118,14 @@ jobs:
         if: steps.get_previous_run.outputs.run_id != ''
         with:
           name: allure-history
-          path: allure-results/history
+          path: .
           run-id: ${{ steps.get_previous_run.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true # first run won't have history yet
 
       - name: Generate Allure report
         if: ${{ !cancelled() }}
-        run: npx allure generate allure-results --clean -o allure-report
+        run: npx allure generate allure-results -o allure-report
 
       - name: Upload Allure results
         uses: actions/upload-artifact@v4
@@ -148,9 +148,10 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: allure-history
-          path: allure-report/history/
+          path: allure-history.jsonl
           retention-days: 90
           overwrite: true
+          if-no-files-found: ignore
 
       - name: E2E Test Summary
         if: ${{ !cancelled() }}

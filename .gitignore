@@ -32,3 +32,4 @@ playwright/.cache/
 # Allure
 allure-results/
 allure-report/
+allure-history.jsonl

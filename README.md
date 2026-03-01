@@ -4,12 +4,16 @@
 
 **The open-source ATS you own. No per-seat fees. No data lock-in. No secret algorithms.**
 
-[Live Demo](https://reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
-
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![E2E Tests](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml)
 [![PR Validation](https://github.com/reqcore-inc/reqcore/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/pr-validation.yml)
 [![Docker Integration](https://github.com/reqcore-inc/reqcore/actions/workflows/docker-readme-validation.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/docker-readme-validation.yml)
+
+[Live Demo](https://reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
+
+
+<a href="https://openalternative.co/reqcore?utm_source=openalternative&utm_medium=badge&utm_campaign=embed&utm_content=tool-reqcore" target="_blank"><img src="https://openalternative.co/reqcore/badge.svg?theme=dark&width=200&height=50" width="200" height="50" alt="Reqcore badge" loading="lazy" /></a>
+
 
 </div>
 

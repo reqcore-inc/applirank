@@ -21,6 +21,16 @@ const isSaving = ref(false)
 const saveSuccess = ref(false)
 const saveError = ref('')
 
+/** Slug must be lowercase alphanumeric + hyphens, 2-48 chars, no leading/trailing hyphen */
+const slugPattern = /^[a-z0-9](?:[a-z0-9-]{0,46}[a-z0-9])?$/
+
+const slugError = computed(() => {
+  const s = orgSlug.value.trim()
+  if (!s) return ''
+  if (!slugPattern.test(s)) return 'Only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.'
+  return ''
+})
+
 watch(activeOrg, (org) => {
   if (org) {
     orgName.value = org.name ?? ''
@@ -30,6 +40,20 @@ watch(activeOrg, (org) => {
 
 async function handleSaveOrg() {
   if (!canUpdateOrg.value) return
+
+  const trimmedName = orgName.value.trim()
+  const trimmedSlug = orgSlug.value.trim().toLowerCase()
+
+  // Prevent saving empty or invalid values
+  if (!trimmedName) {
+    saveError.value = 'Organization name cannot be empty.'
+    return
+  }
+  if (!trimmedSlug || slugError.value) {
+    saveError.value = slugError.value || 'URL slug cannot be empty.'
+    return
+  }
+
   isSaving.value = true
   saveError.value = ''
   saveSuccess.value = false
@@ -37,8 +61,8 @@ async function handleSaveOrg() {
   try {
     await authClient.organization.update({
       data: {
-        name: orgName.value.trim(),
-        slug: orgSlug.value.trim().toLowerCase(),
+        name: trimmedName,
+        slug: trimmedSlug,
       },
     })
     saveSuccess.value = true
@@ -60,9 +84,10 @@ const deleteConfirmText = ref('')
 const isDeleting = ref(false)
 const deleteError = ref('')
 
-const canConfirmDelete = computed(() =>
-  deleteConfirmText.value === activeOrg.value?.name,
-)
+const canConfirmDelete = computed(() => {
+  const name = activeOrg.value?.name
+  return !!name && deleteConfirmText.value === name
+})
 
 async function handleDeleteOrg() {
   if (!canDeleteOrg.value || !canConfirmDelete.value) return
@@ -73,11 +98,15 @@ async function handleDeleteOrg() {
     await authClient.organization.delete({
       organizationId: activeOrg.value!.id,
     })
+    // Use navigateTo for Nuxt-managed navigation, then force reload
+    // so all cached org state is cleared.
     const localePath = useLocalePath()
-    window.location.href = localePath('/onboarding/create-org')
+    await navigateTo(localePath('/onboarding/create-org'), { external: true })
   }
   catch (err: unknown) {
     deleteError.value = err instanceof Error ? err.message : 'Failed to delete organization'
+  }
+  finally {
     isDeleting.value = false
   }
 }
@@ -143,6 +172,9 @@ async function handleDeleteOrg() {
           </div>
           <p class="mt-1.5 text-xs text-surface-400 dark:text-surface-500">
             Used in your public job board URL. Only lowercase letters, numbers, and hyphens.
+          </p>
+          <p v-if="slugError" class="mt-1 text-xs text-danger-500">
+            {{ slugError }}
           </p>
         </div>
 

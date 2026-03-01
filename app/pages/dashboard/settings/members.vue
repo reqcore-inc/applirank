@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import {
   Users, UserPlus, Shield, ShieldCheck, Crown,
   MoreHorizontal, Trash2, ChevronDown, Loader2,
@@ -47,6 +48,35 @@ async function fetchMembers() {
 }
 
 onMounted(fetchMembers)
+
+// ─────────────────────────────────────────────
+// Members search & pagination
+// ─────────────────────────────────────────────
+const memberSearch = ref('')
+const membersPerPage = 20
+const visibleCount = ref(membersPerPage)
+
+const filteredMembers = computed(() => {
+  const q = memberSearch.value.trim().toLowerCase()
+  if (!q) return members.value
+  return members.value.filter(m =>
+    m.user.name?.toLowerCase().includes(q)
+    || m.user.email?.toLowerCase().includes(q)
+    || m.role.toLowerCase().includes(q),
+  )
+})
+
+const visibleMembers = computed(() => filteredMembers.value.slice(0, visibleCount.value))
+const hasMoreMembers = computed(() => visibleCount.value < filteredMembers.value.length)
+
+function showMoreMembers() {
+  visibleCount.value += membersPerPage
+}
+
+// Reset visible count when search changes
+watch(memberSearch, () => {
+  visibleCount.value = membersPerPage
+})
 
 // ─────────────────────────────────────────────
 // Invite member
@@ -135,6 +165,15 @@ const removeError = ref('')
 
 async function handleRemoveMember() {
   if (!memberToRemove.value) return
+
+  // Guard: prevent removing yourself even if called programmatically
+  const currentUserId = session.value?.user?.id
+  const targetMember = members.value.find(m => m.id === memberToRemove.value?.id)
+  if (targetMember && currentUserId && targetMember.userId === currentUserId) {
+    removeError.value = 'You cannot remove yourself from the organization.'
+    return
+  }
+
   isRemoving.value = true
   removeError.value = ''
 
@@ -157,7 +196,7 @@ async function handleRemoveMember() {
 // ─────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────
-const roleConfig: Record<string, { label: string; color: string; bg: string; icon: ReturnType<typeof Object> }> = {
+const roleConfig: Record<string, { label: string; color: string; bg: string; icon: Component }> = {
   owner: { label: 'Owner', color: 'text-warning-700 dark:text-warning-400', bg: 'bg-warning-50 dark:bg-warning-950', icon: Crown },
   admin: { label: 'Admin', color: 'text-brand-700 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-950', icon: ShieldCheck },
   member: { label: 'Member', color: 'text-surface-700 dark:text-surface-300', bg: 'bg-surface-100 dark:bg-surface-800', icon: Shield },
@@ -181,14 +220,20 @@ function getInitials(name: string | undefined): string {
     .toUpperCase()
 }
 
-// Close dropdown on click outside
+// Close dropdown on click outside — store reference for cleanup
+function handleClickOutside(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('[data-member-actions]')) {
+    closeDropdown()
+  }
+}
+
 onMounted(() => {
-  document.addEventListener('click', (e: MouseEvent) => {
-    const target = e.target as HTMLElement
-    if (!target.closest('[data-member-actions]')) {
-      closeDropdown()
-    }
-  })
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -312,6 +357,14 @@ onMounted(() => {
               </p>
             </div>
           </div>
+          <div v-if="!isLoadingMembers && members.length > 5" class="flex-shrink-0">
+            <input
+              v-model="memberSearch"
+              type="text"
+              placeholder="Search members…"
+              class="w-48 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+            />
+          </div>
         </div>
       </div>
 
@@ -333,7 +386,7 @@ onMounted(() => {
       <!-- Members list -->
       <div v-else class="divide-y divide-surface-100 dark:divide-surface-800">
         <div
-          v-for="m in members"
+          v-for="m in visibleMembers"
           :key="m.id"
           class="px-6 py-4 flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
         >
@@ -436,6 +489,17 @@ onMounted(() => {
           <div v-if="isUpdatingRole === m.id" class="flex-shrink-0">
             <Loader2 class="size-4 animate-spin text-brand-500" />
           </div>
+        </div>
+
+        <!-- Show more button -->
+        <div v-if="hasMoreMembers" class="px-6 py-3 text-center border-t border-surface-100 dark:border-surface-800">
+          <button
+            class="text-sm font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+            @click="showMoreMembers"
+          >
+            Show {{ Math.min(membersPerPage, filteredMembers.length - visibleCount) }} more
+            ({{ filteredMembers.length - visibleCount }} remaining)
+          </button>
         </div>
       </div>
     </section>

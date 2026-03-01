@@ -43,18 +43,25 @@ export function usePermission(permissions: PermissionRequest) {
   const activeOrgState = authClient.useActiveOrganization()
 
   async function fetchRole() {
+    // Reset immediately to avoid stale role from previous org (race condition)
+    role.value = null
+
     const { data, error } = await authClient.organization.getActiveMemberRole()
     if (!error) {
       role.value = data?.role ?? null
     }
   }
 
-  // Fetch on mount and whenever the active org changes
-  watch(
-    () => activeOrgState.value.data?.id,
-    () => fetchRole(),
-    { immediate: true },
-  )
+  // Only fetch on the client — during SSR there is no window.location,
+  // so the Better Auth client cannot resolve relative API URLs.
+  // Permission checks are cosmetic (UI gating); real enforcement is server-side.
+  if (import.meta.client) {
+    watch(
+      () => activeOrgState.value.data?.id,
+      () => fetchRole(),
+      { immediate: true },
+    )
+  }
 
   const allowed = computed(() => {
     if (!role.value) return false

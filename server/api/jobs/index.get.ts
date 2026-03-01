@@ -3,8 +3,8 @@ import { job } from '../../database/schema'
 import { jobQuerySchema } from '../../utils/schemas/job'
 
 export default defineEventHandler(async (event) => {
-  const session = await requireAuth(event)
-  const orgId = session.session.activeOrganizationId!
+  const session = await requirePermission(event, { job: ['read'] })
+  const orgId = session.session.activeOrganizationId
 
   const query = await getValidatedQuery(event, jobQuerySchema.parse)
 

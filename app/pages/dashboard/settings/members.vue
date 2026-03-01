@@ -1,0 +1,532 @@
+<script setup lang="ts">
+import {
+  Users, UserPlus, Shield, ShieldCheck, Crown,
+  MoreHorizontal, Trash2, ChevronDown, Loader2,
+  Mail, Clock, X, Check, AlertTriangle,
+} from 'lucide-vue-next'
+
+definePageMeta({
+  layout: 'dashboard',
+  middleware: ['auth', 'require-org'],
+})
+
+useSeoMeta({
+  title: 'Team Members — Reqcore',
+  description: 'Manage your team members and invitations',
+})
+
+const { activeOrg } = useCurrentOrg()
+const { data: session } = await authClient.useSession(useFetch)
+const { allowed: canManageMembers } = usePermission({ member: ['create'] })
+const { allowed: canInvite } = usePermission({ invitation: ['create'] })
+
+// ─────────────────────────────────────────────
+// Members list
+// ─────────────────────────────────────────────
+const members = ref<Array<{
+  id: string
+  userId: string
+  role: string
+  user: { name: string; email: string; image?: string }
+  createdAt: Date
+}>>([])
+const isLoadingMembers = ref(true)
+const membersError = ref('')
+
+async function fetchMembers() {
+  isLoadingMembers.value = true
+  membersError.value = ''
+  try {
+    const result = await authClient.organization.listMembers()
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to load members'))
+    members.value = (result.data?.members ?? []) as typeof members.value
+  }
+  catch (err: unknown) {
+    membersError.value = err instanceof Error ? err.message : 'Failed to load members'
+  }
+  finally {
+    isLoadingMembers.value = false
+  }
+}
+
+onMounted(fetchMembers)
+
+// ─────────────────────────────────────────────
+// Invite member
+// ─────────────────────────────────────────────
+const showInviteForm = ref(false)
+const inviteEmail = ref('')
+const inviteRole = ref<'admin' | 'member'>('member')
+const isInviting = ref(false)
+const inviteSuccess = ref('')
+const inviteError = ref('')
+
+function resetInviteForm() {
+  inviteEmail.value = ''
+  inviteRole.value = 'member'
+  inviteError.value = ''
+  inviteSuccess.value = ''
+}
+
+async function handleInvite() {
+  if (!canInvite.value || !inviteEmail.value.trim()) return
+  isInviting.value = true
+  inviteError.value = ''
+  inviteSuccess.value = ''
+
+  try {
+    const result = await authClient.organization.inviteMember({
+      email: inviteEmail.value.trim().toLowerCase(),
+      role: inviteRole.value,
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to send invitation'))
+    inviteSuccess.value = `Invitation sent to ${inviteEmail.value.trim()}`
+    inviteEmail.value = ''
+    inviteRole.value = 'member'
+    setTimeout(() => { inviteSuccess.value = '' }, 5000)
+  }
+  catch (err: unknown) {
+    inviteError.value = err instanceof Error ? err.message : 'Failed to send invitation'
+  }
+  finally {
+    isInviting.value = false
+  }
+}
+
+// ─────────────────────────────────────────────
+// Role management
+// ─────────────────────────────────────────────
+const activeDropdown = ref<string | null>(null)
+const isUpdatingRole = ref<string | null>(null)
+const roleUpdateError = ref('')
+
+function toggleDropdown(memberId: string) {
+  activeDropdown.value = activeDropdown.value === memberId ? null : memberId
+}
+
+function closeDropdown() {
+  activeDropdown.value = null
+}
+
+async function handleUpdateRole(memberId: string, newRole: 'admin' | 'member') {
+  isUpdatingRole.value = memberId
+  roleUpdateError.value = ''
+
+  try {
+    const result = await authClient.organization.updateMemberRole({
+      memberId,
+      role: newRole,
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to update role'))
+    await fetchMembers()
+  }
+  catch (err: unknown) {
+    roleUpdateError.value = err instanceof Error ? err.message : 'Failed to update role'
+  }
+  finally {
+    isUpdatingRole.value = null
+    closeDropdown()
+  }
+}
+
+// ─────────────────────────────────────────────
+// Remove member
+// ─────────────────────────────────────────────
+const memberToRemove = ref<{ id: string; name: string } | null>(null)
+const isRemoving = ref(false)
+const removeError = ref('')
+
+async function handleRemoveMember() {
+  if (!memberToRemove.value) return
+  isRemoving.value = true
+  removeError.value = ''
+
+  try {
+    const result = await authClient.organization.removeMember({
+      memberIdOrEmail: memberToRemove.value.id,
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to remove member'))
+    memberToRemove.value = null
+    await fetchMembers()
+  }
+  catch (err: unknown) {
+    removeError.value = err instanceof Error ? err.message : 'Failed to remove member'
+  }
+  finally {
+    isRemoving.value = false
+  }
+}
+
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+const roleConfig: Record<string, { label: string; color: string; bg: string; icon: ReturnType<typeof Object> }> = {
+  owner: { label: 'Owner', color: 'text-warning-700 dark:text-warning-400', bg: 'bg-warning-50 dark:bg-warning-950', icon: Crown },
+  admin: { label: 'Admin', color: 'text-brand-700 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-950', icon: ShieldCheck },
+  member: { label: 'Member', color: 'text-surface-700 dark:text-surface-300', bg: 'bg-surface-100 dark:bg-surface-800', icon: Shield },
+}
+
+function getRoleConfig(role: string) {
+  return roleConfig[role] ?? roleConfig.member!
+}
+
+function isCurrentUser(userId: string) {
+  return session.value?.user?.id === userId
+}
+
+function getInitials(name: string | undefined): string {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+}
+
+// Close dropdown on click outside
+onMounted(() => {
+  document.addEventListener('click', (e: MouseEvent) => {
+    const target = e.target as HTMLElement
+    if (!target.closest('[data-member-actions]')) {
+      closeDropdown()
+    }
+  })
+})
+</script>
+
+<template>
+  <div class="mx-auto max-w-2xl">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">
+        Organization Settings
+      </h1>
+      <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
+        Manage your organization's profile and configuration.
+      </p>
+    </div>
+
+    <!-- Settings navigation tabs -->
+    <nav class="flex gap-1 mb-8 border-b border-surface-200 dark:border-surface-800">
+      <NuxtLink
+        :to="$localePath('/dashboard/settings')"
+        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-surface-500 dark:text-surface-400 border-transparent hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300 dark:hover:border-surface-600"
+      >
+        General
+      </NuxtLink>
+      <NuxtLink
+        :to="$localePath('/dashboard/settings/members')"
+        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-brand-600 dark:text-brand-400 border-brand-500"
+      >
+        Members
+      </NuxtLink>
+      <NuxtLink
+        :to="$localePath('/dashboard/settings/account')"
+        class="px-4 py-2.5 text-sm font-medium transition-colors no-underline border-b-2 -mb-px text-surface-500 dark:text-surface-400 border-transparent hover:text-surface-700 dark:hover:text-surface-300 hover:border-surface-300 dark:hover:border-surface-600"
+      >
+        Account
+      </NuxtLink>
+    </nav>
+
+    <!-- Invite member section -->
+    <section v-if="canInvite" class="mb-6">
+      <button
+        v-if="!showInviteForm"
+        class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
+        @click="showInviteForm = true"
+      >
+        <UserPlus class="size-4" />
+        Invite team member
+      </button>
+
+      <Transition
+        enter-active-class="transition-all duration-200"
+        leave-active-class="transition-all duration-200"
+        enter-from-class="opacity-0 -translate-y-2"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="showInviteForm" class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <UserPlus class="size-5 text-brand-600 dark:text-brand-400" />
+              <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Invite a team member</h3>
+            </div>
+            <button
+              class="p-1 rounded-md text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+              @click="showInviteForm = false; resetInviteForm()"
+            >
+              <X class="size-4" />
+            </button>
+          </div>
+
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label for="invite-email" class="sr-only">Email address</label>
+              <input
+                id="invite-email"
+                v-model="inviteEmail"
+                type="email"
+                placeholder="colleague@company.com"
+                class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                @keydown.enter="handleInvite"
+              />
+            </div>
+
+            <div class="relative">
+              <select
+                v-model="inviteRole"
+                class="appearance-none rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 pl-3 pr-8 py-2 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors cursor-pointer"
+              >
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+              <ChevronDown class="absolute right-2.5 top-1/2 -translate-y-1/2 size-3.5 text-surface-400 pointer-events-none" />
+            </div>
+
+            <button
+              :disabled="isInviting || !inviteEmail.trim()"
+              class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              @click="handleInvite"
+            >
+              <Loader2 v-if="isInviting" class="size-4 animate-spin" />
+              <Mail v-else class="size-4" />
+              {{ isInviting ? 'Sending…' : 'Send invite' }}
+            </button>
+          </div>
+
+          <Transition
+            enter-active-class="transition-opacity duration-300"
+            leave-active-class="transition-opacity duration-300"
+            enter-from-class="opacity-0"
+            leave-to-class="opacity-0"
+          >
+            <div v-if="inviteSuccess" class="mt-3 flex items-center gap-2 text-sm text-success-600 dark:text-success-400">
+              <Check class="size-4" />
+              {{ inviteSuccess }}
+            </div>
+          </Transition>
+
+          <div v-if="inviteError" class="mt-3 rounded-lg bg-danger-50 dark:bg-danger-950/40 border border-danger-200 dark:border-danger-900 px-3 py-2 text-sm text-danger-700 dark:text-danger-400">
+            {{ inviteError }}
+          </div>
+        </div>
+      </Transition>
+    </section>
+
+    <!-- Role update error banner -->
+    <div v-if="roleUpdateError" class="mb-4 rounded-lg bg-danger-50 dark:bg-danger-950/40 border border-danger-200 dark:border-danger-900 px-4 py-3 text-sm text-danger-700 dark:text-danger-400 flex items-center justify-between">
+      <span>{{ roleUpdateError }}</span>
+      <button class="text-danger-500 hover:text-danger-700 transition-colors" @click="roleUpdateError = ''">
+        <X class="size-4" />
+      </button>
+    </div>
+
+    <!-- Members list -->
+    <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
+      <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center size-10 rounded-lg bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400">
+              <Users class="size-5" />
+            </div>
+            <div>
+              <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Team members</h2>
+              <p class="text-sm text-surface-500 dark:text-surface-400">
+                {{ isLoadingMembers ? 'Loading…' : `${members.length} member${members.length !== 1 ? 's' : ''}` }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div v-if="isLoadingMembers" class="px-6 py-8 text-center text-surface-400 text-sm">
+        <Loader2 class="size-5 animate-spin mx-auto mb-2" />
+        Loading members…
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="membersError" class="px-6 py-8 text-center">
+        <AlertTriangle class="size-6 text-danger-400 mx-auto mb-2" />
+        <p class="text-sm text-danger-600 dark:text-danger-400">{{ membersError }}</p>
+        <button class="mt-2 text-sm text-brand-600 hover:text-brand-700 underline" @click="fetchMembers">
+          Retry
+        </button>
+      </div>
+
+      <!-- Members list -->
+      <div v-else class="divide-y divide-surface-100 dark:divide-surface-800">
+        <div
+          v-for="m in members"
+          :key="m.id"
+          class="px-6 py-4 flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+        >
+          <!-- Avatar -->
+          <div class="flex-shrink-0">
+            <img
+              v-if="m.user.image"
+              :src="m.user.image"
+              :alt="m.user.name"
+              class="size-10 rounded-full object-cover ring-2 ring-surface-100 dark:ring-surface-800"
+            />
+            <div v-else class="size-10 rounded-full bg-brand-100 dark:bg-brand-900 flex items-center justify-center text-sm font-semibold text-brand-700 dark:text-brand-300 ring-2 ring-surface-100 dark:ring-surface-800">
+              {{ getInitials(m.user.name) }}
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
+                {{ m.user.name }}
+              </span>
+              <span v-if="isCurrentUser(m.userId)" class="text-xs text-surface-400 dark:text-surface-500">(you)</span>
+            </div>
+            <div class="text-sm text-surface-500 dark:text-surface-400 truncate">
+              {{ m.user.email }}
+            </div>
+          </div>
+
+          <!-- Role badge -->
+          <div class="flex-shrink-0">
+            <span
+              :class="[getRoleConfig(m.role).bg, getRoleConfig(m.role).color]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+            >
+              <component :is="getRoleConfig(m.role).icon" class="size-3" />
+              {{ getRoleConfig(m.role).label }}
+            </span>
+          </div>
+
+          <!-- Actions dropdown -->
+          <div v-if="canManageMembers && !isCurrentUser(m.userId) && m.role !== 'owner'" class="flex-shrink-0 relative" data-member-actions>
+            <button
+              class="p-1.5 rounded-md text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+              @click.stop="toggleDropdown(m.id)"
+            >
+              <MoreHorizontal class="size-4" />
+            </button>
+
+            <Transition
+              enter-active-class="transition-all duration-150"
+              leave-active-class="transition-all duration-100"
+              enter-from-class="opacity-0 scale-95"
+              leave-to-class="opacity-0 scale-95"
+            >
+              <div
+                v-if="activeDropdown === m.id"
+                class="absolute right-0 top-full mt-1 w-48 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 shadow-lg z-50 overflow-hidden"
+              >
+                <!-- Role options -->
+                <div class="py-1 border-b border-surface-100 dark:border-surface-800">
+                  <div class="px-3 py-1.5 text-xs font-medium text-surface-400 dark:text-surface-500 uppercase tracking-wider">
+                    Change role
+                  </div>
+                  <button
+                    v-if="m.role !== 'admin'"
+                    :disabled="isUpdatingRole === m.id"
+                    class="w-full px-3 py-2 text-left text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors flex items-center gap-2 disabled:opacity-50 bg-transparent border-0 cursor-pointer"
+                    @click="handleUpdateRole(m.id, 'admin')"
+                  >
+                    <ShieldCheck class="size-3.5 text-brand-500" />
+                    Make admin
+                  </button>
+                  <button
+                    v-if="m.role !== 'member'"
+                    :disabled="isUpdatingRole === m.id"
+                    class="w-full px-3 py-2 text-left text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors flex items-center gap-2 disabled:opacity-50 bg-transparent border-0 cursor-pointer"
+                    @click="handleUpdateRole(m.id, 'member')"
+                  >
+                    <Shield class="size-3.5 text-surface-400" />
+                    Make member
+                  </button>
+                </div>
+
+                <!-- Remove -->
+                <div class="py-1">
+                  <button
+                    class="w-full px-3 py-2 text-left text-sm text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors flex items-center gap-2 bg-transparent border-0 cursor-pointer"
+                    @click="memberToRemove = { id: m.id, name: m.user.name }; closeDropdown()"
+                  >
+                    <Trash2 class="size-3.5" />
+                    Remove member
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
+
+          <!-- Loading indicator for role update -->
+          <div v-if="isUpdatingRole === m.id" class="flex-shrink-0">
+            <Loader2 class="size-4 animate-spin text-brand-500" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Remove member confirmation modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200"
+        leave-active-class="transition-opacity duration-150"
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="memberToRemove" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="memberToRemove = null">
+          <Transition
+            enter-active-class="transition-all duration-200"
+            leave-active-class="transition-all duration-150"
+            enter-from-class="opacity-0 scale-95"
+            leave-to-class="opacity-0 scale-95"
+          >
+            <div v-if="memberToRemove" class="w-full max-w-md bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-2xl p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center justify-center size-10 rounded-full bg-danger-100 dark:bg-danger-950 text-danger-600 dark:text-danger-400">
+                  <AlertTriangle class="size-5" />
+                </div>
+                <div>
+                  <h3 class="text-base font-semibold text-surface-900 dark:text-surface-100">Remove member</h3>
+                  <p class="text-sm text-surface-500 dark:text-surface-400">This action can be undone by re-inviting.</p>
+                </div>
+              </div>
+
+              <p class="text-sm text-surface-600 dark:text-surface-400 mb-5">
+                Are you sure you want to remove <strong class="text-surface-900 dark:text-surface-100">{{ memberToRemove.name }}</strong> from
+                <strong class="text-surface-900 dark:text-surface-100">{{ activeOrg?.name }}</strong>?
+                They will lose access to all organization data immediately.
+              </p>
+
+              <div v-if="removeError" class="mb-4 rounded-lg bg-danger-50 dark:bg-danger-950/40 border border-danger-200 dark:border-danger-900 px-3 py-2 text-sm text-danger-700 dark:text-danger-400">
+                {{ removeError }}
+              </div>
+
+              <div class="flex items-center gap-3 justify-end">
+                <button
+                  class="rounded-lg px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                  @click="memberToRemove = null; removeError = ''"
+                >
+                  Cancel
+                </button>
+                <button
+                  :disabled="isRemoving"
+                  class="inline-flex items-center gap-2 rounded-lg bg-danger-600 px-4 py-2 text-sm font-medium text-white hover:bg-danger-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleRemoveMember"
+                >
+                  <Loader2 v-if="isRemoving" class="size-4 animate-spin" />
+                  <Trash2 v-else class="size-4" />
+                  {{ isRemoving ? 'Removing…' : 'Remove' }}
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Permissions notice for members -->
+    <div v-if="!canManageMembers" class="mt-6 rounded-lg bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-800 px-4 py-3 text-sm text-surface-500 dark:text-surface-400">
+      You don't have permission to manage team members. Contact an admin or owner to invite new members or change roles.
+    </div>
+  </div>
+</template>

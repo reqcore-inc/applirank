@@ -10,7 +10,7 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
-import { organization } from './auth'
+import { organization, user } from './auth'
 
 // ─────────────────────────────────────────────
 // Enums
@@ -160,6 +160,60 @@ export const questionResponse = pgTable('question_response', {
 ]))
 
 // ─────────────────────────────────────────────
+// Collaboration: Comments
+// ─────────────────────────────────────────────
+
+export const commentTargetEnum = pgEnum('comment_target', ['candidate', 'application', 'job'])
+
+/**
+ * Internal comments left by team members on candidates, applications, or jobs.
+ * Scoped by organizationId for tenant isolation.
+ */
+export const comment = pgTable('comment', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  authorId: text('author_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  targetType: commentTargetEnum('target_type').notNull(),
+  targetId: text('target_id').notNull(),
+  body: text('body').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('comment_organization_id_idx').on(t.organizationId),
+  index('comment_target_idx').on(t.targetType, t.targetId),
+  index('comment_author_id_idx').on(t.authorId),
+]))
+
+// ─────────────────────────────────────────────
+// Collaboration: Activity Log
+// ─────────────────────────────────────────────
+
+export const activityActionEnum = pgEnum('activity_action', [
+  'created', 'updated', 'deleted', 'status_changed',
+  'comment_added', 'member_invited', 'member_removed', 'member_role_changed',
+])
+
+/**
+ * Immutable audit trail for all significant actions within an organization.
+ * Append-only — no UPDATE or DELETE allowed via the API.
+ */
+export const activityLog = pgTable('activity_log', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  actorId: text('actor_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  action: activityActionEnum('action').notNull(),
+  resourceType: text('resource_type').notNull(),
+  resourceId: text('resource_id').notNull(),
+  metadata: jsonb('metadata').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ([
+  index('activity_log_organization_id_idx').on(t.organizationId),
+  index('activity_log_actor_id_idx').on(t.actorId),
+  index('activity_log_resource_idx').on(t.resourceType, t.resourceId),
+  index('activity_log_created_at_idx').on(t.createdAt),
+]))
+
+// ─────────────────────────────────────────────
 // Relations
 // ─────────────────────────────────────────────
 
@@ -196,4 +250,14 @@ export const questionResponseRelations = relations(questionResponse, ({ one }) =
   organization: one(organization, { fields: [questionResponse.organizationId], references: [organization.id] }),
   application: one(application, { fields: [questionResponse.applicationId], references: [application.id] }),
   question: one(jobQuestion, { fields: [questionResponse.questionId], references: [jobQuestion.id] }),
+}))
+
+export const commentRelations = relations(comment, ({ one }) => ({
+  organization: one(organization, { fields: [comment.organizationId], references: [organization.id] }),
+  author: one(user, { fields: [comment.authorId], references: [user.id] }),
+}))
+
+export const activityLogRelations = relations(activityLog, ({ one }) => ({
+  organization: one(organization, { fields: [activityLog.organizationId], references: [organization.id] }),
+  actor: one(user, { fields: [activityLog.actorId], references: [user.id] }),
 }))

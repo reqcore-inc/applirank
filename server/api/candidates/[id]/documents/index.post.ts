@@ -27,8 +27,8 @@ import {
  *   - Orphaned S3 objects cleaned up on DB insert failure
  */
 export default defineEventHandler(async (event) => {
-  const session = await requireAuth(event)
-  const orgId = session.session.activeOrganizationId!
+  const session = await requirePermission(event, { document: ['create'] })
+  const orgId = session.session.activeOrganizationId
 
   // ─────────────────────────────────────────────
   // 1. Validate candidate exists and belongs to this org
@@ -162,6 +162,15 @@ export default defineEventHandler(async (event) => {
       mimeType: document.mimeType,
       sizeBytes: document.sizeBytes,
       createdAt: document.createdAt,
+    })
+
+    recordActivity({
+      organizationId: orgId,
+      actorId: session.user.id,
+      action: 'created',
+      resourceType: 'document',
+      resourceId: created.id,
+      metadata: { candidateId, filename: created.originalFilename, type: created.type },
     })
 
     setResponseStatus(event, 201)

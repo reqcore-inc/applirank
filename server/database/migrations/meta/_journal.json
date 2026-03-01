@@ -43,6 +43,13 @@
       "when": 1771422251507,
       "tag": "0005_yielding_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772374562880,
+      "tag": "0006_breezy_hairball",
+      "breakpoints": true
     }
   ]
 }

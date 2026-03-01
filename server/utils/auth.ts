@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
+import { ac, owner, admin, member } from '../../shared/permissions'
 import * as schema from '../database/schema'
 
 type Auth = ReturnType<typeof betterAuth>
@@ -83,7 +84,40 @@ function getAuth(): Auth {
         enabled: true,
       },
       plugins: [
-        organization(),
+        organization({
+          // ── Access Control ──────────────────────────────────────
+          // Declarative RBAC — permissions defined once in shared/permissions.ts,
+          // enforced on every API route via requirePermission().
+          ac,
+          roles: {
+            owner,
+            admin,
+            member,
+          },
+
+          // ── Invitation Email ────────────────────────────────────
+          // Required for Better Auth's built-in invitation flow.
+          // Constructs a link the invitee clicks to accept.
+          async sendInvitationEmail(data) {
+            const inviteLink = `${baseURL}/auth/accept-invitation/${data.id}`
+
+            // TODO: Wire up a real email provider (Resend, SES, etc.)
+            // For now, log the invitation link so dev/testing works.
+            console.info(
+              `[Reqcore] Invitation email → ${data.email} | ` +
+              `Invited by ${data.inviter.user.name} (${data.inviter.user.email}) | ` +
+              `Org: ${data.organization.name} | ` +
+              `Role: ${data.role} | ` +
+              `Link: ${inviteLink}`,
+            )
+          },
+
+          // ── Security Hardening ──────────────────────────────────
+          // Cancel stale invitations when a new one is sent to the same email.
+          cancelPendingInvitationsOnReInvite: true,
+          // 48 hours (default) — explicitly stated for auditability.
+          invitationExpiresIn: 48 * 60 * 60,
+        }),
       ],
     })
   }

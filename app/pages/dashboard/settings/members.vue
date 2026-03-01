@@ -3,7 +3,7 @@ import type { Component } from 'vue'
 import {
   Users, UserPlus, Shield, ShieldCheck, Crown,
   MoreHorizontal, Trash2, ChevronDown, Loader2,
-  Mail, Clock, X, Check, AlertTriangle,
+  Mail, Clock, X, Check, AlertTriangle, RefreshCw,
 } from 'lucide-vue-next'
 
 definePageMeta({})
@@ -17,6 +17,7 @@ const { activeOrg } = useCurrentOrg()
 const { data: session } = await authClient.useSession(useFetch)
 const { allowed: canManageMembers } = usePermission({ member: ['create'] })
 const { allowed: canInvite } = usePermission({ invitation: ['create'] })
+const { allowed: canCancelInvite } = usePermission({ invitation: ['cancel'] })
 
 // ─────────────────────────────────────────────
 // Members list
@@ -111,6 +112,7 @@ async function handleInvite() {
     inviteEmail.value = ''
     inviteRole.value = 'member'
     setTimeout(() => { inviteSuccess.value = '' }, 5000)
+    await fetchInvitations()
   }
   catch (err: unknown) {
     inviteError.value = err instanceof Error ? err.message : 'Failed to send invitation'
@@ -118,6 +120,104 @@ async function handleInvite() {
   finally {
     isInviting.value = false
   }
+}
+
+// ─────────────────────────────────────────────
+// Pending invitations
+// ─────────────────────────────────────────────
+const pendingInvitations = ref<Array<{
+  id: string
+  email: string
+  role: string
+  status: string
+  expiresAt: Date
+  inviterId: string
+}>>([])
+const isLoadingInvitations = ref(true)
+const invitationsError = ref('')
+const resendingInvitation = ref<string | null>(null)
+const cancellingInvitation = ref<string | null>(null)
+const resendSuccess = ref('')
+
+async function fetchInvitations() {
+  isLoadingInvitations.value = true
+  invitationsError.value = ''
+  try {
+    const result = await authClient.organization.listInvitations({
+      query: {},
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to load invitations'))
+    const allInvitations = (result.data ?? []) as typeof pendingInvitations.value
+    pendingInvitations.value = allInvitations.filter(inv => inv.status === 'pending')
+  }
+  catch (err: unknown) {
+    invitationsError.value = err instanceof Error ? err.message : 'Failed to load invitations'
+  }
+  finally {
+    isLoadingInvitations.value = false
+  }
+}
+
+onMounted(fetchInvitations)
+
+async function handleResendInvitation(invitation: { id: string; email: string; role: string }) {
+  resendingInvitation.value = invitation.id
+  resendSuccess.value = ''
+  inviteError.value = ''
+
+  try {
+    const result = await authClient.organization.inviteMember({
+      email: invitation.email,
+      role: invitation.role as 'admin' | 'member',
+      resend: true,
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to resend invitation'))
+    resendSuccess.value = `Invitation resent to ${invitation.email}`
+    setTimeout(() => { resendSuccess.value = '' }, 5000)
+    await fetchInvitations()
+  }
+  catch (err: unknown) {
+    inviteError.value = err instanceof Error ? err.message : 'Failed to resend invitation'
+  }
+  finally {
+    resendingInvitation.value = null
+  }
+}
+
+async function handleCancelInvitation(invitationId: string) {
+  cancellingInvitation.value = invitationId
+
+  try {
+    const result = await authClient.organization.cancelInvitation({
+      invitationId,
+    })
+    if (result.error) throw new Error(String(result.error.message ?? 'Failed to cancel invitation'))
+    await fetchInvitations()
+  }
+  catch (err: unknown) {
+    invitationsError.value = err instanceof Error ? err.message : 'Failed to cancel invitation'
+  }
+  finally {
+    cancellingInvitation.value = null
+  }
+}
+
+function isExpired(expiresAt: Date | string): boolean {
+  return new Date(expiresAt) < new Date()
+}
+
+function formatExpiresAt(expiresAt: Date | string): string {
+  const date = new Date(expiresAt)
+  if (date < new Date()) return 'Expired'
+  const diffMs = date.getTime() - Date.now()
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  if (diffHours < 1) {
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    return `Expires in ${diffMinutes}m`
+  }
+  if (diffHours < 24) return `Expires in ${diffHours}h`
+  const diffDays = Math.floor(diffHours / 24)
+  return `Expires in ${diffDays}d`
 }
 
 // ─────────────────────────────────────────────
@@ -341,6 +441,110 @@ onUnmounted(() => {
         <X class="size-4" />
       </button>
     </div>
+
+    <!-- Resend success banner -->
+    <Transition
+      enter-active-class="transition-opacity duration-300"
+      leave-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="resendSuccess" class="mb-4 flex items-center gap-2 rounded-lg bg-success-50 dark:bg-success-950/40 border border-success-200 dark:border-success-900 px-4 py-3 text-sm text-success-700 dark:text-success-400">
+        <Check class="size-4" />
+        {{ resendSuccess }}
+      </div>
+    </Transition>
+
+    <!-- Pending invitations -->
+    <section v-if="canInvite && (isLoadingInvitations || pendingInvitations.length > 0)" class="mb-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
+      <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-800">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center size-8 rounded-lg bg-warning-50 dark:bg-warning-950 text-warning-600 dark:text-warning-400">
+            <Clock class="size-4" />
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Pending invitations</h2>
+            <p class="text-xs text-surface-500 dark:text-surface-400">
+              {{ isLoadingInvitations ? 'Loading…' : `${pendingInvitations.length} pending` }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div v-if="isLoadingInvitations" class="px-6 py-6 text-center text-surface-400 text-sm">
+        <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
+        Loading invitations…
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="invitationsError" class="px-6 py-6 text-center">
+        <AlertTriangle class="size-5 text-danger-400 mx-auto mb-1.5" />
+        <p class="text-sm text-danger-600 dark:text-danger-400">{{ invitationsError }}</p>
+        <button class="mt-1.5 text-sm text-brand-600 hover:text-brand-700 underline" @click="fetchInvitations">
+          Retry
+        </button>
+      </div>
+
+      <!-- Invitations list -->
+      <div v-else class="divide-y divide-surface-100 dark:divide-surface-800">
+        <div
+          v-for="inv in pendingInvitations"
+          :key="inv.id"
+          class="px-6 py-3.5 flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+        >
+          <!-- Email icon -->
+          <div class="flex-shrink-0">
+            <div class="size-9 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center text-surface-400 dark:text-surface-500">
+              <Mail class="size-4" />
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
+              {{ inv.email }}
+            </div>
+            <div class="flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500">
+              <span
+                :class="[getRoleConfig(inv.role).bg, getRoleConfig(inv.role).color]"
+                class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+              >
+                <component :is="getRoleConfig(inv.role).icon" class="size-2.5" />
+                {{ getRoleConfig(inv.role).label }}
+              </span>
+              <span :class="isExpired(inv.expiresAt) ? 'text-danger-500' : ''">
+                {{ formatExpiresAt(inv.expiresAt) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div v-if="canCancelInvite" class="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              :disabled="resendingInvitation === inv.id"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Resend invitation email"
+              @click="handleResendInvitation(inv)"
+            >
+              <Loader2 v-if="resendingInvitation === inv.id" class="size-3 animate-spin" />
+              <RefreshCw v-else class="size-3" />
+              Resend
+            </button>
+            <button
+              :disabled="cancellingInvitation === inv.id"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-danger-200 dark:border-danger-800 bg-white dark:bg-surface-800 px-3 py-1.5 text-xs font-medium text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Cancel invitation"
+              @click="handleCancelInvitation(inv.id)"
+            >
+              <Loader2 v-if="cancellingInvitation === inv.id" class="size-3 animate-spin" />
+              <X v-else class="size-3" />
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Members list -->
     <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">

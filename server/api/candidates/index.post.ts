@@ -40,6 +40,10 @@ export default defineEventHandler(async (event) => {
     updatedAt: candidate.updatedAt,
   })
 
+  if (!created) {
+    throw createError({ statusCode: 500, statusMessage: 'Failed to create candidate' })
+  }
+
   recordActivity({
     organizationId: orgId,
     actorId: session.user.id,

@@ -164,6 +164,10 @@ export default defineEventHandler(async (event) => {
       createdAt: document.createdAt,
     })
 
+    if (!created) {
+      throw createError({ statusCode: 500, statusMessage: 'Failed to create document' })
+    }
+
     recordActivity({
       organizationId: orgId,
       actorId: session.user.id,

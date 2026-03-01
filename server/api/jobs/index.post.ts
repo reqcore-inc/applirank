@@ -43,6 +43,10 @@ export default defineEventHandler(async (event) => {
     updatedAt: job.updatedAt,
   })
 
+  if (!created) {
+    throw createError({ statusCode: 500, statusMessage: 'Failed to create job' })
+  }
+
   recordActivity({
     organizationId: orgId,
     actorId: session.user.id,

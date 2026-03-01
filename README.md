@@ -4,7 +4,7 @@
 
 **The open-source ATS you own. No per-seat fees. No data lock-in. No secret algorithms.**
 
-[Live Demo](https://demo.reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
+[Live Demo](https://reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![E2E Tests](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml)
@@ -15,7 +15,7 @@
 
 ---
 
-Most recruiting software holds your candidate data hostage behind per-seat pricing and opaque algorithms. Reqcore is different — it runs on **your** infrastructure, your team scales without increasing your software bill, and when AI ranks a candidate, it shows you exactly why.
+Most recruiting software holds your candidate data hostage behind per-seat pricing and opaque algorithms. Reqcore is different — it runs on **your** infrastructure, your team scales without increasing your software bill, and every feature is open source so you can inspect and modify everything.
 
 ## Why Reqcore?
 
@@ -25,7 +25,7 @@ Most recruiting software holds your candidate data hostage behind per-seat prici
 | **Self-hosted** | ✅ | ❌ | ❌ | ❌ | ✅ |
 | **No per-seat pricing** | ✅ | ❌ | ❌ | ❌ | ✅ |
 | **Own your data** | ✅ | ❌ | ❌ | ❌ | ✅ |
-| **Transparent AI ranking** | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Transparent AI ranking** | 🔜 | ❌ | ❌ | ❌ | ❌ |
 | **Modern tech stack** | Nuxt 4 / Vue 3 | — | — | — | PHP 5 |
 | **Active development** | ✅ 2026 | ✅ | ✅ | ✅ | ❌ Stale |
 | **Resume parsing** | 🔜 | ✅ | ✅ | ✅ | ❌ |

@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   Github,
   Settings,
-  Sparkles,
   Droplets,
   KeyRound,
   HardDrive,
@@ -35,16 +34,16 @@ const { t } = useI18n()
 useSeoMeta({
   title: 'Open-Source Applicant Tracking System — Self-Hosted ATS',
   description:
-    'Reqcore is a free, open-source ATS you can self-host. Transparent AI candidate ranking, no per-seat pricing, and full data ownership. The best Greenhouse & Lever alternative.',
+    'Reqcore is a free, open-source ATS you can self-host. No per-seat pricing, full data ownership, and a modern tech stack. The best Greenhouse & Lever alternative.',
   ogTitle: 'Reqcore — Open-Source Applicant Tracking System',
   ogDescription:
-    'Free, self-hosted ATS with auditable AI, zero per-seat fees, and full data ownership. Deploy on your own infrastructure in minutes.',
+    'Free, self-hosted ATS with zero per-seat fees and full data ownership. Deploy on your own infrastructure in minutes.',
   ogType: 'website',
   ogImage: '/og-image.png',
   twitterCard: 'summary_large_image',
   twitterTitle: 'Reqcore — Open-Source Applicant Tracking System',
   twitterDescription:
-    'Self-hosted ATS with transparent AI, no per-seat pricing, and full data ownership.',
+    'Self-hosted ATS with no per-seat pricing, full data ownership, and a modern tech stack.',
 })
 
 // ─── Schema.org: Organization + WebSite ──────────────
@@ -54,15 +53,15 @@ useSchemaOrg([
     url: 'https://reqcore.com',
     logo: 'https://reqcore.com/og-image.png',
     sameAs: ['https://github.com/reqcore-inc/reqcore'],
-    description: 'Open-source applicant tracking system with transparent AI and full data ownership.',
+    description: 'Open-source applicant tracking system with full data ownership and no per-seat pricing.',
   }),
   defineWebSite({
     name: 'Reqcore',
-    description: 'Open-source applicant tracking system with transparent AI, no per-seat pricing, and full data ownership.',
+    description: 'Open-source applicant tracking system with no per-seat pricing and full data ownership.',
   }),
   defineWebPage({
     name: 'Reqcore — Open-Source Applicant Tracking System',
-    description: 'Free, self-hosted ATS with auditable AI, zero per-seat fees, and full data ownership.',
+    description: 'Free, self-hosted ATS with zero per-seat fees and full data ownership.',
   }),
 ])
 
@@ -418,7 +417,7 @@ const ctaRef = useScrollFade()
           </h2>
           <p class="mt-5 text-base leading-relaxed text-surface-400 sm:text-lg">
             Stop renting access to your own talent data. Own your infrastructure,
-            audit your AI, and scale without penalty.
+            control your process, and scale without penalty.
           </p>
         </div>
 
@@ -495,7 +494,7 @@ const ctaRef = useScrollFade()
             </div>
           </div>
 
-          <!-- ── Card 2: Auditable Intelligence ────────────── -->
+          <!-- ── Card 2: Full Visibility ────────────── -->
           <div class="stagger-child bento-card group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0c0c0f] transition-all duration-300 hover:border-white/[0.12]">
             <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden="true">
               <div class="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-accent-500/[0.1] blur-[60px]" />
@@ -506,54 +505,54 @@ const ctaRef = useScrollFade()
                 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-inset ring-accent-500/20">
                   <ScanEye class="h-4 w-4" :stroke-width="1.75" />
                 </div>
-                <h3 class="text-[15px] font-semibold text-white">Auditable Intelligence</h3>
+                <h3 class="text-[15px] font-semibold text-white">Full Visibility</h3>
               </div>
               <p class="mt-3 text-sm leading-relaxed text-surface-400">
-                When AI ranks a candidate, it shows the receipts. Every decision comes with a visible <span class="font-medium text-white">matching-logic summary</span>.
+                See every candidate's journey at a glance. Track applications through your pipeline with a <span class="font-medium text-white">visual Kanban board</span> and real-time stats.
               </p>
             </div>
 
-            <!-- Visual area — match scores, bottom-aligned with fade -->
+            <!-- Visual area — pipeline stages, bottom-aligned with fade -->
             <div class="relative mt-auto px-7 pt-2 pb-0">
               <div class="overflow-hidden rounded-t-lg border border-b-0 border-white/[0.06] bg-white/[0.02]">
                 <div class="border-b border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
-                  <span class="text-[10px] font-semibold text-surface-300">Match Score — Senior Frontend Engineer</span>
+                  <span class="text-[10px] font-semibold text-surface-300">Pipeline — Senior Frontend Engineer</span>
                 </div>
                 <div class="space-y-2 px-3 py-2.5">
                   <div>
                     <div class="flex items-center justify-between text-[10px]">
-                      <span class="text-surface-400">React / Vue.js</span>
-                      <span class="font-medium text-accent-400">95%</span>
+                      <span class="text-surface-400">New</span>
+                      <span class="font-medium text-warning-400">12</span>
                     </div>
                     <div class="mt-0.5 h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                      <div class="h-full rounded-full bg-gradient-to-r from-accent-500 to-accent-400" style="width: 95%" />
+                      <div class="h-full rounded-full bg-gradient-to-r from-warning-500 to-warning-400" style="width: 40%" />
                     </div>
                   </div>
                   <div>
                     <div class="flex items-center justify-between text-[10px]">
-                      <span class="text-surface-400">TypeScript</span>
-                      <span class="font-medium text-accent-400">88%</span>
+                      <span class="text-surface-400">Screening</span>
+                      <span class="font-medium text-info-400">8</span>
                     </div>
                     <div class="mt-0.5 h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                      <div class="h-full rounded-full bg-gradient-to-r from-accent-500 to-accent-400" style="width: 88%" />
+                      <div class="h-full rounded-full bg-gradient-to-r from-info-500 to-info-400" style="width: 27%" />
                     </div>
                   </div>
                   <div>
                     <div class="flex items-center justify-between text-[10px]">
-                      <span class="text-surface-400">CI/CD Experience</span>
-                      <span class="font-medium text-brand-400">72%</span>
+                      <span class="text-surface-400">Interview</span>
+                      <span class="font-medium text-brand-400">6</span>
                     </div>
                     <div class="mt-0.5 h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                      <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400" style="width: 72%" />
+                      <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400" style="width: 20%" />
                     </div>
                   </div>
                   <div>
                     <div class="flex items-center justify-between text-[10px]">
-                      <span class="text-surface-400">System Design</span>
-                      <span class="font-medium text-brand-400">64%</span>
+                      <span class="text-surface-400">Hired</span>
+                      <span class="font-medium text-success-400">4</span>
                     </div>
                     <div class="mt-0.5 h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                      <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-400" style="width: 64%" />
+                      <div class="h-full rounded-full bg-gradient-to-r from-success-500 to-success-400" style="width: 13%" />
                     </div>
                   </div>
                 </div>
@@ -629,7 +628,7 @@ const ctaRef = useScrollFade()
                 <h3 class="text-[15px] font-semibold text-white">Privacy Sovereignty</h3>
               </div>
               <p class="mt-3 text-sm leading-relaxed text-surface-400">
-                Local-first storage and local AI via Ollama. Candidate PII <span class="font-medium text-white">never has to leave your private network</span>.
+                Self-hosted storage with MinIO. Candidate PII <span class="font-medium text-white">never has to leave your private network</span>.
               </p>
             </div>
 
@@ -653,9 +652,6 @@ const ctaRef = useScrollFade()
                     </div>
                     <div class="flex items-center gap-1.5 text-[9px] text-surface-500">
                       <span class="h-1.5 w-1.5 rounded-full bg-success-400" /> minio
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[9px] text-surface-500">
-                      <span class="h-1.5 w-1.5 rounded-full bg-accent-400" /> ollama <span class="text-surface-600">(optional)</span>
                     </div>
                   </div>
                 </div>
@@ -998,21 +994,21 @@ const ctaRef = useScrollFade()
                   </div>
                   <h3 class="text-xl font-bold tracking-tight text-white sm:text-2xl">Hire</h3>
                   <p class="mt-3 text-[15px] leading-relaxed text-surface-400">
-                    Post jobs with a public career page, receive applications, and let transparent AI surface
-                    <span class="font-medium text-surface-300">the best matches — with full matching logic visible</span>.
+                    Post jobs with a public career page, receive applications, and move candidates through
+                    <span class="font-medium text-surface-300">your pipeline — from screening to hired</span>.
                   </p>
                   <div class="mt-5 flex flex-wrap gap-2">
                     <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-surface-300">
-                      <Sparkles class="h-3 w-3 text-warning-400" :stroke-width="2" />
-                      AI matching
+                      <Briefcase class="h-3 w-3 text-warning-400" :stroke-width="2" />
+                      Public job board
                     </span>
                     <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-surface-300">
                       <Eye class="h-3 w-3 text-surface-400" :stroke-width="2" />
-                      Fully auditable
+                      Pipeline tracking
                     </span>
                     <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-surface-300">
                       <FileText class="h-3 w-3 text-surface-400" :stroke-width="2" />
-                      Public job board
+                      Document storage
                     </span>
                   </div>
                 </div>
@@ -1044,48 +1040,33 @@ const ctaRef = useScrollFade()
                       </div>
                     </div>
 
-                    <!-- Matched candidates -->
+                    <!-- Recent candidates -->
                     <div class="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3.5">
-                      <div class="mb-2.5 text-[11px] font-semibold tracking-wider text-surface-500 uppercase">Top Matches</div>
+                      <div class="mb-2.5 text-[11px] font-semibold tracking-wider text-surface-500 uppercase">Recent Candidates</div>
                       <div class="space-y-2">
                         <div class="flex items-center gap-3 rounded-md bg-white/[0.02] px-3 py-2">
                           <div class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500/20 text-[9px] font-bold text-brand-300">JD</div>
                           <div class="flex-1">
                             <div class="text-[12px] font-medium text-white">Jane Doe</div>
-                            <div class="text-[10px] text-surface-500">5 yrs · React, TypeScript, Node.js</div>
+                            <div class="text-[10px] text-surface-500">Senior Frontend Engineer</div>
                           </div>
-                          <div class="flex items-center gap-1">
-                            <div class="h-1.5 w-8 overflow-hidden rounded-full bg-white/[0.06]">
-                              <div class="h-full w-[92%] rounded-full bg-success-400" />
-                            </div>
-                            <span class="text-[10px] font-semibold text-success-400">92%</span>
-                          </div>
+                          <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-medium text-brand-400">Interview</span>
                         </div>
                         <div class="flex items-center gap-3 rounded-md px-3 py-2">
                           <div class="flex h-7 w-7 items-center justify-center rounded-full bg-accent-500/20 text-[9px] font-bold text-accent-300">AK</div>
                           <div class="flex-1">
                             <div class="text-[12px] font-medium text-white">Alex Kim</div>
-                            <div class="text-[10px] text-surface-500">3 yrs · Vue, TypeScript, Go</div>
+                            <div class="text-[10px] text-surface-500">Product Designer</div>
                           </div>
-                          <div class="flex items-center gap-1">
-                            <div class="h-1.5 w-8 overflow-hidden rounded-full bg-white/[0.06]">
-                              <div class="h-full w-[85%] rounded-full bg-brand-400" />
-                            </div>
-                            <span class="text-[10px] font-semibold text-brand-400">85%</span>
-                          </div>
+                          <span class="rounded-full bg-warning-500/10 px-2 py-0.5 text-[10px] font-medium text-warning-400">New</span>
                         </div>
                         <div class="flex items-center gap-3 rounded-md px-3 py-2">
                           <div class="flex h-7 w-7 items-center justify-center rounded-full bg-warning-500/20 text-[9px] font-bold text-warning-300">MS</div>
                           <div class="flex-1">
                             <div class="text-[12px] font-medium text-white">Maria Silva</div>
-                            <div class="text-[10px] text-surface-500">7 yrs · Angular, Python, AWS</div>
+                            <div class="text-[10px] text-surface-500">DevOps Engineer</div>
                           </div>
-                          <div class="flex items-center gap-1">
-                            <div class="h-1.5 w-8 overflow-hidden rounded-full bg-white/[0.06]">
-                              <div class="h-full w-[78%] rounded-full bg-brand-400" />
-                            </div>
-                            <span class="text-[10px] font-semibold text-brand-400">78%</span>
-                          </div>
+                          <span class="rounded-full bg-accent-500/10 px-2 py-0.5 text-[10px] font-medium text-accent-400">Offer</span>
                         </div>
                       </div>
                     </div>

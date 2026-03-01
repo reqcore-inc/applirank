@@ -83,6 +83,6 @@ export const member = ac.newRole({
   candidate: ['create', 'read', 'update'],
   application: ['create', 'read', 'update'],
   document: ['create', 'read'],
-  comment: ['create', 'read'],
+  comment: ['create', 'read', 'delete'],
   activityLog: ['read'],
 })

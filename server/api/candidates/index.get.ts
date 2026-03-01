@@ -12,7 +12,9 @@ export default defineEventHandler(async (event) => {
   const conditions = [eq(candidate.organizationId, orgId)]
 
   if (query.search) {
-    const pattern = `%${query.search}%`
+    // Escape LIKE meta-characters to prevent pattern injection
+    const escaped = query.search.replace(/[%_\\]/g, '\\$&')
+    const pattern = `%${escaped}%`
     conditions.push(
       or(
         ilike(candidate.firstName, pattern),

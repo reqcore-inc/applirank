@@ -1,5 +1,5 @@
 import { eq, and } from 'drizzle-orm'
-import { comment } from '../../database/schema'
+import { comment, member } from '../../database/schema'
 import { commentIdParamSchema } from '../../utils/schemas/comment'
 
 /**
@@ -26,6 +26,21 @@ export default defineEventHandler(async (event) => {
 
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: 'Comment not found' })
+  }
+
+  // Admins/owners can delete any comment; members can only delete their own
+  if (existing.authorId !== session.user.id) {
+    const mem = await db.query.member.findFirst({
+      where: and(
+        eq(member.userId, session.user.id),
+        eq(member.organizationId, orgId),
+      ),
+      columns: { role: true },
+    })
+    const isAdminOrOwner = mem?.role === 'admin' || mem?.role === 'owner'
+    if (!isAdminOrOwner) {
+      throw createError({ statusCode: 403, statusMessage: 'You can only delete your own comments' })
+    }
   }
 
   await db.delete(comment).where(eq(comment.id, id))

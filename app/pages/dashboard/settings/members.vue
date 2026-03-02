@@ -4,6 +4,7 @@ import {
   Users, UserPlus, Shield, ShieldCheck, Crown,
   MoreHorizontal, Trash2, ChevronDown, Loader2,
   Mail, Clock, X, Check, AlertTriangle, RefreshCw,
+  Link2, Copy, Eye, EyeOff, UserCheck, UserX, MessageSquare, Search,
 } from 'lucide-vue-next'
 
 definePageMeta({})
@@ -218,6 +219,206 @@ function formatExpiresAt(expiresAt: Date | string): string {
   if (diffHours < 24) return `Expires in ${diffHours}h`
   const diffDays = Math.floor(diffHours / 24)
   return `Expires in ${diffDays}d`
+}
+
+// ─────────────────────────────────────────────
+// Invite links (shareable)
+// ─────────────────────────────────────────────
+const inviteLinks = ref<Array<{
+  id: string
+  token: string
+  role: string
+  maxUses: number | null
+  useCount: number
+  expiresAt: string
+  createdAt: string
+  createdByName: string | null
+}>>([])
+const isLoadingLinks = ref(true)
+const linksError = ref('')
+const showCreateLinkForm = ref(false)
+const newLinkRole = ref<'admin' | 'member'>('member')
+const newLinkMaxUses = ref<string>('')
+const newLinkExpiresInHours = ref(168) // 7 days default
+const isCreatingLink = ref(false)
+const createLinkError = ref('')
+const createLinkSuccess = ref('')
+const copiedLinkId = ref<string | null>(null)
+const revokingLinkId = ref<string | null>(null)
+
+async function fetchInviteLinks() {
+  isLoadingLinks.value = true
+  linksError.value = ''
+  try {
+    const data = await $fetch('/api/invite-links')
+    inviteLinks.value = data as typeof inviteLinks.value
+  }
+  catch (err: unknown) {
+    linksError.value = err instanceof Error ? err.message : 'Failed to load invite links'
+  }
+  finally {
+    isLoadingLinks.value = false
+  }
+}
+
+onMounted(fetchInviteLinks)
+
+async function handleCreateLink() {
+  isCreatingLink.value = true
+  createLinkError.value = ''
+  createLinkSuccess.value = ''
+
+  try {
+    const maxUses = newLinkMaxUses.value.trim() ? parseInt(newLinkMaxUses.value, 10) : null
+    if (maxUses !== null && (isNaN(maxUses) || maxUses < 1)) {
+      createLinkError.value = 'Max uses must be a positive number'
+      return
+    }
+
+    await $fetch('/api/invite-links', {
+      method: 'POST',
+      body: {
+        role: newLinkRole.value,
+        maxUses,
+        expiresInHours: newLinkExpiresInHours.value,
+      },
+    })
+
+    createLinkSuccess.value = 'Invite link created!'
+    showCreateLinkForm.value = false
+    newLinkRole.value = 'member'
+    newLinkMaxUses.value = ''
+    newLinkExpiresInHours.value = 168
+    setTimeout(() => { createLinkSuccess.value = '' }, 5000)
+    await fetchInviteLinks()
+  }
+  catch (err: any) {
+    createLinkError.value = err?.data?.statusMessage || 'Failed to create invite link'
+  }
+  finally {
+    isCreatingLink.value = false
+  }
+}
+
+function getInviteLinkUrl(token: string): string {
+  return `${window.location.origin}/join/${token}`
+}
+
+async function copyLinkToClipboard(link: { id: string; token: string }) {
+  try {
+    await navigator.clipboard.writeText(getInviteLinkUrl(link.token))
+    copiedLinkId.value = link.id
+    setTimeout(() => { copiedLinkId.value = null }, 2000)
+  }
+  catch {
+    // Fallback for non-secure contexts
+    const textArea = document.createElement('textarea')
+    textArea.value = getInviteLinkUrl(link.token)
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    copiedLinkId.value = link.id
+    setTimeout(() => { copiedLinkId.value = null }, 2000)
+  }
+}
+
+async function handleRevokeLink(linkId: string) {
+  revokingLinkId.value = linkId
+
+  try {
+    await $fetch(`/api/invite-links/${linkId}`, { method: 'DELETE' })
+    await fetchInviteLinks()
+  }
+  catch (err: any) {
+    linksError.value = err?.data?.statusMessage || 'Failed to revoke invite link'
+  }
+  finally {
+    revokingLinkId.value = null
+  }
+}
+
+function isLinkActive(link: { expiresAt: string; maxUses: number | null; useCount: number }): boolean {
+  const notExpired = new Date(link.expiresAt) > new Date()
+  const notExhausted = link.maxUses === null || link.useCount < link.maxUses
+  return notExpired && notExhausted
+}
+
+const expiryOptions = [
+  { label: '1 hour', value: 1 },
+  { label: '6 hours', value: 6 },
+  { label: '24 hours', value: 24 },
+  { label: '3 days', value: 72 },
+  { label: '7 days', value: 168 },
+  { label: '14 days', value: 336 },
+  { label: '30 days', value: 720 },
+]
+
+// ─────────────────────────────────────────────
+// Join requests
+// ─────────────────────────────────────────────
+const joinRequests = ref<Array<{
+  id: string
+  message: string | null
+  status: string
+  createdAt: string
+  userName: string
+  userEmail: string
+  userImage: string | null
+}>>([])
+const isLoadingJoinRequests = ref(true)
+const joinRequestsError = ref('')
+const approvingRequestId = ref<string | null>(null)
+const rejectingRequestId = ref<string | null>(null)
+const joinRequestActionError = ref('')
+
+async function fetchJoinRequests() {
+  isLoadingJoinRequests.value = true
+  joinRequestsError.value = ''
+  try {
+    const data = await $fetch('/api/join-requests')
+    joinRequests.value = data as typeof joinRequests.value
+  }
+  catch (err: unknown) {
+    joinRequestsError.value = err instanceof Error ? err.message : 'Failed to load join requests'
+  }
+  finally {
+    isLoadingJoinRequests.value = false
+  }
+}
+
+onMounted(fetchJoinRequests)
+
+async function handleApproveRequest(requestId: string) {
+  approvingRequestId.value = requestId
+  joinRequestActionError.value = ''
+
+  try {
+    await $fetch(`/api/join-requests/${requestId}/approve`, { method: 'POST' })
+    await Promise.all([fetchJoinRequests(), fetchMembers()])
+  }
+  catch (err: any) {
+    joinRequestActionError.value = err?.data?.statusMessage || 'Failed to approve request'
+  }
+  finally {
+    approvingRequestId.value = null
+  }
+}
+
+async function handleRejectRequest(requestId: string) {
+  rejectingRequestId.value = requestId
+  joinRequestActionError.value = ''
+
+  try {
+    await $fetch(`/api/join-requests/${requestId}/reject`, { method: 'POST' })
+    await fetchJoinRequests()
+  }
+  catch (err: any) {
+    joinRequestActionError.value = err?.data?.statusMessage || 'Failed to reject request'
+  }
+  finally {
+    rejectingRequestId.value = null
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -540,6 +741,302 @@ onUnmounted(() => {
               <Loader2 v-if="cancellingInvitation === inv.id" class="size-3 animate-spin" />
               <X v-else class="size-3" />
               Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Invite links section -->
+    <section v-if="canInvite" class="mb-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
+      <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-800">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center size-8 rounded-lg bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400">
+              <Link2 class="size-4" />
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Invite links</h2>
+              <p class="text-xs text-surface-500 dark:text-surface-400">
+                Shareable links to join your organization
+              </p>
+            </div>
+          </div>
+          <button
+            v-if="!showCreateLinkForm"
+            class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 transition-colors"
+            @click="showCreateLinkForm = true"
+          >
+            <Link2 class="size-3.5" />
+            Create link
+          </button>
+        </div>
+      </div>
+
+      <!-- Create link form -->
+      <Transition
+        enter-active-class="transition-all duration-200"
+        leave-active-class="transition-all duration-200"
+        enter-from-class="opacity-0 -translate-y-2"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="showCreateLinkForm" class="px-6 py-4 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-medium text-surface-900 dark:text-surface-100">New invite link</h3>
+            <button
+              class="p-1 rounded-md text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors"
+              @click="showCreateLinkForm = false; createLinkError = ''"
+            >
+              <X class="size-4" />
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-3 items-end">
+            <div>
+              <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Role</label>
+              <div class="relative">
+                <select
+                  v-model="newLinkRole"
+                  class="appearance-none rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 pl-3 pr-8 py-1.5 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors cursor-pointer"
+                >
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <ChevronDown class="absolute right-2.5 top-1/2 -translate-y-1/2 size-3 text-surface-400 pointer-events-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Expires in</label>
+              <div class="relative">
+                <select
+                  v-model="newLinkExpiresInHours"
+                  class="appearance-none rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 pl-3 pr-8 py-1.5 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors cursor-pointer"
+                >
+                  <option v-for="opt in expiryOptions" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <ChevronDown class="absolute right-2.5 top-1/2 -translate-y-1/2 size-3 text-surface-400 pointer-events-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Max uses (optional)</label>
+              <input
+                v-model="newLinkMaxUses"
+                type="number"
+                min="1"
+                placeholder="Unlimited"
+                class="w-28 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
+              />
+            </div>
+
+            <button
+              :disabled="isCreatingLink"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="handleCreateLink"
+            >
+              <Loader2 v-if="isCreatingLink" class="size-3.5 animate-spin" />
+              Create
+            </button>
+          </div>
+
+          <div v-if="createLinkError" class="mt-2 text-xs text-danger-600 dark:text-danger-400">
+            {{ createLinkError }}
+          </div>
+        </div>
+      </Transition>
+
+      <!-- Success banner -->
+      <Transition
+        enter-active-class="transition-opacity duration-300"
+        leave-active-class="transition-opacity duration-300"
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="createLinkSuccess" class="px-6 py-2 flex items-center gap-2 text-sm text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-950/40 border-b border-success-200 dark:border-success-900">
+          <Check class="size-4" />
+          {{ createLinkSuccess }}
+        </div>
+      </Transition>
+
+      <!-- Loading state -->
+      <div v-if="isLoadingLinks" class="px-6 py-6 text-center text-surface-400 text-sm">
+        <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
+        Loading invite links…
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="linksError" class="px-6 py-6 text-center">
+        <AlertTriangle class="size-5 text-danger-400 mx-auto mb-1.5" />
+        <p class="text-sm text-danger-600 dark:text-danger-400">{{ linksError }}</p>
+        <button class="mt-1.5 text-sm text-brand-600 hover:text-brand-700 underline" @click="fetchInviteLinks">
+          Retry
+        </button>
+      </div>
+
+      <!-- Empty state -->
+      <div v-else-if="inviteLinks.length === 0 && !showCreateLinkForm" class="px-6 py-6 text-center text-sm text-surface-400 dark:text-surface-500">
+        No active invite links. Create one to share with your team.
+      </div>
+
+      <!-- Links list -->
+      <div v-else-if="inviteLinks.length > 0" class="divide-y divide-surface-100 dark:divide-surface-800">
+        <div
+          v-for="link in inviteLinks"
+          :key="link.id"
+          class="px-6 py-3.5 flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+          :class="{ 'opacity-50': !isLinkActive(link) }"
+        >
+          <div class="flex-shrink-0">
+            <div class="size-9 rounded-full flex items-center justify-center"
+              :class="isLinkActive(link) ? 'bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400' : 'bg-surface-100 dark:bg-surface-800 text-surface-400'"
+            >
+              <Link2 class="size-4" />
+            </div>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 text-sm font-medium text-surface-900 dark:text-surface-100">
+              <span
+                :class="[getRoleConfig(link.role).bg, getRoleConfig(link.role).color]"
+                class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+              >
+                <component :is="getRoleConfig(link.role).icon" class="size-2.5" />
+                {{ getRoleConfig(link.role).label }}
+              </span>
+              <span v-if="!isLinkActive(link)" class="text-xs text-danger-500">Inactive</span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+              <span>{{ link.useCount }}{{ link.maxUses ? `/${link.maxUses}` : '' }} uses</span>
+              <span :class="isExpired(link.expiresAt) ? 'text-danger-500' : ''">
+                {{ formatExpiresAt(link.expiresAt) }}
+              </span>
+              <span v-if="link.createdByName">by {{ link.createdByName }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              v-if="isLinkActive(link)"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-1.5 text-xs font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
+              :title="copiedLinkId === link.id ? 'Copied!' : 'Copy invite link'"
+              @click="copyLinkToClipboard(link)"
+            >
+              <Check v-if="copiedLinkId === link.id" class="size-3 text-success-500" />
+              <Copy v-else class="size-3" />
+              {{ copiedLinkId === link.id ? 'Copied' : 'Copy' }}
+            </button>
+            <button
+              :disabled="revokingLinkId === link.id"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-danger-200 dark:border-danger-800 bg-white dark:bg-surface-800 px-3 py-1.5 text-xs font-medium text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Revoke invite link"
+              @click="handleRevokeLink(link.id)"
+            >
+              <Loader2 v-if="revokingLinkId === link.id" class="size-3 animate-spin" />
+              <Trash2 v-else class="size-3" />
+              Revoke
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Join requests section -->
+    <section v-if="canInvite && (isLoadingJoinRequests || joinRequests.length > 0)" class="mb-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
+      <div class="px-6 py-4 border-b border-surface-200 dark:border-surface-800">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center size-8 rounded-lg bg-warning-50 dark:bg-warning-950 text-warning-600 dark:text-warning-400">
+            <UserCheck class="size-4" />
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Join requests</h2>
+            <p class="text-xs text-surface-500 dark:text-surface-400">
+              {{ isLoadingJoinRequests ? 'Loading…' : `${joinRequests.length} pending request${joinRequests.length !== 1 ? 's' : ''}` }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Join request action error -->
+      <div v-if="joinRequestActionError" class="px-6 py-2 flex items-center justify-between text-sm text-danger-700 dark:text-danger-400 bg-danger-50 dark:bg-danger-950/40 border-b border-danger-200 dark:border-danger-900">
+        <span>{{ joinRequestActionError }}</span>
+        <button class="text-danger-500 hover:text-danger-700 transition-colors" @click="joinRequestActionError = ''">
+          <X class="size-4" />
+        </button>
+      </div>
+
+      <!-- Loading state -->
+      <div v-if="isLoadingJoinRequests" class="px-6 py-6 text-center text-surface-400 text-sm">
+        <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
+        Loading join requests…
+      </div>
+
+      <!-- Error state -->
+      <div v-else-if="joinRequestsError" class="px-6 py-6 text-center">
+        <AlertTriangle class="size-5 text-danger-400 mx-auto mb-1.5" />
+        <p class="text-sm text-danger-600 dark:text-danger-400">{{ joinRequestsError }}</p>
+        <button class="mt-1.5 text-sm text-brand-600 hover:text-brand-700 underline" @click="fetchJoinRequests">
+          Retry
+        </button>
+      </div>
+
+      <!-- Requests list -->
+      <div v-else class="divide-y divide-surface-100 dark:divide-surface-800">
+        <div
+          v-for="req in joinRequests"
+          :key="req.id"
+          class="px-6 py-3.5 flex items-center gap-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors"
+        >
+          <!-- Avatar -->
+          <div class="flex-shrink-0">
+            <img
+              v-if="req.userImage"
+              :src="req.userImage"
+              :alt="req.userName"
+              class="size-9 rounded-full object-cover ring-2 ring-surface-100 dark:ring-surface-800"
+            />
+            <div v-else class="size-9 rounded-full bg-brand-100 dark:bg-brand-900 flex items-center justify-center text-xs font-semibold text-brand-700 dark:text-brand-300 ring-2 ring-surface-100 dark:ring-surface-800">
+              {{ req.userName?.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase() || '?' }}
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
+              {{ req.userName }}
+            </div>
+            <div class="text-xs text-surface-500 dark:text-surface-400 truncate">
+              {{ req.userEmail }}
+            </div>
+            <div v-if="req.message" class="mt-1 text-xs text-surface-500 dark:text-surface-400 italic flex items-start gap-1">
+              <MessageSquare class="size-3 mt-0.5 flex-shrink-0" />
+              <span class="truncate">"{{ req.message }}"</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button
+              :disabled="approvingRequestId === req.id"
+              class="inline-flex items-center gap-1.5 rounded-lg bg-success-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-success-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Approve — adds as Member"
+              @click="handleApproveRequest(req.id)"
+            >
+              <Loader2 v-if="approvingRequestId === req.id" class="size-3 animate-spin" />
+              <UserCheck v-else class="size-3" />
+              Approve
+            </button>
+            <button
+              :disabled="rejectingRequestId === req.id"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-danger-200 dark:border-danger-800 bg-white dark:bg-surface-800 px-3 py-1.5 text-xs font-medium text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Reject join request"
+              @click="handleRejectRequest(req.id)"
+            >
+              <Loader2 v-if="rejectingRequestId === req.id" class="size-3 animate-spin" />
+              <UserX v-else class="size-3" />
+              Reject
             </button>
           </div>
         </div>

@@ -13,6 +13,7 @@ useSeoMeta({
 })
 
 const { orgs, isOrgsLoading, switchOrg, createOrg } = useCurrentOrg()
+const { acceptInviteLink } = useInviteLinks()
 const localePath = useLocalePath()
 
 const orgName = ref('')
@@ -150,10 +151,7 @@ async function handleAcceptInviteCode() {
   isAcceptingCode.value = true
 
   try {
-    const result = await $fetch('/api/invite-links/accept', {
-      method: 'POST',
-      body: { token },
-    }) as { organizationId: string; organizationName: string }
+    const result = await acceptInviteLink(token)
 
     inviteCodeSuccess.value = true
 

@@ -19,6 +19,11 @@ const { data: session } = await authClient.useSession(useFetch)
 const { allowed: canManageMembers } = usePermission({ member: ['create'] })
 const { allowed: canInvite } = usePermission({ invitation: ['create'] })
 const { allowed: canCancelInvite } = usePermission({ invitation: ['cancel'] })
+const {
+  listInviteLinks: fetchInviteLinksApi,
+  createInviteLink: createInviteLinkApi,
+  revokeInviteLink: revokeInviteLinkApi,
+} = useInviteLinks()
 
 // ─────────────────────────────────────────────
 // Members list
@@ -224,16 +229,7 @@ function formatExpiresAt(expiresAt: Date | string): string {
 // ─────────────────────────────────────────────
 // Invite links (shareable)
 // ─────────────────────────────────────────────
-const inviteLinks = ref<Array<{
-  id: string
-  token: string
-  role: string
-  maxUses: number | null
-  useCount: number
-  expiresAt: string
-  createdAt: string
-  createdByName: string | null
-}>>([])
+const inviteLinks = ref<InviteLink[]>([])
 const isLoadingLinks = ref(true)
 const linksError = ref('')
 const showCreateLinkForm = ref(false)
@@ -250,8 +246,7 @@ async function fetchInviteLinks() {
   isLoadingLinks.value = true
   linksError.value = ''
   try {
-    const data = await $fetch('/api/invite-links')
-    inviteLinks.value = data as typeof inviteLinks.value
+    inviteLinks.value = await fetchInviteLinksApi()
   }
   catch (err: unknown) {
     linksError.value = err instanceof Error ? err.message : 'Failed to load invite links'
@@ -275,13 +270,10 @@ async function handleCreateLink() {
       return
     }
 
-    await $fetch('/api/invite-links', {
-      method: 'POST',
-      body: {
-        role: newLinkRole.value,
-        maxUses,
-        expiresInHours: newLinkExpiresInHours.value,
-      },
+    await createInviteLinkApi({
+      role: newLinkRole.value,
+      maxUses,
+      expiresInHours: newLinkExpiresInHours.value,
     })
 
     createLinkSuccess.value = 'Invite link created!'
@@ -327,7 +319,7 @@ async function handleRevokeLink(linkId: string) {
   revokingLinkId.value = linkId
 
   try {
-    await $fetch(`/api/invite-links/${linkId}`, { method: 'DELETE' })
+    await revokeInviteLinkApi(linkId)
     await fetchInviteLinks()
   }
   catch (err: any) {

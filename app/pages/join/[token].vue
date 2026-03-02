@@ -13,6 +13,7 @@ useSeoMeta({
 
 const route = useRoute()
 const localePath = useLocalePath()
+const { acceptInviteLink, fetchInviteLinkInfo } = useInviteLinks()
 const token = computed(() => route.params.token as string)
 
 // ─────────────────────────────────────────────
@@ -42,8 +43,8 @@ async function fetchLinkInfo() {
   error.value = ''
 
   try {
-    const data = await $fetch(`/api/invite-links/info/${token.value}`)
-    linkInfo.value = data as typeof linkInfo.value
+    const data = await fetchInviteLinkInfo(token.value)
+    linkInfo.value = data
   }
   catch (err: any) {
     const msg = err?.data?.statusMessage || err?.statusMessage || 'This invite link is invalid or has expired.'
@@ -66,11 +67,7 @@ async function handleAccept() {
   error.value = ''
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await ($fetch as any)('/api/invite-links/accept', {
-      method: 'POST',
-      body: { token: token.value },
-    }) as { organizationId: string; organizationName: string }
+    const result = await acceptInviteLink(token.value)
 
     success.value = true
 

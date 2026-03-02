@@ -21,13 +21,7 @@ useSeoMeta({
 // ─────────────────────────────────────────────
 // Status transitions
 // ─────────────────────────────────────────────
-
-const JOB_STATUS_TRANSITIONS: Record<string, string[]> = {
-  draft: ['open', 'archived'],
-  open: ['closed', 'archived'],
-  closed: ['open', 'archived'],
-  archived: ['draft', 'open'],
-}
+import { JOB_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 const transitionLabels: Record<string, string> = {
   draft: 'Revert to Draft',

@@ -2,7 +2,7 @@
 import {
   LayoutDashboard, Briefcase, Users, Inbox,
   ChevronLeft, Eye, Kanban, FileText, LogOut, Table2, Hand,
-  Sun, Moon, MessageSquarePlus,
+  Sun, Moon, MessageSquarePlus, Settings,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -29,6 +29,7 @@ const navItems = [
   { label: 'Jobs', to: '/dashboard/jobs', icon: Briefcase, exact: false },
   { label: 'Candidates', to: '/dashboard/candidates', icon: Users, exact: false },
   { label: 'Applications', to: '/dashboard/applications', icon: Inbox, exact: false },
+  { label: 'Settings', to: '/dashboard/settings', icon: Settings, exact: false },
 ]
 
 // ─────────────────────────────────────────────

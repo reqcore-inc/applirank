@@ -197,14 +197,7 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
-const STATUS_TRANSITIONS: Record<string, string[]> = {
-  new: ['screening', 'interview', 'rejected'],
-  screening: ['interview', 'offer', 'rejected'],
-  interview: ['offer', 'rejected'],
-  offer: ['hired', 'rejected'],
-  hired: [],
-  rejected: ['new'],
-}
+import { APPLICATION_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 const statusBadgeClasses: Record<string, string> = {
   new: 'bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400',
@@ -274,7 +267,7 @@ function scoreClass(score: number) {
 
 const allowedTransitions = computed(() => {
   if (!currentSummary.value) return []
-  return STATUS_TRANSITIONS[currentSummary.value.status] ?? []
+  return APPLICATION_STATUS_TRANSITIONS[currentSummary.value.status] ?? []
 })
 
 function isCurrentStatus(status: string) {

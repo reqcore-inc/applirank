@@ -159,8 +159,9 @@ const typeLabels: Record<string, string> = {
         v-for="j in jobs"
         :key="j.id"
         :to="$localePath(`/dashboard/jobs/${j.id}`)"
-        class="flex items-center justify-between rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-4 py-3 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm transition-all group"
+        class="flex items-center gap-4 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-4 py-3 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm transition-all group"
       >
+        <!-- Left: job info -->
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 mb-1">
             <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors truncate">
@@ -181,6 +182,11 @@ const typeLabels: Record<string, string> = {
             </span>
             <span>{{ new Date(j.createdAt).toLocaleDateString() }}</span>
           </div>
+        </div>
+
+        <!-- Right: pipeline mini -->
+        <div class="w-48 shrink-0">
+          <JobPipelineMini :pipeline="j.pipeline" />
         </div>
       </NuxtLink>
 
@@ -220,6 +226,11 @@ const typeLabels: Record<string, string> = {
         <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors mb-2 line-clamp-2">
           {{ j.title }}
         </h3>
+
+        <!-- Pipeline mini -->
+        <div class="my-2">
+          <JobPipelineMini :pipeline="j.pipeline" />
+        </div>
 
         <!-- Meta -->
         <div class="mt-auto flex flex-wrap items-center gap-2 text-xs text-surface-400">

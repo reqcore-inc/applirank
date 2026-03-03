@@ -48,7 +48,7 @@ function isActive(to: string, exact: boolean) {
         class="inline-flex items-center gap-1.5 text-xs font-medium text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 transition-colors no-underline mb-3"
       >
         <ChevronLeft class="size-3.5" />
-        Back to dashboard
+        Back to jobs
       </NuxtLink>
       <div class="flex items-center gap-2.5">
         <div class="flex items-center justify-center size-8 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400">

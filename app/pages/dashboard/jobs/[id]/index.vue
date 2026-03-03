@@ -798,16 +798,32 @@ const isLoading = computed(() => {
 
           <template v-else>
             <!-- Candidate header -->
-            <div class="shrink-0 border-b border-surface-200/80 bg-white px-6 py-5 dark:border-surface-800/60 dark:bg-surface-900">
+            <div class="shrink-0 border-b border-surface-200 bg-surface-50 px-6 py-6 dark:border-surface-800 dark:bg-surface-900/80">
+              <div class="mx-auto max-w-4xl">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex items-start gap-4 min-w-0">
                   <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white shadow-lg shadow-brand-500/20 dark:from-brand-500 dark:to-brand-700 dark:shadow-brand-500/10">
                     {{ getCandidateInitials(currentSummary.candidateFirstName, currentSummary.candidateLastName) }}
                   </div>
                   <div class="min-w-0">
-                    <h2 class="text-xl font-semibold tracking-tight text-surface-900 dark:text-surface-50 truncate">
-                      {{ currentSummary.candidateFirstName }} {{ currentSummary.candidateLastName }}
-                    </h2>
+                    <div class="flex items-center gap-2.5">
+                      <h2 class="text-xl font-semibold tracking-tight text-surface-900 dark:text-surface-50 truncate">
+                        {{ currentSummary.candidateFirstName }} {{ currentSummary.candidateLastName }}
+                      </h2>
+                      <span
+                        class="inline-flex shrink-0 items-center rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ring-1 ring-inset"
+                        :class="{
+                          'bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-950/50 dark:text-brand-300 dark:ring-brand-800': currentSummary.status === 'new',
+                          'bg-info-50 text-info-700 ring-info-200 dark:bg-info-950/50 dark:text-info-300 dark:ring-info-800': currentSummary.status === 'screening',
+                          'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/50 dark:text-warning-300 dark:ring-warning-800': currentSummary.status === 'interview',
+                          'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/50 dark:text-success-300 dark:ring-success-800': currentSummary.status === 'offer',
+                          'bg-success-100 text-success-800 ring-success-300 dark:bg-success-900/50 dark:text-success-200 dark:ring-success-700': currentSummary.status === 'hired',
+                          'bg-surface-100 text-surface-500 ring-surface-200 dark:bg-surface-800/50 dark:text-surface-400 dark:ring-surface-700': currentSummary.status === 'rejected',
+                        }"
+                      >
+                        {{ currentSummary.status }}
+                      </span>
+                    </div>
                     <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-surface-500 dark:text-surface-400">
                       <span class="inline-flex items-center gap-1.5 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">
                         <Mail class="size-3.5" />
@@ -820,25 +836,54 @@ const isLoading = computed(() => {
                     </div>
                   </div>
                 </div>
-                <span
-                  class="inline-flex shrink-0 items-center rounded-lg px-3 py-1.5 text-xs font-semibold capitalize ring-1 ring-inset"
-                  :class="{
-                    'bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-950/50 dark:text-brand-300 dark:ring-brand-800': currentSummary.status === 'new',
-                    'bg-info-50 text-info-700 ring-info-200 dark:bg-info-950/50 dark:text-info-300 dark:ring-info-800': currentSummary.status === 'screening',
-                    'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/50 dark:text-warning-300 dark:ring-warning-800': currentSummary.status === 'interview',
-                    'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/50 dark:text-success-300 dark:ring-success-800': currentSummary.status === 'offer',
-                    'bg-success-100 text-success-800 ring-success-300 dark:bg-success-900/50 dark:text-success-200 dark:ring-success-700': currentSummary.status === 'hired',
-                    'bg-surface-100 text-surface-500 ring-surface-200 dark:bg-surface-800/50 dark:text-surface-400 dark:ring-surface-700': currentSummary.status === 'rejected',
-                  }"
+                <div class="flex items-center gap-2 shrink-0">
+                  <div class="flex items-center gap-1.5 mr-2">
+                    <button
+                      :disabled="currentIndex === 0"
+                      class="flex cursor-pointer items-center justify-center rounded-lg border border-surface-200 p-1.5 text-surface-500 transition-all duration-150 hover:bg-white hover:border-surface-300 hover:text-surface-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:border-surface-600 dark:hover:text-surface-300"
+                      @click="goToPreviousCard"
+                    >
+                      <ArrowLeft class="size-4" />
+                    </button>
+                    <span class="text-xs font-medium text-surface-500 dark:text-surface-400 tabular-nums px-0.5">
+                      {{ currentIndex + 1 }}/{{ filteredApplications.length }}
+                    </span>
+                    <button
+                      :disabled="currentIndex >= filteredApplications.length - 1"
+                      class="flex cursor-pointer items-center justify-center rounded-lg border border-surface-200 p-1.5 text-surface-500 transition-all duration-150 hover:bg-white hover:border-surface-300 hover:text-surface-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:border-surface-600 dark:hover:text-surface-300"
+                      @click="goToNextCard"
+                    >
+                      <ArrowRight class="size-4" />
+                    </button>
+                  </div>
+                  <NuxtLink
+                    :to="$localePath(`/dashboard/applications/${currentSummary.id}`)"
+                    class="flex items-center justify-center rounded-lg border border-surface-200 p-1.5 text-surface-500 transition-all duration-150 hover:bg-white hover:border-surface-300 hover:text-surface-700 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:border-surface-600 dark:hover:text-surface-300"
+                    title="Full application page"
+                  >
+                    <ExternalLink class="size-4" />
+                  </NuxtLink>
+                </div>
+              </div>
+              <!-- Status transitions -->
+              <div v-if="allowedTransitions.length > 0" class="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  v-for="nextStatus in allowedTransitions"
+                  :key="nextStatus"
+                  :disabled="isMutating"
+                  class="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  :class="transitionClasses[nextStatus] ?? 'border border-surface-300 text-surface-600 hover:bg-surface-50'"
+                  @click="changeStatus(nextStatus)"
                 >
-                  {{ currentSummary.status }}
-                </span>
+                  {{ transitionLabels[nextStatus] ?? nextStatus }}
+                </button>
+              </div>
               </div>
             </div>
 
             <!-- Detail tabs -->
             <div class="shrink-0 border-b border-surface-200/80 bg-white px-6 dark:border-surface-800/60 dark:bg-surface-900">
-              <div class="flex gap-1 -mb-px">
+              <div class="mx-auto max-w-4xl flex gap-1 -mb-px">
                 <button
                   class="cursor-pointer px-3.5 py-2.5 text-sm font-medium transition-all duration-150 border-b-2"
                   :class="detailTab === 'overview'
@@ -877,14 +922,14 @@ const isLoading = computed(() => {
             </div>
 
             <!-- Detail content -->
-            <div class="flex-1 overflow-y-auto bg-surface-50/80 dark:bg-surface-950/80 p-6">
+            <div class="flex-1 overflow-y-auto bg-surface-50/80 dark:bg-surface-950/80 px-6 py-8">
               <div v-if="detailFetchStatus === 'pending' && !resolvedCurrentApplication" class="flex flex-col items-center justify-center py-12">
                 <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
                 <p class="mt-3 text-sm text-surface-400">Loading details…</p>
               </div>
 
               <!-- PROFILE TAB -->
-              <div v-else-if="detailTab === 'overview'" class="space-y-5 max-w-3xl">
+              <div v-else-if="detailTab === 'overview'" class="space-y-5 max-w-4xl mx-auto">
                 <!-- Candidate info -->
                 <div class="rounded-xl border border-surface-200/80 bg-white p-5 shadow-sm shadow-surface-900/[0.03] dark:border-surface-800/60 dark:bg-surface-900 dark:shadow-none">
                   <div class="flex items-center gap-2.5 mb-4">
@@ -982,7 +1027,7 @@ const isLoading = computed(() => {
               </div>
 
               <!-- DOCUMENTS TAB -->
-              <div v-else-if="detailTab === 'documents'" class="space-y-3 max-w-3xl">
+              <div v-else-if="detailTab === 'documents'" class="space-y-3 max-w-4xl mx-auto">
                 <div v-if="resolvedCurrentApplication?.candidate.documents?.length" class="space-y-3">
                   <div
                     v-for="doc in resolvedCurrentApplication.candidate.documents"
@@ -1032,7 +1077,7 @@ const isLoading = computed(() => {
               </div>
 
               <!-- RESPONSES TAB -->
-              <div v-else-if="detailTab === 'responses'" class="space-y-3 max-w-3xl">
+              <div v-else-if="detailTab === 'responses'" class="space-y-3 max-w-4xl mx-auto">
                 <div v-if="resolvedCurrentApplication?.responses?.length" class="space-y-3">
                   <div
                     v-for="response in resolvedCurrentApplication.responses"
@@ -1059,126 +1104,7 @@ const isLoading = computed(() => {
           </template>
         </div>
 
-        <!-- RIGHT PANEL — Quick overview & actions -->
-        <div class="hidden xl:flex w-72 shrink-0 flex-col border-l border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900">
-          <div v-if="currentSummary" class="flex flex-col h-full">
-            <!-- Panel header -->
-            <div class="shrink-0 border-b border-surface-200/80 px-4 py-3.5 dark:border-surface-800/60">
-              <h3 class="text-xs font-semibold text-surface-800 dark:text-surface-200 uppercase tracking-wider">Actions</h3>
-            </div>
 
-            <div class="flex-1 overflow-y-auto p-4 space-y-6">
-              <!-- Status transitions -->
-              <div>
-                <p class="text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-3">
-                  Move to
-                </p>
-                <div v-if="allowedTransitions.length > 0" class="space-y-2">
-                  <button
-                    v-for="nextStatus in allowedTransitions"
-                    :key="nextStatus"
-                    :disabled="isMutating"
-                    class="flex w-full cursor-pointer items-center justify-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                    :class="transitionClasses[nextStatus] ?? 'border border-surface-300 text-surface-600 hover:bg-surface-50'"
-                    @click="changeStatus(nextStatus)"
-                  >
-                    {{ transitionLabels[nextStatus] ?? nextStatus }}
-                  </button>
-                </div>
-                <p v-else class="text-xs text-surface-400 italic">No transitions available.</p>
-              </div>
-
-              <!-- Divider -->
-              <div class="border-t border-surface-100 dark:border-surface-800/60" />
-
-              <!-- Quick info -->
-              <div>
-                <p class="text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-3">
-                  Overview
-                </p>
-                <dl class="space-y-3 text-sm">
-                  <div class="flex items-center justify-between">
-                    <dt class="text-surface-500 dark:text-surface-400">Score</dt>
-                    <dd>
-                      <span
-                        v-if="currentSummary.score != null"
-                        class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
-                        :class="{
-                          'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/60 dark:text-success-400 dark:ring-success-800': currentSummary.score >= 75,
-                          'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/60 dark:text-warning-400 dark:ring-warning-800': currentSummary.score >= 40 && currentSummary.score < 75,
-                          'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950/60 dark:text-danger-400 dark:ring-danger-800': currentSummary.score < 40,
-                        }"
-                      >
-                        {{ currentSummary.score }}
-                      </span>
-                      <span v-else class="text-surface-400">—</span>
-                    </dd>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <dt class="text-surface-500 dark:text-surface-400">Applied</dt>
-                    <dd class="text-surface-700 dark:text-surface-200 text-xs font-medium">
-                      {{ timeAgo(currentSummary.createdAt) }}
-                    </dd>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <dt class="text-surface-500 dark:text-surface-400">Documents</dt>
-                    <dd class="text-surface-700 dark:text-surface-200 text-xs font-medium tabular-nums">
-                      {{ resolvedCurrentApplication?.candidate.documents?.length ?? 0 }}
-                    </dd>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <dt class="text-surface-500 dark:text-surface-400">Responses</dt>
-                    <dd class="text-surface-700 dark:text-surface-200 text-xs font-medium tabular-nums">
-                      {{ resolvedCurrentApplication?.responses?.length ?? 0 }}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-
-              <!-- Divider -->
-              <div class="border-t border-surface-100 dark:border-surface-800/60" />
-
-              <!-- Navigation -->
-              <div>
-                <p class="text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-3">
-                  Navigate
-                </p>
-                <div class="flex items-center gap-2">
-                  <button
-                    :disabled="currentIndex === 0"
-                    class="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-surface-200 px-2.5 py-2 text-xs font-medium text-surface-600 transition-all duration-150 hover:bg-surface-50 hover:border-surface-300 disabled:cursor-not-allowed disabled:opacity-40 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:border-surface-600 shadow-sm"
-                    @click="goToPreviousCard"
-                  >
-                    <ArrowLeft class="size-3.5" />
-                    Prev
-                  </button>
-                  <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 tabular-nums px-1">
-                    {{ currentIndex + 1 }}/{{ filteredApplications.length }}
-                  </span>
-                  <button
-                    :disabled="currentIndex >= filteredApplications.length - 1"
-                    class="flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-surface-200 px-2.5 py-2 text-xs font-medium text-surface-600 transition-all duration-150 hover:bg-surface-50 hover:border-surface-300 disabled:cursor-not-allowed disabled:opacity-40 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:border-surface-600 shadow-sm"
-                    @click="goToNextCard"
-                  >
-                    Next
-                    <ArrowRight class="size-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right panel empty state -->
-          <div v-else class="flex flex-1 items-center justify-center p-4 text-center">
-            <div>
-              <div class="flex size-12 items-center justify-center rounded-xl bg-surface-100 dark:bg-surface-800/60 mx-auto mb-3">
-                <UserRound class="size-5 text-surface-400 dark:text-surface-500" />
-              </div>
-              <p class="text-sm font-medium text-surface-500 dark:text-surface-400">Select a candidate</p>
-              <p class="mt-1 text-xs text-surface-400 dark:text-surface-500">Actions will appear here.</p>
-            </div>
-          </div>
-        </div>
       </div>
     </template>
 

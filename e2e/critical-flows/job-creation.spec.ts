@@ -43,40 +43,26 @@ test.describe('Job Creation Flow', () => {
     await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
-    // Step 3: Find candidates — submit
-    await page.locator('form').getByRole('button', { name: 'Create job' }).click()
+    // Step 3: Find candidates — skip
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'visible', timeout: 10_000 })
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
-    // ── Verify redirect to jobs list ─────────────────────
-    await page.waitForURL('**/dashboard', { waitUntil: 'commit' })
-    await expect(page.getByText(JOB_TITLE)).toBeVisible()
-
-    // ── Open the job detail page ─────────────────────────
-    await page.getByText(JOB_TITLE).first().click()
-
-    // ── Publish the job (draft → open) ───────────────────
-    const publishButton = page.getByRole('button', { name: 'Publish' })
-    await expect(publishButton).toBeVisible()
+    // Step 4: Publish the job
+    await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
+    const publishButton = page.locator('form').getByRole('button', { name: /Publish & copy link/i })
+    await publishButton.waitFor({ state: 'visible', timeout: 10_000 })
     await publishButton.click()
 
-    // Wait for status to update
-    await expect(page.getByText('open').first()).toBeVisible({ timeout: 10_000 })
+    // ── Verify the success state ("Your job is live!") ───
+    await expect(page.getByRole('heading', { name: 'Your job is live!' })).toBeVisible({ timeout: 20_000 })
+
+    // ── Extract job slug from the application link ────────
+    const applicationLink = await page.locator('input[readonly]').inputValue()
+    expect(applicationLink).toContain('/jobs/')
+    const jobSlug = applicationLink.split('/jobs/')[1]?.split('/apply')[0] ?? ''
+    expect(jobSlug.length, 'Job slug must not be empty').toBeGreaterThan(0)
 
     // ── Verify on public jobs page ───────────────────────
-    // Get the job slug from the URL or page content
-    const jobDetailUrl = page.url()
-    const jobId = jobDetailUrl.split('/dashboard/jobs/')[1]?.split('/')[0]
-    expect(jobId).toBeTruthy()
-
-    // Fetch the job data via API to get the slug
-    const jobData = await page.evaluate(async (id) => {
-      const res = await fetch(`/api/jobs/${id}`)
-      return res.json()
-    }, jobId)
-
-    const jobSlug = jobData.slug
-    expect(jobSlug).toBeTruthy()
-
-    // Visit the public job page
     await page.goto(`/jobs/${jobSlug}`)
     await expect(page.getByRole('heading', { name: JOB_TITLE })).toBeVisible()
     await expect(page.getByText(JOB_LOCATION)).toBeVisible()

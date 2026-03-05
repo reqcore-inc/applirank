@@ -137,6 +137,12 @@ const ctaRef = useScrollFade()
           >
             {{ t('home.nav.blog') }}
           </NuxtLink>
+          <NuxtLink
+            to="/docs"
+            class="rounded-md px-3 py-1.5 text-[13px] font-medium text-surface-400 transition hover:text-white"
+          >
+            Docs
+          </NuxtLink>
           <a
             href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
@@ -1344,14 +1350,9 @@ const ctaRef = useScrollFade()
           >
             GitHub
           </a>
-          <a
-            href="https://github.com/reqcore-inc/reqcore/blob/main/README.md"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="transition hover:text-white"
-          >
+          <NuxtLink to="/docs" class="transition hover:text-white">
             Docs
-          </a>
+          </NuxtLink>
           <a
             href="https://github.com/reqcore-inc/reqcore/blob/main/LICENSE"
             target="_blank"

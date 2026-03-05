@@ -47,6 +47,7 @@ const { data: posts } = await useAsyncData('blog-posts', () =>
           <NuxtLink :to="$localePath('/roadmap')" class="transition hover:text-white">Roadmap</NuxtLink>
           <NuxtLink :to="$localePath('/catalog')" class="transition hover:text-white">Features</NuxtLink>
           <NuxtLink to="/blog" class="text-white transition">Blog</NuxtLink>
+          <NuxtLink to="/docs" class="transition hover:text-white">Docs</NuxtLink>
           <a
             href="https://github.com/reqcore-inc/reqcore"
             target="_blank"
@@ -145,6 +146,7 @@ const { data: posts } = await useAsyncData('blog-posts', () =>
         <div class="flex items-center gap-4">
           <NuxtLink :to="$localePath('/')" class="transition hover:text-white/60">Home</NuxtLink>
           <NuxtLink :to="$localePath('/roadmap')" class="transition hover:text-white/60">Roadmap</NuxtLink>
+          <NuxtLink to="/docs" class="transition hover:text-white/60">Docs</NuxtLink>
           <a
             href="https://github.com/reqcore-inc/reqcore"
             target="_blank"

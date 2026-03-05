@@ -23,5 +23,13 @@ export default defineContentConfig({
         competitors: z.record(z.string(), z.enum(['poor', 'okay', 'good', 'excellent'])).optional(),
       }),
     }),
+    docs: defineCollection({
+      type: 'page',
+      source: 'docs/**/*.md',
+      schema: z.object({
+        section: z.string().optional(),
+        icon: z.string().optional(),
+      }),
+    }),
   },
 })

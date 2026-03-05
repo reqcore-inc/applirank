@@ -19,11 +19,9 @@ export default defineConfig({
     ? [
         ['github'],
         ['html', { open: 'never' }],
-        ['allure-playwright', { outputFolder: 'allure-results', suiteTitle: true }],
       ]
     : [
         ['html'],
-        ['allure-playwright', { outputFolder: 'allure-results', suiteTitle: true }],
       ],
   timeout: process.env.CI ? 120_000 : 60_000,
   expect: { timeout: 10_000 },

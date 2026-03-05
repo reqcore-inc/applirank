@@ -16,9 +16,6 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "npx tsx server/scripts/seed.ts",
     "test:e2e": "npx playwright test",
-    "report:allure:generate": "npx allure generate allure-results -o allure-report",
-    "report:allure:open": "npx allure open allure-report",
-    "report:allure": "npx allure generate allure-results -o allure-report --open",
     "i18n:crowdin:upload": "crowdin upload sources",
     "i18n:crowdin:download": "crowdin download --all",
     "i18n:crowdin:sync": "npm run i18n:crowdin:upload && npm run i18n:crowdin:download"
@@ -48,8 +45,6 @@
     "@crowdin/cli": "^4.14.0",
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.2.3",
-    "allure": "^3.3.1",
-    "allure-playwright": "^3.5.0",
     "commander": "^13.1.0",
     "drizzle-kit": "^0.31.9",
     "tsx": "^4.21.0",
@@ -58,7 +53,7 @@
   },
   "overrides": {
     "fast-xml-parser": "5.4.1",
-    "tar": "7.5.9",
+    "tar": "7.5.10",
     "minimatch": "10.2.4",
     "readdir-glob": "2.0.2",
     "rollup": ">=4.59.0",

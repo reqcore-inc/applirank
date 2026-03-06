@@ -234,7 +234,7 @@ const isLoadingLinks = ref(true)
 const linksError = ref('')
 const showCreateLinkForm = ref(false)
 const newLinkRole = ref<'admin' | 'member'>('member')
-const newLinkMaxUses = ref<string>('')
+const newLinkMaxUses = ref<string | number>('')
 const newLinkExpiresInHours = ref(168) // 7 days default
 const isCreatingLink = ref(false)
 const createLinkError = ref('')
@@ -264,7 +264,12 @@ async function handleCreateLink() {
   createLinkSuccess.value = ''
 
   try {
-    const maxUses = newLinkMaxUses.value.trim() ? parseInt(newLinkMaxUses.value, 10) : null
+    // Vue 3 auto-coerces type="number" input values to numbers (even without .number
+    // modifier), so newLinkMaxUses.value can be a number or an empty string.
+    const rawMaxUses = newLinkMaxUses.value
+    const maxUses = (rawMaxUses !== '' && rawMaxUses !== null)
+      ? parseInt(String(rawMaxUses), 10)
+      : null
     if (maxUses !== null && (isNaN(maxUses) || maxUses < 1)) {
       createLinkError.value = 'Max uses must be a positive number'
       return

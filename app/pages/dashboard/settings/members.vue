@@ -1041,7 +1041,7 @@ onUnmounted(() => {
     </section>
 
     <!-- Members list -->
-    <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
+    <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900">
       <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">

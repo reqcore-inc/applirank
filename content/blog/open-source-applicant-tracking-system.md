@@ -52,7 +52,7 @@ When we chose MIT for [Reqcore](/), the reasoning was straightforward: organizat
 
 ### "Open Source" vs "Free" — They Are Not the Same
 
-A critical distinction that most ATS comparison articles ignore: "free" software and "open source" software are different categories.
+A critical distinction that most ATS comparison articles ignore: "free" software and "open source" software are different categories. For a comprehensive breakdown of each model — with a decision framework and real cost data — read our guide on [why open source and free ATS aren't the same thing](/blog/open-source-vs-free-ats).
 
 - **Free (as in cost):** Many proprietary ATS platforms offer free tiers — BreezyHR, Zoho Recruit, and Freshteam all have $0 plans. But the source code is closed. You cannot inspect it, modify it, or self-host it. The vendor controls the product roadmap, your data, and the pricing of the features you will eventually need.
 - **Open source (as in freedom):** The software is yours to run, read, modify, and distribute. Even if you pay for managed hosting or commercial support, the core code remains accessible. You can fork the project and continue independently if the original maintainers disappear.

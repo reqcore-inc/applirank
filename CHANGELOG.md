@@ -6,6 +6,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## 2026-03-07
+
+### Added
+
+- **Blog: Open Source vs Free ATS: Why They Aren't the Same** — Cluster 1 supporting article. Explains the difference between free (proprietary) and open source ATS, introduces a 4-category ATS pricing spectrum framework, and includes real infrastructure cost data. Published to `content/blog/open-source-vs-free-ats.md`
+- **Internal link** — added cross-link from `open-source-applicant-tracking-system.md` (Cluster 1 pillar) to new supporting article
+
 ## 2026-03-04
 
 ### Added

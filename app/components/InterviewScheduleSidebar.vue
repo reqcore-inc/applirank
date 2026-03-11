@@ -34,6 +34,7 @@ const form = reactive({
 
 const errors = ref<Record<string, string>>({})
 const isSubmitting = ref(false)
+const isMoving = ref(false)
 const sendInvitationAfter = ref(false)
 
 // ─── Email templates ──────────────────────────────────────────────
@@ -254,6 +255,24 @@ async function handleSubmit() {
     errors.value.submit = err?.data?.statusMessage ?? 'Failed to schedule interview'
   } finally {
     isSubmitting.value = false
+  }
+}
+
+// ─── Move to interview stage (no scheduling) ──────────────────────
+async function handleMoveToInterview() {
+  isMoving.value = true
+  errors.value = {}
+  try {
+    await $fetch(`/api/applications/${props.applicationId}`, {
+      method: 'PATCH',
+      body: { status: 'interview' },
+    })
+    await refreshNuxtData('interviews')
+    emit('scheduled')
+  } catch (err: any) {
+    errors.value.submit = err?.data?.statusMessage ?? 'Failed to move to interview stage'
+  } finally {
+    isMoving.value = false
   }
 }
 </script>
@@ -637,17 +656,28 @@ async function handleSubmit() {
               <button
                 type="button"
                 class="flex-1 rounded-xl border border-surface-200 dark:border-surface-700 px-4 py-2.5 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-800 hover:bg-surface-50 dark:hover:text-surface-200 dark:hover:bg-surface-800 transition-colors cursor-pointer"
+                :disabled="isSubmitting || isMoving"
                 @click="emit('close')"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                :disabled="isSubmitting"
+                :disabled="isSubmitting || isMoving"
                 class="flex-[1.5] rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm shadow-brand-600/20 dark:shadow-brand-500/10"
                 @click="handleSubmit"
               >
                 {{ isSubmitting ? 'Scheduling…' : 'Schedule Interview' }}
+              </button>
+            </div>
+            <div class="mt-2.5 text-center">
+              <button
+                type="button"
+                :disabled="isSubmitting || isMoving"
+                class="text-[12px] text-surface-400 hover:text-surface-600 dark:text-surface-500 dark:hover:text-surface-300 underline underline-offset-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="handleMoveToInterview"
+              >
+                {{ isMoving ? 'Moving…' : 'Skip scheduling — just move to interview stage' }}
               </button>
             </div>
           </div>

@@ -290,7 +290,7 @@ const isEmpty = computed(() =>
 
         <!-- To Review -->
         <NuxtLink
-          :to="localePath('/dashboard/applications')"
+          :to="localePath({ path: '/dashboard/applications', query: { status: 'new' } })"
           class="group relative rounded-2xl border bg-white dark:bg-surface-900 p-5 hover:shadow-md transition-all duration-200 no-underline overflow-hidden"
           :class="counts.newApplications > 0
             ? 'border-warning-200 dark:border-warning-900/50 hover:border-warning-300/80 dark:hover:border-warning-800/60 hover:shadow-warning-500/5'

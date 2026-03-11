@@ -772,14 +772,35 @@ function goToNextCard() {
 // Fullscreen (focus) mode
 // ─────────────────────────────────────────────
 const isFullscreen = ref(false)
+const pipelineContainer = useTemplateRef<HTMLElement>('pipelineContainer')
+const teleportTarget = computed(() => isFullscreen.value && pipelineContainer.value ? pipelineContainer.value : 'body')
 
-function toggleFullscreen() {
-  isFullscreen.value = !isFullscreen.value
+async function toggleFullscreen() {
+  if (!isFullscreen.value) {
+    isFullscreen.value = true
+    await nextTick()
+    pipelineContainer.value?.requestFullscreen?.()
+  }
+  else {
+    isFullscreen.value = false
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.()
+    }
+  }
 }
 
-function handleKeyNavigation(event: KeyboardEvent) {
-  if (event.key === 'Escape' && isFullscreen.value) {
+function onFullscreenChange() {
+  if (!document.fullscreenElement) {
     isFullscreen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))
+onBeforeUnmount(() => document.removeEventListener('fullscreenchange', onFullscreenChange))
+
+function handleKeyNavigation(event: KeyboardEvent) {
+  if (event.key === 'Escape' && showDocPreview.value) {
+    closeDocPreview()
     return
   }
 
@@ -1031,8 +1052,9 @@ function closeDocPreview() {
 
 <template>
   <div
+    ref="pipelineContainer"
     :class="isFullscreen
-      ? 'fixed inset-0 z-[100] flex h-screen flex-col overflow-hidden bg-surface-50 dark:bg-surface-950'
+      ? 'flex h-screen flex-col overflow-hidden bg-surface-50 dark:bg-surface-950'
       : '-mx-6 -my-8 flex h-screen flex-col overflow-hidden'"
   >
     <!-- Loading -->
@@ -2092,7 +2114,7 @@ function closeDocPreview() {
     <!-- ═══════════════════════════════════════ -->
 
     <!-- Edit Job Modal -->
-    <Teleport to="body">
+    <Teleport :to="teleportTarget">
       <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="cancelEdit" />
         <div class="relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl shadow-surface-900/10 dark:shadow-black/30 ring-1 ring-surface-200/80 dark:ring-surface-700/60 p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -2174,7 +2196,7 @@ function closeDocPreview() {
     </Teleport>
 
     <!-- Delete Job Confirm -->
-    <Teleport to="body">
+    <Teleport :to="teleportTarget">
       <div v-if="showDeleteConfirm" class="fixed inset-0 z-50 flex items-center justify-center">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showDeleteConfirm = false" />
         <div class="relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl shadow-surface-900/10 dark:shadow-black/30 ring-1 ring-surface-200/80 dark:ring-surface-700/60 p-6 max-w-sm w-full mx-4">
@@ -2206,6 +2228,7 @@ function closeDocPreview() {
     <ApplyCandidateModal
       v-if="showApplyModal"
       :job-id="jobId"
+      :teleport-target="teleportTarget"
       @close="showApplyModal = false"
       @created="handleCandidateApplied"
     />
@@ -2216,12 +2239,13 @@ function closeDocPreview() {
       :application-id="interviewTargetApplication.id"
       :candidate-name="interviewTargetApplication.name"
       :job-title="jobData?.title ?? ''"
+      :teleport-target="teleportTarget"
       @close="showInterviewSidebar = false"
       @scheduled="handleInterviewScheduled"
     />
 
     <!-- Document Preview Modal -->
-    <Teleport to="body">
+    <Teleport :to="teleportTarget">
       <div v-if="showDocPreview" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeDocPreview" />
         <div class="relative flex flex-col bg-white dark:bg-surface-900 rounded-2xl shadow-2xl shadow-surface-900/10 dark:shadow-black/30 ring-1 ring-surface-200/80 dark:ring-surface-700/60 w-full max-w-4xl" style="height: calc(100vh - 3rem);">

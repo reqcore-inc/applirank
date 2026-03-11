@@ -6,11 +6,14 @@ import {
 } from 'lucide-vue-next'
 import { SYSTEM_TEMPLATES } from '~/utils/system-templates'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   applicationId: string
   candidateName: string
   jobTitle: string
-}>()
+  teleportTarget?: string | HTMLElement
+}>(), {
+  teleportTarget: 'body',
+})
 
 const emit = defineEmits<{
   close: []
@@ -253,7 +256,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport :to="teleportTarget">
     <div class="fixed inset-0 z-50 flex justify-end">
       <!-- Backdrop -->
       <Transition

@@ -151,21 +151,30 @@ async function handleDisconnect() {
         <!-- Not configured (admin needs to set env vars) -->
         <div v-else-if="!isAvailable" class="space-y-3">
           <p class="text-sm text-surface-600 dark:text-surface-400">
-            Google Calendar integration requires configuration. Set
+            Google Calendar integration requires server configuration. A server administrator must set the
             <code class="text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-mono">GOOGLE_CLIENT_ID</code>
             and
             <code class="text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-mono">GOOGLE_CLIENT_SECRET</code>
-            environment variables.
+            environment variables before users can connect.
           </p>
-          <a
-            href="https://console.cloud.google.com/apis/credentials"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:underline"
-          >
-            Google Cloud Console
-            <ExternalLink class="size-3.5" />
-          </a>
+          <div class="flex items-center gap-4">
+            <NuxtLink
+              to="/docs/features/google-calendar"
+              class="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:underline"
+            >
+              Setup guide
+              <ExternalLink class="size-3.5" />
+            </NuxtLink>
+            <a
+              href="https://console.cloud.google.com/apis/credentials"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-sm text-surface-500 dark:text-surface-400 hover:underline"
+            >
+              Google Cloud Console
+              <ExternalLink class="size-3.5" />
+            </a>
+          </div>
         </div>
 
         <!-- Connected state -->

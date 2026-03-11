@@ -1,0 +1,1 @@
+ALTER TABLE "interview" ADD COLUMN "google_calendar_event_link" text;

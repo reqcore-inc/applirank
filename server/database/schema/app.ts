@@ -292,6 +292,8 @@ export const interview = pgTable('interview', {
   candidateRespondedAt: timestamp('candidate_responded_at'),
   /** Google Calendar event ID for two-way sync (null = not synced) */
   googleCalendarEventId: text('google_calendar_event_id'),
+  /** Direct link to the Google Calendar event (htmlLink from Google API) */
+  googleCalendarEventLink: text('google_calendar_event_link'),
   /** IANA timezone for the scheduled time (e.g. 'America/New_York') */
   timezone: text('timezone').notNull().default('UTC'),
   createdAt: timestamp('created_at').notNull().defaultNow(),

@@ -302,10 +302,27 @@ function formatResponseValue(value: unknown): string {
 const responsesCount = computed(() => application.value?.responses?.length ?? 0)
 
 // ─────────────────────────────────────────────
-// Interview scheduling
+// Interview scheduling & existing interviews
 // ─────────────────────────────────────────────
 
 const showScheduleSidebar = ref(false)
+
+const { interviews: applicationInterviews } = useInterviews({
+  applicationId: computed(() => props.applicationId),
+})
+
+const interviewTypeLabels: Record<string, string> = {
+  phone: 'Phone',
+  video: 'Video',
+  in_person: 'In-person',
+  panel: 'Panel',
+  technical: 'Technical',
+  take_home: 'Take-home',
+}
+
+function formatInterviewDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
 </script>
 
 <template>
@@ -567,6 +584,62 @@ const showScheduleSidebar = ref(false)
                 {{ application.notes }}
               </p>
               <p v-else class="text-sm text-surface-400 italic">No notes yet.</p>
+            </div>
+
+            <!-- Scheduled interviews -->
+            <div v-if="applicationInterviews.length > 0" class="rounded-xl border border-surface-200/80 dark:border-surface-800/60 bg-white dark:bg-surface-950 p-5 shadow-sm shadow-surface-900/[0.03] dark:shadow-none">
+              <div class="flex items-center gap-2.5 mb-4">
+                <div class="flex size-7 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
+                  <Calendar class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Interviews</h3>
+              </div>
+              <div class="space-y-3">
+                <div
+                  v-for="iv in applicationInterviews"
+                  :key="iv.id"
+                  class="rounded-lg border border-surface-200/60 dark:border-surface-800/40 p-3"
+                >
+                  <div class="flex items-center justify-between mb-1">
+                    <NuxtLink
+                      :to="$localePath(`/dashboard/interviews/${iv.id}`)"
+                      class="text-sm font-medium text-surface-800 dark:text-surface-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors truncate"
+                    >
+                      {{ iv.title }}
+                    </NuxtLink>
+                    <span
+                      class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize shrink-0 ml-2"
+                      :class="{
+                        'bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-400': iv.status === 'scheduled',
+                        'bg-success-50 text-success-700 dark:bg-success-950/40 dark:text-success-400': iv.status === 'completed',
+                        'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400': iv.status === 'cancelled' || iv.status === 'no_show',
+                      }"
+                    >
+                      {{ iv.status === 'no_show' ? 'No show' : iv.status }}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500">
+                    <span class="font-medium">{{ formatInterviewDate(iv.scheduledAt) }}</span>
+                    <span class="text-surface-200 dark:text-surface-700">&middot;</span>
+                    <span>{{ interviewTypeLabels[iv.type] ?? iv.type }}</span>
+                    <span class="text-surface-200 dark:text-surface-700">&middot;</span>
+                    <span>{{ iv.duration }} min</span>
+                  </div>
+                  <div class="mt-2">
+                    <a
+                      v-if="iv.googleCalendarEventLink"
+                      :href="iv.googleCalendarEventLink"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                    >
+                      <Calendar class="size-2.5" />
+                      Open in Google Calendar
+                      <ExternalLink class="size-2" />
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Quick links -->

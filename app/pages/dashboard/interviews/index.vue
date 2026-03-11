@@ -4,7 +4,7 @@ import {
   Building2, Code2, FileText, UsersRound, MoreHorizontal,
   CheckCircle2, XCircle, AlertTriangle, UserRound, Briefcase,
   Plus, Pencil, Trash2, MapPin, Users, Filter, CalendarDays,
-  Mail,
+  Mail, ExternalLink,
 } from 'lucide-vue-next'
 
 definePageMeta({
@@ -495,7 +495,19 @@ const statusCounts = computed(() => {
                     <Users class="size-3.5" />
                     {{ interviewItem.interviewers.join(', ') }}
                   </span>
-                  <span v-if="interviewItem.googleCalendarEventId" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                  <a
+                    v-if="interviewItem.googleCalendarEventId && interviewItem.googleCalendarEventLink"
+                    :href="interviewItem.googleCalendarEventLink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                    @click.stop
+                  >
+                    <Calendar class="size-3" />
+                    Google Calendar
+                    <ExternalLink class="size-2.5" />
+                  </a>
+                  <span v-else-if="interviewItem.googleCalendarEventId" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
                     <Calendar class="size-3" />
                     Google Calendar
                   </span>
@@ -628,7 +640,19 @@ const statusCounts = computed(() => {
                       <MapPin class="size-3 shrink-0" />
                       {{ interviewItem.location }}
                     </span>
-                    <span v-if="interviewItem.googleCalendarEventId" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                    <a
+                      v-if="interviewItem.googleCalendarEventId && interviewItem.googleCalendarEventLink"
+                      :href="interviewItem.googleCalendarEventLink"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                      @click.stop
+                    >
+                      <Calendar class="size-2.5" />
+                      Synced
+                      <ExternalLink class="size-2" />
+                    </a>
+                    <span v-else-if="interviewItem.googleCalendarEventId" class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
                       <Calendar class="size-2.5" />
                       Synced
                     </span>

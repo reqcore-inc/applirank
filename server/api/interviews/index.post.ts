@@ -71,10 +71,10 @@ export default defineEventHandler(async (event) => {
       candidateEmail: app.candidate.email,
       candidateName,
       interviewerEmails: body.interviewers ?? [],
-    }).then(async (eventId) => {
-      if (eventId) {
+    ).then(async (result) => {
+      if (result) {
         await db.update(interview)
-          .set({ googleCalendarEventId: eventId })
+          .set({ googleCalendarEventId: result.id, googleCalendarEventLink: result.htmlLink })
           .where(eq(interview.id, created.id))
       }
     }).catch(err => {

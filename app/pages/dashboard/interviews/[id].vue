@@ -396,14 +396,22 @@ const localePath = useLocalePath()
                 </span>
               </div>
               <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 text-sm text-surface-500 dark:text-surface-400">
-                <span class="inline-flex items-center gap-1.5">
+                <NuxtLink
+                  :to="$localePath(`/dashboard/candidates/${interview.candidateId}`)"
+                  class="inline-flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 transition-colors group"
+                >
                   <UserRound class="size-4" />
                   {{ interview.candidateFirstName }} {{ interview.candidateLastName }}
-                </span>
-                <span class="inline-flex items-center gap-1.5">
+                  <ExternalLink class="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </NuxtLink>
+                <NuxtLink
+                  :to="$localePath(`/dashboard/jobs/${interview.jobId}`)"
+                  class="inline-flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 transition-colors group"
+                >
                   <Briefcase class="size-4" />
                   {{ interview.jobTitle }}
-                </span>
+                  <ExternalLink class="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </NuxtLink>
               </div>
             </div>
           </div>
@@ -428,7 +436,14 @@ const localePath = useLocalePath()
           class="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400"
         >
           <Calendar class="size-3.5" />
-          Synced to Google Calendar
+          <a
+            v-if="interview.googleCalendarEventLink"
+            :href="interview.googleCalendarEventLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline underline-offset-2 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+          >Open in Google Calendar</a>
+          <span v-else>Synced to Google Calendar</span>
         </div>
       </div>
 
@@ -643,7 +658,18 @@ const localePath = useLocalePath()
             <div v-if="interview.googleCalendarEventId">
               <dt class="text-surface-400">Calendar</dt>
               <dd>
-                <span class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                <a
+                  v-if="interview.googleCalendarEventLink"
+                  :href="interview.googleCalendarEventLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                >
+                  <CheckCircle2 class="size-3.5" />
+                  Open in Google Calendar
+                  <ExternalLink class="size-3" />
+                </a>
+                <span v-else class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 class="size-3.5" />
                   Synced to Google Calendar
                 </span>
@@ -654,9 +680,18 @@ const localePath = useLocalePath()
 
         <!-- Candidate info -->
         <div class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-5">
-          <div class="flex items-center gap-2 mb-3">
-            <UserRound class="size-4 text-surface-500 dark:text-surface-400" />
-            <h2 class="text-sm font-semibold text-surface-700 dark:text-surface-200">Candidate</h2>
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <UserRound class="size-4 text-surface-500 dark:text-surface-400" />
+              <h2 class="text-sm font-semibold text-surface-700 dark:text-surface-200">Candidate</h2>
+            </div>
+            <NuxtLink
+              :to="$localePath(`/dashboard/candidates/${interview.candidateId}`)"
+              class="inline-flex items-center gap-1 text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+            >
+              View Profile
+              <ExternalLink class="size-3" />
+            </NuxtLink>
           </div>
           <dl class="grid grid-cols-1 gap-3 text-sm">
             <div>
@@ -675,7 +710,15 @@ const localePath = useLocalePath()
             </div>
             <div>
               <dt class="text-surface-400">Job</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ interview.jobTitle }}</dd>
+              <dd>
+                <NuxtLink
+                  :to="$localePath(`/dashboard/jobs/${interview.jobId}`)"
+                  class="inline-flex items-center gap-1 font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                >
+                  {{ interview.jobTitle }}
+                  <ExternalLink class="size-3" />
+                </NuxtLink>
+              </dd>
             </div>
           </dl>
         </div>

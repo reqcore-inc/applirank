@@ -85,6 +85,12 @@ export default defineEventHandler(async (event) => {
           candidateName: `${candidate.firstName} ${candidate.lastName}`,
         } : {}),
         ...(body.interviewers ? { interviewerEmails: body.interviewers } : {}),
+      }).then(async (htmlLink) => {
+        if (htmlLink) {
+          await db.update(interview)
+            .set({ googleCalendarEventLink: htmlLink })
+            .where(eq(interview.id, id))
+        }
       }).catch(err => {
         console.error('[Calendar] Failed to update event:', err)
       })

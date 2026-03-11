@@ -237,12 +237,12 @@ interface InterviewEventData {
 /**
  * Create a Google Calendar event for an interview.
  * Adds the candidate and interviewers as attendees for two-way communication.
- * Returns the created event ID.
+ * Returns the created event ID and HTML link, or null if creation failed.
  */
 export async function createCalendarEvent(
   userId: string,
   data: InterviewEventData,
-): Promise<string | null> {
+): Promise<{ id: string; htmlLink: string } | null> {
   const calendar = await getCalendarClient(userId)
   if (!calendar) return null
 
@@ -298,7 +298,10 @@ export async function createCalendarEvent(
       },
     })
 
-    return response.data.id ?? null
+    const id = response.data.id
+    const htmlLink = response.data.htmlLink
+    if (!id || !htmlLink) return null
+    return { id, htmlLink }
   }
   catch (err) {
     console.error('[Calendar] Failed to create event:', err)
@@ -308,12 +311,13 @@ export async function createCalendarEvent(
 
 /**
  * Update an existing Google Calendar event.
+ * Returns the htmlLink if the update succeeded, or null on failure.
  */
 export async function updateCalendarEvent(
   userId: string,
   eventId: string,
   data: Partial<InterviewEventData>,
-): Promise<boolean> {
+): Promise<string | null> {
   const calendar = await getCalendarClient(userId)
   if (!calendar) return false
 
@@ -361,17 +365,17 @@ export async function updateCalendarEvent(
   }
 
   try {
-    await calendar.events.patch({
+    const response = await calendar.events.patch({
       calendarId,
       eventId,
       sendUpdates: 'all',
       requestBody: patch,
     })
-    return true
+    return response.data.htmlLink ?? null
   }
   catch (err) {
     console.error('[Calendar] Failed to update event:', err)
-    return false
+    return null
   }
 }
 

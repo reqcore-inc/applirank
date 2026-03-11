@@ -14,8 +14,10 @@ export interface Interview {
   candidateResponse: 'pending' | 'accepted' | 'declined' | 'tentative'
   candidateRespondedAt: string | null
   googleCalendarEventId: string | null
+  googleCalendarEventLink: string | null
   timezone: string
   applicationId: string
+  candidateId: string
   candidateFirstName: string
   candidateLastName: string
   candidateEmail: string

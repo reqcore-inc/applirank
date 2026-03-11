@@ -1756,7 +1756,19 @@ function closeDocPreview() {
                             {{ formatInterviewDateTime(iv.scheduledAt) }} · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
                           </p>
                           <div v-if="iv.googleCalendarEventId" class="mt-1">
-                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                            <a
+                              v-if="iv.googleCalendarEventLink"
+                              :href="iv.googleCalendarEventLink"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                              @click.stop
+                            >
+                              <Calendar class="size-2.5" />
+                              Google Calendar
+                              <ExternalLink class="size-2" />
+                            </a>
+                            <span v-else class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
                               <Calendar class="size-2.5" />
                               Google Calendar
                             </span>
@@ -1900,7 +1912,18 @@ function closeDocPreview() {
                             <div v-if="iv.googleCalendarEventId" class="col-span-2">
                               <dt class="text-[11px] font-medium text-surface-400 dark:text-surface-500 mb-0.5">Calendar Sync</dt>
                               <dd class="text-[13px]">
-                                <span class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-emerald-700 dark:text-emerald-400 font-medium">
+                                <a
+                                  v-if="iv.googleCalendarEventLink"
+                                  :href="iv.googleCalendarEventLink"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-emerald-700 dark:text-emerald-400 font-medium hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                                >
+                                  <Calendar class="size-3.5" />
+                                  Open in Google Calendar
+                                  <ExternalLink class="size-3" />
+                                </a>
+                                <span v-else class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-emerald-700 dark:text-emerald-400 font-medium">
                                   <Calendar class="size-3.5" />
                                   Synced to Google Calendar
                                 </span>

@@ -2,7 +2,7 @@
 import {
   Briefcase, Users, FileText, Calendar, Plus,
   ArrowRight, TrendingUp, Clock, AlertCircle,
-  Eye, UserPlus,
+  Eye, UserPlus, ExternalLink,
   LayoutDashboard, Zap,
 } from 'lucide-vue-next'
 
@@ -530,6 +530,18 @@ const isEmpty = computed(() =>
                   <span>{{ interviewTypeLabels[interview.type] ?? interview.type }}</span>
                   <span class="text-surface-200 dark:text-surface-700">·</span>
                   <span class="truncate">{{ interview.jobTitle }}</span>
+                  <a
+                    v-if="interview.googleCalendarEventLink"
+                    :href="interview.googleCalendarEventLink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors shrink-0 ml-auto"
+                    @click.stop
+                  >
+                    <Calendar class="size-2.5" />
+                    Google Calendar
+                    <ExternalLink class="size-2" />
+                  </a>
                 </div>
               </NuxtLink>
             </div>

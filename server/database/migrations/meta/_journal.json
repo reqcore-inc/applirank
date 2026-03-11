@@ -92,6 +92,13 @@
       "when": 1773222445580,
       "tag": "0012_chief_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773228233884,
+      "tag": "0013_smart_blue_marvel",
+      "breakpoints": true
     }
   ]
 }

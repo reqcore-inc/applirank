@@ -330,9 +330,21 @@ const {
   },
 )
 
+// Cache the last successfully loaded detail so switching candidates doesn't flash a loading spinner
+const cachedApplication = ref<SwipeApplicationDetail | null>(null)
+
 const resolvedCurrentApplication = computed(() => {
-  if (!currentApplication.value) return null
-  return currentApplication.value.id === currentApplicationId.value ? currentApplication.value : null
+  if (currentApplication.value && currentApplication.value.id === currentApplicationId.value) {
+    return currentApplication.value
+  }
+  // Show cached (previous) data while the new detail is loading
+  return cachedApplication.value
+})
+
+watch(currentApplication, (val) => {
+  if (val && val.id === currentApplicationId.value) {
+    cachedApplication.value = val
+  }
 })
 
 watch(currentApplicationId, async (id) => {
@@ -737,7 +749,6 @@ async function changeStatus(status: string) {
   const applicationId = currentSummary.value.id
 
   isMutating.value = true
-  const nextIndex = Math.min(currentIndex.value + 1, Math.max(filteredApplications.value.length - 1, 0))
 
   try {
     await $fetch(`/api/applications/${applicationId}`, {
@@ -747,8 +758,13 @@ async function changeStatus(status: string) {
 
     await refreshApps()
 
-    if (filteredApplications.value.length > 1) {
-      currentIndex.value = Math.min(nextIndex, filteredApplications.value.length - 1)
+    // After the moved candidate disappears from the list, the items that came after
+    // it shift up by one index. currentIndex now naturally points to the next
+    // candidate — no change needed. We only clamp if currentIndex is now out of
+    // bounds (i.e. the moved candidate was the last item in the filtered list).
+    const newLen = filteredApplications.value.length
+    if (newLen > 0 && currentIndex.value >= newLen) {
+      currentIndex.value = newLen - 1
     }
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
@@ -798,12 +814,21 @@ function onFullscreenChange() {
 onMounted(() => document.addEventListener('fullscreenchange', onFullscreenChange))
 onBeforeUnmount(() => document.removeEventListener('fullscreenchange', onFullscreenChange))
 
-function handleKeyNavigation(event: KeyboardEvent) {
-  if (event.key === 'Escape' && showDocPreview.value) {
-    closeDocPreview()
-    return
+function goToPreviousStage() {
+  const idx = PIPELINE_STATUSES.indexOf(focusStatus.value)
+  if (idx > 0) {
+    focusStatus.value = PIPELINE_STATUSES[idx - 1]!
   }
+}
 
+function goToNextStage() {
+  const idx = PIPELINE_STATUSES.indexOf(focusStatus.value)
+  if (idx < PIPELINE_STATUSES.length - 1) {
+    focusStatus.value = PIPELINE_STATUSES[idx + 1]!
+  }
+}
+
+function handleKeyNavigation(event: KeyboardEvent) {
   if (event.key === 'Escape' && showDocPreview.value) {
     closeDocPreview()
     return
@@ -819,6 +844,28 @@ function handleKeyNavigation(event: KeyboardEvent) {
   if (event.key === 'ArrowDown') {
     event.preventDefault()
     goToNextCard()
+  }
+
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault()
+    goToPreviousStage()
+  }
+
+  if (event.key === 'ArrowRight') {
+    event.preventDefault()
+    goToNextStage()
+  }
+
+  // Number keys 1-9 trigger status transition buttons
+  const num = parseInt(event.key)
+  if (num >= 1 && num <= 9 && allowedTransitions.value.length >= num) {
+    event.preventDefault()
+    const targetStatus = allowedTransitions.value[num - 1]!
+    if (targetStatus === 'interview') {
+      openInterviewScheduler()
+    } else {
+      changeStatus(targetStatus)
+    }
   }
 }
 
@@ -1155,9 +1202,19 @@ function closeDocPreview() {
             </Transition>
           </div>
 
-          <div class="hidden sm:flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 text-[10px] font-medium text-surface-400 dark:bg-surface-800/60 dark:text-surface-500">
-            <span class="font-mono text-[10px]">↑↓</span>
-            <span>navigate</span>
+          <div class="hidden sm:flex items-center gap-2 text-[10px] font-medium text-surface-400 dark:text-surface-500">
+            <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
+              <span class="font-mono text-[10px]">↑↓</span>
+              <span>candidates</span>
+            </div>
+            <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
+              <span class="font-mono text-[10px]">←→</span>
+              <span>stages</span>
+            </div>
+            <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
+              <span class="font-mono text-[10px]">1-9</span>
+              <span>actions</span>
+            </div>
           </div>
         </div>
       </Teleport>
@@ -1409,9 +1466,12 @@ function closeDocPreview() {
                 <p class="truncate text-sm font-medium text-surface-900 dark:text-surface-100">
                   {{ app.candidateFirstName }} {{ app.candidateLastName }}
                 </p>
-                <p class="mt-0.5 truncate text-xs text-surface-500 dark:text-surface-400">
-                  {{ app.candidateEmail }}
-                </p>
+                <a
+                  :href="`mailto:${app.candidateEmail}`"
+                  target="_blank"
+                  class="mt-0.5 block truncate text-xs text-surface-500 dark:text-surface-400 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                  @click.stop
+                >{{ app.candidateEmail }}</a>
                 <div class="mt-1.5 flex items-center gap-2">
                   <span
                     v-if="app.score != null"
@@ -1457,14 +1517,15 @@ function closeDocPreview() {
             <div v-if="allowedTransitions.length > 0" class="shrink-0 border-b border-surface-200/80 bg-white/95 backdrop-blur-sm px-6 py-2.5 dark:border-surface-800/60 dark:bg-surface-900/95">
               <div class="mx-auto max-w-4xl flex flex-wrap items-center gap-2">
                 <button
-                  v-for="nextStatus in allowedTransitions"
+                  v-for="(nextStatus, idx) in allowedTransitions"
                   :key="nextStatus"
                   :disabled="isMutating"
-                  class="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  class="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm inline-flex items-center gap-1.5"
                   :class="transitionClasses[nextStatus] ?? 'border border-surface-300 text-surface-600 hover:bg-surface-50'"
                   @click="nextStatus === 'interview' ? openInterviewScheduler() : changeStatus(nextStatus)"
                 >
                   {{ transitionLabels[nextStatus] ?? nextStatus }}
+                  <kbd class="inline-flex items-center justify-center rounded px-1 py-0.5 text-[10px] font-mono leading-none opacity-60 bg-black/10 dark:bg-white/10 min-w-[16px]">{{ idx + 1 }}</kbd>
                 </button>
               </div>
             </div>
@@ -1500,13 +1561,37 @@ function closeDocPreview() {
                       </span>
                     </div>
                     <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-surface-500 dark:text-surface-400">
-                      <span class="inline-flex items-center gap-1.5 hover:text-surface-700 dark:hover:text-surface-300 transition-colors">
+                      <a
+                        :href="`mailto:${currentSummary.candidateEmail}`"
+                        target="_blank"
+                        class="inline-flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                      >
                         <Mail class="size-3.5" />
                         {{ currentSummary.candidateEmail }}
-                      </span>
+                      </a>
                       <span v-if="resolvedCurrentApplication?.candidate.phone" class="inline-flex items-center gap-1.5">
                         <Phone class="size-3.5" />
                         {{ resolvedCurrentApplication.candidate.phone }}
+                      </span>
+                    </div>
+                    <div class="mt-2 flex flex-wrap items-center gap-2">
+                      <span
+                        v-if="currentSummary.score != null"
+                        class="inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset"
+                        :class="{
+                          'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/60 dark:text-success-400 dark:ring-success-800': currentSummary.score >= 75,
+                          'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/60 dark:text-warning-400 dark:ring-warning-800': currentSummary.score >= 40 && currentSummary.score < 75,
+                          'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950/60 dark:text-danger-400 dark:ring-danger-800': currentSummary.score < 40,
+                        }"
+                      >
+                        {{ currentSummary.score }} pts
+                      </span>
+                      <span class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
+                        <Clock class="size-3" />
+                        Applied {{ new Date(currentSummary.createdAt).toLocaleDateString() }}
+                      </span>
+                      <span v-if="currentSummary.updatedAt !== currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
+                        · Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}
                       </span>
                     </div>
                   </div>
@@ -1609,77 +1694,6 @@ function closeDocPreview() {
 
               <!-- PROFILE SECTION -->
               <div ref="overviewRef" class="space-y-5 max-w-4xl mx-auto scroll-mt-4">
-                <!-- Candidate info -->
-                <div class="rounded-xl border border-surface-200/80 bg-white p-5 shadow-sm shadow-surface-900/[0.03] dark:border-surface-800/60 dark:bg-surface-900 dark:shadow-none">
-                  <div class="flex items-center gap-2.5 mb-4">
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-950/40">
-                      <UserRound class="size-3.5 text-brand-600 dark:text-brand-400" />
-                    </div>
-                    <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Candidate</h3>
-                  </div>
-                  <dl class="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Name</dt>
-                      <dd class="text-surface-800 dark:text-surface-200 font-medium">
-                        {{ currentSummary.candidateFirstName }} {{ currentSummary.candidateLastName }}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Email</dt>
-                      <dd class="text-surface-800 dark:text-surface-200 font-medium truncate">
-                        {{ currentSummary.candidateEmail }}
-                      </dd>
-                    </div>
-                    <div v-if="resolvedCurrentApplication?.candidate.phone">
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Phone</dt>
-                      <dd class="text-surface-800 dark:text-surface-200 font-medium">
-                        {{ resolvedCurrentApplication.candidate.phone }}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Score</dt>
-                      <dd class="font-medium">
-                        <span
-                          v-if="currentSummary.score != null"
-                          class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
-                          :class="{
-                            'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/60 dark:text-success-400 dark:ring-success-800': currentSummary.score >= 75,
-                            'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/60 dark:text-warning-400 dark:ring-warning-800': currentSummary.score >= 40 && currentSummary.score < 75,
-                            'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950/60 dark:text-danger-400 dark:ring-danger-800': currentSummary.score < 40,
-                          }"
-                        >
-                          {{ currentSummary.score }} pts
-                        </span>
-                        <span v-else class="text-surface-400">—</span>
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-
-                <!-- Application details -->
-                <div class="rounded-xl border border-surface-200/80 bg-white p-5 shadow-sm shadow-surface-900/[0.03] dark:border-surface-800/60 dark:bg-surface-900 dark:shadow-none">
-                  <div class="flex items-center gap-2.5 mb-4">
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-info-50 dark:bg-info-950/40">
-                      <Briefcase class="size-3.5 text-info-600 dark:text-info-400" />
-                    </div>
-                    <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Application</h3>
-                  </div>
-                  <dl class="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Applied</dt>
-                      <dd class="text-surface-800 dark:text-surface-200 font-medium">
-                        {{ new Date(currentSummary.createdAt).toLocaleDateString() }}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Updated</dt>
-                      <dd class="text-surface-800 dark:text-surface-200 font-medium">
-                        {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-
                 <!-- Notes -->
                 <div class="rounded-xl border border-surface-200/80 bg-white p-5 shadow-sm shadow-surface-900/[0.03] dark:border-surface-800/60 dark:bg-surface-900 dark:shadow-none">
                   <div class="flex items-center gap-2.5 mb-4">

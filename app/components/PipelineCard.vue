@@ -45,10 +45,15 @@ const transitionClasses: Record<string, string> = {
         {{ candidateFirstName }} {{ candidateLastName }}
       </h4>
       <div class="flex items-center gap-2 text-xs text-surface-400 mt-0.5">
-        <span class="inline-flex items-center gap-1 truncate">
+        <a
+          :href="`mailto:${candidateEmail}`"
+          target="_blank"
+          class="inline-flex items-center gap-1 truncate hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+          @click.stop
+        >
           <User class="size-3 shrink-0" />
           {{ candidateEmail }}
-        </span>
+        </a>
       </div>
     </NuxtLink>
 

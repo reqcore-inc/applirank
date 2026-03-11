@@ -117,10 +117,14 @@ const { candidates, total, fetchStatus, error, refresh } = useCandidates({
             </span>
           </div>
           <div class="flex items-center gap-3 text-xs text-surface-400">
-            <span class="inline-flex items-center gap-1">
+            <a
+              :href="`mailto:${c.email}`"
+              target="_blank"
+              class="inline-flex items-center gap-1 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+            >
               <Mail class="size-3" />
               {{ c.email }}
-            </span>
+            </a>
             <span v-if="c.phone" class="inline-flex items-center gap-1">
               <Phone class="size-3" />
               {{ c.phone }}

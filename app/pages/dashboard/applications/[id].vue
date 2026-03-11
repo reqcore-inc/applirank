@@ -225,7 +225,13 @@ function formatResponseValue(value: unknown): string {
             </div>
             <div>
               <dt class="text-surface-400">Email</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ application.candidate.email }}</dd>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">
+                <a
+                  :href="`mailto:${application.candidate.email}`"
+                  target="_blank"
+                  class="hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                >{{ application.candidate.email }}</a>
+              </dd>
             </div>
             <div v-if="application.candidate.phone">
               <dt class="text-surface-400">Phone</dt>

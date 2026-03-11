@@ -305,10 +305,14 @@ function formatFileSize(bytes: number | null | undefined): string {
               {{ candidate.firstName }} {{ candidate.lastName }}
             </h1>
             <div class="flex items-center gap-4 text-sm text-surface-500">
-              <span class="inline-flex items-center gap-1">
+              <a
+                :href="`mailto:${candidate.email}`"
+                target="_blank"
+                class="inline-flex items-center gap-1 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+              >
                 <Mail class="size-3.5" />
                 {{ candidate.email }}
-              </span>
+              </a>
               <span v-if="candidate.phone" class="inline-flex items-center gap-1">
                 <Phone class="size-3.5" />
                 {{ candidate.phone }}
@@ -340,7 +344,13 @@ function formatFileSize(bytes: number | null | undefined): string {
           <dl class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt class="text-surface-400">Email</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ candidate.email }}</dd>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">
+                <a
+                  :href="`mailto:${candidate.email}`"
+                  target="_blank"
+                  class="hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                >{{ candidate.email }}</a>
+              </dd>
             </div>
             <div>
               <dt class="text-surface-400">Phone</dt>

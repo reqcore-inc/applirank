@@ -701,7 +701,11 @@ onUnmounted(() => {
           <!-- Info -->
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
-              {{ inv.email }}
+              <a
+                :href="`mailto:${inv.email}`"
+                target="_blank"
+                class="hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+              >{{ inv.email }}</a>
             </div>
             <div class="flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500">
               <span
@@ -1110,7 +1114,11 @@ onUnmounted(() => {
               <span v-if="isCurrentUser(m.userId)" class="text-xs text-surface-400 dark:text-surface-500">(you)</span>
             </div>
             <div class="text-sm text-surface-500 dark:text-surface-400 truncate">
-              {{ m.user.email }}
+              <a
+                :href="`mailto:${m.user.email}`"
+                target="_blank"
+                class="hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+              >{{ m.user.email }}</a>
             </div>
           </div>
 

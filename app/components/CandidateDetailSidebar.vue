@@ -327,10 +327,14 @@ const showScheduleSidebar = ref(false)
                 {{ application.candidate.firstName }} {{ application.candidate.lastName }}
               </h2>
               <div class="flex items-center gap-3 text-sm text-surface-500 dark:text-surface-400">
-                <span class="inline-flex items-center gap-1 truncate">
+                <a
+                  :href="`mailto:${application.candidate.email}`"
+                  target="_blank"
+                  class="inline-flex items-center gap-1 truncate hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                >
                   <Mail class="size-3.5 shrink-0" />
                   {{ application.candidate.email }}
-                </span>
+                </a>
                 <span v-if="application.candidate.phone" class="inline-flex items-center gap-1">
                   <Phone class="size-3.5 shrink-0" />
                   {{ application.candidate.phone }}
@@ -456,7 +460,11 @@ const showScheduleSidebar = ref(false)
                 <div>
                   <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Email</dt>
                   <dd class="text-surface-800 dark:text-surface-200 font-medium truncate">
-                    {{ application.candidate.email }}
+                    <a
+                      :href="`mailto:${application.candidate.email}`"
+                      target="_blank"
+                      class="hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+                    >{{ application.candidate.email }}</a>
                   </dd>
                 </div>
                 <div v-if="application.candidate.phone">

@@ -162,10 +162,14 @@ function getInitials(name: string | undefined): string {
           </div>
           <div>
             <p class="text-sm font-medium text-surface-900 dark:text-surface-100">{{ session?.user?.name }}</p>
-            <p class="text-sm text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
+            <a
+              :href="session?.user?.email ? `mailto:${session.user.email}` : undefined"
+              target="_blank"
+              class="text-sm text-surface-500 dark:text-surface-400 flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
+            >
               <Mail class="size-3.5" />
               {{ session?.user?.email }}
-            </p>
+            </a>
           </div>
         </div>
 

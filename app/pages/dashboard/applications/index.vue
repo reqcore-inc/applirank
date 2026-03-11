@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileText, Search, X, ChevronDown, Briefcase, Mail, Clock } from 'lucide-vue-next'
+import { FileText, Search, X, ChevronDown, Briefcase, Mail, Clock, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -83,29 +83,20 @@ onUnmounted(() => document.removeEventListener('mousedown', handleJobDropdownOut
 
 // ── Sorting ───────────────────────────────────────────────────────────────────
 
-type SortOption = 'newest' | 'oldest' | 'score-high' | 'score-low' | 'name-az' | 'name-za'
-const activeSort = useState<SortOption>('app-sort', () => 'newest')
-const sortDropdownOpen = ref(false)
-const sortDropdownRef = ref<HTMLElement | null>(null)
+type SortKey = 'name' | 'email' | 'job' | 'status' | 'score' | 'created'
+type SortDir = 'asc' | 'desc'
 
-const sortOptions: { value: SortOption, label: string }[] = [
-  { value: 'newest', label: 'Newest first' },
-  { value: 'oldest', label: 'Oldest first' },
-  { value: 'score-high', label: 'Score: high to low' },
-  { value: 'score-low', label: 'Score: low to high' },
-  { value: 'name-az', label: 'Name: A → Z' },
-  { value: 'name-za', label: 'Name: Z → A' },
-]
+const sortKey = ref<SortKey>('created')
+const sortDir = ref<SortDir>('desc')
 
-const activeSortLabel = computed(() => sortOptions.find(o => o.value === activeSort.value)?.label ?? 'Newest first')
-
-function handleSortDropdownOutside(e: MouseEvent) {
-  if (sortDropdownRef.value && !sortDropdownRef.value.contains(e.target as Node)) {
-    sortDropdownOpen.value = false
+function toggleSort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = key === 'created' || key === 'score' ? 'desc' : 'asc'
   }
 }
-onMounted(() => document.addEventListener('mousedown', handleSortDropdownOutside))
-onUnmounted(() => document.removeEventListener('mousedown', handleSortDropdownOutside))
 
 // ── Filtered + sorted list ────────────────────────────────────────────────────
 
@@ -128,20 +119,21 @@ const filteredApplications = computed(() => {
   }
 
   // Sort
+  const dir = sortDir.value === 'asc' ? 1 : -1
   list.sort((a, b) => {
-    switch (activeSort.value) {
-      case 'newest':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      case 'oldest':
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      case 'score-high':
-        return (b.score ?? -1) - (a.score ?? -1)
-      case 'score-low':
-        return (a.score ?? -1) - (b.score ?? -1)
-      case 'name-az':
-        return `${a.candidateFirstName} ${a.candidateLastName}`.localeCompare(`${b.candidateFirstName} ${b.candidateLastName}`)
-      case 'name-za':
-        return `${b.candidateFirstName} ${b.candidateLastName}`.localeCompare(`${a.candidateFirstName} ${a.candidateLastName}`)
+    switch (sortKey.value) {
+      case 'name':
+        return dir * `${a.candidateFirstName} ${a.candidateLastName}`.localeCompare(`${b.candidateFirstName} ${b.candidateLastName}`)
+      case 'email':
+        return dir * a.candidateEmail.localeCompare(b.candidateEmail)
+      case 'job':
+        return dir * a.jobTitle.localeCompare(b.jobTitle)
+      case 'status':
+        return dir * a.status.localeCompare(b.status)
+      case 'score':
+        return dir * ((a.score ?? -1) - (b.score ?? -1))
+      case 'created':
+        return dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       default:
         return 0
     }
@@ -172,23 +164,6 @@ function timeAgo(date: string | Date) {
   const days = Math.floor(hrs / 24)
   if (days < 30) return `${days}d ago`
   return new Date(date).toLocaleDateString()
-}
-
-function candidateInitials(first: string, last: string) {
-  return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase()
-}
-
-function initialsColor(name: string) {
-  const colors = [
-    'bg-brand-100 text-brand-700 dark:bg-brand-900 dark:text-brand-300',
-    'bg-info-100 text-info-700 dark:bg-info-900 dark:text-info-300',
-    'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300',
-    'bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300',
-    'bg-danger-100 text-danger-700 dark:bg-danger-900 dark:text-danger-300',
-  ]
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return colors[Math.abs(hash) % colors.length]
 }
 
 function scoreClass(score: number) {
@@ -226,7 +201,7 @@ const statusLabels: Record<Status, string> = {
 </script>
 
 <template>
-  <div class="mx-auto max-w-5xl">
+  <div class="mx-auto max-w-6xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
@@ -321,38 +296,6 @@ const statusLabels: Record<Status, string> = {
       </button>
     </div>
 
-    <!-- Results bar -->
-    <div class="flex items-center justify-between mb-3">
-      <p class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide">
-        {{ filteredApplications.length }} application{{ filteredApplications.length === 1 ? '' : 's' }}
-      </p>
-
-      <!-- Sort dropdown -->
-      <div ref="sortDropdownRef" class="relative">
-        <button
-          class="inline-flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
-          @click="sortDropdownOpen = !sortDropdownOpen"
-        >
-          {{ activeSortLabel }}
-          <ChevronDown class="size-3" />
-        </button>
-        <div
-          v-if="sortDropdownOpen"
-          class="absolute right-0 top-full mt-1 z-20 w-48 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-lg py-1"
-        >
-          <button
-            v-for="opt in sortOptions"
-            :key="opt.value"
-            class="w-full text-left px-3 py-2 text-sm hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
-            :class="activeSort === opt.value ? 'text-brand-600 font-medium' : 'text-surface-700 dark:text-surface-300'"
-            @click="activeSort = opt.value; sortDropdownOpen = false"
-          >
-            {{ opt.label }}
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-16 text-surface-400">
       Loading applications…
@@ -397,69 +340,121 @@ const statusLabels: Record<Status, string> = {
       </button>
     </div>
 
-    <!-- Application cards -->
-    <div v-else class="space-y-2">
-      <NuxtLink
-        v-for="app in filteredApplications"
-        :key="app.id"
-        :to="$localePath(`/dashboard/applications/${app.id}`)"
-        class="flex items-start gap-4 rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-4 py-4 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm transition-all group"
-      >
-        <!-- Avatar -->
-        <div
-          class="size-10 shrink-0 rounded-full flex items-center justify-center text-sm font-semibold select-none"
-          :class="initialsColor(`${app.candidateFirstName} ${app.candidateLastName}`)"
-        >
-          {{ candidateInitials(app.candidateFirstName, app.candidateLastName) }}
-        </div>
-
-        <!-- Info -->
-        <div class="min-w-0 flex-1">
-          <!-- Row 1: name + badges -->
-          <div class="flex items-center gap-2 flex-wrap">
-            <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors truncate">
-              {{ app.candidateFirstName }} {{ app.candidateLastName }}
-            </h3>
-            <!-- Status badge -->
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium capitalize"
-              :class="statusBadgeClasses[app.status] ?? 'bg-surface-100 text-surface-600'"
+    <!-- Application table -->
+    <div v-else>
+      <div class="overflow-x-auto rounded-lg border border-surface-200 dark:border-surface-800">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-surface-50 dark:bg-surface-800/50 border-b border-surface-200 dark:border-surface-800">
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('name')">
+                  Candidate
+                  <ArrowUp v-if="sortKey === 'name' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'name' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden lg:table-cell">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('email')">
+                  Email
+                  <ArrowUp v-if="sortKey === 'email' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'email' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden md:table-cell">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('job')">
+                  Job
+                  <ArrowUp v-if="sortKey === 'job' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'job' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('status')">
+                  Status
+                  <ArrowUp v-if="sortKey === 'status' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'status' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-center px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden sm:table-cell">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('score')">
+                  Score
+                  <ArrowUp v-if="sortKey === 'score' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'score' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('created')">
+                  Applied
+                  <ArrowUp v-if="sortKey === 'created' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'created' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+            <tr
+              v-for="app in filteredApplications"
+              :key="app.id"
+              class="group bg-white dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800/60 transition-colors cursor-pointer"
+              @click="$router.push($localePath(`/dashboard/applications/${app.id}`))"
             >
-              <span class="size-1.5 rounded-full" :class="statusDotClasses[app.status] ?? 'bg-surface-400'" />
-              {{ statusLabels[app.status as Status] ?? app.status }}
-            </span>
-            <!-- Score badge -->
-            <span
-              v-if="app.score != null"
-              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ring-1 ring-inset"
-              :class="scoreClass(app.score)"
-            >
-              {{ app.score }}%
-            </span>
-          </div>
-
-          <!-- Row 2: job title -->
-          <div class="flex items-center gap-1.5 mt-1 text-sm text-surface-600 dark:text-surface-300">
-            <Briefcase class="size-3.5 shrink-0 text-surface-400" />
-            <span class="truncate">{{ app.jobTitle }}</span>
-          </div>
-
-          <!-- Row 3: email + time -->
-          <div class="flex items-center gap-3 mt-1.5 text-xs text-surface-400">
-            <span class="inline-flex items-center gap-1">
-              <Mail class="size-3" />
-              {{ app.candidateEmail }}
-            </span>
-            <span class="inline-flex items-center gap-1">
-              <Clock class="size-3" />
-              {{ timeAgo(app.createdAt) }}
-            </span>
-          </div>
-        </div>
-      </NuxtLink>
+              <td class="px-4 py-3">
+                <NuxtLink
+                  :to="$localePath(`/dashboard/applications/${app.id}`)"
+                  class="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors whitespace-nowrap"
+                >
+                  {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                </NuxtLink>
+              </td>
+              <td class="px-4 py-3 text-surface-500 dark:text-surface-400 hidden lg:table-cell">
+                <span class="inline-flex items-center gap-1.5">
+                  <Mail class="size-3.5 shrink-0" />
+                  <span class="truncate max-w-[200px]">{{ app.candidateEmail }}</span>
+                </span>
+              </td>
+              <td class="px-4 py-3 text-surface-600 dark:text-surface-300 hidden md:table-cell">
+                <span class="inline-flex items-center gap-1.5 truncate max-w-[200px]">
+                  <Briefcase class="size-3.5 shrink-0 text-surface-400" />
+                  {{ app.jobTitle }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium capitalize whitespace-nowrap"
+                  :class="statusBadgeClasses[app.status] ?? 'bg-surface-100 text-surface-600'"
+                >
+                  <span class="size-1.5 rounded-full" :class="statusDotClasses[app.status] ?? 'bg-surface-400'" />
+                  {{ statusLabels[app.status as Status] ?? app.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center hidden sm:table-cell">
+                <span
+                  v-if="app.score != null"
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ring-1 ring-inset"
+                  :class="scoreClass(app.score)"
+                >
+                  {{ app.score }}%
+                </span>
+                <span v-else class="text-surface-300 dark:text-surface-600">—</span>
+              </td>
+              <td class="px-4 py-3 text-surface-400 whitespace-nowrap">
+                <span class="inline-flex items-center gap-1.5">
+                  <Clock class="size-3.5 shrink-0" />
+                  {{ timeAgo(app.createdAt) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Footer count -->
-      <p class="text-xs text-surface-400 pt-2">
+      <p class="text-xs text-surface-400 pt-3">
         Showing {{ filteredApplications.length }} of {{ total }} application{{ total === 1 ? '' : 's' }}
       </p>
     </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Users, Plus, Search, Mail, Phone } from 'lucide-vue-next'
+import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -25,10 +25,51 @@ watch(searchInput, (val) => {
 const { candidates, total, fetchStatus, error, refresh } = useCandidates({
   search: debouncedSearch,
 })
+
+// ── Sorting ───────────────────────────────────────────────────────────────────
+
+type SortKey = 'name' | 'email' | 'phone' | 'applications' | 'created'
+type SortDir = 'asc' | 'desc'
+
+const sortKey = ref<SortKey>('created')
+const sortDir = ref<SortDir>('desc')
+
+function toggleSort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = key === 'created' || key === 'applications' ? 'desc' : 'asc'
+  }
+}
+
+const sortedCandidates = computed(() => {
+  const list = [...candidates.value]
+  const dir = sortDir.value === 'asc' ? 1 : -1
+
+  list.sort((a, b) => {
+    switch (sortKey.value) {
+      case 'name':
+        return dir * `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+      case 'email':
+        return dir * a.email.localeCompare(b.email)
+      case 'phone':
+        return dir * (a.phone ?? '').localeCompare(b.phone ?? '')
+      case 'applications':
+        return dir * ((a.applicationCount ?? 0) - (b.applicationCount ?? 0))
+      case 'created':
+        return dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      default:
+        return 0
+    }
+  })
+
+  return list
+})
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl">
+  <div class="mx-auto max-w-5xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
@@ -96,46 +137,105 @@ const { candidates, total, fetchStatus, error, refresh } = useCandidates({
       </NuxtLink>
     </div>
 
-    <!-- Candidate list -->
-    <div v-else class="space-y-2">
-      <NuxtLink
-        v-for="c in candidates"
-        :key="c.id"
-        :to="$localePath(`/dashboard/candidates/${c.id}`)"
-        class="flex items-center justify-between rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 px-4 py-3 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm transition-all group"
-      >
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-2 mb-1">
-            <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors truncate">
-              {{ c.firstName }} {{ c.lastName }}
-            </h3>
-            <span
-              v-if="c.applicationCount > 0"
-              class="inline-flex items-center rounded-full bg-brand-50 dark:bg-brand-950 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400 shrink-0"
+    <!-- Candidate table -->
+    <div v-else>
+      <div class="overflow-x-auto rounded-lg border border-surface-200 dark:border-surface-800">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-surface-50 dark:bg-surface-800/50 border-b border-surface-200 dark:border-surface-800">
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('name')">
+                  Name
+                  <ArrowUp v-if="sortKey === 'name' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'name' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('email')">
+                  Email
+                  <ArrowUp v-if="sortKey === 'email' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'email' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden md:table-cell">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('phone')">
+                  Phone
+                  <ArrowUp v-if="sortKey === 'phone' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'phone' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-center px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden sm:table-cell">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('applications')">
+                  Applications
+                  <ArrowUp v-if="sortKey === 'applications' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'applications' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
+                <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('created')">
+                  Added
+                  <ArrowUp v-if="sortKey === 'created' && sortDir === 'asc'" class="size-3.5" />
+                  <ArrowDown v-else-if="sortKey === 'created' && sortDir === 'desc'" class="size-3.5" />
+                  <ArrowUpDown v-else class="size-3.5 opacity-40" />
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
+            <tr
+              v-for="c in sortedCandidates"
+              :key="c.id"
+              class="group bg-white dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800/60 transition-colors cursor-pointer"
+              @click="$router.push($localePath(`/dashboard/candidates/${c.id}`))"
             >
-              {{ c.applicationCount }} application{{ c.applicationCount === 1 ? '' : 's' }}
-            </span>
-          </div>
-          <div class="flex items-center gap-3 text-xs text-surface-400">
-            <a
-              :href="`mailto:${c.email}`"
-              target="_blank"
-              class="inline-flex items-center gap-1 hover:text-brand-600 dark:hover:text-brand-400 hover:underline cursor-pointer transition-colors"
-            >
-              <Mail class="size-3" />
-              {{ c.email }}
-            </a>
-            <span v-if="c.phone" class="inline-flex items-center gap-1">
-              <Phone class="size-3" />
-              {{ c.phone }}
-            </span>
-            <span>{{ new Date(c.createdAt).toLocaleDateString() }}</span>
-          </div>
-        </div>
-      </NuxtLink>
+              <td class="px-4 py-3">
+                <NuxtLink
+                  :to="$localePath(`/dashboard/candidates/${c.id}`)"
+                  class="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors whitespace-nowrap"
+                >
+                  {{ c.firstName }} {{ c.lastName }}
+                </NuxtLink>
+              </td>
+              <td class="px-4 py-3 text-surface-500 dark:text-surface-400">
+                <a
+                  :href="`mailto:${c.email}`"
+                  class="inline-flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 hover:underline transition-colors"
+                  @click.stop
+                >
+                  <Mail class="size-3.5 shrink-0" />
+                  <span class="truncate max-w-[200px]">{{ c.email }}</span>
+                </a>
+              </td>
+              <td class="px-4 py-3 text-surface-500 dark:text-surface-400 hidden md:table-cell">
+                <span v-if="c.phone" class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <Phone class="size-3.5 shrink-0" />
+                  {{ c.phone }}
+                </span>
+                <span v-else class="text-surface-300 dark:text-surface-600">—</span>
+              </td>
+              <td class="px-4 py-3 text-center hidden sm:table-cell">
+                <span
+                  v-if="c.applicationCount > 0"
+                  class="inline-flex items-center justify-center rounded-full bg-brand-50 dark:bg-brand-950 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-400 tabular-nums"
+                >
+                  {{ c.applicationCount }}
+                </span>
+                <span v-else class="text-surface-300 dark:text-surface-600">0</span>
+              </td>
+              <td class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap">
+                {{ new Date(c.createdAt).toLocaleDateString() }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Total count -->
-      <p class="text-xs text-surface-400 pt-2">
+      <p class="text-xs text-surface-400 pt-3">
         {{ total }} candidate{{ total === 1 ? '' : 's' }} total
       </p>
     </div>

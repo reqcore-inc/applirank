@@ -45,6 +45,9 @@ export default defineEventHandler(async (event) => {
   if (!created) throw createError({ statusCode: 500, statusMessage: 'Failed to create interview' })
 
   // Sync to Google Calendar only when explicitly requested
+  let calendarEventLink: string | null = null
+  let calendarEventId: string | null = null
+
   if (body.calendarSync !== false && app.candidate && app.job) {
     const org = await db.query.organization.findFirst({
       where: eq(organization.id, orgId),
@@ -66,26 +69,30 @@ export default defineEventHandler(async (event) => {
     const addCandidate = body.calendarAddCandidateAttendee !== false
     const sendUpdates = body.calendarSendUpdates !== false
 
-    createCalendarEvent(session.user.id, {
-      title: calendarTitle,
-      description: calendarDescription,
-      startTime: new Date(body.scheduledAt),
-      durationMinutes: body.duration,
-      timezone: body.timezone ?? 'UTC',
-      location: body.location ?? null,
-      candidateEmail: addCandidate ? app.candidate.email : null,
-      candidateName,
-      interviewerEmails: body.interviewers ?? [],
-      sendUpdates,
-    }).then(async (result) => {
+    try {
+      const result = await createCalendarEvent(session.user.id, {
+        title: calendarTitle,
+        description: calendarDescription,
+        startTime: new Date(body.scheduledAt),
+        durationMinutes: body.duration,
+        timezone: body.timezone ?? 'UTC',
+        location: body.location ?? null,
+        candidateEmail: addCandidate ? app.candidate.email : null,
+        candidateName,
+        interviewerEmails: body.interviewers ?? [],
+        sendUpdates,
+      })
+
       if (result) {
+        calendarEventId = result.id
+        calendarEventLink = result.htmlLink
         await db.update(interview)
           .set({ googleCalendarEventId: result.id, googleCalendarEventLink: result.htmlLink })
           .where(eq(interview.id, created.id))
       }
-    }).catch(err => {
+    } catch (err) {
       console.error('[Calendar] Failed to create event for interview:', err)
-    })
+    }
   }
 
   recordActivity({
@@ -102,5 +109,9 @@ export default defineEventHandler(async (event) => {
   })
 
   setResponseStatus(event, 201)
-  return created
+  return {
+    ...created,
+    ...(calendarEventId && { googleCalendarEventId: calendarEventId }),
+    ...(calendarEventLink && { googleCalendarEventLink: calendarEventLink }),
+  }
 })

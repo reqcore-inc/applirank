@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-  X, Calendar, Clock, MapPin, Users, Video, Phone,
-  Building2, Code2, FileText, UsersRound, ChevronLeft, ChevronRight,
+  X, Calendar, Clock, MapPin, Users, ChevronLeft, ChevronRight,
   Plus, AlertCircle, Mail, ChevronDown, RefreshCw, Globe,
-  Send, UserPlus, Bell, Pencil,
+  Send, UserPlus, Bell, Pencil, CheckCircle2, ExternalLink,
+  ArrowRight, Eye,
 } from 'lucide-vue-next'
 import { SYSTEM_TEMPLATES } from '~/utils/system-templates'
 
@@ -18,8 +18,12 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   close: []
-  scheduled: []
+  scheduled: [createdInterview?: { id: string; googleCalendarEventLink?: string | null }]
 }>()
+
+// ─── Success state ────────────────────────────────────────────────
+const showSuccess = ref(false)
+const createdInterview = ref<{ id: string; googleCalendarEventLink?: string | null } | null>(null)
 
 // ─── Calendar integration status ──────────────────────────────────
 const { isConnected: calendarConnected } = useCalendarIntegration()
@@ -27,7 +31,6 @@ const { isConnected: calendarConnected } = useCalendarIntegration()
 // ─── Form state ───────────────────────────────────────────────────
 const form = reactive({
   title: '',
-  type: 'video' as 'phone' | 'video' | 'in_person' | 'panel' | 'technical' | 'take_home',
   date: '',
   time: '10:00',
   duration: 60,
@@ -89,16 +92,6 @@ onMounted(() => {
     notifyViaCalendar.value = true
   }
 })
-
-// ─── Interview type config ────────────────────────────────────────
-const interviewTypes = [
-  { value: 'video', label: 'Video Call', icon: Video, color: 'text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/40' },
-  { value: 'phone', label: 'Phone', icon: Phone, color: 'text-success-600 dark:text-success-400 bg-success-50 dark:bg-success-950/40' },
-  { value: 'in_person', label: 'In Person', icon: Building2, color: 'text-warning-600 dark:text-warning-400 bg-warning-50 dark:bg-warning-950/40' },
-  { value: 'technical', label: 'Technical', icon: Code2, color: 'text-info-600 dark:text-info-400 bg-info-50 dark:bg-info-950/40' },
-  { value: 'panel', label: 'Panel', icon: UsersRound, color: 'text-accent-600 dark:text-accent-400 bg-accent-50 dark:bg-accent-950/40' },
-  { value: 'take_home', label: 'Take Home', icon: FileText, color: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-800/60' },
-] as const
 
 // ─── Duration presets ─────────────────────────────────────────────
 const durationPresets = [15, 30, 45, 60, 90, 120]
@@ -195,6 +188,8 @@ function selectDate(date: string) {
 }
 
 // ─── Interviewers ─────────────────────────────────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function addInterviewer() {
   form.interviewers.push('')
 }
@@ -281,18 +276,22 @@ async function handleSubmit() {
     errors.value.date = 'Invalid date/time'
   }
 
+  const filteredInterviewers = form.interviewers.filter(i => i.trim())
+  const invalidEmails = filteredInterviewers.filter(e => !EMAIL_RE.test(e.trim()))
+  if (invalidEmails.length > 0) {
+    errors.value.interviewers = 'All interviewers must have a valid email address'
+  }
+
   if (Object.keys(errors.value).length > 0) return
 
   isSubmitting.value = true
   try {
-    const filteredInterviewers = form.interviewers.filter(i => i.trim())
 
     const created = await $fetch('/api/interviews', {
       method: 'POST',
       body: {
         applicationId: props.applicationId,
         title: form.title.trim(),
-        type: form.type,
         scheduledAt: scheduledDate.toISOString(),
         duration: form.duration,
         location: form.location.trim() || undefined,
@@ -323,7 +322,8 @@ async function handleSubmit() {
     }
 
     await refreshNuxtData('interviews')
-    emit('scheduled')
+    createdInterview.value = created ? { id: created.id, googleCalendarEventLink: created.googleCalendarEventLink ?? null } : null
+    showSuccess.value = true
   } catch (err: any) {
     errors.value.submit = err?.data?.statusMessage ?? 'Failed to schedule interview'
   } finally {
@@ -380,11 +380,15 @@ async function handleMoveToInterview() {
             <div class="flex items-start justify-between">
               <div class="min-w-0">
                 <div class="flex items-center gap-2.5 mb-1">
-                  <div class="flex size-8 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950/40">
-                    <Calendar class="size-4 text-brand-600 dark:text-brand-400" />
+                  <div
+                    class="flex size-8 items-center justify-center rounded-xl"
+                    :class="showSuccess ? 'bg-emerald-50 dark:bg-emerald-950/40' : 'bg-brand-50 dark:bg-brand-950/40'"
+                  >
+                    <CheckCircle2 v-if="showSuccess" class="size-4 text-emerald-600 dark:text-emerald-400" />
+                    <Calendar v-else class="size-4 text-brand-600 dark:text-brand-400" />
                   </div>
                   <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 tracking-tight">
-                    Schedule Interview
+                    {{ showSuccess ? 'Interview Scheduled' : 'Schedule Interview' }}
                   </h2>
                 </div>
                 <p class="text-[13px] text-surface-500 dark:text-surface-400 truncate pl-[42px]">
@@ -393,7 +397,7 @@ async function handleMoveToInterview() {
               </div>
               <button
                 class="flex items-center justify-center rounded-lg p-2 -mr-1.5 -mt-0.5 text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:text-surface-500 dark:hover:text-surface-300 dark:hover:bg-surface-800 transition-colors cursor-pointer"
-                @click="emit('close')"
+                @click="showSuccess ? emit('scheduled', createdInterview ?? undefined) : emit('close')"
               >
                 <X class="size-4" />
               </button>
@@ -402,6 +406,96 @@ async function handleMoveToInterview() {
 
           <div class="h-px bg-gradient-to-r from-transparent via-surface-200 to-transparent dark:via-surface-700/60" />
 
+          <!-- ─── Success view ─────────────────────────────────── -->
+          <template v-if="showSuccess">
+            <div class="flex-1 overflow-y-auto px-6 py-8 flex flex-col items-center">
+              <!-- Success icon -->
+              <div class="flex size-16 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 mb-5">
+                <CheckCircle2 class="size-8 text-emerald-500 dark:text-emerald-400" />
+              </div>
+
+              <h3 class="text-base font-semibold text-surface-900 dark:text-surface-50 mb-1.5 text-center">
+                Interview successfully scheduled
+              </h3>
+              <p class="text-sm text-surface-500 dark:text-surface-400 text-center max-w-sm mb-6">
+                {{ form.title }} on {{ formattedDateTime }} ({{ form.duration }}m)
+              </p>
+
+              <!-- Notification summary -->
+              <div v-if="notifyViaEmail || notifyViaCalendar" class="flex flex-wrap items-center justify-center gap-2 mb-6">
+                <span v-if="notifyViaEmail" class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 dark:bg-brand-950/30 px-2.5 py-1 text-xs font-medium text-brand-700 dark:text-brand-400">
+                  <Mail class="size-3" />
+                  Email sent
+                </span>
+                <span v-if="notifyViaCalendar" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <Calendar class="size-3" />
+                  Calendar event created
+                </span>
+              </div>
+
+              <!-- Quick links -->
+              <div class="w-full max-w-sm space-y-2.5">
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">
+                  Quick links
+                </p>
+
+                <!-- Google Calendar link -->
+                <a
+                  v-if="createdInterview?.googleCalendarEventLink"
+                  :href="createdInterview.googleCalendarEventLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-3 rounded-xl border border-surface-200 dark:border-surface-700/80 bg-white dark:bg-surface-800/40 px-4 py-3 text-sm font-medium text-surface-700 dark:text-surface-300 hover:border-emerald-300 hover:bg-emerald-50/50 dark:hover:border-emerald-700 dark:hover:bg-emerald-950/20 transition-all group"
+                >
+                  <div class="flex size-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/30">
+                    <Calendar class="size-4 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <span class="flex-1">Open in Google Calendar</span>
+                  <ExternalLink class="size-3.5 text-surface-400 group-hover:text-emerald-500 transition-colors" />
+                </a>
+
+                <!-- View application -->
+                <NuxtLink
+                  :to="`/dashboard/applications/${applicationId}`"
+                  class="flex items-center gap-3 rounded-xl border border-surface-200 dark:border-surface-700/80 bg-white dark:bg-surface-800/40 px-4 py-3 text-sm font-medium text-surface-700 dark:text-surface-300 hover:border-brand-300 hover:bg-brand-50/50 dark:hover:border-brand-700 dark:hover:bg-brand-950/20 transition-all group"
+                  @click="emit('scheduled', createdInterview ?? undefined)"
+                >
+                  <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-950/30">
+                    <Eye class="size-4 text-brand-600 dark:text-brand-400" />
+                  </div>
+                  <span class="flex-1">View application</span>
+                  <ArrowRight class="size-3.5 text-surface-400 group-hover:text-brand-500 transition-colors" />
+                </NuxtLink>
+
+                <!-- Schedule another -->
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-xl border border-surface-200 dark:border-surface-700/80 bg-white dark:bg-surface-800/40 px-4 py-3 text-sm font-medium text-surface-700 dark:text-surface-300 hover:border-surface-300 hover:bg-surface-50 dark:hover:border-surface-600 dark:hover:bg-surface-800 transition-all group cursor-pointer"
+                  @click="showSuccess = false; createdInterview = null"
+                >
+                  <div class="flex size-8 items-center justify-center rounded-lg bg-surface-100 dark:bg-surface-800">
+                    <Plus class="size-4 text-surface-500 dark:text-surface-400" />
+                  </div>
+                  <span class="flex-1 text-left">Schedule another interview</span>
+                  <ArrowRight class="size-3.5 text-surface-400 group-hover:text-surface-600 dark:group-hover:text-surface-300 transition-colors" />
+                </button>
+              </div>
+            </div>
+
+            <!-- Success footer -->
+            <div class="shrink-0 border-t border-surface-200/60 dark:border-surface-800/40 bg-white/80 dark:bg-surface-900/80 backdrop-blur-sm px-6 py-4">
+              <button
+                type="button"
+                class="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-500 transition-colors cursor-pointer shadow-sm shadow-brand-600/20 dark:shadow-brand-500/10"
+                @click="emit('scheduled', createdInterview ?? undefined)"
+              >
+                Done
+              </button>
+            </div>
+          </template>
+
+          <!-- ─── Form view ────────────────────────────────────── -->
+          <template v-else>
           <!-- Form content -->
           <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
             <!-- Error banner -->
@@ -606,28 +700,6 @@ async function handleMoveToInterview() {
               </p>
             </div>
 
-            <!-- Interview Type -->
-            <div>
-              <label class="block text-[13px] font-medium text-surface-700 dark:text-surface-300 mb-2">
-                Interview type
-              </label>
-              <div class="grid grid-cols-3 gap-1.5">
-                <button
-                  v-for="t in interviewTypes"
-                  :key="t.value"
-                  type="button"
-                  class="flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[12px] font-medium transition-all duration-150 cursor-pointer truncate"
-                  :class="form.type === t.value
-                    ? 'border-brand-500 bg-brand-50 text-brand-700 dark:border-brand-400 dark:bg-brand-950/30 dark:text-brand-300'
-                    : 'border-surface-200 dark:border-surface-700/80 text-surface-500 dark:text-surface-400 hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-800/40'"
-                  @click="form.type = t.value"
-                >
-                  <component :is="t.icon" class="size-3.5 shrink-0" />
-                  <span class="truncate">{{ t.label }}</span>
-                </button>
-              </div>
-            </div>
-
             <!-- Title -->
             <div>
               <label for="interview-title" class="block text-[13px] font-medium text-surface-700 dark:text-surface-300 mb-2">
@@ -797,12 +869,13 @@ async function handleMoveToInterview() {
                 <span class="font-normal text-surface-400 dark:text-surface-500">(optional)</span>
               </label>
               <div class="space-y-2">
-                <div v-for="(_, idx) in form.interviewers" :key="idx" class="flex items-center gap-2">
+                <div v-for="(email, idx) in form.interviewers" :key="idx" class="flex items-center gap-2">
                   <input
                     v-model="form.interviewers[idx]"
-                    type="text"
-                    :placeholder="`Interviewer ${idx + 1}`"
-                    class="flex-1 rounded-xl border border-surface-200 dark:border-surface-700/80 bg-surface-50/50 dark:bg-surface-800/50 px-4 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 focus:bg-white dark:focus:bg-surface-800 transition-all"
+                    type="email"
+                    :placeholder="`interviewer${idx + 1}@example.com`"
+                    :class="errors.interviewers && email.trim() && !EMAIL_RE.test(email.trim()) ? 'border-danger-300 dark:border-danger-700' : 'border-surface-200 dark:border-surface-700/80'"
+                    class="flex-1 rounded-xl border bg-surface-50/50 dark:bg-surface-800/50 px-4 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 focus:bg-white dark:focus:bg-surface-800 transition-all"
                   />
                   <button
                     v-if="form.interviewers.length > 1"
@@ -821,6 +894,7 @@ async function handleMoveToInterview() {
                   <Plus class="size-3.5" />
                   Add interviewer
                 </button>
+                <p v-if="errors.interviewers" class="mt-1 text-xs text-danger-600 dark:text-danger-400">{{ errors.interviewers }}</p>
               </div>
             </div>
 
@@ -892,6 +966,7 @@ async function handleMoveToInterview() {
               </button>
             </div>
           </div>
+          </template>
         </div>
       </Transition>
     </div>

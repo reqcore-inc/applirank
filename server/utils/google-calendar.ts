@@ -222,6 +222,12 @@ export async function removeCalendarIntegration(userId: string): Promise<void> {
 // Calendar Event CRUD
 // ─────────────────────────────────────────────
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function isValidEmail(value: string): boolean {
+  return EMAIL_RE.test(value.trim())
+}
+
 interface InterviewEventData {
   title: string
   description: string
@@ -256,15 +262,20 @@ export async function createCalendarEvent(
 
   const endTime = new Date(data.startTime.getTime() + data.durationMinutes * 60_000)
 
+  const candidateEmailTrimmed = data.candidateEmail?.trim() || null
+  const validInterviewerEmails = data.interviewerEmails
+    .map(e => e.trim())
+    .filter(e => isValidEmail(e))
+
   const attendees: calendar_v3.Schema$EventAttendee[] = [
-    ...(data.candidateEmail
+    ...(candidateEmailTrimmed && isValidEmail(candidateEmailTrimmed)
       ? [{
-          email: data.candidateEmail,
+          email: candidateEmailTrimmed,
           displayName: data.candidateName,
           responseStatus: 'needsAction' as const,
         }]
       : []),
-    ...data.interviewerEmails.map(email => ({
+    ...validInterviewerEmails.map(email => ({
       email,
       responseStatus: 'accepted' as const,
     })),
@@ -322,7 +333,7 @@ export async function updateCalendarEvent(
   data: Partial<InterviewEventData>,
 ): Promise<string | null> {
   const calendar = await getCalendarClient(userId)
-  if (!calendar) return false
+  if (!calendar) return null
 
   const integration = await db.query.calendarIntegration.findFirst({
     where: eq(calendarIntegration.userId, userId),
@@ -351,15 +362,19 @@ export async function updateCalendarEvent(
 
   if (data.candidateEmail || data.interviewerEmails) {
     const attendees: calendar_v3.Schema$EventAttendee[] = []
-    if (data.candidateEmail) {
+    const candidateEmailTrimmed = data.candidateEmail?.trim() || null
+    if (candidateEmailTrimmed && isValidEmail(candidateEmailTrimmed)) {
       attendees.push({
-        email: data.candidateEmail,
+        email: candidateEmailTrimmed,
         displayName: data.candidateName,
         responseStatus: 'needsAction',
       })
     }
     if (data.interviewerEmails) {
-      attendees.push(...data.interviewerEmails.map(email => ({
+      const validEmails = data.interviewerEmails
+        .map(e => e.trim())
+        .filter(e => isValidEmail(e))
+      attendees.push(...validEmails.map(email => ({
         email,
         responseStatus: 'accepted' as const,
       })))

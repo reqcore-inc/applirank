@@ -112,9 +112,9 @@ function getAuth(): Auth {
           invitationExpiresIn: 48 * 60 * 60,
         }),
       ],
-    })
+    }) as unknown as Auth
   }
-  return _auth
+  return _auth!
 }
 
 /**

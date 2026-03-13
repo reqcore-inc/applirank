@@ -12,9 +12,9 @@ const { data: session } = await authClient.useSession(useFetch)
 <template>
   <nav class="fixed inset-x-0 top-0 z-50 border-b border-white/[0.06] bg-[#09090b]/80 backdrop-blur-xl">
     <div class="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-      <!-- Logo -->
-      <NuxtLink
-        :to="localePath('/')"
+      <!-- Logo — links to marketing site (reqcore.com) -->
+      <a
+        :href="useRuntimeConfig().public.marketingUrl"
         class="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-white"
       >
         <img
@@ -27,7 +27,7 @@ const { data: session } = await authClient.useSession(useFetch)
           class="h-7 w-7 object-contain"
         />
         Reqcore
-      </NuxtLink>
+      </a>
 
       <!-- Center nav links (desktop) -->
       <div class="hidden items-center gap-1 md:flex">

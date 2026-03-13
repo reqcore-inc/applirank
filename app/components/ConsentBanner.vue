@@ -20,12 +20,14 @@ const { needsConsent, acceptAnalytics, declineAnalytics } = useAnalyticsConsent(
         Help us improve reqcore. No ads, no data selling, just product insights.
       </p>
       <p class="mt-1.5 text-[12px] text-white/40">
-        <NuxtLink
-          to="/docs/legal/privacy-policy"
+        <a
+          :href="`${useRuntimeConfig().public.marketingUrl}/docs/legal/privacy-policy`"
+          target="_blank"
+          rel="noopener noreferrer"
           class="underline underline-offset-2 transition hover:text-white/70"
         >
           Privacy policy
-        </NuxtLink>
+        </a>
       </p>
       <div class="mt-3 flex gap-2">
         <button

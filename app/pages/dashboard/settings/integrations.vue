@@ -158,13 +158,15 @@ async function handleDisconnect() {
             environment variables before users can connect.
           </p>
           <div class="flex items-center gap-4">
-            <NuxtLink
-              to="/docs/features/google-calendar"
+            <a
+              :href="`${useRuntimeConfig().public.marketingUrl}/docs/features/google-calendar`"
+              target="_blank"
+              rel="noopener noreferrer"
               class="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:underline"
             >
               Setup guide
               <ExternalLink class="size-3.5" />
-            </NuxtLink>
+            </a>
             <a
               href="https://console.cloud.google.com/apis/credentials"
               target="_blank"

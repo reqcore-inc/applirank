@@ -106,6 +106,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      /** Base URL of the marketing site (reqcore-web) for cross-domain links */
+      marketingUrl: process.env.NUXT_PUBLIC_MARKETING_URL || 'https://reqcore.com',
       // PostHog runtimeConfig is managed by @posthog/nuxt via posthogConfig above.
       // Override at runtime with NUXT_PUBLIC_POSTHOG_PUBLIC_KEY / NUXT_PUBLIC_POSTHOG_HOST.
       /** When set, the dashboard shows a read-only demo banner for this org slug */

@@ -250,12 +250,12 @@ const typeLabels: Record<string, string> = {
       <p class="text-sm text-surface-500 mb-6 max-w-xs">
         This position may have been filled or is no longer accepting applications.
       </p>
-      <NuxtLink
-        :to="$localePath('/')"
+      <a
+        :href="useRuntimeConfig().public.marketingUrl"
         class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors shadow-sm"
       >
         Back to Home
-      </NuxtLink>
+      </a>
     </div>
 
     <!-- Application form -->

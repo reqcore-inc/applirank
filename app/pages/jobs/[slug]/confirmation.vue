@@ -47,12 +47,12 @@ useSeoMeta({
       >
         Browse more positions
       </NuxtLink>
-      <NuxtLink
-        :to="$localePath('/')"
+      <a
+        :href="useRuntimeConfig().public.marketingUrl"
         class="inline-flex items-center rounded-lg border border-surface-300 dark:border-surface-700 px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
       >
         Back to Home
-      </NuxtLink>
+      </a>
     </div>
   </div>
 </template>

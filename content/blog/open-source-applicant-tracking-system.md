@@ -17,7 +17,7 @@ If you manage hiring and want to understand what sets open source ATS apart from
 
 An applicant tracking system manages the hiring lifecycle from job requisition to offer letter. For a detailed breakdown of each stage — from resume parsing to AI scoring to data flow — see our guide on [how applicant tracking systems work](/blog/how-applicant-tracking-systems-work). At its core, every ATS performs five functions:
 
-1. **Job posting** — Create job listings and distribute them to career pages and job boards ([Indeed](https://www.indeed.com/), [LinkedIn](https://www.linkedin.com/), [Google for Jobs](https://jobs.google.com/)).
+1. **Job posting** — Create job listings and distribute them to career pages and job boards ([Indeed](https://www.indeed.com/), [LinkedIn](https://www.linkedin.com/), [Google for Jobs](https://jobs.google.com/)). To maximize organic applicant traffic, generate [SEO-optimized career pages with individual job URLs](/blog/career-page-seo).
 2. **Application collection** — Accept candidate applications via web forms, email, or API integrations. Store resumes, cover letters, and custom field responses.
 3. **Pipeline management** — Track each candidate through configurable stages: applied → screened → interviewed → offered → hired (or rejected at any stage). When we built Reqcore's pipeline system, we learned that rigid 5-stage pipelines break immediately in practice — every team structures hiring differently. Configurable stages are not a nice-to-have, they are a core requirement.
 4. **Collaboration** — Let recruiters, hiring managers, and interviewers share notes, schedule interviews, and score candidates within a single system.

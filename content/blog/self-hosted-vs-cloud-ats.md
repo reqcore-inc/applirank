@@ -58,7 +58,7 @@ When we built Reqcore, we chose PostgreSQL 16 specifically because it supports J
 
 **Transparent AI.** Open-source ATS platforms let you inspect the code behind every ranking decision. Reqcore's AI scoring shows a visible Matching Logic summary — recruiters see exactly why a candidate scored the way they did and can verify or override the result. This is the opposite of the "secret algorithm" approach used by commercial platforms.
 
-**Full customization.** You control the source code. Need a custom pipeline stage, a proprietary scoring algorithm, or an integration with an internal HRIS? Fork the repo and build it. No enterprise tier required, no feature request queue.
+**Full customization.** You control the source code. Need a custom pipeline stage, a proprietary scoring algorithm, an integration with an internal HRIS, or a [branded career page with custom styling](/blog/career-page-that-converts)? Fork the repo and build it. No enterprise tier required, no feature request queue.
 
 ### Where self-hosted ATS requires effort
 

@@ -112,6 +112,7 @@ No ATS operates in isolation. The system's value increases when it integrates wi
 **Common ATS integrations:**
 
 - **Job boards** — [Indeed](https://www.indeed.com/), [LinkedIn](https://www.linkedin.com/), Google for Jobs. The ATS pushes job postings to these platforms and pulls applications back in.
+- **Career page** — Your own [branded career page](/blog/career-page-that-converts) where candidates apply directly. The ATS generates individual job URLs and can add [structured data for Google for Jobs](/blog/google-for-jobs-structured-data) automatically.
 - **Calendar tools** — Google Calendar, Outlook. Interview scheduling syncs automatically.
 - **Communication** — Email (SMTP), Slack, Microsoft Teams. Candidate notifications and team discussions flow through the ATS.
 - **Background checks** — Third-party services triggered directly from the pipeline when a candidate reaches the reference check stage.

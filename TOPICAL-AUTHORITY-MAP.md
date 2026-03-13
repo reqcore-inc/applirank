@@ -291,11 +291,11 @@ All articles must follow the SEO Skill ([`.agents/skills/seo-skill/SKILL.md`](.a
 > Captures people optimizing their hiring presence. Naturally links to ATS setup and integrations.
 
 **Pillar:**
-- [ ] How to build a career page that converts (the ATS-powered guide) 🔵
+- [x] How to build a career page that converts (the ATS-powered guide) 🔵 — [`career-page-that-converts.md`](content/blog/career-page-that-converts.md)
 
 **Supporting:**
-- [ ] Career page SEO: getting your job listings found on Google 🔵
-- [ ] Google for Jobs: structured data implementation guide 🔵
+- [x] Career page SEO: getting your job listings found on Google 🔵 — [`career-page-seo.md`](content/blog/career-page-seo.md)
+- [x] Google for Jobs: structured data implementation guide 🔵 — [`google-for-jobs-structured-data.md`](content/blog/google-for-jobs-structured-data.md)
 - [ ] Application form design: reducing candidate drop-off 🔵 → [Cluster 7]
 - [ ] Mobile career pages: why they matter and how to optimize 🔵
 - [ ] Custom career page vs ATS-generated page: pros and cons 🔵

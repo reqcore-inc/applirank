@@ -37,6 +37,7 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/i18n',
+    '@nuxtjs/mdc',
     // Only load PostHog module when the API key is available;
     // the SDK crashes during prerender/build if the key is empty.
     ...(process.env.POSTHOG_PUBLIC_KEY ? ['@posthog/nuxt' as const] : []),

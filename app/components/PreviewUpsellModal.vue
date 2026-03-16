@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, X, Github, Rocket } from 'lucide-vue-next'
+import { Eye, X, Github, Rocket, Cloud } from 'lucide-vue-next'
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -38,30 +38,51 @@ function closeModal() {
           </p>
 
           <p class="text-sm text-surface-500 dark:text-surface-400">
-            Reqcore is 100% free and open-source. Deploy your own instance in minutes to get full read &amp; write access.
+            Get full read &amp; write access — choose the option that works best for you:
           </p>
 
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="space-y-2">
+            <!-- Cloud hosted option -->
+            <NuxtLink
+              :to="$localePath('/auth/fresh-signup')"
+              class="flex items-start gap-3 rounded-xl border border-brand-200 dark:border-brand-800 bg-gradient-to-r from-brand-50 to-violet-50 dark:from-brand-950/30 dark:to-violet-950/30 px-4 py-3 transition-all hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700 no-underline group"
+              @click="closeModal"
+            >
+              <div class="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-brand-500 to-violet-600 text-white shrink-0 shadow-sm mt-0.5">
+                <Cloud class="size-4" />
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">Use Cloud Hosted</div>
+                <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Start free in seconds — we handle hosting, updates &amp; backups</div>
+              </div>
+            </NuxtLink>
+
+            <!-- Self-host option -->
             <a
               href="https://github.com/reqcore-inc/reqcore#quick-start"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
+              class="flex items-start gap-3 rounded-xl border border-surface-200 dark:border-surface-700 px-4 py-3 transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50/50 dark:hover:bg-surface-800/40 no-underline group"
             >
-              <Rocket class="size-4" />
-              Deploy your own instance
-            </a>
-
-            <a
-              href="https://github.com/reqcore-inc/reqcore"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 rounded-lg border border-surface-300 px-3 py-2 text-sm font-medium text-surface-700 transition-colors hover:bg-surface-50 dark:border-surface-700 dark:text-surface-200 dark:hover:bg-surface-800"
-            >
-              <Github class="size-4" />
-              View on GitHub
+              <div class="flex items-center justify-center size-9 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 shrink-0 shadow-sm mt-0.5">
+                <Rocket class="size-4" />
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-surface-700 dark:group-hover:text-surface-200 transition-colors">Self-Host (Free &amp; Open Source)</div>
+                <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Deploy on your own infrastructure — full control over your data</div>
+              </div>
             </a>
           </div>
+
+          <a
+            href="https://github.com/reqcore-inc/reqcore"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-xs text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 transition-colors no-underline"
+          >
+            <Github class="size-3.5" />
+            View on GitHub
+          </a>
         </div>
       </div>
     </div>

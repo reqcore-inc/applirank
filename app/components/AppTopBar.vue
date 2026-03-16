@@ -5,6 +5,7 @@ import {
   Sun, Moon, MessageSquarePlus, Settings,
   ChevronDown, Menu, X, Users, ChevronLeft,
   LayoutDashboard, Calendar, ArrowUpCircle,
+  Cloud, Server, Sparkles,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -17,6 +18,22 @@ const { isDark, toggle: toggleColorMode } = useColorMode()
 const showFeedbackModal = ref(false)
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
+const showGetStartedMenu = ref(false)
+
+const config = useRuntimeConfig()
+const { activeOrg } = useCurrentOrg()
+
+const isDemo = computed(() => {
+  const slug = config.public.demoOrgSlug
+  return slug && activeOrg.value?.slug === slug
+})
+
+const getStartedMenuRef = useTemplateRef<HTMLElement>('getStartedMenuRoot')
+function onClickOutsideGetStarted(e: MouseEvent) {
+  if (getStartedMenuRef.value && !getStartedMenuRef.value.contains(e.target as Node)) {
+    showGetStartedMenu.value = false
+  }
+}
 
 const userName = computed(() => session.value?.user?.name ?? 'User')
 const userEmail = computed(() => session.value?.user?.email ?? '')
@@ -119,6 +136,7 @@ function isActiveRoute(to: string, exact: boolean) {
 watch(() => route.path, () => {
   showUserMenu.value = false
   showMobileMenu.value = false
+  showGetStartedMenu.value = false
 })
 
 // Close user menu on outside click
@@ -128,8 +146,14 @@ function onClickOutsideUser(e: MouseEvent) {
     showUserMenu.value = false
   }
 }
-onMounted(() => document.addEventListener('click', onClickOutsideUser))
-onUnmounted(() => document.removeEventListener('click', onClickOutsideUser))
+onMounted(() => {
+  document.addEventListener('click', onClickOutsideUser)
+  document.addEventListener('click', onClickOutsideGetStarted)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutsideUser)
+  document.removeEventListener('click', onClickOutsideGetStarted)
+})
 </script>
 
 <template>
@@ -167,6 +191,67 @@ onUnmounted(() => document.removeEventListener('click', onClickOutsideUser))
 
         <!-- Right: Actions -->
         <div class="flex items-center gap-1 lg:gap-1.5">
+          <!-- Get Started CTA (demo mode only) -->
+          <div v-if="isDemo" ref="getStartedMenuRoot" class="relative hidden sm:block">
+            <button
+              class="group inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-brand-600 to-violet-600 px-4 py-1.5 text-[13px] font-semibold text-white shadow-md shadow-brand-600/25 hover:shadow-lg hover:shadow-brand-600/30 active:shadow-sm transition-all duration-200 cursor-pointer border-0"
+              @click="showGetStartedMenu = !showGetStartedMenu"
+            >
+              <Sparkles class="size-3.5 transition-transform duration-300 group-hover:rotate-12" />
+              Get Started
+              <ChevronDown
+                class="size-3 opacity-70 transition-transform duration-200"
+                :class="showGetStartedMenu ? 'rotate-180' : ''"
+              />
+            </button>
+
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 scale-95 -translate-y-1"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 -translate-y-1"
+            >
+              <div
+                v-if="showGetStartedMenu"
+                class="absolute right-0 top-[calc(100%+6px)] w-72 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 shadow-xl shadow-surface-900/8 dark:shadow-surface-950/30 overflow-hidden"
+              >
+                <div class="px-4 py-3 border-b border-surface-100 dark:border-surface-800">
+                  <p class="text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Choose your setup</p>
+                </div>
+                <div class="p-2 space-y-1">
+                  <NuxtLink
+                    :to="$localePath('/auth/fresh-signup')"
+                    class="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-brand-50 dark:hover:bg-brand-950/30 no-underline group/item"
+                  >
+                    <div class="flex items-center justify-center size-8 rounded-lg bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 shrink-0 mt-0.5">
+                      <Cloud class="size-4" />
+                    </div>
+                    <div>
+                      <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover/item:text-brand-700 dark:group-hover/item:text-brand-300 transition-colors">Cloud Hosted</div>
+                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Start free in seconds — we handle hosting, updates &amp; backups</div>
+                    </div>
+                  </NuxtLink>
+                  <a
+                    href="https://github.com/reqcore-inc/reqcore#quick-start"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-50 dark:hover:bg-surface-800/60 no-underline group/item"
+                  >
+                    <div class="flex items-center justify-center size-8 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 shrink-0 mt-0.5">
+                      <Server class="size-4" />
+                    </div>
+                    <div>
+                      <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover/item:text-surface-700 dark:group-hover/item:text-surface-200 transition-colors">Self-Host</div>
+                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Deploy on your own infrastructure — full control, 100% free</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </Transition>
+          </div>
+
           <!-- New Job button (desktop) -->
           <NuxtLink
             :to="$localePath('/dashboard/jobs/new')"
@@ -393,6 +478,29 @@ onUnmounted(() => document.removeEventListener('click', onClickOutsideUser))
             <Plus class="size-4" />
             New Job
           </NuxtLink>
+
+          <!-- Get Started CTA (demo mode, mobile) -->
+          <template v-if="isDemo">
+            <div class="mt-2 pt-2 border-t border-surface-200 dark:border-surface-700">
+              <p class="px-3 mb-1.5 text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">Get Started</p>
+              <NuxtLink
+                :to="$localePath('/auth/fresh-signup')"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950/60 transition-colors no-underline"
+              >
+                <Cloud class="size-4" />
+                Cloud Hosted — Start Free
+              </NuxtLink>
+              <a
+                href="https://github.com/reqcore-inc/reqcore#quick-start"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors no-underline mt-1"
+              >
+                <Server class="size-4" />
+                Self-Host — Deploy Free
+              </a>
+            </div>
+          </template>
         </nav>
 
         <div class="px-4 pb-3 flex flex-col gap-2 border-t border-surface-100 dark:border-surface-800 pt-3 lg:hidden">

@@ -27,40 +27,24 @@ function resolveTrustedOrigins(baseUrl: string): string[] {
 function resolveBetterAuthUrl(): string {
   const explicitUrl = env.BETTER_AUTH_URL?.trim()
   const railwayDomain = env.RAILWAY_PUBLIC_DOMAIN?.trim()
-  const hasPreviewDomain = railwayDomain ? railwayDomain.toLowerCase().includes('-pr-') : false
-  const hasPrNumber = !!env.RAILWAY_GIT_PR_NUMBER?.trim()
-  const isPreview = isRailwayPreviewEnvironment(env.RAILWAY_ENVIRONMENT_NAME) || hasPreviewDomain || hasPrNumber
 
-  if (!isPreview) {
-    if (!explicitUrl) {
-      throw new Error('BETTER_AUTH_URL is required outside Railway PR/preview environments')
-    }
-
-    return explicitUrl
-  }
-
-  if (railwayDomain) {
-    const previewUrl = `https://${railwayDomain}`
-    console.info(`[Reqcore] Using Railway public-domain BETTER_AUTH_URL: ${previewUrl}`)
-    return previewUrl
-  }
-
-  const prNumber = env.RAILWAY_GIT_PR_NUMBER?.trim()
-  if (prNumber) {
-    console.warn(
-      `[Reqcore] Railway PR number detected (${prNumber}) but RAILWAY_PUBLIC_DOMAIN is missing. ` +
-      'Set BETTER_AUTH_URL explicitly or ensure Railway generated domains are enabled.',
-    )
-  }
-
+  // Explicit URL always wins (custom domain, local dev, etc.)
   if (explicitUrl) {
-    console.info('[Reqcore] Using explicit BETTER_AUTH_URL in Railway PR/preview environment')
     return explicitUrl
+  }
+
+  // Derive from Railway's auto-injected public domain (works for all environments)
+  if (railwayDomain) {
+    // Railway sets this as bare domain (e.g. "app.up.railway.app"), never with protocol
+    const domain = railwayDomain.replace(/^https?:\/\//, '')
+    const url = `https://${domain}`
+    console.info(`[Reqcore] Using Railway public-domain BETTER_AUTH_URL: ${url}`)
+    return url
   }
 
   throw new Error(
-    'Unable to resolve BETTER_AUTH_URL in Railway PR/preview environment. ' +
-    'Set RAILWAY_GIT_PR_NUMBER, RAILWAY_PUBLIC_DOMAIN, or BETTER_AUTH_URL.',
+    'BETTER_AUTH_URL is required. Either set it explicitly or generate a public domain in Railway.\n' +
+    'Railway users: go to Settings → Networking → Generate Domain, then redeploy.',
   )
 }
 

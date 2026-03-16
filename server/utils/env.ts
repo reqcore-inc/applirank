@@ -38,7 +38,16 @@ const envSchema = z
   .object({
     DATABASE_URL: z.url(),
     BETTER_AUTH_SECRET: emptyToUndefined.pipe(z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters')),
-    BETTER_AUTH_URL: emptyToUndefined.pipe(z.url()).optional(),
+    BETTER_AUTH_URL: z.preprocess(
+      (val) => {
+        if (typeof val !== 'string') return val
+        const trimmed = val.trim()
+        // Treat empty strings and broken Railway template refs ("https://") as unset
+        if (trimmed === '' || trimmed === 'https://' || trimmed === 'http://') return undefined
+        return trimmed
+      },
+      z.string().url(),
+    ).optional(),
     /** Comma-separated list of additional trusted origins for Better Auth CSRF checks. */
     BETTER_AUTH_TRUSTED_ORIGINS: emptyToUndefined
       .pipe(z.string())
@@ -81,17 +90,13 @@ const envSchema = z
     CRON_SECRET: emptyToUndefined.pipe(z.string().min(16)).optional(),
   })
   .superRefine((data, ctx) => {
-    const hasPreviewDomain = data.RAILWAY_PUBLIC_DOMAIN
-      ? data.RAILWAY_PUBLIC_DOMAIN.toLowerCase().includes('-pr-')
-      : false
-    const hasPrNumber = !!data.RAILWAY_GIT_PR_NUMBER
-    const isPreview = isRailwayPreviewEnvironment(data.RAILWAY_ENVIRONMENT_NAME) || hasPreviewDomain || hasPrNumber
-
-    if (!isPreview && !data.BETTER_AUTH_URL) {
+    // BETTER_AUTH_URL can be derived at runtime from RAILWAY_PUBLIC_DOMAIN,
+    // so it's only required when not running on Railway.
+    if (!data.BETTER_AUTH_URL && !data.RAILWAY_PUBLIC_DOMAIN) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['BETTER_AUTH_URL'],
-        message: 'BETTER_AUTH_URL is required outside Railway PR/preview environments',
+        message: 'BETTER_AUTH_URL is required when RAILWAY_PUBLIC_DOMAIN is not available',
       })
     }
   })
@@ -124,7 +129,7 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
           `\n[Reqcore] ❌ Missing or invalid environment variables:\n${missing}\n\n` +
           `Ensure these variables are set in your Railway service (Settings → Variables).\n` +
           `Required: DATABASE_URL, BETTER_AUTH_SECRET, S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET\n` +
-          `Required outside Railway PR/preview environments: BETTER_AUTH_URL\n` +
+          `Required when not on Railway: BETTER_AUTH_URL (or generate a Railway domain)\n` +
           `Optional: BETTER_AUTH_TRUSTED_ORIGINS, S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG, RESEND_API_KEY, RESEND_FROM_EMAIL\n`,
         )
         throw result.error

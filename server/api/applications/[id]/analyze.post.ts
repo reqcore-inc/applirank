@@ -5,6 +5,7 @@ import {
 } from '../../../database/schema'
 import { scoreApplication, computeCompositeScore } from '../../../utils/ai/scoring'
 import type { CriterionDefinition } from '../../../utils/ai/scoring'
+import { extractResumeText } from '../../../utils/resume-parser'
 import { z } from 'zod'
 
 const paramsSchema = z.object({ id: z.string().min(1) })
@@ -73,11 +74,7 @@ export default defineEventHandler(async (event) => {
     ))
 
   const resumeDoc = docs.find(d => d.type === 'resume')
-  const resumeText = resumeDoc?.parsedContent
-    ? (typeof resumeDoc.parsedContent === 'string'
-      ? resumeDoc.parsedContent
-      : JSON.stringify(resumeDoc.parsedContent))
-    : null
+  const resumeText = extractResumeText(resumeDoc?.parsedContent)
 
   if (!resumeText) {
     throw createError({

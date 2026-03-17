@@ -4,6 +4,7 @@ import { job, candidate, application, jobQuestion, questionResponse, document, o
 import { publicApplicationSchema, publicJobSlugSchema } from '../../../../utils/schemas/publicApplication'
 import { createPreviewReadOnlyError } from '../../../../utils/previewReadOnly'
 import { autoScoreApplication } from '../../../../utils/ai/autoScore'
+import { parseDocument } from '../../../../utils/resume-parser'
 import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE,
@@ -433,6 +434,9 @@ export default defineEventHandler(async (event) => {
     try {
       await uploadToS3(storageKey, file.data, mimeType)
 
+      // Parse document content (best-effort — does not block upload)
+      const parsedContent = await parseDocument(file.data, mimeType)
+
       const [created] = await db.insert(document).values({
         id: docId,
         organizationId: orgId,
@@ -442,6 +446,7 @@ export default defineEventHandler(async (event) => {
         originalFilename: sanitizeFilename(file.filename),
         mimeType,
         sizeBytes: file.data.length,
+        parsedContent: parsedContent as any,
       }).returning({ id: document.id })
 
       uploadedDocIds.push(created!.id)
@@ -480,6 +485,9 @@ export default defineEventHandler(async (event) => {
     try {
       await uploadToS3(storageKey, file.data, mimeType)
 
+      // Parse resume content (best-effort — does not block upload)
+      const parsedContent = await parseDocument(file.data, mimeType)
+
       await db.insert(document).values({
         id: docId,
         organizationId: orgId,
@@ -489,6 +497,7 @@ export default defineEventHandler(async (event) => {
         originalFilename: sanitizeFilename(file.filename),
         mimeType,
         sizeBytes: file.data.length,
+        parsedContent: parsedContent as any,
       })
     } catch (uploadError) {
       try {

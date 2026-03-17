@@ -10,6 +10,7 @@ import {
 } from '../../database/schema'
 import { scoreApplication, computeCompositeScore } from './scoring'
 import type { CriterionDefinition } from './scoring'
+import { extractResumeText } from '../resume-parser'
 
 export async function autoScoreApplication(applicationId: string, orgId: string) {
   const app = await db.query.application.findFirst({
@@ -38,11 +39,7 @@ export async function autoScoreApplication(applicationId: string, orgId: string)
     .where(and(eq(document.candidateId, app.candidate.id), eq(document.organizationId, orgId)))
 
   const resumeDoc = docs.find(d => d.type === 'resume')
-  const resumeText = resumeDoc?.parsedContent
-    ? (typeof resumeDoc.parsedContent === 'string'
-      ? resumeDoc.parsedContent
-      : JSON.stringify(resumeDoc.parsedContent))
-    : null
+  const resumeText = extractResumeText(resumeDoc?.parsedContent)
   if (!resumeText) return
 
   if (!app.job.description) return

@@ -70,6 +70,28 @@ export async function uploadToS3(
 }
 
 /**
+ * Download a file from S3/MinIO and return the raw bytes.
+ *
+ * @param key - The storage key of the object to download
+ * @returns File content as a Buffer
+ */
+export async function downloadFromS3(key: string): Promise<Buffer> {
+  const response = await getS3Client().send(
+    new GetObjectCommand({
+      Bucket: env.S3_BUCKET,
+      Key: key,
+    }),
+  )
+
+  if (!response.Body) {
+    throw new Error(`S3 object body is empty: ${key}`)
+  }
+
+  const bytes = await response.Body.transformToByteArray()
+  return Buffer.from(bytes)
+}
+
+/**
  * Delete a file from S3/MinIO.
  * Silently succeeds if the object doesn't exist (S3 convention).
  *

@@ -9,6 +9,7 @@ import {
   documentTypeSchema,
   sanitizeFilename,
 } from '../../../../utils/schemas/document'
+import { parseDocument } from '../../../../utils/resume-parser'
 
 /**
  * POST /api/candidates/:id/documents
@@ -142,7 +143,13 @@ export default defineEventHandler(async (event) => {
   await uploadToS3(storageKey, fileBuffer, mimeType)
 
   // ─────────────────────────────────────────────
-  // 8. Insert DB record — clean up S3 on failure
+  // 8. Parse document content (best-effort — does not block upload)
+  // ─────────────────────────────────────────────
+
+  const parsedContent = await parseDocument(fileBuffer, mimeType)
+
+  // ─────────────────────────────────────────────
+  // 9. Insert DB record — clean up S3 on failure
   // ─────────────────────────────────────────────
 
   try {
@@ -155,6 +162,7 @@ export default defineEventHandler(async (event) => {
       originalFilename: sanitizeFilename(filePart.filename),
       mimeType,
       sizeBytes: fileBuffer.length,
+      parsedContent: parsedContent as any,
     }).returning({
       id: document.id,
       type: document.type,

@@ -110,6 +110,7 @@ const jobTabs = computed(() => {
     { label: 'Pipeline', to: base, icon: Kanban, exact: true },
     { label: 'Table', to: `${base}/candidates`, icon: Table2, exact: true },
     { label: 'Application Form', to: `${base}/application-form`, icon: FileText, exact: true },
+    { label: 'AI Analysis', to: `${base}/ai-analysis`, icon: Sparkles, exact: true },
   ]
 })
 

@@ -9,10 +9,33 @@
  *   - DOCX — via mammoth (XML-based, reliable)
  *   - DOC — via word-extractor (OLE2 compound documents)
  */
-import { PDFParse } from 'pdf-parse'
 import mammoth from 'mammoth'
-// @ts-expect-error — word-extractor has no type declarations
+// @ts-ignore — word-extractor has no bundled type declarations
 import WordExtractor from 'word-extractor'
+
+// pdfjs-dist uses browser APIs (DOMMatrix, Path2D, ImageData) at module scope.
+// In Node.js these don't exist, so we install minimal stubs before importing.
+// We only use pdfjs-dist for text extraction — no actual rendering is needed.
+function ensurePdfjsPolyfills() {
+  if (typeof globalThis.DOMMatrix === 'undefined') {
+    // Minimal 6-value identity matrix stub — enough for pdfjs-dist text layer
+    globalThis.DOMMatrix = class DOMMatrix {
+      a = 1; b = 0; c = 0; d = 1; e = 0; f = 0
+    } as any
+  }
+  if (typeof globalThis.ImageData === 'undefined') {
+    globalThis.ImageData = class ImageData {
+      data: Uint8ClampedArray; width: number; height: number
+      constructor(w: number, h: number) {
+        this.width = w; this.height = h
+        this.data = new Uint8ClampedArray(w * h * 4)
+      }
+    } as any
+  }
+  if (typeof globalThis.Path2D === 'undefined') {
+    globalThis.Path2D = class Path2D {} as any
+  }
+}
 
 const PARSER_VERSION = '1.0'
 
@@ -71,6 +94,10 @@ export async function parseDocument(
 // ─── PDF Parser ───────────────────────────────────────────────────
 
 async function parsePdf(buffer: Buffer): Promise<ParsedResume | null> {
+  // Polyfill browser globals before pdfjs-dist evaluates its module-level code
+  ensurePdfjsPolyfills()
+  const { PDFParse } = await import('pdf-parse')
+
   const parser = new PDFParse({ data: buffer })
   const result = await parser.getText()
 

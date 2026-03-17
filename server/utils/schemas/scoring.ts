@@ -2,11 +2,22 @@ import { z } from 'zod'
 
 // ─── AI Config Schemas ────────────────────────────────────────────
 
+const safeBaseUrl = z.string().url().max(500)
+  .refine(url => {
+    try {
+      const parsed = new URL(url)
+      // Block cloud metadata endpoints (SSRF)
+      if (parsed.hostname === '169.254.169.254') return false
+      if (parsed.hostname === 'metadata.google.internal') return false
+      return true
+    } catch { return false }
+  }, 'URL must not target internal metadata endpoints')
+
 export const createAiConfigSchema = z.object({
   provider: z.enum(['openai', 'anthropic', 'google', 'openai_compatible']),
   model: z.string().min(1).max(200),
   apiKey: z.string().min(1).max(500).optional(),
-  baseUrl: z.string().url().max(500).nullish(),
+  baseUrl: safeBaseUrl.nullish(),
   maxTokens: z.number().int().min(256).max(32768).optional().default(4096),
 })
 
@@ -14,7 +25,7 @@ export const updateAiConfigSchema = z.object({
   provider: z.enum(['openai', 'anthropic', 'google', 'openai_compatible']).optional(),
   model: z.string().min(1).max(200).optional(),
   apiKey: z.string().min(1).max(500).optional(),
-  baseUrl: z.string().url().max(500).nullish(),
+  baseUrl: safeBaseUrl.nullish(),
   maxTokens: z.number().int().min(256).max(32768).optional(),
 })
 

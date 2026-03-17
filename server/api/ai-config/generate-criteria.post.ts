@@ -2,11 +2,14 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { aiConfig } from '../../database/schema'
 import { generateCriteriaFromDescription } from '../../utils/ai/scoring'
+import type { SupportedProvider } from '../../utils/ai/provider'
+import { createRateLimiter } from '../../utils/rateLimit'
 
 const bodySchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().min(1).max(50000),
 })
+const limiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10, message: 'Too many AI criteria generation requests. Please wait before retrying.' })
 
 /**
  * POST /api/ai-config/generate-criteria
@@ -14,6 +17,7 @@ const bodySchema = z.object({
  * Does NOT require a saved job — used during job creation flow.
  */
 export default defineEventHandler(async (event) => {
+  await limiter(event)
   const session = await requirePermission(event, { scoring: ['create'] })
   const orgId = session.session.activeOrganizationId
 
@@ -31,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
   const criteria = await generateCriteriaFromDescription(
     {
-      provider: config.provider as 'openai' | 'anthropic' | 'google' | 'openai_compatible',
+      provider: config.provider as SupportedProvider,
       model: config.model,
       apiKeyEncrypted: config.apiKeyEncrypted,
       baseUrl: config.baseUrl,

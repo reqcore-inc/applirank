@@ -261,6 +261,11 @@ Evaluate this candidate against each criterion. Return your evaluation.`,
     schemaDescription: 'Structured candidate evaluation with per-criterion scores',
   })
 
+  // Clamp applicantScore to maxScore — LLMs may occasionally exceed the maximum
+  for (const evaluation of result.object.evaluations) {
+    evaluation.applicantScore = Math.min(evaluation.applicantScore, evaluation.maxScore)
+  }
+
   return {
     scoring: result.object,
     usage: result.usage,

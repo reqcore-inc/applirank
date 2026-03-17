@@ -2,9 +2,12 @@ import { eq, and } from 'drizzle-orm'
 import { aiConfig, job } from '../../../../database/schema'
 import { generateCriteriaSchema } from '../../../../utils/schemas/scoring'
 import { generateCriteriaFromDescription, PREMADE_CRITERIA } from '../../../../utils/ai/scoring'
+import type { SupportedProvider } from '../../../../utils/ai/provider'
+import { createRateLimiter } from '../../../../utils/rateLimit'
 import { z } from 'zod'
 
 const paramsSchema = z.object({ id: z.string().min(1) })
+const limiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10, message: 'Too many AI criteria generation requests. Please wait before retrying.' })
 
 /**
  * POST /api/jobs/:id/criteria/generate
@@ -12,6 +15,7 @@ const paramsSchema = z.object({ id: z.string().min(1) })
  * Does NOT persist — returns generated criteria for the client to review before saving.
  */
 export default defineEventHandler(async (event) => {
+  await limiter(event)
   const session = await requirePermission(event, { scoring: ['create'] })
   const orgId = session.session.activeOrganizationId
   const { id: jobId } = await getValidatedRouterParams(event, paramsSchema.parse)
@@ -55,7 +59,7 @@ export default defineEventHandler(async (event) => {
 
   const criteria = await generateCriteriaFromDescription(
     {
-      provider: config.provider as 'openai' | 'anthropic' | 'openai_compatible',
+      provider: config.provider as SupportedProvider,
       model: config.model,
       apiKeyEncrypted: config.apiKeyEncrypted,
       baseUrl: config.baseUrl,

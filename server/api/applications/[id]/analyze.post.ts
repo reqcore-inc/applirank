@@ -5,10 +5,13 @@ import {
 } from '../../../database/schema'
 import { scoreApplication, computeCompositeScore } from '../../../utils/ai/scoring'
 import type { CriterionDefinition } from '../../../utils/ai/scoring'
+import type { SupportedProvider } from '../../../utils/ai/provider'
 import { extractResumeText } from '../../../utils/resume-parser'
+import { createRateLimiter } from '../../../utils/rateLimit'
 import { z } from 'zod'
 
 const paramsSchema = z.object({ id: z.string().min(1) })
+const limiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20, message: 'Too many AI analysis requests. Please wait before retrying.' })
 
 /**
  * POST /api/applications/:id/analyze
@@ -16,6 +19,7 @@ const paramsSchema = z.object({ id: z.string().min(1) })
  * Stores individual criterion scores + composite score + audit trail.
  */
 export default defineEventHandler(async (event) => {
+  await limiter(event)
   const session = await requirePermission(event, { scoring: ['create'] })
   const orgId = session.session.activeOrganizationId
   const { id: applicationId } = await getValidatedRouterParams(event, paramsSchema.parse)
@@ -100,7 +104,7 @@ export default defineEventHandler(async (event) => {
   }))
 
   const providerConfig = {
-    provider: config.provider as 'openai' | 'anthropic' | 'openai_compatible',
+    provider: config.provider as SupportedProvider,
     model: config.model,
     apiKeyEncrypted: config.apiKeyEncrypted,
     baseUrl: config.baseUrl,
@@ -139,14 +143,7 @@ export default defineEventHandler(async (event) => {
   // Compute composite score
   const compositeScore = computeCompositeScore(criteriaDefinitions, result.scoring.evaluations)
 
-  // Delete previous scores for this application (replace strategy)
-  await db.delete(criterionScore)
-    .where(and(
-      eq(criterionScore.applicationId, applicationId),
-      eq(criterionScore.organizationId, orgId),
-    ))
-
-  // Insert individual criterion scores
+  // Insert scores, update application, and record run atomically
   const scoreValues = result.scoring.evaluations.map(evaluation => ({
     organizationId: orgId,
     applicationId,
@@ -159,28 +156,37 @@ export default defineEventHandler(async (event) => {
     gaps: evaluation.gaps,
   }))
 
-  if (scoreValues.length > 0) {
-    await db.insert(criterionScore).values(scoreValues)
-  }
+  const [run] = await db.transaction(async (tx) => {
+    // Delete previous scores for this application (replace strategy)
+    await tx.delete(criterionScore)
+      .where(and(
+        eq(criterionScore.applicationId, applicationId),
+        eq(criterionScore.organizationId, orgId),
+      ))
 
-  // Update application composite score
-  await db.update(application)
-    .set({ score: compositeScore, updatedAt: new Date() })
-    .where(eq(application.id, applicationId))
+    if (scoreValues.length > 0) {
+      await tx.insert(criterionScore).values(scoreValues)
+    }
 
-  // Record analysis run
-  const [run] = await db.insert(analysisRun).values({
-    organizationId: orgId,
-    applicationId,
-    status: 'completed',
-    provider: config.provider,
-    model: config.model,
-    criteriaSnapshot: criteriaDefinitions as any,
-    compositeScore,
-    promptTokens: result.usage.promptTokens,
-    completionTokens: result.usage.completionTokens,
-    scoredById: session.user.id,
-  }).returning()
+    // Update application composite score
+    await tx.update(application)
+      .set({ score: compositeScore, updatedAt: new Date() })
+      .where(eq(application.id, applicationId))
+
+    // Record analysis run
+    return tx.insert(analysisRun).values({
+      organizationId: orgId,
+      applicationId,
+      status: 'completed',
+      provider: config.provider,
+      model: config.model,
+      criteriaSnapshot: criteriaDefinitions as any,
+      compositeScore,
+      promptTokens: result.usage.promptTokens,
+      completionTokens: result.usage.completionTokens,
+      scoredById: session.user.id,
+    }).returning()
+  })
 
   recordActivity({
     organizationId: orgId,

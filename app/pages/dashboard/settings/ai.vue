@@ -113,11 +113,9 @@ async function handleSave() {
     await refreshConfig()
   } catch (err: any) {
     const statusMessage = err?.data?.statusMessage ?? err?.message ?? 'An unexpected error occurred while saving.'
-    const errorDetails = err?.data?.message ?? err?.data?.stack?.join?.('\n') ?? err?.stack ?? ''
 
     toast.error('Failed to save AI configuration', {
       message: statusMessage,
-      details: errorDetails || undefined,
       statusCode: err?.data?.statusCode,
     })
   } finally {

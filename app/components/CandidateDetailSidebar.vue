@@ -2,7 +2,7 @@
 import {
   X, User, Calendar, Clock, Hash, MessageSquare, FileText,
   ExternalLink, Mail, Phone, Upload, Download, Eye, Trash2,
-  ArrowLeft, AlertTriangle,
+  ArrowLeft, AlertTriangle, Brain,
 } from 'lucide-vue-next'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
 
@@ -17,6 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const toast = useToast()
 
 // Detect if the job sub-nav bar is visible (adds 40px / 2.5rem)
 const route = useRoute()
@@ -32,7 +33,7 @@ const hasSubNav = computed(() => {
 // Tabs
 // ─────────────────────────────────────────────
 
-const activeTab = ref<'overview' | 'documents' | 'responses'>('overview')
+const activeTab = ref<'overview' | 'documents' | 'responses' | 'ai_analysis'>('overview')
 
 // ─────────────────────────────────────────────
 // Fetch application detail
@@ -120,7 +121,7 @@ async function handleTransition(newStatus: string) {
     emit('updated')
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to update status')
+    toast.error('Failed to update status', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isTransitioning.value = false
   }
@@ -151,7 +152,7 @@ async function saveNotes() {
     isEditingNotes.value = false
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to save notes')
+    toast.error('Failed to save notes', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isSavingNotes.value = false
   }
@@ -242,7 +243,7 @@ async function handleDownload(docId: string) {
   try {
     await downloadDocument(docId)
   } catch {
-    alert('Failed to download document')
+    toast.error('Failed to download document')
   }
 }
 
@@ -255,7 +256,7 @@ async function handleDeleteDoc(docId: string) {
     showDocDeleteConfirm.value = null
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to delete document')
+    toast.error('Failed to delete document', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isDeletingDoc.value = false
   }
@@ -413,6 +414,16 @@ function formatInterviewDate(dateStr: string) {
             @click="activeTab = 'responses'"
           >
             Responses ({{ responsesCount }})
+          </button>
+          <button
+            class="cursor-pointer px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px inline-flex items-center gap-1.5"
+            :class="activeTab === 'ai_analysis'
+              ? 'border-brand-600 text-brand-600'
+              : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300 dark:hover:text-surface-300'"
+            @click="activeTab = 'ai_analysis'"
+          >
+            <Brain class="size-3.5" />
+            AI Analysis
           </button>
         </div>
       </div>
@@ -855,6 +866,13 @@ function formatInterviewDate(dateStr: string) {
                 </dd>
               </div>
             </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════ -->
+          <!-- AI ANALYSIS TAB                         -->
+          <!-- ═══════════════════════════════════════ -->
+          <div v-if="activeTab === 'ai_analysis'">
+            <ScoreBreakdown :application-id="props.applicationId" @scored="refresh(); emit('updated')" />
           </div>
 
         </template>

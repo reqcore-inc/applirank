@@ -12,8 +12,8 @@ export type CandidateAction = 'accepted' | 'declined' | 'tentative'
 
 const VALID_ACTIONS: CandidateAction[] = ['accepted', 'declined', 'tentative']
 
-/** Default token expiry: 14 days */
-const DEFAULT_EXPIRY_MS = 14 * 24 * 60 * 60 * 1000
+/** Default token expiry: 7 days */
+const DEFAULT_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000
 
 interface TokenPayload {
   /** Interview UUID */

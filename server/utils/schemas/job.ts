@@ -27,6 +27,8 @@ export const createJobSchema = z.object({
   requireResume: z.boolean().optional().default(false),
   /** Whether the application form asks for a cover letter upload */
   requireCoverLetter: z.boolean().optional().default(false),
+  /** Whether to automatically run AI scoring when a candidate applies */
+  autoScoreOnApply: z.boolean().optional().default(false),
 })
 
 /** Schema for updating an existing job (all fields optional, no defaults — PATCH semantics) */
@@ -44,6 +46,7 @@ export const updateJobSchema = z.object({
   validThrough: z.coerce.date().optional(),
   requireResume: z.boolean().optional(),
   requireCoverLetter: z.boolean().optional(),
+  autoScoreOnApply: z.boolean().optional(),
   status: z.enum(['draft', 'open', 'closed', 'archived']).optional(),
 })
 

@@ -31,11 +31,12 @@ const atsStatements = {
   job: ['create', 'read', 'update', 'delete'],
   candidate: ['create', 'read', 'update', 'delete'],
   application: ['create', 'read', 'update', 'delete'],
-  document: ['create', 'read', 'delete'],
+  document: ['create', 'read', 'update', 'delete'],
   comment: ['create', 'read', 'update', 'delete'],
   interview: ['create', 'read', 'update', 'delete'],
   emailTemplate: ['create', 'read', 'update', 'delete'],
   activityLog: ['read'],
+  scoring: ['create', 'read', 'update', 'delete'],
 } as const
 
 // ─── Merged statement (Better Auth defaults + ATS resources) ───────
@@ -58,11 +59,12 @@ export const owner = ac.newRole({
   job: ['create', 'read', 'update', 'delete'],
   candidate: ['create', 'read', 'update', 'delete'],
   application: ['create', 'read', 'update', 'delete'],
-  document: ['create', 'read', 'delete'],
+  document: ['create', 'read', 'update', 'delete'],
   comment: ['create', 'read', 'update', 'delete'],
   interview: ['create', 'read', 'update', 'delete'],
   emailTemplate: ['create', 'read', 'update', 'delete'],
   activityLog: ['read'],
+  scoring: ['create', 'read', 'update', 'delete'],
 })
 
 export const admin = ac.newRole({
@@ -70,11 +72,12 @@ export const admin = ac.newRole({
   job: ['create', 'read', 'update', 'delete'],
   candidate: ['create', 'read', 'update', 'delete'],
   application: ['create', 'read', 'update', 'delete'],
-  document: ['create', 'read', 'delete'],
+  document: ['create', 'read', 'update', 'delete'],
   comment: ['create', 'read', 'update', 'delete'],
   interview: ['create', 'read', 'update', 'delete'],
   emailTemplate: ['create', 'read', 'update', 'delete'],
   activityLog: ['read'],
+  scoring: ['create', 'read', 'update', 'delete'],
 })
 
 export const member = ac.newRole({
@@ -87,4 +90,5 @@ export const member = ac.newRole({
   interview: ['create', 'read', 'update'],
   emailTemplate: ['create', 'read', 'update'],
   activityLog: ['read'],
+  scoring: ['create', 'read'],
 })

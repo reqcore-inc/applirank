@@ -30,6 +30,7 @@ export function useJobs(options?: {
     type?: 'full_time' | 'part_time' | 'contract' | 'internship'
     requireResume?: boolean
     requireCoverLetter?: boolean
+    autoScoreOnApply?: boolean
   }) {
     try {
       const created = await $fetch('/api/jobs', {

@@ -110,6 +110,7 @@ const jobTabs = computed(() => {
     { label: 'Pipeline', to: base, icon: Kanban, exact: true },
     { label: 'Table', to: `${base}/candidates`, icon: Table2, exact: true },
     { label: 'Application Form', to: `${base}/application-form`, icon: FileText, exact: true },
+    { label: 'AI Analysis', to: `${base}/ai-analysis`, icon: Sparkles, exact: true },
   ]
 })
 
@@ -123,6 +124,7 @@ const mainNav = [
   { label: 'Candidates', to: '/dashboard/candidates', icon: Users, exact: false },
   { label: 'Applications', to: '/dashboard/applications', icon: FileText, exact: false },
   { label: 'Interviews', to: '/dashboard/interviews', icon: Calendar, exact: false },
+  { label: 'AI Analysis', to: '/dashboard/ai-analysis', icon: Sparkles, exact: true },
   { label: 'Settings', to: '/dashboard/settings', icon: Settings, exact: false },
 ]
 

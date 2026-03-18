@@ -8,6 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const jobId = route.params.id as string
+const toast = useToast()
 
 const { job, status: fetchStatus, error, updateJob } = useJob(jobId)
 
@@ -36,7 +37,7 @@ async function copyApplicationLink() {
     setTimeout(() => { linkCopied.value = false }, 2000)
   } catch {
     // Fallback for non-HTTPS contexts
-    alert(applicationUrl.value)
+    toast.info(applicationUrl.value)
   }
 }
 

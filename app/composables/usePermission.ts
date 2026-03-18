@@ -38,6 +38,7 @@ type PermissionRequest = {
  */
 export function usePermission(permissions: PermissionRequest) {
   const role = ref<string | null>(null)
+  const isLoading = ref(true)
 
   // Fetch the active member's role and re-fetch when org changes
   const activeOrgState = authClient.useActiveOrganization()
@@ -45,11 +46,13 @@ export function usePermission(permissions: PermissionRequest) {
   async function fetchRole() {
     // Reset immediately to avoid stale role from previous org (race condition)
     role.value = null
+    isLoading.value = true
 
     const { data, error } = await authClient.organization.getActiveMemberRole()
     if (!error) {
       role.value = data?.role ?? null
     }
+    isLoading.value = false
   }
 
   // Only fetch on the client — during SSR there is no window.location,
@@ -72,5 +75,5 @@ export function usePermission(permissions: PermissionRequest) {
     })
   })
 
-  return { allowed, role: readonly(role) }
+  return { allowed, role: readonly(role), isLoading: readonly(isLoading) }
 }

@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
       validThrough: true,
       requireResume: true,
       requireCoverLetter: true,
+      autoScoreOnApply: true,
       createdAt: true,
       updatedAt: true,
     },

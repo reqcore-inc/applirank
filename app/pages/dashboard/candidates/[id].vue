@@ -11,6 +11,7 @@ definePageMeta({
 const route = useRoute()
 const candidateId = route.params.id as string
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const toast = useToast()
 
 const { candidate, status: fetchStatus, error, refresh, updateCandidate, deleteCandidate } = useCandidate(candidateId)
 
@@ -93,7 +94,7 @@ async function handleSave() {
     if (err.statusCode === 409 || err.data?.statusCode === 409) {
       editErrors.value.email = message
     } else {
-      alert(message)
+      toast.error(message, { message, statusCode: err.statusCode ?? err.data?.statusCode })
     }
   } finally {
     isSaving.value = false
@@ -113,7 +114,7 @@ async function handleDelete() {
     await deleteCandidate()
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to delete candidate')
+    toast.error('Failed to delete candidate', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
     isDeleting.value = false
     showDeleteConfirm.value = false
   }
@@ -243,7 +244,7 @@ async function handleDownload(docId: string) {
   try {
     await downloadDocument(docId)
   } catch {
-    alert('Failed to download document')
+    toast.error('Failed to download document')
   }
 }
 
@@ -254,7 +255,7 @@ async function handleDeleteDoc(docId: string) {
     showDocDeleteConfirm.value = null
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to delete document')
+    toast.error('Failed to delete document', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isDeletingDoc.value = false
   }

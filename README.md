@@ -2,7 +2,7 @@
 
 # Reqcore
 
-**The open-source ATS built for developers. Self-hosted. No per-seat fees.**
+**The simple, open-source ATS. Self-hosted. No per-seat fees.**
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![E2E Tests](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml)
@@ -19,13 +19,13 @@
 
 ---
 
-Most ATS software was designed for enterprise HR departments — complex procurement, per-seat licensing, no API access, no way to self-host. Reqcore is built for engineering teams who want to own their hiring stack the same way they own their infrastructure. It runs on **your** servers, scales without increasing your software bill, and every line of code is open source.
+Hiring software shouldn't be complicated or expensive. Most applicant tracking systems charge per seat, lock your data in their cloud, and overwhelm you with features you don't need. Reqcore is a lightweight, open-source ATS you can self-host in minutes. No per-seat fees, no vendor lock-in, no bloat — just a clean tool that helps you hire.
 
 > **Early open-source release** — Reqcore is actively developed and improving every week. The foundation is solid (jobs, pipeline, applications, documents, job board), but some features are still on the roadmap. Check the [Roadmap](ROADMAP.md) for what's shipped and what's next.
 
 ## Why Reqcore?
 
-*Built for teams that deploy with Docker, not procurement.*
+*Simple hiring software you actually own.*
 
 | | **Reqcore** | Greenhouse | Lever | Ashby | OpenCATS |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -52,8 +52,8 @@ Most ATS software was designed for enterprise HR departments — complex procure
 - **Document storage** — Upload and manage resumes and cover letters via S3-compatible storage (MinIO)
 - **Multi-tenant organizations** — Isolated data per organization with role-based membership
 - **Recruiter dashboard** — At-a-glance stats, pipeline breakdown, recent applications, and top active jobs
-- **Server-proxied documents** — Resumes are never exposed via public URLs; all access is authenticated and streamed
-- **API rate limiting** — Global per-IP limits on all `/api` endpoints with stricter auth/write thresholds
+- **Secure document access** — Resumes are never exposed via public URLs; all access is authenticated and streamed
+- **Built-in rate limiting** — Protection against abuse on all endpoints out of the box
 
 ## Quick Start
 

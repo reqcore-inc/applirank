@@ -62,7 +62,13 @@ const transitionClasses: Record<string, string> = {
         <Calendar class="size-3" />
         {{ new Date(createdAt).toLocaleDateString() }}
       </span>
-      <span v-if="score != null" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset bg-surface-50 text-surface-600 ring-surface-200 dark:bg-surface-800/60 dark:text-surface-300 dark:ring-surface-700">
+      <span v-if="score != null" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset"
+        :class="score >= 75
+          ? 'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950 dark:text-success-300 dark:ring-success-800'
+          : score >= 40
+            ? 'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950 dark:text-warning-300 dark:ring-warning-800'
+            : 'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950 dark:text-danger-300 dark:ring-danger-800'"
+      >
         {{ score }}pts
       </span>
     </div>

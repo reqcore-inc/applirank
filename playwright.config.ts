@@ -27,7 +27,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3333',
     actionTimeout: 15_000,
     navigationTimeout: 30_000,
     trace: 'on-first-retry',
@@ -47,8 +47,8 @@ export default defineConfig({
     ? {}
     : {
         webServer: {
-          command: 'npm run dev',
-          url: 'http://localhost:3000',
+          command: 'BETTER_AUTH_URL=http://localhost:3333 npx nuxt dev --port 3333',
+          url: 'http://localhost:3333',
           reuseExistingServer: true,
           timeout: 60_000,
         },

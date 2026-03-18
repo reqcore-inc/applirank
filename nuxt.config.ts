@@ -164,6 +164,8 @@ export default defineNuxtConfig({
           'Referrer-Policy': 'strict-origin-when-cross-origin',
           'X-XSS-Protection': '1; mode=block',
           'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+          'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+          'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://eu.i.posthog.com https://eu.posthog.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
         },
       },
       // Allow same-origin framing for inline PDF preview in the sidebar iframe

@@ -10,6 +10,7 @@ definePageMeta({
 const route = useRoute()
 const applicationId = route.params.id as string
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const toast = useToast()
 
 const { application, status: fetchStatus, error, updateApplication } = useApplication(applicationId)
 
@@ -67,7 +68,7 @@ async function handleTransition(newStatus: string) {
     await updateApplication({ status: newStatus as any })
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to update status')
+    toast.error('Failed to update status', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isTransitioning.value = false
   }
@@ -93,7 +94,7 @@ async function saveNotes() {
     isEditingNotes.value = false
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to save notes')
+    toast.error('Failed to save notes', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isSavingNotes.value = false
   }

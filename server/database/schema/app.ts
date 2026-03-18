@@ -8,6 +8,7 @@ import {
   pgEnum,
   index,
   uniqueIndex,
+  numeric,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { organization, user } from './auth'
@@ -53,6 +54,8 @@ export const job = pgTable('job', {
   // ── Application form settings ──
   requireResume: boolean('require_resume').notNull().default(false),
   requireCoverLetter: boolean('require_cover_letter').notNull().default(false),
+  // ── AI scoring settings ──
+  autoScoreOnApply: boolean('auto_score_on_apply').notNull().default(false),
   // ── Timestamps ──
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -357,6 +360,19 @@ export const comment = pgTable('comment', {
 export const activityActionEnum = pgEnum('activity_action', [
   'created', 'updated', 'deleted', 'status_changed',
   'comment_added', 'member_invited', 'member_removed', 'member_role_changed',
+  'scored',
+])
+
+// ─────────────────────────────────────────────
+// AI Scoring Enums
+// ─────────────────────────────────────────────
+
+export const criterionCategoryEnum = pgEnum('criterion_category', [
+  'technical', 'experience', 'soft_skills', 'education', 'culture', 'custom',
+])
+
+export const analysisRunStatusEnum = pgEnum('analysis_run_status', [
+  'completed', 'failed', 'partial',
 ])
 
 /**
@@ -380,6 +396,112 @@ export const activityLog = pgTable('activity_log', {
 ]))
 
 // ─────────────────────────────────────────────
+// AI Configuration & Scoring Tables
+// ─────────────────────────────────────────────
+
+/**
+ * Per-organization AI provider configuration.
+ * API keys are encrypted at rest using AES-256-GCM (same as calendar tokens).
+ * Each org can configure their own provider, model, and API key.
+ */
+export const aiConfig = pgTable('ai_config', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  provider: text('provider').notNull().default('openai'),
+  model: text('model').notNull().default('gpt-4o-mini'),
+  /** AES-256-GCM encrypted API key — NEVER returned to client */
+  apiKeyEncrypted: text('api_key_encrypted').notNull(),
+  /** Optional base URL override (e.g. for Ollama or custom endpoints) */
+  baseUrl: text('base_url'),
+  maxTokens: integer('max_tokens').notNull().default(4096),
+  /** Price per 1M input tokens in USD (e.g. "2.50") */
+  inputPricePer1m: numeric('input_price_per_1m', { precision: 10, scale: 4 }),
+  /** Price per 1M output tokens in USD (e.g. "10.00") */
+  outputPricePer1m: numeric('output_price_per_1m', { precision: 10, scale: 4 }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  uniqueIndex('ai_config_organization_id_idx').on(t.organizationId),
+]))
+
+/**
+ * Per-job scoring criteria. Each criterion defines one dimension of evaluation.
+ * Weights are user-adjustable via sliders and used to compute weighted composite scores.
+ */
+export const scoringCriterion = pgTable('scoring_criterion', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  jobId: text('job_id').notNull().references(() => job.id, { onDelete: 'cascade' }),
+  key: text('key').notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  category: criterionCategoryEnum('category').notNull().default('custom'),
+  maxScore: integer('max_score').notNull().default(10),
+  /** Weight from 0–100, used by sliders. Default 50 = neutral. */
+  weight: integer('weight').notNull().default(50),
+  displayOrder: integer('display_order').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('scoring_criterion_organization_id_idx').on(t.organizationId),
+  index('scoring_criterion_job_id_idx').on(t.jobId),
+  uniqueIndex('scoring_criterion_job_key_idx').on(t.jobId, t.key),
+]))
+
+/**
+ * Individual criterion scores computed by AI for each application.
+ * Stores the raw AI output including evidence and confidence.
+ */
+export const criterionScore = pgTable('criterion_score', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  applicationId: text('application_id').notNull().references(() => application.id, { onDelete: 'cascade' }),
+  criterionKey: text('criterion_key').notNull(),
+  maxScore: integer('max_score').notNull(),
+  applicantScore: integer('applicant_score').notNull(),
+  /** Confidence from 0 to 100 (%). */
+  confidence: integer('confidence').notNull(),
+  evidence: text('evidence').notNull(),
+  strengths: jsonb('strengths').$type<string[]>(),
+  gaps: jsonb('gaps').$type<string[]>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ([
+  index('criterion_score_organization_id_idx').on(t.organizationId),
+  index('criterion_score_application_id_idx').on(t.applicationId),
+  uniqueIndex('criterion_score_app_criterion_idx').on(t.applicationId, t.criterionKey),
+]))
+
+/**
+ * Audit trail for each AI scoring run. Captures the rubric snapshot,
+ * model used, token usage, and the raw LLM response for debugging.
+ */
+export const analysisRun = pgTable('analysis_run', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  applicationId: text('application_id').notNull().references(() => application.id, { onDelete: 'cascade' }),
+  status: analysisRunStatusEnum('status').notNull().default('completed'),
+  /** Provider + model used for this run */
+  provider: text('provider').notNull(),
+  model: text('model').notNull(),
+  /** Snapshot of criteria at score time for audit trail */
+  criteriaSnapshot: jsonb('criteria_snapshot').$type<Record<string, unknown>[]>(),
+  /** Composite weighted score (0–100) */
+  compositeScore: integer('composite_score'),
+  /** Token usage for cost tracking */
+  promptTokens: integer('prompt_tokens'),
+  completionTokens: integer('completion_tokens'),
+  /** Raw LLM response for debugging (sanitized — no PII stored) */
+  rawResponse: jsonb('raw_response'),
+  errorMessage: text('error_message'),
+  scoredById: text('scored_by_id').references(() => user.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ([
+  index('analysis_run_organization_id_idx').on(t.organizationId),
+  index('analysis_run_application_id_idx').on(t.applicationId),
+  index('analysis_run_created_at_idx').on(t.createdAt),
+]))
+
+// ─────────────────────────────────────────────
 // Relations
 // ─────────────────────────────────────────────
 
@@ -387,6 +509,7 @@ export const jobRelations = relations(job, ({ one, many }) => ({
   organization: one(organization, { fields: [job.organizationId], references: [organization.id] }),
   applications: many(application),
   questions: many(jobQuestion),
+  scoringCriteria: many(scoringCriterion),
 }))
 
 export const candidateRelations = relations(candidate, ({ one, many }) => ({
@@ -401,6 +524,8 @@ export const applicationRelations = relations(application, ({ one, many }) => ({
   job: one(job, { fields: [application.jobId], references: [job.id] }),
   responses: many(questionResponse),
   interviews: many(interview),
+  criterionScores: many(criterionScore),
+  analysisRuns: many(analysisRun),
 }))
 
 export const documentRelations = relations(document, ({ one }) => ({
@@ -453,4 +578,26 @@ export const emailTemplateRelations = relations(emailTemplate, ({ one }) => ({
 
 export const calendarIntegrationRelations = relations(calendarIntegration, ({ one }) => ({
   user: one(user, { fields: [calendarIntegration.userId], references: [user.id] }),
+}))
+
+// ─── AI Scoring Relations ──────────────────────────────────────────
+
+export const aiConfigRelations = relations(aiConfig, ({ one }) => ({
+  organization: one(organization, { fields: [aiConfig.organizationId], references: [organization.id] }),
+}))
+
+export const scoringCriterionRelations = relations(scoringCriterion, ({ one }) => ({
+  organization: one(organization, { fields: [scoringCriterion.organizationId], references: [organization.id] }),
+  job: one(job, { fields: [scoringCriterion.jobId], references: [job.id] }),
+}))
+
+export const criterionScoreRelations = relations(criterionScore, ({ one }) => ({
+  organization: one(organization, { fields: [criterionScore.organizationId], references: [organization.id] }),
+  application: one(application, { fields: [criterionScore.applicationId], references: [application.id] }),
+}))
+
+export const analysisRunRelations = relations(analysisRun, ({ one }) => ({
+  organization: one(organization, { fields: [analysisRun.organizationId], references: [organization.id] }),
+  application: one(application, { fields: [analysisRun.applicationId], references: [application.id] }),
+  scoredBy: one(user, { fields: [analysisRun.scoredById], references: [user.id] }),
 }))

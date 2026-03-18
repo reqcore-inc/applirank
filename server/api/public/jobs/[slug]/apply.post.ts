@@ -3,6 +3,8 @@ import { fileTypeFromBuffer } from 'file-type'
 import { job, candidate, application, jobQuestion, questionResponse, document, organization } from '../../../../database/schema'
 import { publicApplicationSchema, publicJobSlugSchema } from '../../../../utils/schemas/publicApplication'
 import { createPreviewReadOnlyError } from '../../../../utils/previewReadOnly'
+import { autoScoreApplication } from '../../../../utils/ai/autoScore'
+import { parseDocument } from '../../../../utils/resume-parser'
 import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE,
@@ -152,7 +154,7 @@ export default defineEventHandler(async (event) => {
 
   const existingJob = await db.query.job.findFirst({
     where: and(eq(job.slug, slug), eq(job.status, 'open')),
-    columns: { id: true, organizationId: true, requireResume: true, requireCoverLetter: true },
+    columns: { id: true, organizationId: true, requireResume: true, requireCoverLetter: true, autoScoreOnApply: true },
   })
 
   if (!existingJob) {
@@ -432,6 +434,9 @@ export default defineEventHandler(async (event) => {
     try {
       await uploadToS3(storageKey, file.data, mimeType)
 
+      // Parse document content (best-effort — does not block upload)
+      const parsedContent = await parseDocument(file.data, mimeType)
+
       const [created] = await db.insert(document).values({
         id: docId,
         organizationId: orgId,
@@ -441,6 +446,7 @@ export default defineEventHandler(async (event) => {
         originalFilename: sanitizeFilename(file.filename),
         mimeType,
         sizeBytes: file.data.length,
+        parsedContent: parsedContent as any,
       }).returning({ id: document.id })
 
       uploadedDocIds.push(created!.id)
@@ -479,6 +485,9 @@ export default defineEventHandler(async (event) => {
     try {
       await uploadToS3(storageKey, file.data, mimeType)
 
+      // Parse resume content (best-effort — does not block upload)
+      const parsedContent = await parseDocument(file.data, mimeType)
+
       await db.insert(document).values({
         id: docId,
         organizationId: orgId,
@@ -488,6 +497,7 @@ export default defineEventHandler(async (event) => {
         originalFilename: sanitizeFilename(file.filename),
         mimeType,
         sizeBytes: file.data.length,
+        parsedContent: parsedContent as any,
       })
     } catch (uploadError) {
       try {
@@ -510,6 +520,16 @@ export default defineEventHandler(async (event) => {
 
       throw createError({ statusCode: 502, statusMessage: 'Failed to upload your resume. Please try again.' })
     }
+  }
+
+  // ─────────────────────────────────────────────
+  // 12. Fire-and-forget auto AI scoring if enabled
+  // ─────────────────────────────────────────────
+
+  if (existingJob.autoScoreOnApply && newApplication) {
+    autoScoreApplication(newApplication.id, orgId).catch((err) => {
+      console.error('[Reqcore] Auto-score failed for application', newApplication.id, err)
+    })
   }
 
   setResponseStatus(event, 201)

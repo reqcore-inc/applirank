@@ -43,11 +43,15 @@ test.describe('Job Creation Flow', () => {
     await expect(page.locator('form').getByRole('button', { name: 'Save & continue' })).toBeEnabled({ timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
-    // Step 3: Find candidates — skip
+    // Step 3: Scoring criteria — skip (defaults are fine)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
 
-    // Step 4: Publish the job
+    // Step 4: Find candidates — skip
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).waitFor({ state: 'visible', timeout: 10_000 })
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).click()
+
+    // Step 5: Publish the job
     await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
     const publishButton = page.locator('form').getByRole('button', { name: /Publish & copy link/i })
     await publishButton.waitFor({ state: 'visible', timeout: 10_000 })

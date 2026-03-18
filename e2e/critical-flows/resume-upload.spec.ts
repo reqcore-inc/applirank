@@ -133,15 +133,20 @@ test.describe('Resume Upload — All File Formats', () => {
     await page.getByRole('button', { name: 'Add Question' }).click()
     await page.locator('#q-label').waitFor({ state: 'hidden', timeout: 10_000 })
 
-    // Step 2 → Step 3
+    // Step 2 → Step 3 (Scoring criteria)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // Step 3 → Step 4
+    // Step 3 → Step 4 (Find candidates)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
       .waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // Step 4: Publish
+    // Step 4 → Step 5 (Publish)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
+      .waitFor({ state: 'visible', timeout: 10_000 })
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
+
+    // Step 5: Publish
     await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
     const publishButton = page.locator('form').getByRole('button', { name: /Publish & copy link/i })
     await publishButton.waitFor({ state: 'visible', timeout: 10_000 })

@@ -15,6 +15,7 @@ definePageMeta({
 const route = useRoute()
 const interviewId = route.params.id as string
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const toast = useToast()
 const { activeOrg } = useCurrentOrg()
 
 const { interview, status: fetchStatus, error, updateInterview, deleteInterview, refresh } = useInterview(interviewId)
@@ -99,7 +100,7 @@ async function handleTransition(newStatus: InterviewStatus) {
     await updateInterview({ status: newStatus })
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to update status')
+    toast.error('Failed to update status', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isTransitioning.value = false
   }
@@ -153,7 +154,7 @@ async function saveNotes() {
     isEditingNotes.value = false
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to save notes')
+    toast.error('Failed to save notes', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isSavingNotes.value = false
   }
@@ -261,7 +262,7 @@ async function handleDelete() {
     await navigateTo(useLocalePath()('/dashboard/interviews'))
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
-    alert(err.data?.statusMessage ?? 'Failed to delete interview')
+    toast.error('Failed to delete interview', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
   } finally {
     isDeleting.value = false
   }

@@ -173,15 +173,20 @@ test.describe('Candidate Application Flow — All Custom Question Field Types', 
       await expect(page.getByText(question.label).first()).toBeVisible()
     }
 
-    // Step 2 → Step 3 (Find candidates — skip)
+    // Step 2 → Step 3 (Scoring criteria — skip)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // ── Step 3: Find candidates (skip) → Step 4 ──────────────────────────────
+    // ── Step 3: Scoring criteria (skip) → Step 4 ─────────────────────────────
 
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // ── Step 4: Publish the job ───────────────────────────────────────────────
+    // ── Step 4: Find candidates (skip) → Step 5 ──────────────────────────────
+
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().waitFor({ state: 'visible', timeout: 10_000 })
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
+
+    // ── Step 5: Publish the job ───────────────────────────────────────────────
 
     await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
 
@@ -500,7 +505,10 @@ test.describe('Candidate Application — Required Cover Letter Validation', () =
     }
     await expect(coverLetterToggle).toHaveAttribute('aria-pressed', 'true')
 
-    // Step 2 → Step 3 → Step 4
+    // Step 2 → Step 3 (Scoring criteria) → Step 4 (Find candidates) → Step 5 (Publish)
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
+    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
+      .waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
       .waitFor({ state: 'visible', timeout: 10_000 })

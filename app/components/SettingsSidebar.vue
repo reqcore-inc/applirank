@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  Building2, Users, UserCircle, ChevronLeft, Settings, Plug,
+  Building2, Users, UserCircle, ChevronLeft, Settings, Plug, Brain,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -26,6 +26,13 @@ const settingsNav = [
     description: 'Calendar & services',
     to: '/dashboard/settings/integrations',
     icon: Plug,
+    exact: true,
+  },
+  {
+    label: 'AI Configuration',
+    description: 'Models & API keys',
+    to: '/dashboard/settings/ai',
+    icon: Brain,
     exact: true,
   },
   {

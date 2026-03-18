@@ -56,6 +56,7 @@ export default defineEventHandler(async (event) => {
       validThrough: job.validThrough,
       requireResume: job.requireResume,
       requireCoverLetter: job.requireCoverLetter,
+      autoScoreOnApply: job.autoScoreOnApply,
       createdAt: job.createdAt,
       updatedAt: job.updatedAt,
     })

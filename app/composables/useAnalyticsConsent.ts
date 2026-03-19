@@ -53,6 +53,11 @@ export function useAnalyticsConsent() {
       url.hash = ''
       ph?.capture('$pageview', { $current_url: url.toString() })
     }
+    // Replay any events that were buffered before consent was granted
+    // (e.g. signup_submitted, org_created fired during the auth flow).
+    if (import.meta.client) {
+      flushPendingEvents()
+    }
   }
 
   function declineAnalytics() {
@@ -61,6 +66,10 @@ export function useAnalyticsConsent() {
       localStorage.setItem(CONSENT_KEY, 'denied')
     }
     ph?.opt_out_capturing()
+    // Discard any events buffered before the user declined.
+    if (import.meta.client) {
+      discardPendingEvents()
+    }
   }
 
   // Apply stored consent on mount.

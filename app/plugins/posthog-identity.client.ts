@@ -31,6 +31,33 @@ export default defineNuxtPlugin({
     const posthog = $ph?.()
     if (!posthog) return
 
+    // ── Cross-domain consent linking ──
+    // The marketing site (reqcore.com) appends ?ph_consent=granted when the
+    // user already accepted analytics there.  Apply it to localStorage so
+    // the consent banner doesn't appear a second time on the app.
+    const url = new URL(window.location.href)
+    let urlModified = false
+    const crossDomainConsent = url.searchParams.get('ph_consent')
+    if (crossDomainConsent === 'granted') {
+      // Only accept cross-domain consent when the referrer is the known
+      // marketing site.  Without this check any crafted link with
+      // ?ph_consent=granted would silently bypass the consent banner,
+      // violating GDPR Art. 7 (consent must be freely given).
+      let fromTrustedOrigin = false
+      if (document.referrer) {
+        try {
+          const ref = new URL(document.referrer)
+          fromTrustedOrigin = ref.hostname === 'reqcore.com' || ref.hostname.endsWith('.reqcore.com')
+        }
+        catch { /* invalid referrer — ignore */ }
+      }
+      if (fromTrustedOrigin) {
+        localStorage.setItem(CONSENT_STORAGE_KEY, 'granted')
+      }
+      url.searchParams.delete('ph_consent')
+      urlModified = true
+    }
+
     // ── Apply stored consent BEFORE any events fire ──
     // PostHog starts with opt_out_capturing_by_default: true.  If the user has
     // already consented, we must call opt_in_capturing() here — before the
@@ -53,13 +80,20 @@ export default defineNuxtPlugin({
     // The marketing site (reqcore.com) appends ?ph_did=<distinct_id> to links
     // pointing here.  If present, alias the marketing visitor's anonymous ID to
     // this session so the full journey is stitched together in PostHog.
-    const url = new URL(window.location.href)
     const marketingDistinctId = url.searchParams.get('ph_did')
-    if (marketingDistinctId && storedConsent === 'granted') {
+    // Validate format: PostHog distinct IDs are typically UUIDs or short
+    // alphanumeric strings.  Reject anything outside that to prevent
+    // passing arbitrary untrusted input to posthog.alias().
+    const isValidDistinctId = marketingDistinctId && /^[\w-]{10,100}$/.test(marketingDistinctId)
+    if (isValidDistinctId && storedConsent === 'granted') {
       // Create an alias so both IDs resolve to the same person in PostHog.
       posthog.alias(marketingDistinctId)
       // Strip the param from the URL to prevent it leaking into pageview props.
       url.searchParams.delete('ph_did')
+      urlModified = true
+    }
+
+    if (urlModified) {
       window.history.replaceState({}, '', url.pathname + url.search + url.hash)
     }
 

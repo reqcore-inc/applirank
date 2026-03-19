@@ -2,12 +2,19 @@
  * Composable for managing PostHog analytics consent (GDPR compliance).
  *
  * By default, PostHog captures events. Users can opt out via this composable.
- * The consent state is persisted in localStorage.
+ * The consent state is persisted in a cookie shared across subdomains
+ * (e.g. reqcore.com and app.reqcore.com) via the NUXT_PUBLIC_COOKIE_DOMAIN
+ * runtime config.
  *
  * Usage:
  *   const { hasConsented, acceptAnalytics, declineAnalytics } = useAnalyticsConsent()
  */
-const CONSENT_KEY = 'reqcore-analytics-consent'
+
+/** Cookie name — shared across reqcore-web and applirank */
+export const CONSENT_COOKIE_NAME = 'reqcore-consent'
+
+/** @deprecated Old localStorage key — used only for one-time migration */
+const LEGACY_STORAGE_KEY = 'reqcore-analytics-consent'
 
 type ConsentState = 'granted' | 'denied' | null
 
@@ -18,30 +25,35 @@ export function useAnalyticsConsent() {
   const posthog = (useNuxtApp() as Record<string, unknown>).$posthog as ((() => { opt_in_capturing: () => void, opt_out_capturing: () => void, capture: (event: string, properties?: Record<string, unknown>) => void }) | undefined)
   const ph = posthog?.()
 
-  const consentState = useState<ConsentState>('analytics-consent', () => null)
+  const cookieDomain = (useRuntimeConfig().public as Record<string, string>).cookieDomain
 
-  // The useState factory only runs on the server: Nuxt serialises the `null`
-  // result into the SSR payload and restores it on the client without ever
-  // calling the factory again.  We must therefore re-hydrate the persisted
-  // choice here — outside the factory — so that returning visitors don't see
-  // the banner a second time and PostHog's opt-in/out state is correct on the
-  // very first client render.
-  if (import.meta.client && consentState.value === null) {
-    const stored = localStorage.getItem(CONSENT_KEY)
-    if (stored === 'granted' || stored === 'denied') {
-      consentState.value = stored
+  // Cross-subdomain cookie: domain=.reqcore.com makes this visible on both
+  // reqcore.com (marketing) and app.reqcore.com (app).
+  const consentCookie = useCookie<ConsentState>(CONSENT_COOKIE_NAME, {
+    domain: cookieDomain || undefined,
+    maxAge: 365 * 24 * 60 * 60,
+    path: '/',
+    sameSite: 'lax',
+  })
+
+  // One-time migration: move consent from localStorage to cookie for users
+  // who consented before this change, then clean up localStorage.
+  if (import.meta.client && !consentCookie.value) {
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
+    if (legacy === 'granted' || legacy === 'denied') {
+      consentCookie.value = legacy
+      localStorage.removeItem(LEGACY_STORAGE_KEY)
     }
   }
 
-  const hasConsented = computed(() => consentState.value === 'granted')
-  const hasDeclined = computed(() => consentState.value === 'denied')
-  const needsConsent = computed(() => consentState.value === null)
+  const hasConsented = computed(() => consentCookie.value === 'granted')
+  const hasDeclined = computed(() => consentCookie.value === 'denied')
+  const needsConsent = computed(() => !consentCookie.value)
 
   function acceptAnalytics() {
-    consentState.value = 'granted'
-    if (import.meta.client) {
-      localStorage.setItem(CONSENT_KEY, 'granted')
-    }
+    consentCookie.value = 'granted'
+    // Also clean up legacy key if it still exists
+    if (import.meta.client) localStorage.removeItem(LEGACY_STORAGE_KEY)
     ph?.opt_in_capturing()
     // Capture the entry-page pageview now that the user has opted in.
     // PostHog's init-time $pageview was suppressed by opt_out_capturing_by_default,
@@ -61,10 +73,8 @@ export function useAnalyticsConsent() {
   }
 
   function declineAnalytics() {
-    consentState.value = 'denied'
-    if (import.meta.client) {
-      localStorage.setItem(CONSENT_KEY, 'denied')
-    }
+    consentCookie.value = 'denied'
+    if (import.meta.client) localStorage.removeItem(LEGACY_STORAGE_KEY)
     ph?.opt_out_capturing()
     // Discard any events buffered before the user declined.
     if (import.meta.client) {
@@ -76,7 +86,7 @@ export function useAnalyticsConsent() {
   // PostHog defaults to opt_out_capturing_by_default: true (GDPR), so we only
   // need to explicitly opt-in for users who previously granted consent.
   if (import.meta.client) {
-    if (consentState.value === 'granted') {
+    if (consentCookie.value === 'granted') {
       ph?.opt_in_capturing()
     }
     else {

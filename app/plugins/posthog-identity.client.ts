@@ -2,17 +2,15 @@
  * Client-only plugin that identifies the current user and organization
  * in PostHog whenever the auth session is available.
  *
- * - Applies stored consent from localStorage BEFORE any identity events fire,
- *   preventing the race condition where identify() is discarded because PostHog
- *   is still in opt_out_capturing_by_default mode when ConsentBanner hasn't
- *   mounted yet.
+ * - Applies stored consent from the cross-subdomain cookie BEFORE any
+ *   identity events fire, preventing the race condition where identify()
+ *   is discarded because PostHog is still in opt_out_capturing_by_default
+ *   mode when ConsentBanner hasn't mounted yet.
  * - Calls posthog.identify() with the user's ID and safe properties
  * - Calls posthog.group() for the active organization (group analytics)
  * - Resets PostHog on sign-out to avoid cross-user data leakage
  */
-
-// Must match the key used in useAnalyticsConsent.ts
-const CONSENT_STORAGE_KEY = 'reqcore-analytics-consent'
+import { CONSENT_COOKIE_NAME } from '~/composables/useAnalyticsConsent'
 
 // URL properties that may carry tokens or invitation IDs — always sanitized.
 // Includes referrer properties: if a user navigated from /jobs?invite_token=xxx,
@@ -31,9 +29,17 @@ export default defineNuxtPlugin({
     const posthog = $ph?.()
     if (!posthog) return
 
+    const cookieDomain = (useRuntimeConfig().public as Record<string, string>).cookieDomain
+    const consentCookie = useCookie<string | null>(CONSENT_COOKIE_NAME, {
+      domain: cookieDomain || undefined,
+      maxAge: 365 * 24 * 60 * 60,
+      path: '/',
+      sameSite: 'lax',
+    })
+
     // ── Cross-domain consent linking ──
     // The marketing site (reqcore.com) appends ?ph_consent=granted when the
-    // user already accepted analytics there.  Apply it to localStorage so
+    // user already accepted analytics there.  Apply it to the shared cookie so
     // the consent banner doesn't appear a second time on the app.
     const url = new URL(window.location.href)
     let urlModified = false
@@ -52,7 +58,7 @@ export default defineNuxtPlugin({
         catch { /* invalid referrer — ignore */ }
       }
       if (fromTrustedOrigin) {
-        localStorage.setItem(CONSENT_STORAGE_KEY, 'granted')
+        consentCookie.value = 'granted'
       }
       url.searchParams.delete('ph_consent')
       urlModified = true
@@ -63,7 +69,7 @@ export default defineNuxtPlugin({
     // already consented, we must call opt_in_capturing() here — before the
     // identity watchers in usePostHogIdentity fire — otherwise identify() and
     // group() calls are silently discarded while PostHog is still opted-out.
-    const storedConsent = localStorage.getItem(CONSENT_STORAGE_KEY)
+    const storedConsent = consentCookie.value
     if (storedConsent === 'granted') {
       posthog.opt_in_capturing()
     }

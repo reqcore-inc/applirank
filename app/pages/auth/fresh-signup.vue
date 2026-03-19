@@ -3,26 +3,13 @@ definePageMeta({ layout: 'auth' })
 
 useSeoMeta({ robots: 'noindex, nofollow' })
 
-const localePath = useLocalePath()
-
-onMounted(async () => {
-  try {
-    // Single server-side call: checks demo status AND signs out if needed.
-    // The server deletes the session from the DB and clears auth cookies
-    // via Set-Cookie headers — no client-side sign-out quirks.
-    const { action } = await $fetch('/api/auth/demo-fresh-signup', { method: 'POST' })
-
-    if (action === 'dashboard') {
-      window.location.href = localePath('/dashboard')
-    }
-    else {
-      window.location.href = localePath('/auth/sign-up')
-    }
-  }
-  catch {
-    // On any error, default to sign-up
-    window.location.href = localePath('/auth/sign-up')
-  }
+onMounted(() => {
+  // Full browser navigation to the server endpoint. The server checks
+  // the session, destroys it if it belongs to the demo org, clears
+  // auth cookies via Set-Cookie headers, and returns a 302 redirect
+  // to either /auth/sign-up or /dashboard. Using native navigation
+  // (not $fetch) guarantees the browser processes Set-Cookie headers.
+  window.location.replace('/api/auth/demo-fresh-signup')
 })
 </script>
 

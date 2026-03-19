@@ -17,8 +17,16 @@ onMounted(async () => {
 
   // Check if the user is in the demo org
   const demoSlug = config.public.demoOrgSlug
-  const activeOrgState = authClient.useActiveOrganization()
-  const isDemo = demoSlug && activeOrgState.value?.data?.slug === demoSlug
+  if (!demoSlug) {
+    // No demo slug configured — redirect to dashboard
+    await navigateTo(localePath('/dashboard'), { replace: true })
+    return
+  }
+
+  // Await the active org — useActiveOrganization() is reactive and
+  // may not have resolved when read synchronously inside onMounted
+  const { data: org } = await authClient.organization.getFullOrganization()
+  const isDemo = org?.slug === demoSlug
 
   if (isDemo) {
     // Demo user — sign out and redirect to sign-up for a real account

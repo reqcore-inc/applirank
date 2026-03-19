@@ -15,8 +15,34 @@ interface PendingEvent {
 
 // Module-level buffer for events captured before consent is granted.
 // Flushed to PostHog when the user accepts analytics; discarded on decline.
+// Persisted to sessionStorage so the buffer survives hard page reloads
+// (e.g. window.location.href navigation in createOrg/switchOrg).
 const MAX_PENDING_EVENTS = 50
-const pendingEvents: PendingEvent[] = []
+const STORAGE_KEY = 'ph-pending-events'
+
+function restoreBuffer(): PendingEvent[] {
+  if (!import.meta.client) return []
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) as PendingEvent[] : []
+  }
+  catch { return [] }
+}
+
+function persistBuffer() {
+  if (!import.meta.client) return
+  try {
+    if (pendingEvents.length > 0) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(pendingEvents))
+    }
+    else {
+      sessionStorage.removeItem(STORAGE_KEY)
+    }
+  }
+  catch { /* storage full or unavailable */ }
+}
+
+const pendingEvents: PendingEvent[] = restoreBuffer()
 
 function getPostHog(): PostHog | undefined {
   const $ph = (useNuxtApp() as Record<string, unknown>).$posthog as (() => PostHog) | undefined
@@ -34,6 +60,7 @@ export function flushPendingEvents() {
     const event = pendingEvents.shift()!
     ph.capture(event.eventName, event.properties)
   }
+  persistBuffer()
 }
 
 /**
@@ -41,6 +68,7 @@ export function flushPendingEvents() {
  */
 export function discardPendingEvents() {
   pendingEvents.length = 0
+  persistBuffer()
 }
 
 export function useTrack() {
@@ -69,6 +97,7 @@ export function useTrack() {
     }
     else if (pendingEvents.length < MAX_PENDING_EVENTS) {
       pendingEvents.push({ eventName, properties: enrichedProps })
+      persistBuffer()
     }
   }
 

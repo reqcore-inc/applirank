@@ -15,6 +15,36 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## [1.3.0](https://github.com/reqcore-inc/reqcore/compare/v1.2.0...v1.3.0) (2026-03-22)
+
+
+### ✨ Features
+
+* add AI configuration seeding and demo data reset script ([927cf1e](https://github.com/reqcore-inc/reqcore/commit/927cf1ed6fea90325e0dadf362b4ab2000c767f3))
+* add Deploy on Railway badge to README, enhance ScoreBreakdown component with caching, and introduce DemoUpsellBanner component ([c372668](https://github.com/reqcore-inc/reqcore/commit/c372668570a16723870868c605382c0876cca3ab))
+* add document parsing functionality ([e6279d0](https://github.com/reqcore-inc/reqcore/commit/e6279d004612cc1544f1f1c9f957cef55bb4440e))
+* add Settings page for job management and update job tabs in AppTopBar ([7dba4da](https://github.com/reqcore-inc/reqcore/commit/7dba4dac492d31a75b2d5faab176cbe4a693960f))
+* add WordExtractor type declarations and update document permissions ([6f66efd](https://github.com/reqcore-inc/reqcore/commit/6f66efdbf34dbf38f1c6867dd9995f8001047dc3))
+* **ai-analysis:** add AI analysis dashboard and stats endpoint with tests ([c09ea21](https://github.com/reqcore-inc/reqcore/commit/c09ea21741f63bf7b3c175418ff6ab552489c2d3))
+* **ai:** enhance AI scoring and configuration with rate limiting and error handling improvements ([71f0185](https://github.com/reqcore-inc/reqcore/commit/71f0185d55c029cd8e20525828b4d196a426bd73))
+* enhance analytics consent management with cross-domain linking and event buffering ([7a9dd82](https://github.com/reqcore-inc/reqcore/commit/7a9dd82ede3ae275c97f66ebbcd8efba0d0b6353))
+* enhance analytics event handling by flushing pending events on consent and organization creation ([2212af8](https://github.com/reqcore-inc/reqcore/commit/2212af82b1d7ebb949bd3a50014fb40dd55ce8a9))
+* enhance event tracking by persisting pending events in sessionStorage ([95c48ce](https://github.com/reqcore-inc/reqcore/commit/95c48cee281e4a35b0f237bcb88668812ed13011))
+* enhance resume parser with PDF polyfills and dynamic import for pdf-parse ([2d6dea5](https://github.com/reqcore-inc/reqcore/commit/2d6dea5bb7a2d92150cca330cbd334526cd619e4))
+* Implement AI scoring system with provider integration and criteria management ([6ba3159](https://github.com/reqcore-inc/reqcore/commit/6ba31596f7fe239611901b99c2c60f430166e84a))
+* Implement AI scoring system with provider integration and criteria management ([8158718](https://github.com/reqcore-inc/reqcore/commit/8158718f8421903c5df639bb5731f6361d39685f))
+* implement autoScoreApplication for AI-driven application scoring ([5222980](https://github.com/reqcore-inc/reqcore/commit/5222980ea02aa92fa44b048157717bc23c3e370a))
+* implement combined demo-check and sign-out endpoint for fresh sign-up flow ([a5632bd](https://github.com/reqcore-inc/reqcore/commit/a5632bd865610f6f1a4fb9196df9b95d06d9db93))
+* implement demo-aware signup redirect with server-side session check ([092d324](https://github.com/reqcore-inc/reqcore/commit/092d3241a96ff78b7ddc9068c1c0f8bfac6e00ba))
+* implement internationalization for navigation and hero sections across multiple languages ([7720fc8](https://github.com/reqcore-inc/reqcore/commit/7720fc85fb3dba24fda9f87dc595522e235504ef))
+* implement server-side demo organization check for fresh sign-up flow ([3075a17](https://github.com/reqcore-inc/reqcore/commit/3075a17cb9d87c64a81d947bd51efb5e99f34583))
+* improve demo organization check by ensuring demo slug is validated before redirecting ([b60b9bc](https://github.com/reqcore-inc/reqcore/commit/b60b9bc9a102c4086fb30cc32b0d90d057aaecea))
+* migrate analytics consent management from localStorage to cross-domain cookies ([59e5e33](https://github.com/reqcore-inc/reqcore/commit/59e5e33026451c640acea1ef9b977d617aec6fdd))
+* refactor demo session checks to use user email for demo account detection ([c747d24](https://github.com/reqcore-inc/reqcore/commit/c747d24f346f6169444abfee2d163ab221fe6cd2))
+* refactor demo sign-up flow by removing demo-fresh-signup endpoint and handling session checks in fresh-signup component ([58be8e0](https://github.com/reqcore-inc/reqcore/commit/58be8e0096005c8ffad56937134cc3abbc7126c8))
+* refactor demo sign-up flow by replacing POST endpoint with GET for better cookie handling ([e4268eb](https://github.com/reqcore-inc/reqcore/commit/e4268eb346df996379bae987705dada182fe78df))
+* update scoring criteria steps in candidate application, job creation, and resume upload tests ([30d87f0](https://github.com/reqcore-inc/reqcore/commit/30d87f07583d4eba9dbf3db35a0e604425ebcfb9))
+
 ## [1.2.0](https://github.com/reqcore-inc/reqcore/compare/v1.1.0...v1.2.0) (2026-03-16)
 
 

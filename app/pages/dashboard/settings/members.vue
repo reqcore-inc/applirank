@@ -580,7 +580,7 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <div class="flex gap-3">
+          <div class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1">
               <label for="invite-email" class="sr-only">Email address</label>
               <input

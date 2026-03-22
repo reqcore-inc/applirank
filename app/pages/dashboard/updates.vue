@@ -265,7 +265,7 @@ function formatDate(dateString: string | null | undefined): string {
 
       <div class="px-6 py-5 space-y-4">
         <!-- Version details -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p class="text-xs font-medium text-surface-400 dark:text-surface-500 uppercase tracking-wide">
               Installed version

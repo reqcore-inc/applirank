@@ -429,7 +429,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                     <ChevronsUpDown v-else class="size-3 opacity-40" />
                   </button>
                 </th>
-                <th v-if="visibleCols.email" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
+                <th v-if="visibleCols.email" class="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('email')">
                     Email
                     <ChevronUp v-if="sortKey === 'email' && sortDir === 'asc'" class="size-3" />
@@ -453,7 +453,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                     <ChevronsUpDown v-else class="size-3 opacity-40" />
                   </button>
                 </th>
-                <th v-if="visibleCols.createdAt" class="px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
+                <th v-if="visibleCols.createdAt" class="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wide select-none">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('createdAt')">
                     Applied
                     <ChevronUp v-if="sortKey === 'createdAt' && sortDir === 'asc'" class="size-3" />
@@ -497,7 +497,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                     </span>
                   </div>
                 </td>
-                <td v-if="visibleCols.email" class="px-4 py-3 text-surface-600 dark:text-surface-300 max-w-[220px] truncate">
+                <td v-if="visibleCols.email" class="hidden sm:table-cell px-4 py-3 text-surface-600 dark:text-surface-300 max-w-[220px] truncate">
                   <a
                     :href="`mailto:${app.candidateEmail}`"
                     target="_blank"
@@ -522,7 +522,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                     {{ app.status }}
                   </span>
                 </td>
-                <td v-if="visibleCols.createdAt" class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap text-xs font-medium">
+                <td v-if="visibleCols.createdAt" class="hidden md:table-cell px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap text-xs font-medium">
                   {{ timeAgo(app.createdAt) }}
                 </td>
               </tr>

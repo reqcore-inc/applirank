@@ -330,11 +330,11 @@ function formatInterviewDate(dateStr: string) {
   <Transition name="slide">
     <aside
       v-if="open"
-      class="fixed right-0 z-40 w-[640px] max-w-[calc(100vw-4rem)] border-l border-surface-200/80 dark:border-surface-800/60 bg-white dark:bg-surface-900 shadow-xl flex flex-col"
+      class="fixed right-0 z-40 w-full sm:w-[640px] sm:max-w-[calc(100vw-4rem)] border-l border-surface-200/80 dark:border-surface-800/60 bg-white dark:bg-surface-900 shadow-xl flex flex-col"
       :class="hasSubNav ? 'top-24 h-[calc(100vh-6rem)]' : 'top-14 h-[calc(100vh-3.5rem)]'"
     >
       <!-- Header -->
-      <div class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/60 px-6 py-4 shrink-0">
+      <div class="flex items-center justify-between border-b border-surface-200/80 dark:border-surface-800/60 px-4 sm:px-6 py-4 shrink-0">
         <div v-if="application" class="min-w-0 flex-1">
           <div class="flex items-center gap-3">
             <div class="flex items-center justify-center size-10 rounded-full bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400 font-semibold text-sm shrink-0">
@@ -385,8 +385,8 @@ function formatInterviewDate(dateStr: string) {
       </div>
 
       <!-- Tabs -->
-      <div v-if="application" class="border-b border-surface-200/80 dark:border-surface-800/60 px-6 shrink-0">
-        <div class="flex gap-1">
+      <div v-if="application" class="border-b border-surface-200/80 dark:border-surface-800/60 px-4 sm:px-6 shrink-0">
+        <div class="flex gap-1 overflow-x-auto scrollbar-none">
           <button
             class="cursor-pointer px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px"
             :class="activeTab === 'overview'
@@ -429,7 +429,7 @@ function formatInterviewDate(dateStr: string) {
       </div>
 
       <!-- Body -->
-      <div class="flex-1 overflow-y-auto px-6 py-5">
+      <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
         <!-- Loading -->
         <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
           Loading details…

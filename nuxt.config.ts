@@ -99,6 +99,7 @@ export default defineNuxtConfig({
       ],
       meta: [
         { name: 'theme-color', content: '#09090b' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=5.0' },
       ],
       // Plausible removed — PostHog handles all analytics
     },

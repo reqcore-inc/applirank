@@ -400,18 +400,18 @@ onUnmounted(() => {
         v-if="activeJobId"
         class="relative z-10 border-b border-surface-200/60 dark:border-surface-800/60 bg-surface-50/90 dark:bg-surface-950/90 backdrop-blur-lg"
       >
-        <div class="flex items-center gap-4 px-4 lg:px-6 h-10">
+        <div class="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 lg:px-6 h-10 overflow-x-auto scrollbar-none">
           <NuxtLink
             :to="$localePath('/dashboard/jobs')"
-            class="flex items-center gap-1 text-xs font-medium text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 transition-colors no-underline shrink-0"
+            class="hidden sm:flex items-center gap-1 text-xs font-medium text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 transition-colors no-underline shrink-0"
           >
             <ChevronLeft class="size-3.5" />
             All Jobs
           </NuxtLink>
 
-          <div class="w-px h-4 bg-surface-200 dark:bg-surface-700" />
+          <div class="hidden sm:block w-px h-4 bg-surface-200 dark:bg-surface-700 shrink-0" />
 
-          <div class="flex items-center gap-2 shrink-0 min-w-0">
+          <div class="hidden md:flex items-center gap-2 shrink-0 min-w-0">
             <Briefcase class="size-3.5 text-brand-500 shrink-0" />
             <span class="text-sm font-semibold text-surface-900 dark:text-surface-100 truncate max-w-48">
               {{ activeJobTitle }}
@@ -425,22 +425,22 @@ onUnmounted(() => {
             </span>
           </div>
 
-          <nav class="flex items-center gap-0.5 ml-2">
+          <nav class="flex items-center gap-0.5 md:ml-2">
             <NuxtLink
               v-for="tab in jobTabs"
               :key="tab.to"
               :to="$localePath(tab.to)"
-              class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200 no-underline"
+              class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200 no-underline whitespace-nowrap shrink-0"
               :class="isActiveRoute(tab.to, tab.exact)
                 ? 'bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 shadow-sm'
                 : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:bg-white/60 dark:hover:bg-surface-800/60'"
             >
               <component :is="tab.icon" class="size-3.5" />
-              {{ tab.label }}
+              <span class="hidden sm:inline">{{ tab.label }}</span>
             </NuxtLink>
           </nav>
 
-          <div class="ml-auto flex items-center gap-2">
+          <div class="ml-auto flex items-center gap-2 shrink-0">
             <div id="job-sub-nav-actions" />
           </div>
         </div>

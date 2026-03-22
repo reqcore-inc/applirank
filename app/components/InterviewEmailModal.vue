@@ -160,7 +160,7 @@ const canSend = computed(() => {
       <!-- Modal -->
       <div class="relative bg-white dark:bg-surface-900 rounded-2xl shadow-2xl shadow-surface-900/10 dark:shadow-black/30 ring-1 ring-surface-200/80 dark:ring-surface-700/60 w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col overflow-hidden">
         <!-- Header -->
-        <div class="shrink-0 border-b border-surface-200/80 dark:border-surface-800/60 px-6 py-4">
+        <div class="shrink-0 border-b border-surface-200/80 dark:border-surface-800/60 px-4 sm:px-6 py-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
               <div class="flex size-9 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-950/40">
@@ -198,7 +198,7 @@ const canSend = computed(() => {
         <!-- Main content -->
         <template v-else>
           <!-- Tabs -->
-          <div class="shrink-0 border-b border-surface-200/80 dark:border-surface-800/60 px-6">
+          <div class="shrink-0 border-b border-surface-200/80 dark:border-surface-800/60 px-4 sm:px-6 overflow-x-auto scrollbar-none">
             <div class="flex gap-1">
               <button
                 v-for="tab in ([
@@ -207,7 +207,7 @@ const canSend = computed(() => {
                   { id: 'manage' as Tab, label: 'Manage Templates', icon: Sparkles },
                 ])"
                 :key="tab.id"
-                class="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-all cursor-pointer -mb-px"
+                class="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border-b-2 transition-all cursor-pointer -mb-px whitespace-nowrap shrink-0"
                 :class="activeTab === tab.id
                   ? 'border-brand-500 text-brand-700 dark:text-brand-300'
                   : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'"
@@ -220,13 +220,13 @@ const canSend = computed(() => {
           </div>
 
           <!-- Error -->
-          <div v-if="sendError" class="mx-6 mt-4 flex items-start gap-2.5 rounded-xl border border-danger-200/80 bg-danger-50 p-3.5 text-sm text-danger-700 dark:border-danger-800/60 dark:bg-danger-950/40 dark:text-danger-300">
+          <div v-if="sendError" class="mx-4 sm:mx-6 mt-4 flex items-start gap-2.5 rounded-xl border border-danger-200/80 bg-danger-50 p-3.5 text-sm text-danger-700 dark:border-danger-800/60 dark:bg-danger-950/40 dark:text-danger-300">
             <AlertCircle class="size-4 shrink-0 mt-0.5" />
             {{ sendError }}
           </div>
 
           <!-- Tab content -->
-          <div class="flex-1 overflow-y-auto px-6 py-5">
+          <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-5">
             <!-- Template Selection Tab -->
             <div v-if="activeTab === 'template'" class="space-y-3">
               <p class="text-xs text-surface-500 dark:text-surface-400 mb-3">

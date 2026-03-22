@@ -211,6 +211,9 @@ const statusCounts = computed(() => {
 
 const currentIndex = ref(0)
 
+// Mobile: toggle between candidate list and detail view
+const showMobileDetail = ref(false)
+
 watch(focusedApplications, () => {
   if (focusedApplications.value.length === 0) {
     currentIndex.value = 0
@@ -454,6 +457,7 @@ function setFocusStatus(status: PipelineStatus) {
 
 function selectCandidate(index: number) {
   currentIndex.value = index
+  showMobileDetail.value = true
 }
 
 const isMutating = ref(false)
@@ -1256,7 +1260,7 @@ function closeDocPreview() {
       <!-- PIPELINE STATUS TABS                     -->
       <!-- ═══════════════════════════════════════ -->
       <div class="shrink-0 border-b border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900">
-        <div class="flex items-center gap-1 overflow-x-auto px-5 py-2">
+        <div class="flex items-center gap-1 overflow-x-auto scrollbar-none px-3 sm:px-5 py-2">
           <button
             v-for="status in PIPELINE_STATUSES"
             :key="`tab-${status}`"
@@ -1303,7 +1307,10 @@ function closeDocPreview() {
       <div class="flex flex-1 overflow-hidden">
 
         <!-- LEFT PANEL — Candidate list -->
-        <div class="flex w-72 shrink-0 flex-col border-r border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900">
+        <div
+          class="flex flex-col border-r border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900"
+          :class="showMobileDetail ? 'hidden md:flex md:w-72 md:shrink-0' : 'w-full md:w-72 md:shrink-0'"
+        >
           <!-- Search + Sort + Filter controls -->
           <div class="shrink-0 px-3.5 pt-3 pb-2 space-y-2 dark:border-surface-800">
             <!-- Search input -->
@@ -1523,7 +1530,19 @@ function closeDocPreview() {
         </div>
 
         <!-- CENTER PANEL — Candidate detail -->
-        <div class="flex flex-1 flex-col overflow-hidden">
+        <div
+          class="flex flex-1 flex-col overflow-hidden"
+          :class="showMobileDetail ? 'flex' : 'hidden md:flex'"
+        >
+          <!-- Mobile back button -->
+          <button
+            class="md:hidden flex items-center gap-2 px-4 py-2.5 border-b border-surface-200/80 dark:border-surface-800/60 bg-white dark:bg-surface-900 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 transition-colors"
+            @click="showMobileDetail = false"
+          >
+            <ArrowLeft class="size-4" />
+            Back to candidates
+          </button>
+
           <!-- Empty state -->
           <div
             v-if="!currentSummary"
@@ -1542,8 +1561,8 @@ function closeDocPreview() {
 
           <template v-else>
             <!-- Sticky status transitions (stays visible on scroll) -->
-            <div v-if="allowedTransitions.length > 0" class="shrink-0 border-b border-surface-200/80 bg-white/95 backdrop-blur-sm px-6 py-2.5 dark:border-surface-800/60 dark:bg-surface-900/95">
-              <div class="mx-auto max-w-4xl flex flex-wrap items-center gap-2">
+            <div v-if="allowedTransitions.length > 0" class="shrink-0 border-b border-surface-200/80 bg-white/95 backdrop-blur-sm px-4 sm:px-6 py-2.5 dark:border-surface-800/60 dark:bg-surface-900/95">
+              <div class="mx-auto max-w-4xl flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <button
                   v-for="(nextStatus, idx) in allowedTransitions"
                   :key="nextStatus"
@@ -1562,9 +1581,9 @@ function closeDocPreview() {
             <div ref="detailScrollContainer" class="flex-1 overflow-y-auto">
 
             <!-- Candidate header -->
-            <div class="border-b border-surface-200 bg-surface-50 px-6 py-6 dark:border-surface-800 dark:bg-surface-900/80">
+            <div class="border-b border-surface-200 bg-surface-50 px-4 sm:px-6 py-4 sm:py-6 dark:border-surface-800 dark:bg-surface-900/80">
               <div class="mx-auto max-w-4xl">
-              <div class="flex items-start justify-between gap-4">
+              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div class="flex items-start gap-4 min-w-0">
                   <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white shadow-lg shadow-brand-500/20 dark:from-brand-500 dark:to-brand-700 dark:shadow-brand-500/10">
                     {{ getCandidateInitials(currentSummary.candidateFirstName, currentSummary.candidateLastName) }}
@@ -1669,8 +1688,8 @@ function closeDocPreview() {
             </div>
 
             <!-- Detail tabs -->
-            <div class="border-b border-surface-200/80 bg-white px-6 dark:border-surface-800/60 dark:bg-surface-900">
-              <div class="mx-auto max-w-4xl flex gap-1 -mb-px">
+            <div class="border-b border-surface-200/80 bg-white px-4 sm:px-6 dark:border-surface-800/60 dark:bg-surface-900">
+              <div class="mx-auto max-w-4xl flex gap-1 -mb-px overflow-x-auto scrollbar-none">
                 <div ref="overviewDropdownRef" class="relative">
                   <div class="flex items-center border-b-2 transition-all duration-150" :class="detailTab === 'overview'
                     ? 'border-brand-600 dark:border-brand-400'
@@ -1784,7 +1803,7 @@ function closeDocPreview() {
             </div>
 
             <!-- Detail content -->
-            <div class="bg-surface-50/80 dark:bg-surface-950/80 px-6 py-8">
+            <div class="bg-surface-50/80 dark:bg-surface-950/80 px-4 sm:px-6 py-5 sm:py-8">
               <div v-if="detailFetchStatus === 'pending' && !resolvedCurrentApplication" class="flex flex-col items-center justify-center py-12">
                 <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
                 <p class="mt-3 text-sm text-surface-400">Loading details…</p>

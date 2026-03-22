@@ -14,7 +14,7 @@ async function handleUpgrade() {
 
 <template>
   <Teleport to="body">
-    <div class="fixed bottom-5 left-5 z-50 w-[300px]">
+    <div class="fixed bottom-4 left-4 right-4 z-50 sm:right-auto sm:w-[300px]">
       <div
         class="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-surface-900 via-surface-900 to-brand-950/80 shadow-2xl backdrop-blur-xl dark:from-surface-950 dark:via-surface-950 dark:to-brand-950/90"
       >

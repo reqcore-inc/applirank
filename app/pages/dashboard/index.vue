@@ -211,16 +211,16 @@ const isEmpty = computed(() =>
     <!-- ─── Dashboard content ─── -->
     <template v-else>
       <!-- ─── Header ─── -->
-      <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center justify-between mb-6 sm:mb-10">
         <div>
-          <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50 tracking-tight">Dashboard</h1>
+          <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-50 tracking-tight">Dashboard</h1>
           <p v-if="activeOrg" class="text-sm text-surface-400 dark:text-surface-500 mt-1">
             {{ activeOrg.name }}
           </p>
         </div>
         <NuxtLink
           :to="localePath('/dashboard/jobs/new')"
-          class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 shadow-sm shadow-brand-600/15 hover:shadow-md hover:shadow-brand-600/20 transition-all no-underline"
+          class="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-brand-600 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-brand-700 shadow-sm shadow-brand-600/15 hover:shadow-md hover:shadow-brand-600/20 transition-all no-underline shrink-0"
         >
           <Plus class="size-4" />
           New Job
@@ -228,7 +228,7 @@ const isEmpty = computed(() =>
       </div>
 
       <!-- ─── Stat cards ─── -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-10">
         <!-- Open Jobs -->
         <NuxtLink
           :to="localePath('/dashboard/jobs')"
@@ -242,7 +242,7 @@ const isEmpty = computed(() =>
                 <Briefcase class="size-4 text-brand-600 dark:text-brand-400" />
               </div>
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
+            <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
               {{ counts.openJobs }}
             </div>
             <p class="text-xs text-surface-400 mt-1.5">
@@ -264,7 +264,7 @@ const isEmpty = computed(() =>
                 <Users class="size-4 text-violet-600 dark:text-violet-400" />
               </div>
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
+            <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
               {{ counts.totalCandidates }}
             </div>
             <p class="text-xs text-surface-400 mt-1.5">Talent pool</p>
@@ -284,7 +284,7 @@ const isEmpty = computed(() =>
                 <FileText class="size-4 text-teal-600 dark:text-teal-400" />
               </div>
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
+            <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
               {{ counts.totalApplications }}
             </div>
             <p class="text-xs text-surface-400 mt-1.5">Total received</p>
@@ -318,7 +318,7 @@ const isEmpty = computed(() =>
               </div>
             </div>
             <div
-              class="text-3xl font-bold tracking-tight tabular-nums"
+              class="text-2xl sm:text-3xl font-bold tracking-tight tabular-nums"
               :class="counts.newApplications > 0
                 ? 'text-warning-700 dark:text-warning-400'
                 : 'text-surface-900 dark:text-surface-50'"

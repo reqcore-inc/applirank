@@ -335,6 +335,15 @@
 
 /* ── Pipeline view premium touches ──────────────────── */
 
+/* Hide scrollbar but keep functionality (for horizontal-scroll navs) */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Smooth candidate card highlight on selection */
 .pipeline-candidate-card {
   position: relative;

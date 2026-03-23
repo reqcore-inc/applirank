@@ -63,7 +63,7 @@
     "wait-on": "^9.0.4"
   },
   "overrides": {
-    "fast-xml-parser": "5.5.6",
+    "fast-xml-parser": ">=5.5.7",
     "tar": "7.5.11",
     "minimatch": ">=10.2.4",
     "glob": ">=13.0.6",

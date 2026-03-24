@@ -5,7 +5,7 @@ import {
   Sun, Moon, MessageSquarePlus, Settings,
   ChevronDown, Menu, X, Users, ChevronLeft,
   LayoutDashboard, Calendar, ArrowUpCircle,
-  Cloud, Server, Sparkles,
+  Cloud, Server, Sparkles, Radio,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -125,6 +125,7 @@ const mainNav = [
   { label: 'Candidates', to: '/dashboard/candidates', icon: Users, exact: false },
   { label: 'Applications', to: '/dashboard/applications', icon: FileText, exact: false },
   { label: 'Interviews', to: '/dashboard/interviews', icon: Calendar, exact: false },
+  { label: 'Source Tracking', to: '/dashboard/source-tracking', icon: Radio, exact: true, comingSoon: true },
   { label: 'AI Analysis', to: '/dashboard/ai-analysis', icon: Sparkles, exact: true },
   { label: 'Settings', to: '/dashboard/settings', icon: Settings, exact: false },
 ]
@@ -188,6 +189,12 @@ onUnmounted(() => {
             >
               <component :is="item.icon" class="size-4" />
               {{ item.label }}
+              <span
+                v-if="item.comingSoon"
+                class="ml-0.5 inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 text-[9px] font-semibold leading-none text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-800/40"
+              >
+                Soon
+              </span>
             </NuxtLink>
           </nav>
         </div>
@@ -355,6 +362,12 @@ onUnmounted(() => {
                   >
                     <component :is="item.icon" class="size-4" />
                     {{ item.label }}
+                    <span
+                      v-if="item.comingSoon"
+                      class="ml-auto inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 text-[9px] font-semibold leading-none text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-800/40"
+                    >
+                      Soon
+                    </span>
                   </NuxtLink>
                 </div>
 
@@ -472,6 +485,12 @@ onUnmounted(() => {
           >
             <component :is="item.icon" class="size-4" />
             {{ item.label }}
+            <span
+              v-if="item.comingSoon"
+              class="ml-auto inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 text-[9px] font-semibold leading-none text-amber-700 dark:text-amber-400 ring-1 ring-inset ring-amber-200/60 dark:ring-amber-800/40"
+            >
+              Soon
+            </span>
           </NuxtLink>
 
           <NuxtLink

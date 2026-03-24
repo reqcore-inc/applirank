@@ -117,8 +117,16 @@ export default defineEventHandler(async (event) => {
           scheduledAt: interview.scheduledAt,
           type: interview.type,
           applicationId: interview.applicationId,
+          jobId: application.jobId,
+          candidateId: application.candidateId,
+          jobTitle: job.title,
+          candidateFirstName: candidate.firstName,
+          candidateLastName: candidate.lastName,
         })
           .from(interview)
+          .innerJoin(application, eq(application.id, interview.applicationId))
+          .innerJoin(job, eq(job.id, application.jobId))
+          .innerJoin(candidate, eq(candidate.id, application.candidateId))
           .where(inArray(interview.id, Array.from(interviewIds)))
       : Promise.resolve([]),
   ])
@@ -136,18 +144,26 @@ export default defineEventHandler(async (event) => {
     scheduledAt: i.scheduledAt,
     type: i.type,
     applicationId: i.applicationId,
+    jobId: i.jobId,
+    candidateId: i.candidateId,
+    jobTitle: i.jobTitle,
+    candidateName: `${i.candidateFirstName} ${i.candidateLastName}`,
   }]))
 
   // Enrich items with resource display names
   const enriched = items.map((item) => {
     let resourceName: string | null = null
     let resourceUrl: string | null = null
+    let jobId: string | null = null
+    let jobName: string | null = null
     let extra: Record<string, unknown> = {}
 
     switch (item.resourceType) {
       case 'job': {
         resourceName = jobMap.get(item.resourceId) ?? null
         resourceUrl = `/dashboard/jobs/${item.resourceId}`
+        jobId = item.resourceId
+        jobName = resourceName
         break
       }
       case 'candidate': {
@@ -159,18 +175,26 @@ export default defineEventHandler(async (event) => {
         const appInfo = applicationMap.get(item.resourceId)
         if (appInfo) {
           resourceName = `${appInfo.candidateName} → ${appInfo.jobTitle}`
-          resourceUrl = `/dashboard/jobs/${appInfo.jobId}`
-          extra = { candidateId: appInfo.candidateId, jobId: appInfo.jobId }
+          resourceUrl = `/dashboard/applications/${item.resourceId}`
+          jobId = appInfo.jobId
+          jobName = appInfo.jobTitle
+          extra = { candidateId: appInfo.candidateId, candidateName: appInfo.candidateName }
         }
         break
       }
       case 'interview': {
         const intInfo = interviewMap.get(item.resourceId)
         if (intInfo) {
-          resourceName = `${intInfo.type} interview`
-          resourceUrl = `/dashboard/interviews`
-          extra = { scheduledAt: intInfo.scheduledAt, applicationId: intInfo.applicationId }
+          resourceName = `${intInfo.candidateName} — ${intInfo.type} interview`
+          resourceUrl = `/dashboard/interviews/${item.resourceId}`
+          jobId = intInfo.jobId
+          jobName = intInfo.jobTitle
+          extra = { scheduledAt: intInfo.scheduledAt, applicationId: intInfo.applicationId, candidateId: intInfo.candidateId, candidateName: intInfo.candidateName }
         }
+        break
+      }
+      case 'member': {
+        resourceUrl = `/dashboard/settings/members`
         break
       }
     }
@@ -179,6 +203,8 @@ export default defineEventHandler(async (event) => {
       ...item,
       resourceName,
       resourceUrl,
+      jobId,
+      jobName,
       ...extra,
     }
   })
@@ -192,8 +218,10 @@ export default defineEventHandler(async (event) => {
         scheduledAt: interview.scheduledAt,
         type: interview.type,
         applicationId: interview.applicationId,
+        candidateId: application.candidateId,
         candidateFirstName: candidate.firstName,
         candidateLastName: candidate.lastName,
+        jobId: application.jobId,
         jobTitle: job.title,
       })
       .from(interview)
@@ -220,8 +248,12 @@ export default defineEventHandler(async (event) => {
       actorEmail: null,
       actorImage: null,
       resourceName: `${i.candidateFirstName} ${i.candidateLastName} — ${i.type} interview`,
-      resourceUrl: `/dashboard/interviews`,
+      resourceUrl: `/dashboard/interviews/${i.id}`,
       applicationId: i.applicationId,
+      jobId: i.jobId,
+      jobName: i.jobTitle,
+      candidateId: i.candidateId,
+      candidateName: `${i.candidateFirstName} ${i.candidateLastName}`,
       isUpcoming: true,
     }))
   }

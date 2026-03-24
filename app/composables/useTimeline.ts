@@ -18,7 +18,33 @@ export interface TimelineItem {
   resourceUrl: string | null
   isUpcoming?: boolean
   candidateId?: string
+  candidateName?: string
   jobId?: string
+  jobName?: string
+}
+
+export interface TimelineActionGroup {
+  action: string
+  label: string
+  items: TimelineItem[]
+}
+
+export interface TimelineCandidateGroup {
+  candidateId: string
+  candidateName: string
+  candidateUrl: string | null
+  actionGroups: TimelineActionGroup[]
+  items: TimelineItem[]
+}
+
+export interface TimelineSection {
+  type: 'job' | 'candidates' | 'team' | 'other'
+  label: string
+  jobId?: string
+  jobUrl?: string
+  directItems: TimelineItem[]
+  candidateGroups: TimelineCandidateGroup[]
+  items: TimelineItem[]
 }
 
 export interface TimelineDayGroup {
@@ -27,6 +53,7 @@ export interface TimelineDayGroup {
   isToday: boolean
   isFuture: boolean
   items: TimelineItem[]
+  sections: TimelineSection[]
 }
 
 export function useTimeline() {
@@ -142,16 +169,96 @@ export function useTimeline() {
       return b.localeCompare(a)
     })
 
-    return sortedDates.map(date => ({
-      date,
-      label: formatDayLabel(date, todayStr),
-      isToday: date === todayStr,
-      isFuture: date > todayStr,
-      items: groupMap.get(date)!.sort((a, b) => {
+    return sortedDates.map((date) => {
+      const dayItems = groupMap.get(date)!.sort((a, b) => {
         // Within each day, sort by time descending
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      }),
-    }))
+      })
+
+      // Purpose-based grouping: cluster by job, then candidates, team, other
+      const jobClusters = new Map<string, { name: string, items: TimelineItem[] }>()
+      const candidateItems: TimelineItem[] = []
+      const teamItems: TimelineItem[] = []
+      const otherItems: TimelineItem[] = []
+
+      for (const item of dayItems) {
+        const jId = item.resourceType === 'job' ? item.resourceId : item.jobId
+        if (jId) {
+          if (!jobClusters.has(jId)) {
+            const jName = item.resourceType === 'job'
+              ? item.resourceName
+              : item.jobName
+            jobClusters.set(jId, { name: jName ?? 'Unknown job', items: [] })
+          }
+          jobClusters.get(jId)!.items.push(item)
+        } else if (item.resourceType === 'candidate') {
+          candidateItems.push(item)
+        } else if (item.resourceType === 'member') {
+          teamItems.push(item)
+        } else {
+          otherItems.push(item)
+        }
+      }
+
+      // Build sections with deep hierarchy: job → candidate → action type
+      const sections: TimelineSection[] = []
+
+      const sortedClusters = Array.from(jobClusters.entries()).sort((a, b) => {
+        const aLatest = Math.max(...a[1].items.map(i => new Date(i.createdAt).getTime()))
+        const bLatest = Math.max(...b[1].items.map(i => new Date(i.createdAt).getTime()))
+        return bLatest - aLatest
+      })
+      for (const [jId, cluster] of sortedClusters) {
+        const directItems = cluster.items.filter(i => i.resourceType === 'job')
+        const candidateRelated = cluster.items.filter(i => i.resourceType !== 'job')
+        sections.push({
+          type: 'job',
+          label: cluster.name,
+          jobId: jId,
+          jobUrl: `/dashboard/jobs/${jId}`,
+          directItems,
+          candidateGroups: buildCandidateGroups(candidateRelated),
+          items: cluster.items,
+        })
+      }
+
+      if (candidateItems.length) {
+        sections.push({
+          type: 'candidates',
+          label: 'Candidates',
+          directItems: [],
+          candidateGroups: buildCandidateGroups(candidateItems),
+          items: candidateItems,
+        })
+      }
+      if (teamItems.length) {
+        sections.push({
+          type: 'team',
+          label: 'Team',
+          directItems: teamItems,
+          candidateGroups: [],
+          items: teamItems,
+        })
+      }
+      if (otherItems.length) {
+        sections.push({
+          type: 'other',
+          label: 'Other activity',
+          directItems: otherItems,
+          candidateGroups: [],
+          items: otherItems,
+        })
+      }
+
+      return {
+        date,
+        label: formatDayLabel(date, todayStr),
+        isToday: date === todayStr,
+        isFuture: date > todayStr,
+        items: dayItems,
+        sections,
+      }
+    })
   })
 
   /**
@@ -172,6 +279,85 @@ export function useTimeline() {
     loadInitial,
     loadMore,
   }
+}
+
+function buildCandidateGroups(items: TimelineItem[]): TimelineCandidateGroup[] {
+  const candidateMap = new Map<string, { name: string, items: TimelineItem[] }>()
+
+  for (const item of items) {
+    const cId = item.candidateId ?? (item.resourceType === 'candidate' ? item.resourceId : null)
+    if (!cId) {
+      const fallback = '__uncategorized__'
+      if (!candidateMap.has(fallback)) {
+        candidateMap.set(fallback, { name: 'Other', items: [] })
+      }
+      candidateMap.get(fallback)!.items.push(item)
+      continue
+    }
+
+    if (!candidateMap.has(cId)) {
+      const cName = item.candidateName
+        ?? (item.resourceType === 'candidate' ? item.resourceName : null)
+        ?? 'Unknown candidate'
+      candidateMap.set(cId, { name: cName, items: [] })
+    }
+    candidateMap.get(cId)!.items.push(item)
+  }
+
+  return Array.from(candidateMap.entries())
+    .sort((a, b) => {
+      const aLatest = Math.max(...a[1].items.map(i => new Date(i.createdAt).getTime()))
+      const bLatest = Math.max(...b[1].items.map(i => new Date(i.createdAt).getTime()))
+      return bLatest - aLatest
+    })
+    .map(([cId, group]) => ({
+      candidateId: cId,
+      candidateName: group.name,
+      candidateUrl: cId === '__uncategorized__' ? null : `/dashboard/candidates/${cId}`,
+      items: group.items,
+      actionGroups: buildActionGroups(group.items),
+    }))
+}
+
+function buildActionGroups(items: TimelineItem[]): TimelineActionGroup[] {
+  const actionMap = new Map<string, TimelineItem[]>()
+
+  for (const item of items) {
+    if (!actionMap.has(item.action)) {
+      actionMap.set(item.action, [])
+    }
+    actionMap.get(item.action)!.push(item)
+  }
+
+  const actionOrder = ['scored', 'status_changed', 'created', 'updated', 'comment_added', 'scheduled', 'deleted']
+
+  return Array.from(actionMap.entries())
+    .sort((a, b) => {
+      const aIdx = actionOrder.indexOf(a[0])
+      const bIdx = actionOrder.indexOf(b[0])
+      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx)
+    })
+    .map(([action, actionItems]) => ({
+      action,
+      label: getActionGroupLabel(action),
+      items: actionItems,
+    }))
+}
+
+function getActionGroupLabel(action: string): string {
+  const labels: Record<string, string> = {
+    created: 'Created',
+    updated: 'Updated',
+    deleted: 'Deleted',
+    status_changed: 'Status changes',
+    comment_added: 'Comments',
+    member_invited: 'Invited',
+    member_removed: 'Removed',
+    member_role_changed: 'Role changed',
+    scored: 'AI scores',
+    scheduled: 'Scheduled',
+  }
+  return labels[action] ?? action
 }
 
 function formatDateKey(date: Date): string {

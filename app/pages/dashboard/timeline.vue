@@ -61,24 +61,14 @@ async function setFilter(type?: string) {
 // ─────────────────────────────────────────────
 
 const collapsedSections = reactive(new Set<string>())
-const collapsedCandidates = reactive(new Set<string>())
 
 function toggleSection(key: string) {
   if (collapsedSections.has(key)) collapsedSections.delete(key)
   else collapsedSections.add(key)
 }
 
-function toggleCandidate(key: string) {
-  if (collapsedCandidates.has(key)) collapsedCandidates.delete(key)
-  else collapsedCandidates.add(key)
-}
-
 function sectionKey(date: string, section: { jobId?: string, type: string }) {
   return `${date}::${section.jobId ?? section.type}`
-}
-
-function candidateKey(date: string, section: { jobId?: string, type: string }, candidateId: string) {
-  return `${date}::${section.jobId ?? section.type}::${candidateId}`
 }
 
 // ─────────────────────────────────────────────
@@ -433,7 +423,7 @@ function getStatusChangeDescription(metadata: Record<string, unknown> | null): s
 
               <!-- Section content (collapsible) -->
               <div v-if="!collapsedSections.has(sectionKey(group.date, section))">
-                <!-- Direct items (e.g., job created/updated, team events) -->
+                <!-- Direct items (job-level events, team events, etc.) -->
                 <div v-if="section.directItems.length" class="divide-y divide-surface-100 dark:divide-surface-800/60">
                   <component
                     :is="item.resourceUrl ? NuxtLinkComponent : 'div'"
@@ -448,7 +438,7 @@ function getStatusChangeDescription(metadata: Record<string, unknown> | null): s
                     </div>
                     <div class="flex-1 min-w-0 flex items-center gap-1.5">
                       <span class="text-[13px] font-medium text-surface-900 dark:text-surface-100 shrink-0">{{ getActionStyle(item.action, item.resourceType).label }}</span>
-                      <span v-if="item.resourceName" class="text-[13px] text-surface-600 dark:text-surface-300 truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">— {{ item.resourceName }}</span>
+                      <span v-if="item.resourceName" class="text-[13px] text-surface-600 dark:text-surface-300 truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">&mdash; {{ item.resourceName }}</span>
                       <span v-if="item.action === 'status_changed' && getStatusChangeDescription(item.metadata)" class="text-[11px] text-warning-600 dark:text-warning-400 shrink-0">{{ getStatusChangeDescription(item.metadata) }}</span>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
@@ -464,77 +454,53 @@ function getStatusChangeDescription(metadata: Record<string, unknown> | null): s
                   </component>
                 </div>
 
-                <!-- Candidate groups (deep hierarchy) -->
+                <!-- Candidate groups (flat list per candidate) -->
                 <div v-for="cGroup in section.candidateGroups" :key="cGroup.candidateId" class="border-t border-surface-100 dark:border-surface-800/60">
-                  <!-- Candidate sub-header (collapsible) -->
-                  <button
-                    class="flex items-center gap-2 px-3 py-1.5 pl-5 w-full cursor-pointer hover:bg-surface-50/80 dark:hover:bg-surface-800/40 transition-colors"
-                    @click="toggleCandidate(candidateKey(group.date, section, cGroup.candidateId))"
-                  >
-                    <ChevronRight
-                      class="size-2.5 text-surface-400 dark:text-surface-500 transition-transform duration-150 shrink-0"
-                      :class="{ 'rotate-90': !collapsedCandidates.has(candidateKey(group.date, section, cGroup.candidateId)) }"
-                    />
+                  <!-- Candidate label -->
+                  <div class="flex items-center gap-2 px-3 py-1.5 pl-5">
                     <User class="size-3 text-surface-400 dark:text-surface-500 shrink-0" />
                     <component
                       :is="cGroup.candidateUrl ? NuxtLinkComponent : 'span'"
                       :to="cGroup.candidateUrl ? localePath(cGroup.candidateUrl) : undefined"
                       class="text-[12px] font-semibold text-surface-700 dark:text-surface-300 no-underline truncate hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                      @click.stop
                     >
                       {{ cGroup.candidateName }}
                     </component>
-                    <span class="text-[10px] text-surface-300 dark:text-surface-600 tabular-nums ml-auto shrink-0">
-                      {{ cGroup.items.length }}
-                    </span>
-                  </button>
+                  </div>
 
-                  <!-- Candidate content: action groups -->
-                  <div v-if="!collapsedCandidates.has(candidateKey(group.date, section, cGroup.candidateId))" class="pl-5">
-                    <div v-for="aGroup in cGroup.actionGroups" :key="aGroup.action">
-                      <!-- Action group label -->
-                      <div class="flex items-center gap-1.5 px-3 py-1">
-                        <component :is="getActionStyle(aGroup.action, '').icon" class="size-2.5" :class="getActionStyle(aGroup.action, '').color" />
-                        <span class="text-[10px] font-semibold uppercase tracking-wider" :class="getActionStyle(aGroup.action, '').color">
-                          {{ aGroup.label }}
-                        </span>
-                        <span class="text-[10px] text-surface-300 dark:text-surface-600 tabular-nums">{{ aGroup.items.length }}</span>
+                  <!-- Candidate events (flat) -->
+                  <div class="divide-y divide-surface-50 dark:divide-surface-800/40">
+                    <component
+                      :is="item.resourceUrl ? NuxtLinkComponent : 'div'"
+                      v-for="item in cGroup.items"
+                      :key="item.id"
+                      :to="item.resourceUrl ? localePath(item.resourceUrl) : undefined"
+                      class="group relative flex items-center gap-2 py-1.5 px-3 pl-6 transition-colors duration-150 no-underline"
+                      :class="[
+                        item.resourceUrl ? 'cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800/60' : '',
+                        item.isUpcoming ? 'bg-accent-50/50 dark:bg-accent-950/20' : '',
+                      ]"
+                    >
+                      <div class="flex items-center justify-center size-5 rounded shrink-0" :class="getActionStyle(item.action, item.resourceType).bg">
+                        <component :is="getActionStyle(item.action, item.resourceType).icon" class="size-2.5" :class="getActionStyle(item.action, item.resourceType).color" />
                       </div>
-
-                      <!-- Action items -->
-                      <div class="divide-y divide-surface-50 dark:divide-surface-800/40">
-                        <component
-                          :is="item.resourceUrl ? NuxtLinkComponent : 'div'"
-                          v-for="item in aGroup.items"
-                          :key="item.id"
-                          :to="item.resourceUrl ? localePath(item.resourceUrl) : undefined"
-                          class="group relative flex items-center gap-2 py-1.5 px-3 pl-6 transition-colors duration-150 no-underline"
-                          :class="[
-                            item.resourceUrl ? 'cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800/60' : '',
-                            item.isUpcoming ? 'bg-accent-50/50 dark:bg-accent-950/20' : '',
-                          ]"
-                        >
-                          <div class="flex items-center justify-center size-5 rounded shrink-0" :class="getActionStyle(item.action, item.resourceType).bg">
-                            <component :is="getActionStyle(item.action, item.resourceType).icon" class="size-2.5" :class="getActionStyle(item.action, item.resourceType).color" />
-                          </div>
-                          <div class="flex-1 min-w-0 flex items-center gap-1.5">
-                            <span v-if="item.resourceName" class="text-[12px] text-surface-600 dark:text-surface-300 truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">{{ item.resourceName }}</span>
-                            <span v-if="item.action === 'status_changed' && getStatusChangeDescription(item.metadata)" class="text-[11px] text-warning-600 dark:text-warning-400 shrink-0">{{ getStatusChangeDescription(item.metadata) }}</span>
-                            <span v-if="item.isUpcoming" class="text-[11px] font-medium text-accent-600 dark:text-accent-400 shrink-0">Upcoming</span>
-                          </div>
-                          <div class="flex items-center gap-2 shrink-0">
-                            <div v-if="item.actorName" class="flex items-center gap-1">
-                              <img v-if="item.actorImage" :src="item.actorImage" :alt="item.actorName" class="size-3.5 rounded-full object-cover" />
-                              <div v-else class="size-3.5 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center">
-                                <span class="text-[7px] font-bold text-surface-500 dark:text-surface-400">{{ item.actorName.charAt(0).toUpperCase() }}</span>
-                              </div>
-                              <span class="text-[10px] text-surface-400 dark:text-surface-500 max-w-[70px] truncate">{{ item.actorName }}</span>
-                            </div>
-                            <span class="text-[10px] text-surface-400 dark:text-surface-500 tabular-nums">{{ formatTime(item.createdAt) }}</span>
-                          </div>
-                        </component>
+                      <div class="flex-1 min-w-0 flex items-center gap-1.5">
+                        <span class="text-[12px] font-medium shrink-0" :class="getActionStyle(item.action, item.resourceType).color">{{ getActionStyle(item.action, item.resourceType).label }}</span>
+                        <span v-if="item.resourceName" class="text-[12px] text-surface-600 dark:text-surface-300 truncate group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors">{{ item.resourceName }}</span>
+                        <span v-if="item.action === 'status_changed' && getStatusChangeDescription(item.metadata)" class="text-[11px] text-warning-600 dark:text-warning-400 shrink-0">{{ getStatusChangeDescription(item.metadata) }}</span>
+                        <span v-if="item.isUpcoming" class="text-[11px] font-medium text-accent-600 dark:text-accent-400 shrink-0">Upcoming</span>
                       </div>
-                    </div>
+                      <div class="flex items-center gap-2 shrink-0">
+                        <div v-if="item.actorName" class="flex items-center gap-1">
+                          <img v-if="item.actorImage" :src="item.actorImage" :alt="item.actorName" class="size-3.5 rounded-full object-cover" />
+                          <div v-else class="size-3.5 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center">
+                            <span class="text-[7px] font-bold text-surface-500 dark:text-surface-400">{{ item.actorName.charAt(0).toUpperCase() }}</span>
+                          </div>
+                          <span class="text-[10px] text-surface-400 dark:text-surface-500 max-w-[70px] truncate">{{ item.actorName }}</span>
+                        </div>
+                        <span class="text-[10px] text-surface-400 dark:text-surface-500 tabular-nums">{{ formatTime(item.createdAt) }}</span>
+                      </div>
+                    </component>
                   </div>
                 </div>
               </div>

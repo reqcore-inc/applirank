@@ -23,17 +23,10 @@ export interface TimelineItem {
   jobName?: string
 }
 
-export interface TimelineActionGroup {
-  action: string
-  label: string
-  items: TimelineItem[]
-}
-
 export interface TimelineCandidateGroup {
   candidateId: string
   candidateName: string
   candidateUrl: string | null
-  actionGroups: TimelineActionGroup[]
   items: TimelineItem[]
 }
 
@@ -315,49 +308,7 @@ function buildCandidateGroups(items: TimelineItem[]): TimelineCandidateGroup[] {
       candidateName: group.name,
       candidateUrl: cId === '__uncategorized__' ? null : `/dashboard/candidates/${cId}`,
       items: group.items,
-      actionGroups: buildActionGroups(group.items),
     }))
-}
-
-function buildActionGroups(items: TimelineItem[]): TimelineActionGroup[] {
-  const actionMap = new Map<string, TimelineItem[]>()
-
-  for (const item of items) {
-    if (!actionMap.has(item.action)) {
-      actionMap.set(item.action, [])
-    }
-    actionMap.get(item.action)!.push(item)
-  }
-
-  const actionOrder = ['scored', 'status_changed', 'created', 'updated', 'comment_added', 'scheduled', 'deleted']
-
-  return Array.from(actionMap.entries())
-    .sort((a, b) => {
-      const aIdx = actionOrder.indexOf(a[0])
-      const bIdx = actionOrder.indexOf(b[0])
-      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx)
-    })
-    .map(([action, actionItems]) => ({
-      action,
-      label: getActionGroupLabel(action),
-      items: actionItems,
-    }))
-}
-
-function getActionGroupLabel(action: string): string {
-  const labels: Record<string, string> = {
-    created: 'Created',
-    updated: 'Updated',
-    deleted: 'Deleted',
-    status_changed: 'Status changes',
-    comment_added: 'Comments',
-    member_invited: 'Invited',
-    member_removed: 'Removed',
-    member_role_changed: 'Role changed',
-    scored: 'AI scores',
-    scheduled: 'Scheduled',
-  }
-  return labels[action] ?? action
 }
 
 function formatDateKey(date: Date): string {

@@ -117,16 +117,16 @@ test.describe('Resume Upload — All File Formats', () => {
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
     // Step 2: Application form — enable resume, add file_upload question
-    await page.getByRole('button', { name: /Require resume\/CV/i })
-      .waitFor({ state: 'visible', timeout: 10_000 })
-    const resumeToggle = page.getByRole('button', { name: /Require resume\/CV/i })
-    if ((await resumeToggle.getAttribute('aria-pressed')) !== 'true') {
-      await resumeToggle.click()
+    const resumeRadioGroup = page.getByRole('radiogroup', { name: /Resume requirement/i })
+    await resumeRadioGroup.waitFor({ state: 'visible', timeout: 10_000 })
+    const resumeRequiredRadio = resumeRadioGroup.getByRole('radio', { name: 'Required' })
+    if ((await resumeRequiredRadio.getAttribute('aria-checked')) !== 'true') {
+      await resumeRequiredRadio.click()
     }
 
     // Add a file_upload custom question
-    await page.getByRole('button', { name: 'Add Question' }).waitFor({ state: 'visible', timeout: 10_000 })
-    await page.getByRole('button', { name: 'Add Question' }).click()
+    await page.getByRole('button', { name: 'Add a question' }).waitFor({ state: 'visible', timeout: 10_000 })
+    await page.getByRole('button', { name: 'Add a question' }).click()
     await page.locator('#q-label').waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('#q-label').fill('Portfolio document')
     await page.locator('#q-type').selectOption('file_upload')
@@ -136,17 +136,12 @@ test.describe('Resume Upload — All File Formats', () => {
     // Step 2 → Step 3 (Scoring criteria)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // Step 3 → Step 4 (Find candidates)
+    // Step 3 → Step 4 (Publish)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
       .waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // Step 4 → Step 5 (Publish)
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
-      .waitFor({ state: 'visible', timeout: 10_000 })
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
-
-    // Step 5: Publish
+    // Step 4: Publish
     await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
     const publishButton = page.locator('form').getByRole('button', { name: /Publish & copy link/i })
     await publishButton.waitFor({ state: 'visible', timeout: 10_000 })

@@ -365,7 +365,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 Created
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(candidate.createdAt).toLocaleDateString() }}
+                <TimelineDateLink :date="candidate.createdAt">{{ new Date(candidate.createdAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
             <div>
@@ -374,7 +374,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 Updated
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(candidate.updatedAt).toLocaleDateString() }}
+                <TimelineDateLink :date="candidate.updatedAt">{{ new Date(candidate.updatedAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
           </dl>
@@ -439,7 +439,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                   {{ app.job.title }}
                 </h4>
                 <span class="text-xs text-surface-400">
-                  Applied {{ new Date(app.createdAt).toLocaleDateString() }}
+                  Applied <TimelineDateLink :date="app.createdAt">{{ new Date(app.createdAt).toLocaleDateString() }}</TimelineDateLink>
                 </span>
               </NuxtLink>
               <div class="flex items-center gap-2 shrink-0 sm:ml-3">
@@ -609,7 +609,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                     </p>
                     <span class="text-xs text-surface-400">
                       {{ documentTypeLabels[doc.type] ?? doc.type }}
-                      · {{ new Date(doc.createdAt).toLocaleDateString() }}
+                      · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
                       <template v-if="doc.mimeType === 'application/pdf'"> · <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
                     </span>
                   </div>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-vue-next'
 
 const NuxtLinkComponent = resolveComponent('NuxtLink')
+const route = useRoute()
 
 definePageMeta({
   layout: 'dashboard',
@@ -100,9 +101,40 @@ function itemMatchesSearch(item: TimelineItem, query: string): boolean {
 }
 
 // Load data on mount
+const targetDate = ref<string | null>(null)
+const dateRefs = ref<Record<string, HTMLElement | null>>({})
+
+function setDateRef(date: string, isToday: boolean, el: any) {
+  const htmlEl = el?.$el ?? el ?? null
+  dateRefs.value[date] = htmlEl
+  if (isToday) todayRef.value = htmlEl
+}
+
 onMounted(async () => {
   track('timeline_viewed')
+  const dateParam = route.query.date as string | undefined
+  if (dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    targetDate.value = dateParam
+  }
   await loadInitial()
+  if (targetDate.value) {
+    // Keep loading older pages until the target date is present or no more data
+    while (!dayGroups.value.some(g => g.date === targetDate.value) && hasMore.value) {
+      await loadMore()
+    }
+    // Wait for the DOM element to appear (more reliable than a fixed timeout)
+    await nextTick()
+    const maxAttempts = 20
+    for (let i = 0; i < maxAttempts; i++) {
+      const el = dateRefs.value[targetDate.value]
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        break
+      }
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      await nextTick()
+    }
+  }
 })
 
 // ─────────────────────────────────────────────
@@ -160,7 +192,7 @@ onMounted(() => {
 // Scroll to today
 // ─────────────────────────────────────────────
 
-const todayRef = useTemplateRef<HTMLElement>('todayMarker')
+const todayRef = ref<HTMLElement | null>(null)
 
 function scrollToToday() {
   todayRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -503,8 +535,9 @@ function getEventDescription(item: TimelineItem): string {
         <div v-for="group in filteredDayGroups" :key="group.date">
           <!-- Day header -->
           <div
-            :ref="group.isToday ? 'todayMarker' : undefined"
-            class="relative flex items-center gap-3 mb-1"
+            :ref="(el: any) => setDateRef(group.date, group.isToday, el)"
+            class="relative flex items-center gap-3 mb-1 transition-colors duration-700 rounded-lg -mx-2 px-2 py-1"
+            :class="targetDate === group.date ? 'bg-brand-50/80 dark:bg-brand-950/30 ring-1 ring-brand-200 dark:ring-brand-800' : ''"
           >
             <!-- Day dot on the timeline -->
             <div

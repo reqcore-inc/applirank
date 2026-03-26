@@ -1652,12 +1652,12 @@ function closeDocPreview() {
                         <Brain v-else class="size-3" />
                         {{ isScoringIndividual ? 'Scoring…' : (currentSummary.score != null ? 'Re-score' : 'Score Candidate') }}
                       </button>
-                      <span class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
+                      <TimelineDateLink :date="currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
                         <Clock class="size-3" />
                         Applied {{ new Date(currentSummary.createdAt).toLocaleDateString() }}
-                      </span>
+                      </TimelineDateLink>
                       <span v-if="currentSummary.updatedAt !== currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
-                        · Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}
+                        · <TimelineDateLink :date="currentSummary.updatedAt">Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}</TimelineDateLink>
                       </span>
                     </div>
                   </div>
@@ -1895,7 +1895,7 @@ function closeDocPreview() {
                             {{ iv.title }}
                           </p>
                           <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                            {{ formatInterviewDateTime(iv.scheduledAt) }} · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
+                            <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTime(iv.scheduledAt) }}</TimelineDateLink> · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
                           </p>
                           <div v-if="iv.googleCalendarEventId" class="mt-1">
                             <a
@@ -2014,7 +2014,7 @@ function closeDocPreview() {
                             <div>
                               <dt class="text-[11px] font-medium text-surface-400 dark:text-surface-500 mb-0.5">Date & Time</dt>
                               <dd class="text-surface-800 dark:text-surface-200 font-medium text-[13px]">
-                                {{ formatInterviewDateTimeFull(iv.scheduledAt) }}
+                                <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTimeFull(iv.scheduledAt) }}</TimelineDateLink>
                               </dd>
                             </div>
                             <div>
@@ -2235,7 +2235,7 @@ function closeDocPreview() {
                           {{ doc.originalFilename }}
                         </p>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                          {{ formatDocumentType(doc.type) }} · {{ new Date(doc.createdAt).toLocaleDateString() }}
+                          {{ formatDocumentType(doc.type) }} · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
                         </p>
                       </div>
                     </div>

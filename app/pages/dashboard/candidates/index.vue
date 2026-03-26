@@ -227,7 +227,7 @@ const sortedCandidates = computed(() => {
                 <span v-else class="text-surface-300 dark:text-surface-600">0</span>
               </td>
               <td class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap">
-                {{ new Date(c.createdAt).toLocaleDateString() }}
+                <TimelineDateLink :date="c.createdAt">{{ new Date(c.createdAt).toLocaleDateString() }}</TimelineDateLink>
               </td>
             </tr>
           </tbody>

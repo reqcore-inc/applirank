@@ -443,10 +443,10 @@ const statusLabels: Record<Status, string> = {
                 <span v-else class="text-surface-300 dark:text-surface-600">—</span>
               </td>
               <td class="px-4 py-3 text-surface-400 whitespace-nowrap">
-                <span class="inline-flex items-center gap-1.5">
+                <TimelineDateLink :date="app.createdAt" class="inline-flex items-center gap-1.5">
                   <Clock class="size-3.5 shrink-0" />
                   {{ timeAgo(app.createdAt) }}
-                </span>
+                </TimelineDateLink>
               </td>
             </tr>
           </tbody>

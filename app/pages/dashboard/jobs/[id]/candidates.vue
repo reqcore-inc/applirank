@@ -523,7 +523,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                   </span>
                 </td>
                 <td v-if="visibleCols.createdAt" class="hidden md:table-cell px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap text-xs font-medium">
-                  {{ timeAgo(app.createdAt) }}
+                  <TimelineDateLink :date="app.createdAt">{{ timeAgo(app.createdAt) }}</TimelineDateLink>
                 </td>
               </tr>
             </tbody>

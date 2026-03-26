@@ -68,11 +68,11 @@ const total = computed(() => appData.value?.total ?? 0)
 // ─────────────────────────────────────────────
 
 const statusBadgeClasses: Record<string, string> = {
-  new: 'bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-950/50 dark:text-brand-300 dark:ring-brand-800',
-  screening: 'bg-info-50 text-info-700 ring-info-200 dark:bg-info-950/50 dark:text-info-300 dark:ring-info-800',
-  interview: 'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/50 dark:text-warning-300 dark:ring-warning-800',
-  offer: 'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/50 dark:text-success-300 dark:ring-success-800',
-  hired: 'bg-success-100 text-success-800 ring-success-300 dark:bg-success-900/50 dark:text-success-200 dark:ring-success-700',
+  new: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-800',
+  screening: 'bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-950/50 dark:text-violet-400 dark:ring-violet-800',
+  interview: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-800',
+  offer: 'bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-950/50 dark:text-teal-400 dark:ring-teal-800',
+  hired: 'bg-green-50 text-green-700 ring-green-200 dark:bg-green-950/50 dark:text-green-400 dark:ring-green-800',
   rejected: 'bg-surface-100 text-surface-500 ring-surface-200 dark:bg-surface-800/50 dark:text-surface-400 dark:ring-surface-700',
 }
 
@@ -523,7 +523,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                   </span>
                 </td>
                 <td v-if="visibleCols.createdAt" class="hidden md:table-cell px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap text-xs font-medium">
-                  {{ timeAgo(app.createdAt) }}
+                  <TimelineDateLink :date="app.createdAt">{{ timeAgo(app.createdAt) }}</TimelineDateLink>
                 </td>
               </tr>
             </tbody>

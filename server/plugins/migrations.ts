@@ -9,6 +9,7 @@ export default defineNitroPlugin(async () => {
   // Running runtime migrations there can conflict with drizzle-kit push/migrate.
   if (process.env.RAILWAY_ENVIRONMENT_ID) {
     console.log('[Reqcore] Skipping runtime migrations on Railway (handled in preDeploy)')
+    logInfo('migrations.skipped_railway')
     return
   }
 
@@ -25,6 +26,7 @@ export default defineNitroPlugin(async () => {
 
     if (!locked) {
       console.log('[Reqcore] Another instance is running migrations, skipping')
+      logInfo('migrations.skipped_locked')
       return
     }
 
@@ -36,8 +38,12 @@ export default defineNitroPlugin(async () => {
     })
     await db.execute(`SET client_min_messages TO notice`)
     console.log('[Reqcore] Database migrations applied successfully')
+    logInfo('migrations.completed')
   } catch (error) {
     console.error('[Reqcore] Migration failed:', error)
+    logError('migrations.failed', {
+      error_message: error instanceof Error ? error.message : String(error),
+    })
     throw error
   } finally {
     await db.execute(

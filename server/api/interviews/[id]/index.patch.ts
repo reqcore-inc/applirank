@@ -55,7 +55,10 @@ export default defineEventHandler(async (event) => {
 
     if (isCancelling) {
       cancelCalendarEvent(current.createdById, current.googleCalendarEventId).catch(err => {
-        console.error('[Calendar] Failed to cancel event:', err)
+        logError('calendar.cancel_event_failed', {
+          event_id: current.googleCalendarEventId,
+          error_message: err instanceof Error ? err.message : String(err),
+        })
       })
     }
     else {
@@ -92,7 +95,10 @@ export default defineEventHandler(async (event) => {
             .where(and(eq(interview.id, id), eq(interview.organizationId, orgId)))
         }
       }).catch(err => {
-        console.error('[Calendar] Failed to update event:', err)
+        logError('calendar.update_event_failed', {
+          event_id: current.googleCalendarEventId,
+          error_message: err instanceof Error ? err.message : String(err),
+        })
       })
     }
   }

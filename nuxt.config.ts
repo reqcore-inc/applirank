@@ -58,6 +58,9 @@ export default defineNuxtConfig({
   // ─────────────────────────────────────────────
   // PostHog — privacy-focused product analytics & feature flags
   // ─────────────────────────────────────────────
+  // Enable source maps so PostHog error tracking can display readable stack traces
+  sourcemap: { client: 'hidden' },
+
   posthogConfig: {
     publicKey: process.env.POSTHOG_PUBLIC_KEY || '',
     host: process.env.POSTHOG_HOST || 'https://eu.i.posthog.com',
@@ -76,9 +79,19 @@ export default defineNuxtConfig({
       secure_cookie: true,
       capture_pageview: true,
       capture_pageleave: true,
+      // ── Error tracking: capture unhandled errors and rejections ──
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: false,
+      },
       // ── Persistence ──
       persistence: 'localStorage+cookie',
       cross_subdomain_cookie: true,
+    },
+    serverConfig: {
+      // Capture uncaught exceptions and unhandled rejections on the server
+      enableExceptionAutocapture: true,
     },
   },
 
@@ -110,6 +123,13 @@ export default defineNuxtConfig({
       meta: [
         { name: 'theme-color', content: '#09090b' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=5.0' },
+      ],
+      script: [
+        {
+          // Blocking inline script to apply dark mode before first paint (prevents white flash)
+          innerHTML: '(function(){try{var s=localStorage.getItem("reqcore-color-mode");if(s==="dark"||(!s&&window.matchMedia("(prefers-color-scheme:dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()',
+          tagPosition: 'head',
+        },
       ],
       // Plausible removed — PostHog handles all analytics
     },

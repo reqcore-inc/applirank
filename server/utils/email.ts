@@ -68,7 +68,10 @@ export async function sendOrgInvitationEmail(data: {
   })
 
   if (error) {
-    console.error('[Reqcore] Failed to send invitation email via Resend:', error)
+    logError('email.invitation_send_failed', {
+      provider: 'resend',
+      error_message: error.message,
+    })
     throw new Error(`Failed to send invitation email: ${error.message}`)
   }
 
@@ -289,7 +292,10 @@ export async function sendInterviewInvitationEmail(params: {
   })
 
   if (error) {
-    console.error('[Reqcore] Failed to send interview invitation email via Resend:', error)
+    logError('email.interview_invitation_send_failed', {
+      provider: 'resend',
+      error_message: error.message,
+    })
     throw new Error(`Failed to send interview invitation email: ${error.message}`)
   }
 

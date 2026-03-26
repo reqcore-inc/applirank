@@ -14,6 +14,7 @@ const localePath = useLocalePath()
 const jobId = route.params.id as string
 const toast = useToast()
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const { track } = useTrack()
 
 const { job, status: fetchStatus, error: fetchError, updateJob, deleteJob } = useJob(jobId)
 
@@ -123,6 +124,7 @@ async function handleSave() {
     if (form.value.validThrough) payload.validThrough = new Date(form.value.validThrough)
 
     await updateJob(payload as any)
+    track('job_settings_saved', { job_id: jobId })
     saved.value = true
     setTimeout(() => { saved.value = false }, 2000)
   } catch (err: any) {
@@ -165,6 +167,7 @@ const isDeleting = ref(false)
 async function handleDelete() {
   isDeleting.value = true
   try {
+    track('job_deleted', { job_id: jobId, source: 'settings' })
     await deleteJob()
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return

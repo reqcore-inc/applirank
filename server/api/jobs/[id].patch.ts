@@ -76,5 +76,19 @@ export default defineEventHandler(async (event) => {
       : { title: updated.title },
   })
 
+  if (body.status && body.status !== existing.status) {
+    trackEvent(event, session, 'job status_changed', {
+      job_id: id,
+      from_status: existing.status,
+      to_status: body.status,
+    })
+
+    logApiRequest(event, session, 'job.status_changed', {
+      job_id: id,
+      from_status: existing.status,
+      to_status: body.status,
+    })
+  }
+
   return updated
 })

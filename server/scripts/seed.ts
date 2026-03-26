@@ -10,6 +10,7 @@
  * - Custom questions on select jobs
  * - Question responses on applications
  * - 35+ scheduled/completed interviews across the pipeline
+ * - 200+ activity log entries covering all action types (for Timeline page)
  *
  * Usage: npx tsx server/scripts/seed.ts
  * Requires DATABASE_URL in .env (loaded via dotenv or shell env).
@@ -2235,19 +2236,24 @@ async function seed() {
 
   // 8. Create interviews
   let totalInterviews = 0
+  const interviewIds: string[] = [] // track IDs for activity log
 
   for (const iv of INTERVIEWS_DATA) {
     const applicationId = applicationMap.get(`${iv.jobIndex}-${iv.candidateIndex}`)
     if (!applicationId) {
       console.warn(`⚠️  Skipping interview "${iv.title}" — no application found for job ${iv.jobIndex}, candidate ${iv.candidateIndex}`)
+      interviewIds.push('') // placeholder to keep index alignment
       continue
     }
 
     const scheduledAt = dateWithOffset(iv.daysOffset, iv.hour, iv.minute ?? 0)
     const responded = iv.candidateResponse !== 'pending'
 
+    const interviewId = id()
+    interviewIds.push(interviewId)
+
     await db.insert(schema.interview).values({
-      id: id(),
+      id: interviewId,
       organizationId: orgId,
       applicationId,
       title: iv.title,
@@ -2271,6 +2277,150 @@ async function seed() {
   }
 
   console.log(`✅ Created ${totalInterviews} interviews across the pipeline`)
+
+  // 9. Create activity log entries so the Timeline page is populated
+  let totalActivities = 0
+
+  // --- Job creation activities ---
+  for (let i = 0; i < JOBS_DATA.length; i++) {
+    const jobData = JOBS_DATA[i]
+    const jobId = jobIds[i]
+    if (!jobData || !jobId) continue
+
+    await db.insert(schema.activityLog).values({
+      id: id(),
+      organizationId: orgId,
+      actorId: userId,
+      action: 'created',
+      resourceType: 'job',
+      resourceId: jobId,
+      metadata: { title: jobData.title },
+      createdAt: daysAgo(20 + Math.floor(Math.random() * 10)),
+    })
+    totalActivities++
+  }
+
+  // --- Candidate creation activities ---
+  for (let i = 0; i < CANDIDATES_DATA.length; i++) {
+    const c = CANDIDATES_DATA[i]
+    const cId = candidateIds[i]
+    if (!c || !cId) continue
+
+    await db.insert(schema.activityLog).values({
+      id: id(),
+      organizationId: orgId,
+      actorId: userId,
+      action: 'created',
+      resourceType: 'candidate',
+      resourceId: cId,
+      metadata: { name: `${c.firstName} ${c.lastName}` },
+      createdAt: daysAgo(5 + Math.floor(Math.random() * 20)),
+    })
+    totalActivities++
+  }
+
+  // --- Application creation + status change activities ---
+  // Maps each application's final status to a realistic sequence of transitions
+  const STATUS_PIPELINE: Record<AppStatus, AppStatus[]> = {
+    new: [],
+    screening: ['screening'],
+    interview: ['screening', 'interview'],
+    offer: ['screening', 'interview', 'offer'],
+    hired: ['screening', 'interview', 'offer', 'hired'],
+    rejected: ['rejected'], // rejected can happen at any stage
+  }
+
+  for (let jobIndex = 0; jobIndex < JOB_APPLICATIONS.length; jobIndex++) {
+    const apps = JOB_APPLICATIONS[jobIndex]
+    const jobId = jobIds[jobIndex]
+    if (!apps || !jobId) continue
+
+    for (const app of apps) {
+      const candidateId = candidateIds[app.candidateIndex]
+      const appId = applicationMap.get(`${jobIndex}-${app.candidateIndex}`)
+      if (!candidateId || !appId) continue
+
+      // Application created activity
+      const appCreatedDays = 1 + Math.floor(Math.random() * 15)
+      await db.insert(schema.activityLog).values({
+        id: id(),
+        organizationId: orgId,
+        actorId: userId,
+        action: 'created',
+        resourceType: 'application',
+        resourceId: appId,
+        metadata: { candidateId, jobId },
+        createdAt: daysAgo(appCreatedDays),
+      })
+      totalActivities++
+
+      // Status change activities along the pipeline
+      const transitions = STATUS_PIPELINE[app.status] ?? []
+      let previousStatus: AppStatus = 'new'
+      for (let t = 0; t < transitions.length; t++) {
+        const toStatus = transitions[t]!
+        const transitionDays = Math.max(0, appCreatedDays - (t + 1) * 2)
+        await db.insert(schema.activityLog).values({
+          id: id(),
+          organizationId: orgId,
+          actorId: userId,
+          action: 'status_changed',
+          resourceType: 'application',
+          resourceId: appId,
+          metadata: { from: previousStatus, to: toStatus },
+          createdAt: daysAgo(transitionDays),
+        })
+        totalActivities++
+        previousStatus = toStatus
+      }
+
+      // Scored activity for applications with a score
+      if (app.score) {
+        await db.insert(schema.activityLog).values({
+          id: id(),
+          organizationId: orgId,
+          actorId: userId,
+          action: 'scored',
+          resourceType: 'application',
+          resourceId: appId,
+          metadata: { compositeScore: app.score, model: 'gpt-4o-mini', criterionCount: 5 },
+          createdAt: daysAgo(Math.max(0, appCreatedDays - 1)),
+        })
+        totalActivities++
+      }
+    }
+  }
+
+  // --- Interview creation activities ---
+  for (let i = 0; i < INTERVIEWS_DATA.length; i++) {
+    const iv = INTERVIEWS_DATA[i]
+    const interviewId = interviewIds[i]
+    if (!iv || !interviewId) continue
+
+    const appId = applicationMap.get(`${iv.jobIndex}-${iv.candidateIndex}`)
+    if (!appId) continue
+
+    const scheduledAt = dateWithOffset(iv.daysOffset, iv.hour, iv.minute ?? 0)
+    const interviewCreatedDays = Math.abs(iv.daysOffset) + 4
+
+    await db.insert(schema.activityLog).values({
+      id: id(),
+      organizationId: orgId,
+      actorId: userId,
+      action: 'created',
+      resourceType: 'interview',
+      resourceId: interviewId,
+      metadata: {
+        applicationId: appId,
+        title: iv.title,
+        scheduledAt: scheduledAt.toISOString(),
+      },
+      createdAt: daysAgo(interviewCreatedDays),
+    })
+    totalActivities++
+  }
+
+  console.log(`✅ Created ${totalActivities} activity log entries for timeline`)
 
   // Summary
   const statusCounts: Record<string, number> = {}

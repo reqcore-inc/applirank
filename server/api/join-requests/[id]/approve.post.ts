@@ -136,7 +136,9 @@ export default defineEventHandler(async (event) => {
     }
     // Wrap unexpected database errors with a descriptive message
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('Failed to approve join request:', message)
+    logError('join_request.approve_failed', {
+      error_message: message,
+    })
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to approve join request. Please try again.',

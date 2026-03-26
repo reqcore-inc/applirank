@@ -201,7 +201,9 @@ export default defineEventHandler(async (event) => {
     )
     issueUrl = response.html_url
   } catch (err: any) {
-    console.error('[feedback] Failed to create GitHub issue:', err.data ?? err.message)
+    logError('feedback.github_issue_failed', {
+      error_message: err.data ?? err.message,
+    })
     throw createError({
       statusCode: 502,
       statusMessage: 'Failed to submit feedback. Please try again later.',

@@ -17,6 +17,7 @@ const interviewId = route.params.id as string
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
 const { activeOrg } = useCurrentOrg()
+const { track } = useTrack()
 
 const { interview, status: fetchStatus, error, updateInterview, deleteInterview, refresh } = useInterview(interviewId)
 
@@ -98,6 +99,11 @@ async function handleTransition(newStatus: InterviewStatus) {
   isTransitioning.value = true
   try {
     await updateInterview({ status: newStatus })
+    track('interview_status_changed', {
+      interview_id: interviewId,
+      from_status: interview.value?.status,
+      to_status: newStatus,
+    })
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
     toast.error('Failed to update status', { message: err.data?.statusMessage, statusCode: err.data?.statusCode })
@@ -429,7 +435,7 @@ const localePath = useLocalePath()
           class="mt-3 flex items-center gap-1.5 text-xs text-success-600 dark:text-success-400"
         >
           <CheckCheck class="size-3.5" />
-          Invitation sent {{ formatDate(interview.invitationSentAt) }}
+          Invitation sent <TimelineDateLink :date="interview.invitationSentAt" class="text-success-600 dark:text-success-400">{{ formatDate(interview.invitationSentAt) }}</TimelineDateLink>
         </div>
         <!-- Google Calendar sync status -->
         <div
@@ -638,7 +644,7 @@ const localePath = useLocalePath()
             <div>
               <dt class="text-surface-400">Date & Time</dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ formatDateTime(interview.scheduledAt) }}
+                <TimelineDateLink :date="interview.scheduledAt">{{ formatDateTime(interview.scheduledAt) }}</TimelineDateLink>
               </dd>
             </div>
             <div>
@@ -747,11 +753,11 @@ const localePath = useLocalePath()
           <dl class="flex flex-wrap gap-x-8 gap-y-2 text-sm">
             <div>
               <dt class="text-surface-400 inline-flex items-center gap-1"><Clock class="size-3.5" /> Created</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ formatDate(interview.createdAt) }}</dd>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium"><TimelineDateLink :date="interview.createdAt">{{ formatDate(interview.createdAt) }}</TimelineDateLink></dd>
             </div>
             <div>
               <dt class="text-surface-400 inline-flex items-center gap-1"><Clock class="size-3.5" /> Updated</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ formatDate(interview.updatedAt) }}</dd>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium"><TimelineDateLink :date="interview.updatedAt">{{ formatDate(interview.updatedAt) }}</TimelineDateLink></dd>
             </div>
           </dl>
         </div>

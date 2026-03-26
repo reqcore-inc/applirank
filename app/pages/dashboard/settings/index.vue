@@ -11,6 +11,7 @@ useSeoMeta({
 const { activeOrg } = useCurrentOrg()
 const { allowed: canUpdateOrg } = usePermission({ organization: ['update'] })
 const { allowed: canDeleteOrg } = usePermission({ organization: ['delete'] })
+const { track } = useTrack()
 
 // ─────────────────────────────────────────────
 // Org name/slug editing
@@ -65,6 +66,7 @@ async function handleSaveOrg() {
         slug: trimmedSlug,
       },
     })
+    track('org_settings_saved')
     saveSuccess.value = true
     setTimeout(() => { saveSuccess.value = false }, 3000)
   }
@@ -95,6 +97,7 @@ async function handleDeleteOrg() {
   deleteError.value = ''
 
   try {
+    track('org_deleted')
     await authClient.organization.delete({
       organizationId: activeOrg.value!.id,
     })

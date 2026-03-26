@@ -38,19 +38,19 @@ const transitionLabels: Record<string, string> = {
 
 const transitionClasses: Record<string, string> = {
   new: 'border border-surface-300 dark:border-surface-700 bg-white/80 dark:bg-surface-900 text-surface-700 dark:text-surface-300 hover:border-surface-400 dark:hover:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-800',
-  screening: 'bg-info-600 text-white shadow-sm shadow-info-900/20 hover:bg-info-700',
-  interview: 'bg-warning-600 text-white shadow-sm shadow-warning-900/20 hover:bg-warning-700',
-  offer: 'bg-success-600 text-white shadow-sm shadow-success-900/20 hover:bg-success-700',
-  hired: 'bg-success-700 text-white shadow-sm shadow-success-900/30 hover:bg-success-800',
+  screening: 'bg-violet-600 text-white shadow-sm shadow-violet-900/20 hover:bg-violet-700',
+  interview: 'bg-amber-600 text-white shadow-sm shadow-amber-900/20 hover:bg-amber-700',
+  offer: 'bg-teal-600 text-white shadow-sm shadow-teal-900/20 hover:bg-teal-700',
+  hired: 'bg-green-700 text-white shadow-sm shadow-green-900/30 hover:bg-green-800',
   rejected: 'bg-danger-600 text-white shadow-sm shadow-danger-900/20 hover:bg-danger-700',
 }
 
 const transitionDotClasses: Record<string, string> = {
   new: 'bg-surface-400 dark:bg-surface-500',
-  screening: 'bg-info-200',
-  interview: 'bg-warning-200',
-  offer: 'bg-success-200',
-  hired: 'bg-success-100',
+  screening: 'bg-violet-200',
+  interview: 'bg-amber-200',
+  offer: 'bg-teal-200',
+  hired: 'bg-green-100',
   rejected: 'bg-danger-200',
 }
 
@@ -105,11 +105,11 @@ async function saveNotes() {
 // ─────────────────────────────────────────────
 
 const statusBadgeClasses: Record<string, string> = {
-  new: 'bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400',
-  screening: 'bg-info-50 text-info-700 dark:bg-info-950 dark:text-info-400',
-  interview: 'bg-warning-50 text-warning-700 dark:bg-warning-950 dark:text-warning-400',
-  offer: 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-400',
-  hired: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300',
+  new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
+  screening: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
+  interview: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  offer: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-400',
+  hired: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400',
   rejected: 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400',
 }
 
@@ -171,9 +171,9 @@ function formatResponseValue(value: unknown): string {
           >
             {{ application.status }}
           </span>
-          <span class="text-sm text-surface-500 dark:text-surface-400">
+          <TimelineDateLink :date="application.createdAt" class="text-sm text-surface-500 dark:text-surface-400">
             Applied {{ new Date(application.createdAt).toLocaleDateString() }}
-          </span>
+          </TimelineDateLink>
         </div>
       </div>
 
@@ -287,7 +287,7 @@ function formatResponseValue(value: unknown): string {
                 Applied
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(application.createdAt).toLocaleDateString() }}
+                <TimelineDateLink :date="application.createdAt">{{ new Date(application.createdAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
             <div>
@@ -296,7 +296,7 @@ function formatResponseValue(value: unknown): string {
                 Updated
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(application.updatedAt).toLocaleDateString() }}
+                <TimelineDateLink :date="application.updatedAt">{{ new Date(application.updatedAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
           </dl>

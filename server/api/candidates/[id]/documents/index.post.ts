@@ -192,7 +192,10 @@ export default defineEventHandler(async (event) => {
     try {
       await deleteFromS3(storageKey)
     } catch (cleanupError) {
-      console.error('[Reqcore] Failed to clean up orphaned S3 object:', storageKey, cleanupError)
+      logWarn('document.s3_orphan_cleanup_failed', {
+        storage_key: storageKey,
+        error_message: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+      })
     }
     throw dbError
   }

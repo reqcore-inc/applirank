@@ -27,10 +27,10 @@ const transitionLabels: Record<string, string> = {
 
 const transitionClasses: Record<string, string> = {
   new: 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700',
-  screening: 'text-info-600 dark:text-info-400 hover:bg-info-50 dark:hover:bg-info-950',
-  interview: 'text-warning-600 dark:text-warning-400 hover:bg-warning-50 dark:hover:bg-warning-950',
-  offer: 'text-success-600 dark:text-success-400 hover:bg-success-50 dark:hover:bg-success-950',
-  hired: 'text-success-700 dark:text-success-300 hover:bg-success-100 dark:hover:bg-success-900',
+  screening: 'text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950',
+  interview: 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950',
+  offer: 'text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950',
+  hired: 'text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900',
   rejected: 'text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950',
 }
 </script>

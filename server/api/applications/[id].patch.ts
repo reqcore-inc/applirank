@@ -63,5 +63,22 @@ export default defineEventHandler(async (event) => {
       : undefined,
   })
 
+  // Track to PostHog for per-user debugging and funnel analytics
+  if (body.status && body.status !== current.status) {
+    trackEvent(event, session, 'application status_changed', {
+      application_id: id,
+      job_id: updated.jobId,
+      from_status: current.status,
+      to_status: body.status,
+    })
+
+    logApiRequest(event, session, 'application.status_changed', {
+      application_id: id,
+      job_id: updated.jobId,
+      from_status: current.status,
+      to_status: body.status,
+    })
+  }
+
   return updated
 })

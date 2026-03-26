@@ -9,6 +9,7 @@ const emit = defineEmits<{
   (e: 'scored'): void
 }>()
 
+const { track } = useTrack()
 const isAnalyzing = ref(false)
 const analyzeError = ref<string | null>(null)
 const expandedCriterion = ref<string | null>(null)
@@ -71,6 +72,7 @@ async function runAnalysis() {
       headers: useRequestHeaders(['cookie']),
     })
     await refresh()
+    track('ai_analysis_run', { application_id: props.applicationId })
     emit('scored')
   } catch (err: any) {
     analyzeError.value = err?.data?.statusMessage ?? 'Analysis failed. Make sure AI is configured in settings.'

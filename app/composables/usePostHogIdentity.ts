@@ -48,13 +48,23 @@ export async function usePostHogIdentity() {
   // Watch org AND consent for group analytics — same gating logic as above.
   watch(
     [() => activeOrgState.value?.data, hasConsented] as const,
-    ([org, consented]) => {
+    async ([org, consented]) => {
       if (consented) {
         if (org?.id) {
-          // Only org id and name are forwarded; slug is omitted to minimise data.
-          ;($posthogSetOrganization as (org: { id: string, name?: string }) => void)({
+          // Fetch the current member's role to enrich group properties — useful
+          // for debugging permission issues without exposing personal data.
+          let memberRole: string | undefined
+          try {
+            const { data } = await authClient.organization.getActiveMemberRole()
+            memberRole = data?.role ?? undefined
+          }
+          catch { /* non-critical; role is just an enrichment property */ }
+
+          // Only org id, name, and member role are forwarded; slug is omitted to minimise data.
+          ;($posthogSetOrganization as (org: { id: string, name?: string, member_role?: string }) => void)({
             id: org.id,
             name: org.name || undefined,
+            member_role: memberRole,
           })
         }
         else {

@@ -99,9 +99,9 @@ export default defineEventHandler(async (event) => {
     // Pass through silently — there is no demo org to protect, so blocking
     // all writes would break the entire application for every user.
     if (isExplicitlyConfigured) {
-      console.warn(
-        `[demo-guard] DEMO_ORG_SLUG is set but none of the configured slugs could be resolved: ${demoSlugs.join(', ')}. Demo write-protection is inactive.`,
-      )
+      logWarn('demo_guard.slug_unresolved', {
+        demo_slugs: demoSlugs.join(', '),
+      })
     }
     return
   }

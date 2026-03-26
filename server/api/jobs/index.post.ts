@@ -62,6 +62,22 @@ export default defineEventHandler(async (event) => {
     metadata: { title: created.title },
   })
 
+  trackEvent(event, session, 'job created', {
+    job_id: created.id,
+    job_type: created.type,
+    has_salary: !!(created.salaryMin || created.salaryMax),
+    require_resume: created.requireResume,
+    auto_score: created.autoScoreOnApply,
+  })
+
+  logApiRequest(event, session, 'job.created', {
+    job_id: created.id,
+    job_type: created.type,
+    has_salary: !!(created.salaryMin || created.salaryMax),
+    require_resume: created.requireResume,
+    auto_score: created.autoScoreOnApply,
+  })
+
   setResponseStatus(event, 201)
   return created
 })

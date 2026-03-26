@@ -81,12 +81,17 @@ export async function parseDocument(
       case 'application/msword':
         return await parseDoc(buffer)
       default:
-        console.warn(`[ResumeParser] Unsupported MIME type: ${mimeType}`)
+        logWarn('resume_parser.unsupported_mime_type', {
+          mime_type: mimeType,
+        })
         return null
     }
   }
   catch (error) {
-    console.error('[ResumeParser] Failed to parse document:', error)
+    logError('resume_parser.parse_failed', {
+      mime_type: mimeType,
+      error_message: error instanceof Error ? error.message : String(error),
+    })
     return null
   }
 }

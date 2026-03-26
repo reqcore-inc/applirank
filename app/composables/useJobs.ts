@@ -28,6 +28,7 @@ export function useJobs(options?: {
     description?: string
     location?: string
     type?: 'full_time' | 'part_time' | 'contract' | 'internship'
+    remoteStatus?: 'remote' | 'hybrid' | 'onsite'
     requireResume?: boolean
     requireCoverLetter?: boolean
     autoScoreOnApply?: boolean

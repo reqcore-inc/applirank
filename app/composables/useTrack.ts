@@ -101,5 +101,21 @@ export function useTrack() {
     }
   }
 
-  return { track }
+  /**
+   * Report a caught error to PostHog's error tracking (consent-gated).
+   * Use for errors that are handled in catch blocks but still worth logging.
+   */
+  function captureError(error: unknown, properties?: Record<string, unknown>) {
+    if (!import.meta.client) return
+    const ph = getPostHog()
+    if (!ph || !ph.has_opted_in_capturing()) return
+
+    ph.captureException(error instanceof Error ? error : new Error(String(error)), {
+      path: route.path,
+      viewport_width: window.innerWidth,
+      ...properties,
+    })
+  }
+
+  return { track, captureError }
 }

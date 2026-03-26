@@ -1,8 +1,20 @@
 /**
- * Nitro plugin: gracefully shut down the server-side PostHog Node client when
- * the server process closes.  Without this the flush-interval timer keeps the
- * event loop alive and any buffered events are silently discarded.
+ * Nitro plugin: initialise PostHog integrations on startup and shut them
+ * down cleanly when the server process closes.
+ *
+ * – PostHog Node client  (event capture, error tracking)
+ * – OpenTelemetry logger (PostHog Logs via OTLP)
  */
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hookOnce('close', () => shutdownServerPostHog())
+  // Start the OpenTelemetry LoggerProvider so structured logs
+  // are sent to PostHog's /i/v1/logs endpoint throughout the lifetime
+  // of the server process.
+  initLoggerProvider()
+
+  nitroApp.hooks.hookOnce('close', async () => {
+    await Promise.all([
+      shutdownServerPostHog(),
+      shutdownLoggerProvider(),
+    ])
+  })
 })

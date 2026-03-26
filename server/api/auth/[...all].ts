@@ -3,11 +3,10 @@ export default defineEventHandler(async (event) => {
     return await auth.handler(toWebRequest(event))
   } catch (error) {
     const requestUrl = getRequestURL(event)
-    console.error('[Reqcore] Auth handler error', {
-      method: event.method,
-      path: requestUrl.pathname,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    logError('auth.handler_error', {
+      http_method: event.method,
+      http_path: requestUrl.pathname,
+      error_message: error instanceof Error ? error.message : 'Unknown error',
     })
 
     // Detect BETTER_AUTH_URL mismatch — the #1 self-hosting setup issue
@@ -19,7 +18,10 @@ export default defineEventHandler(async (event) => {
     const isUrlMismatch = configuredOrigin && requestOrigin !== configuredOrigin
 
     if (isUrlMismatch) {
-      console.error(`[Reqcore] BETTER_AUTH_URL mismatch: configured=${configuredOrigin}, request=${requestOrigin}`)
+      logError('auth.url_mismatch', {
+        configured_origin: configuredOrigin,
+        request_origin: requestOrigin,
+      })
       throw createError({
         statusCode: 500,
         statusMessage: 'Auth configuration error',

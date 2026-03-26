@@ -11,6 +11,7 @@ definePageMeta({
 const route = useRoute()
 const jobId = route.params.id as string
 const toast = useToast()
+const { track } = useTrack()
 
 const { job, status: jobFetchStatus, error: jobError, updateJob } = useJob(jobId)
 
@@ -174,6 +175,7 @@ async function generateAiCriteria() {
       maxScore: c.maxScore ?? 10,
       weight: c.weight ?? 50,
     }))
+    track('ai_criteria_generated', { job_id: jobId, criteria_count: scoringCriteria.value.length })
     toast.success('Criteria generated', `${scoringCriteria.value.length} scoring criteria created from job description.`)
   } catch (err: any) {
     const statusCode = err?.data?.statusCode ?? err?.statusCode
@@ -265,6 +267,7 @@ async function saveCriteria() {
       },
     })
     hasUnsavedChanges.value = false
+    track('scoring_criteria_saved', { job_id: jobId, criteria_count: scoringCriteria.value.length })
     toast.success('Criteria saved', `${scoringCriteria.value.length} scoring criteria updated.`)
     await refreshCriteria()
   } catch (err: any) {

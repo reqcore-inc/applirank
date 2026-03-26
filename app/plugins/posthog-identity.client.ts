@@ -136,9 +136,10 @@ export default defineNuxtPlugin({
         },
         // Only id and human-readable name are forwarded.  slug is redundant
         // for analytics purposes and is omitted to minimise data collection.
-        posthogSetOrganization: (org: { id: string, name?: string }) => {
+        posthogSetOrganization: (org: { id: string, name?: string, member_role?: string }) => {
           posthog.group('organization', org.id, {
             name: org.name || undefined,
+            member_role: org.member_role || undefined,
           })
         },
         posthogReset: () => {

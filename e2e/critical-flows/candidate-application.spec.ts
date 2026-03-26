@@ -96,8 +96,8 @@ async function addCustomQuestion(
   },
 ) {
   // Click the trigger to open the QuestionForm
-  await page.getByRole('button', { name: 'Add Question' }).waitFor({ state: 'visible', timeout: 10_000 })
-  await page.getByRole('button', { name: 'Add Question' }).click()
+  await page.getByRole('button', { name: 'Add a question' }).waitFor({ state: 'visible', timeout: 10_000 })
+  await page.getByRole('button', { name: 'Add a question' }).click()
 
   // Wait for the form to render
   await page.locator('#q-label').waitFor({ state: 'visible', timeout: 10_000 })
@@ -155,13 +155,11 @@ test.describe('Candidate Application Flow — All Custom Question Field Types', 
 
     // ── Step 2: Application form — disable resume requirement, add all question types ──
 
-    // "Require resume/CV" defaults to ON — toggle it off so the candidate flow
+    // "Require resume/CV" defaults to ON — switch it off so the candidate flow
     // does not need a resume upload (the file_upload custom question covers files)
-    await page.getByRole('button', { name: /Require resume\/CV/i }).waitFor({ state: 'visible', timeout: 10_000 })
-    const resumeToggle = page.getByRole('button', { name: /Require resume\/CV/i })
-    if ((await resumeToggle.getAttribute('aria-pressed')) === 'true') {
-      await resumeToggle.click()
-    }
+    const resumeRadioGroup = page.getByRole('radiogroup', { name: /Resume requirement/i })
+    await resumeRadioGroup.waitFor({ state: 'visible', timeout: 10_000 })
+    await resumeRadioGroup.getByRole('radio', { name: 'Off' }).click()
 
     // Add one question for each of the nine available field types
     for (const question of CUSTOM_QUESTIONS) {
@@ -181,12 +179,7 @@ test.describe('Candidate Application Flow — All Custom Question Field Types', 
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().waitFor({ state: 'visible', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // ── Step 4: Find candidates (skip) → Step 5 ──────────────────────────────
-
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().waitFor({ state: 'visible', timeout: 10_000 })
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
-
-    // ── Step 5: Publish the job ───────────────────────────────────────────────
+    // ── Step 4: Publish the job ─────────────────────────────────────────
 
     await expect(page.getByRole('heading', { name: /Ready to go\?/i })).toBeVisible({ timeout: 10_000 })
 
@@ -497,18 +490,13 @@ test.describe('Candidate Application — Required Cover Letter Validation', () =
       .waitFor({ state: 'attached', timeout: 10_000 })
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
 
-    // Step 2: Enable "Ask for cover letter" toggle
-    const coverLetterToggle = page.getByRole('button', { name: /Ask for cover letter/i })
-    await coverLetterToggle.waitFor({ state: 'visible', timeout: 10_000 })
-    if ((await coverLetterToggle.getAttribute('aria-pressed')) !== 'true') {
-      await coverLetterToggle.click()
-    }
-    await expect(coverLetterToggle).toHaveAttribute('aria-pressed', 'true')
+    // Step 2: Enable "Cover letter" requirement via radio group
+    const coverLetterRadioGroup = page.getByRole('radiogroup', { name: /Cover letter requirement/i })
+    await coverLetterRadioGroup.waitFor({ state: 'visible', timeout: 10_000 })
+    await coverLetterRadioGroup.getByRole('radio', { name: 'Required' }).click()
+    await expect(coverLetterRadioGroup.getByRole('radio', { name: 'Required' })).toHaveAttribute('aria-checked', 'true')
 
-    // Step 2 → Step 3 (Scoring criteria) → Step 4 (Find candidates) → Step 5 (Publish)
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
-    await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
-      .waitFor({ state: 'visible', timeout: 10_000 })
+    // Step 2 → Step 3 (Scoring criteria) → Step 4 (Publish)
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first().click()
     await page.locator('form').getByRole('button', { name: 'Save & continue' }).first()
       .waitFor({ state: 'visible', timeout: 10_000 })

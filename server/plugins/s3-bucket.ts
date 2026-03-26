@@ -15,14 +15,20 @@ export default defineNitroPlugin(async () => {
   // and enforce privacy at the platform level — skip bucket initialization
   if (!env.S3_FORCE_PATH_STYLE) {
     console.log(`[Reqcore] S3 bucket "${env.S3_BUCKET}" — managed provider detected, skipping initialization`)
+    logInfo('s3.managed_provider_detected', { bucket: env.S3_BUCKET })
     return
   }
 
   try {
     await ensureBucketExists()
     console.log(`[Reqcore] S3 bucket "${env.S3_BUCKET}" is ready`)
+    logInfo('s3.bucket_ready', { bucket: env.S3_BUCKET })
   } catch (error) {
     console.error(`[Reqcore] Failed to initialize S3 bucket "${env.S3_BUCKET}":`, error)
+    logError('s3.bucket_init_failed', {
+      bucket: env.S3_BUCKET,
+      error_message: error instanceof Error ? error.message : String(error),
+    })
     // Don't throw — the app can still start, but uploads will fail.
     // This allows the app to boot even if MinIO is temporarily unavailable.
   }

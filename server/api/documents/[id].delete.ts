@@ -42,7 +42,10 @@ export default defineEventHandler(async (event) => {
   try {
     await deleteFromS3(doc.storageKey)
   } catch (s3Error) {
-    console.error('[Reqcore] Failed to delete S3 object:', doc.storageKey, s3Error)
+    logWarn('document.s3_delete_failed', {
+      storage_key: doc.storageKey,
+      error_message: s3Error instanceof Error ? s3Error.message : String(s3Error),
+    })
     // Continue with DB deletion — orphaned S3 objects can be cleaned up later
   }
 

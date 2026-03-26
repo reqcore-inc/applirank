@@ -21,7 +21,10 @@ export default defineEventHandler(async (event) => {
   // Cancel Google Calendar event (non-blocking)
   if (current.googleCalendarEventId) {
     cancelCalendarEvent(current.createdById, current.googleCalendarEventId).catch(err => {
-      console.error('[Calendar] Failed to cancel event on delete:', err)
+      logError('calendar.cancel_event_on_delete_failed', {
+        event_id: current.googleCalendarEventId,
+        error_message: err instanceof Error ? err.message : String(err),
+      })
     })
   }
 

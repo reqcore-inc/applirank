@@ -51,13 +51,19 @@ export default defineEventHandler(async (event) => {
 
     // Set up webhook for two-way sync (non-blocking)
     setupCalendarWebhook(session.user.id).catch(err => {
-      console.error('[Calendar] Failed to setup webhook after connect:', err)
+      logWarn('calendar.webhook_setup_failed', {
+        posthog_distinct_id: session.user.id,
+        error_message: err instanceof Error ? err.message : String(err),
+      })
     })
 
     return sendRedirect(event, '/dashboard/settings/integrations?success=connected')
   }
   catch (err) {
-    console.error('[Calendar] OAuth callback failed:', err)
+    logError('calendar.oauth_callback_failed', {
+      posthog_distinct_id: session.user.id,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
     return sendRedirect(event, '/dashboard/settings/integrations?error=oauth_failed')
   }
 })

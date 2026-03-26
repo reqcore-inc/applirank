@@ -91,7 +91,12 @@ export default defineEventHandler(async (event) => {
           .where(eq(interview.id, created.id))
       }
     } catch (err) {
-      console.error('[Calendar] Failed to create event for interview:', err)
+      logError('interview.calendar_sync_failed', {
+        posthog_distinct_id: session.user.id,
+        org_id: orgId,
+        interview_id: created.id,
+        error_message: err instanceof Error ? err.message : String(err),
+      })
     }
   }
 
@@ -106,6 +111,22 @@ export default defineEventHandler(async (event) => {
       title: body.title,
       scheduledAt: body.scheduledAt,
     },
+  })
+
+  trackEvent(event, session, 'interview scheduled', {
+    interview_id: created.id,
+    application_id: body.applicationId,
+    interview_type: body.type,
+    duration_minutes: body.duration,
+    has_calendar_sync: !!calendarEventId,
+  })
+
+  logApiRequest(event, session, 'interview.scheduled', {
+    interview_id: created.id,
+    application_id: body.applicationId,
+    interview_type: body.type,
+    duration_minutes: body.duration,
+    has_calendar_sync: !!calendarEventId,
   })
 
   setResponseStatus(event, 201)

@@ -116,7 +116,9 @@ export async function getCalendarClient(userId: string): Promise<calendar_v3.Cal
   const refreshToken = decrypt(integration.refreshTokenEncrypted, secret)
 
   if (!accessToken || !refreshToken) {
-    console.error(`[Calendar] Failed to decrypt tokens for user ${userId}`)
+    logError('calendar.token_decrypt_failed', {
+      posthog_distinct_id: userId,
+    })
     return null
   }
 
@@ -139,7 +141,10 @@ export async function getCalendarClient(userId: string): Promise<calendar_v3.Cal
           .where(eq(calendarIntegration.userId, userId))
       }
       catch (err) {
-        console.error('[Calendar] Failed to persist refreshed token:', err)
+        logError('calendar.token_refresh_persist_failed', {
+          posthog_distinct_id: userId,
+          error_message: err instanceof Error ? err.message : String(err),
+        })
       }
     }
   })
@@ -211,7 +216,10 @@ export async function removeCalendarIntegration(userId: string): Promise<void> {
     }
     catch (err) {
       // Non-critical — channel may have already expired
-      console.warn('[Calendar] Failed to stop webhook channel on disconnect:', err)
+      logWarn('calendar.webhook_channel_stop_failed', {
+        posthog_distinct_id: userId,
+        error_message: err instanceof Error ? err.message : String(err),
+      })
     }
   }
 
@@ -318,7 +326,10 @@ export async function createCalendarEvent(
     return { id, htmlLink }
   }
   catch (err) {
-    console.error('[Calendar] Failed to create event:', err)
+    logError('calendar.create_event_failed', {
+      posthog_distinct_id: userId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
     return null
   }
 }
@@ -392,7 +403,11 @@ export async function updateCalendarEvent(
     return response.data.htmlLink ?? null
   }
   catch (err) {
-    console.error('[Calendar] Failed to update event:', err)
+    logError('calendar.update_event_failed', {
+      posthog_distinct_id: userId,
+      event_id: eventId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
     return null
   }
 }
@@ -424,7 +439,11 @@ export async function cancelCalendarEvent(
     return true
   }
   catch (err) {
-    console.error('[Calendar] Failed to cancel event:', err)
+    logError('calendar.cancel_event_failed', {
+      posthog_distinct_id: userId,
+      event_id: eventId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
     return false
   }
 }
@@ -502,7 +521,10 @@ export async function setupCalendarWebhook(userId: string): Promise<boolean> {
     return true
   }
   catch (err) {
-    console.error('[Calendar] Failed to setup webhook:', err)
+    logError('calendar.webhook_setup_failed', {
+      posthog_distinct_id: userId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
     return false
   }
 }
@@ -563,7 +585,9 @@ export async function performIncrementalSync(userId: string): Promise<void> {
             return performIncrementalSync(userId)
           }
           // Already cleared syncToken but still getting 410 — bail out
-          console.error('[Calendar] Persistent 410 error during sync, aborting')
+          logError('calendar.persistent_410_error', {
+            posthog_distinct_id: userId,
+          })
           return
         }
         throw err
@@ -588,7 +612,10 @@ export async function performIncrementalSync(userId: string): Promise<void> {
     }
   }
   catch (err) {
-    console.error('[Calendar] Incremental sync failed:', err)
+    logError('calendar.incremental_sync_failed', {
+      posthog_distinct_id: userId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
   }
 }
 

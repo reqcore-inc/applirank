@@ -378,11 +378,11 @@ useSeoMeta({
 // ─────────────────────────────────────────────
 
 const statusBadgeClasses: Record<string, string> = {
-  new: 'bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400',
-  screening: 'bg-info-50 text-info-700 dark:bg-info-950 dark:text-info-400',
-  interview: 'bg-warning-50 text-warning-700 dark:bg-warning-950 dark:text-warning-400',
-  offer: 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-400',
-  hired: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300',
+  new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
+  screening: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
+  interview: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  offer: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-400',
+  hired: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400',
   rejected: 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400',
 }
 
@@ -397,10 +397,10 @@ const transitionLabels: Record<string, string> = {
 
 const transitionClasses: Record<string, string> = {
   new: 'border border-surface-300 dark:border-surface-600 text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800',
-  screening: 'bg-info-600 text-white hover:bg-info-700',
-  interview: 'bg-warning-600 text-white hover:bg-warning-700',
-  offer: 'bg-success-600 text-white hover:bg-success-700',
-  hired: 'bg-success-700 text-white hover:bg-success-800',
+  screening: 'bg-violet-600 text-white hover:bg-violet-700',
+  interview: 'bg-amber-600 text-white hover:bg-amber-700',
+  offer: 'bg-teal-600 text-white hover:bg-teal-700',
+  hired: 'bg-green-700 text-white hover:bg-green-800',
   rejected: 'bg-danger-600 text-white hover:bg-danger-700',
 }
 
@@ -938,7 +938,9 @@ const isJobTransitioning = ref(false)
 async function handleJobTransition(newStatus: string) {
   isJobTransitioning.value = true
   try {
+    const fromStatus = jobData.value?.status
     await updateJob({ status: newStatus as any })
+    track('job_status_changed', { job_id: jobId, from_status: fromStatus, to_status: newStatus })
     await refreshJob()
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
@@ -958,6 +960,7 @@ const showDeleteConfirm = ref(false)
 async function handleDelete() {
   isDeleting.value = true
   try {
+    track('job_deleted', { job_id: jobId })
     await deleteJob()
   } catch (err: any) {
     if (handlePreviewReadOnlyError(err)) return
@@ -995,6 +998,7 @@ async function scoreAllCandidates() {
       method: 'POST',
     })
     scoringProgress.value.total = applicationIds.length
+    track('bulk_scoring_started', { job_id: jobId, candidate_count: applicationIds.length })
     if (applicationIds.length === 0) {
       toast.info('All candidates scored', 'Every candidate already has a score.')
       return
@@ -1048,6 +1052,7 @@ async function scoreIndividualCandidate(applicationId: string) {
     if (currentApplicationId.value === applicationId) {
       await executeDetailFetch()
     }
+    track('individual_scoring_completed', { application_id: applicationId })
     toast.success('Candidate scored', 'AI analysis complete.')
   } catch (err: any) {
     const statusMessage = err?.data?.statusMessage ?? ''
@@ -1114,6 +1119,7 @@ const docPreviewDocId = ref<string | null>(null)
 const isDocPreviewPdf = computed(() => docPreviewMimeType.value === 'application/pdf')
 
 function handleDocPreview(doc: SwipeDocument) {
+  track('document_viewed', { document_type: doc.type, mime_type: doc.mimeType })
   if (doc.mimeType !== 'application/pdf') {
     // Non-PDFs: fall back to download
     window.open(`/api/documents/${doc.id}/download`, '_blank')
@@ -1282,11 +1288,11 @@ function closeDocPreview() {
             @click="setFocusStatus(status)"
           >
             <span class="pipeline-status-dot size-2 rounded-full" :class="{
-              'bg-brand-500 dark:bg-brand-400': status === 'new',
-              'bg-info-500 dark:bg-info-400': status === 'screening',
-              'bg-warning-500 dark:bg-warning-400': status === 'interview',
-              'bg-success-500 dark:bg-success-400': status === 'offer',
-              'bg-success-600 dark:bg-success-300': status === 'hired',
+              'bg-blue-500 dark:bg-blue-400': status === 'new',
+              'bg-violet-500 dark:bg-violet-400': status === 'screening',
+              'bg-amber-500 dark:bg-amber-400': status === 'interview',
+              'bg-teal-500 dark:bg-teal-400': status === 'offer',
+              'bg-green-600 dark:bg-green-300': status === 'hired',
               'bg-surface-400 dark:bg-surface-500': status === 'rejected',
             }" />
             {{ formatStatusLabel(status) }}
@@ -1597,11 +1603,11 @@ function closeDocPreview() {
                       <span
                         class="inline-flex shrink-0 items-center rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ring-1 ring-inset"
                         :class="{
-                          'bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-950/50 dark:text-brand-300 dark:ring-brand-800': currentSummary.status === 'new',
-                          'bg-info-50 text-info-700 ring-info-200 dark:bg-info-950/50 dark:text-info-300 dark:ring-info-800': currentSummary.status === 'screening',
-                          'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/50 dark:text-warning-300 dark:ring-warning-800': currentSummary.status === 'interview',
-                          'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/50 dark:text-success-300 dark:ring-success-800': currentSummary.status === 'offer',
-                          'bg-success-100 text-success-800 ring-success-300 dark:bg-success-900/50 dark:text-success-200 dark:ring-success-700': currentSummary.status === 'hired',
+                          'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-800': currentSummary.status === 'new',
+                          'bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-950/50 dark:text-violet-400 dark:ring-violet-800': currentSummary.status === 'screening',
+                          'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-800': currentSummary.status === 'interview',
+                          'bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-950/50 dark:text-teal-400 dark:ring-teal-800': currentSummary.status === 'offer',
+                          'bg-green-50 text-green-700 ring-green-200 dark:bg-green-950/50 dark:text-green-400 dark:ring-green-800': currentSummary.status === 'hired',
                           'bg-surface-100 text-surface-500 ring-surface-200 dark:bg-surface-800/50 dark:text-surface-400 dark:ring-surface-700': currentSummary.status === 'rejected',
                         }"
                       >
@@ -1646,12 +1652,12 @@ function closeDocPreview() {
                         <Brain v-else class="size-3" />
                         {{ isScoringIndividual ? 'Scoring…' : (currentSummary.score != null ? 'Re-score' : 'Score Candidate') }}
                       </button>
-                      <span class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
+                      <TimelineDateLink :date="currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
                         <Clock class="size-3" />
                         Applied {{ new Date(currentSummary.createdAt).toLocaleDateString() }}
-                      </span>
+                      </TimelineDateLink>
                       <span v-if="currentSummary.updatedAt !== currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
-                        · Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}
+                        · <TimelineDateLink :date="currentSummary.updatedAt">Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}</TimelineDateLink>
                       </span>
                     </div>
                   </div>
@@ -1690,7 +1696,7 @@ function closeDocPreview() {
 
             <!-- Detail tabs -->
             <div class="border-b border-surface-200/80 bg-white px-4 sm:px-6 dark:border-surface-800/60 dark:bg-surface-900">
-              <div class="mx-auto max-w-4xl flex gap-1 -mb-px overflow-x-auto scrollbar-none whitespace-nowrap">
+              <div class="mx-auto max-w-4xl flex gap-1 -mb-px scrollbar-none whitespace-nowrap" :class="showOverviewDropdown ? '' : 'overflow-x-auto'">
                 <div ref="overviewDropdownRef" class="relative">
                   <div class="flex items-center border-b-2 transition-all duration-150" :class="detailTab === 'overview'
                     ? 'border-brand-600 dark:border-brand-400'
@@ -1889,7 +1895,7 @@ function closeDocPreview() {
                             {{ iv.title }}
                           </p>
                           <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                            {{ formatInterviewDateTime(iv.scheduledAt) }} · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
+                            <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTime(iv.scheduledAt) }}</TimelineDateLink> · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
                           </p>
                           <div v-if="iv.googleCalendarEventId" class="mt-1">
                             <a
@@ -2008,7 +2014,7 @@ function closeDocPreview() {
                             <div>
                               <dt class="text-[11px] font-medium text-surface-400 dark:text-surface-500 mb-0.5">Date & Time</dt>
                               <dd class="text-surface-800 dark:text-surface-200 font-medium text-[13px]">
-                                {{ formatInterviewDateTimeFull(iv.scheduledAt) }}
+                                <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTimeFull(iv.scheduledAt) }}</TimelineDateLink>
                               </dd>
                             </div>
                             <div>
@@ -2229,7 +2235,7 @@ function closeDocPreview() {
                           {{ doc.originalFilename }}
                         </p>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                          {{ formatDocumentType(doc.type) }} · {{ new Date(doc.createdAt).toLocaleDateString() }}
+                          {{ formatDocumentType(doc.type) }} · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
                         </p>
                       </div>
                     </div>

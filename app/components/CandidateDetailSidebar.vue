@@ -18,6 +18,7 @@ const emit = defineEmits<{
 
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
+const { track } = useTrack()
 
 // Detect if the job sub-nav bar is visible (adds 40px / 2.5rem)
 const route = useRoute()
@@ -87,19 +88,19 @@ const transitionLabels: Record<string, string> = {
 
 const transitionClasses: Record<string, string> = {
   new: 'border border-surface-300 dark:border-surface-600 text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800',
-  screening: 'bg-info-600 text-white hover:bg-info-700',
-  interview: 'bg-warning-600 text-white hover:bg-warning-700',
-  offer: 'bg-success-600 text-white hover:bg-success-700',
-  hired: 'bg-success-700 text-white hover:bg-success-800',
+  screening: 'bg-violet-600 text-white hover:bg-violet-700',
+  interview: 'bg-amber-600 text-white hover:bg-amber-700',
+  offer: 'bg-teal-600 text-white hover:bg-teal-700',
+  hired: 'bg-green-700 text-white hover:bg-green-800',
   rejected: 'bg-danger-600 text-white hover:bg-danger-700',
 }
 
 const statusBadgeClasses: Record<string, string> = {
-  new: 'bg-brand-50 text-brand-700 ring-brand-200 dark:bg-brand-950/50 dark:text-brand-300 dark:ring-brand-800',
-  screening: 'bg-info-50 text-info-700 ring-info-200 dark:bg-info-950/50 dark:text-info-300 dark:ring-info-800',
-  interview: 'bg-warning-50 text-warning-700 ring-warning-200 dark:bg-warning-950/50 dark:text-warning-300 dark:ring-warning-800',
-  offer: 'bg-success-50 text-success-700 ring-success-200 dark:bg-success-950/50 dark:text-success-300 dark:ring-success-800',
-  hired: 'bg-success-100 text-success-800 ring-success-300 dark:bg-success-900/50 dark:text-success-200 dark:ring-success-700',
+  new: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-800',
+  screening: 'bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-950/50 dark:text-violet-400 dark:ring-violet-800',
+  interview: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-800',
+  offer: 'bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-950/50 dark:text-teal-400 dark:ring-teal-800',
+  hired: 'bg-green-50 text-green-700 ring-green-200 dark:bg-green-950/50 dark:text-green-400 dark:ring-green-800',
   rejected: 'bg-surface-100 text-surface-500 ring-surface-200 dark:bg-surface-800/50 dark:text-surface-400 dark:ring-surface-700',
 }
 
@@ -116,6 +117,11 @@ async function handleTransition(newStatus: string) {
     await $fetch(`/api/applications/${props.applicationId}`, {
       method: 'PATCH',
       body: { status: newStatus },
+    })
+    track('sidebar_status_changed', {
+      application_id: props.applicationId,
+      from_status: application.value?.status,
+      to_status: newStatus,
     })
     await refresh()
     emit('updated')
@@ -241,6 +247,7 @@ function closePreview() {
 
 async function handleDownload(docId: string) {
   try {
+    track('document_downloaded', { document_id: docId })
     await downloadDocument(docId)
   } catch {
     toast.error('Failed to download document')

@@ -5,7 +5,7 @@ import {
   Sun, Moon, MessageSquarePlus, Settings,
   ChevronDown, Menu, X, Users, ChevronLeft,
   LayoutDashboard, Calendar, ArrowUpCircle,
-  Cloud, Server, Sparkles, Radio,
+  Cloud, Server, Sparkles, Radio, History,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -125,6 +125,7 @@ const mainNav = [
   { label: 'Candidates', to: '/dashboard/candidates', icon: Users, exact: false },
   { label: 'Applications', to: '/dashboard/applications', icon: FileText, exact: false },
   { label: 'Interviews', to: '/dashboard/interviews', icon: Calendar, exact: false },
+  { label: 'Timeline', to: '/dashboard/timeline', icon: History, exact: true },
   { label: 'Source Tracking', to: '/dashboard/source-tracking', icon: Radio, exact: true, comingSoon: true },
   { label: 'AI Analysis', to: '/dashboard/ai-analysis', icon: Sparkles, exact: true },
   { label: 'Settings', to: '/dashboard/settings', icon: Settings, exact: false },

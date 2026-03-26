@@ -29,6 +29,11 @@ export async function recordActivity(params: {
   }
   catch (err) {
     // Activity logging must never break the primary operation.
-    console.error('[Reqcore] Failed to record activity:', err)
+    logWarn('activity.record_failed', {
+      org_id: params.organizationId,
+      resource_type: params.resourceType,
+      resource_id: params.resourceId,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
   }
 }

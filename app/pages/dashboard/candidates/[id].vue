@@ -125,11 +125,11 @@ async function handleDelete() {
 // ─────────────────────────────────────────────
 
 const applicationStatusClasses: Record<string, string> = {
-  new: 'bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400',
-  screening: 'bg-info-50 text-info-700 dark:bg-info-950 dark:text-info-400',
-  interview: 'bg-warning-50 text-warning-700 dark:bg-warning-950 dark:text-warning-400',
-  offer: 'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-400',
-  hired: 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300',
+  new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
+  screening: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400',
+  interview: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+  offer: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-400',
+  hired: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400',
   rejected: 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400',
 }
 
@@ -365,7 +365,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 Created
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(candidate.createdAt).toLocaleDateString() }}
+                <TimelineDateLink :date="candidate.createdAt">{{ new Date(candidate.createdAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
             <div>
@@ -374,7 +374,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 Updated
               </dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ new Date(candidate.updatedAt).toLocaleDateString() }}
+                <TimelineDateLink :date="candidate.updatedAt">{{ new Date(candidate.updatedAt).toLocaleDateString() }}</TimelineDateLink>
               </dd>
             </div>
           </dl>
@@ -439,7 +439,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                   {{ app.job.title }}
                 </h4>
                 <span class="text-xs text-surface-400">
-                  Applied {{ new Date(app.createdAt).toLocaleDateString() }}
+                  Applied <TimelineDateLink :date="app.createdAt">{{ new Date(app.createdAt).toLocaleDateString() }}</TimelineDateLink>
                 </span>
               </NuxtLink>
               <div class="flex items-center gap-2 shrink-0 sm:ml-3">
@@ -609,7 +609,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                     </p>
                     <span class="text-xs text-surface-400">
                       {{ documentTypeLabels[doc.type] ?? doc.type }}
-                      · {{ new Date(doc.createdAt).toLocaleDateString() }}
+                      · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
                       <template v-if="doc.mimeType === 'application/pdf'"> · <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
                     </span>
                   </div>

@@ -485,10 +485,10 @@ const statusCounts = computed(() => {
 
                 <!-- Schedule details -->
                 <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-surface-400 dark:text-surface-500">
-                  <span class="inline-flex items-center gap-1 font-medium" :class="isUpcoming(interviewItem.scheduledAt) ? 'text-brand-600 dark:text-brand-400' : ''">
+                  <TimelineDateLink :date="interviewItem.scheduledAt" class="inline-flex items-center gap-1 font-medium" :class="isUpcoming(interviewItem.scheduledAt) ? 'text-brand-600 dark:text-brand-400' : ''">
                     <Calendar class="size-3.5" />
                     {{ formatDateShort(interviewItem.scheduledAt) }}
-                  </span>
+                  </TimelineDateLink>
                   <span class="inline-flex items-center gap-1">
                     <Clock class="size-3.5" />
                     {{ formatTime(interviewItem.scheduledAt) }} · {{ interviewItem.duration }}min

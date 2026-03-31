@@ -186,98 +186,93 @@ function statusBadgeClass(status: string): string {
       <!-- ─── Stat cards ─── -->
       <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
         <!-- Total Runs -->
-        <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 hover:border-brand-300/60 dark:hover:border-brand-800/60 hover:shadow-md hover:shadow-brand-500/5 transition-all duration-200 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-transparent dark:from-brand-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-brand-500/25 dark:hover:ring-brand-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-500/[0.08]">
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Activity class="absolute -bottom-3 -right-3 size-24 text-brand-500/[0.03] dark:text-brand-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
           <div class="relative">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Total Runs</span>
-              <div class="flex items-center justify-center size-9 rounded-xl bg-brand-50 dark:bg-brand-950/40 group-hover:bg-brand-100 dark:group-hover:bg-brand-950/60 transition-colors">
-                <Activity class="size-4 text-brand-600 dark:text-brand-400" />
-              </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                {{ formatNumber(summary.totalRuns) }}
+              </span>
+              <span class="size-1.5 rounded-full bg-brand-500 shrink-0 mb-1" />
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-              {{ formatNumber(summary.totalRuns) }}
-            </div>
-            <div class="mt-1.5 flex items-center gap-3 text-xs">
+            <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Total Runs</span>
+            <div class="mt-1 flex items-center gap-3 text-[11px]">
               <span class="flex items-center gap-1 text-success-600 dark:text-success-400">
                 <CheckCircle2 class="size-3" />
-                {{ summary.completedRuns }} completed
+                {{ summary.completedRuns }}
               </span>
               <span v-if="summary.failedRuns > 0" class="flex items-center gap-1 text-danger-600 dark:text-danger-400">
                 <XCircle class="size-3" />
-                {{ summary.failedRuns }} failed
+                {{ summary.failedRuns }}
               </span>
             </div>
           </div>
         </div>
 
         <!-- Success Rate -->
-        <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 hover:border-success-300/60 dark:hover:border-success-800/60 hover:shadow-md hover:shadow-success-500/5 transition-all duration-200 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-success-50/50 to-transparent dark:from-success-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-success-500/25 dark:hover:ring-success-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-success-500/[0.08]">
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-success-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <TrendingUp class="absolute -bottom-3 -right-3 size-24 text-success-500/[0.03] dark:text-success-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
           <div class="relative">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Success Rate</span>
-              <div class="flex items-center justify-center size-9 rounded-xl bg-success-50 dark:bg-success-950/40 group-hover:bg-success-100 dark:group-hover:bg-success-950/60 transition-colors">
-                <TrendingUp class="size-4 text-success-600 dark:text-success-400" />
-              </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl sm:text-4xl font-black tracking-tight tabular-nums leading-none transition-colors duration-300" :class="successRate >= 90 ? 'text-success-600 dark:text-success-400' : successRate >= 70 ? 'text-warning-600 dark:text-warning-400' : 'text-danger-600 dark:text-danger-400'">
+                {{ successRate }}%
+              </span>
+              <span class="size-1.5 rounded-full shrink-0 mb-1" :class="successRate >= 90 ? 'bg-success-500' : successRate >= 70 ? 'bg-warning-500' : 'bg-danger-500'" />
             </div>
-            <div class="text-3xl font-bold tracking-tight tabular-nums" :class="successRate >= 90 ? 'text-success-600 dark:text-success-400' : successRate >= 70 ? 'text-warning-600 dark:text-warning-400' : 'text-danger-600 dark:text-danger-400'">
-              {{ successRate }}%
-            </div>
-            <p class="mt-1.5 text-xs text-surface-400">
+            <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Success Rate</span>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">
               {{ summary.completedRuns }} of {{ summary.totalRuns }} successful
             </p>
           </div>
         </div>
 
         <!-- Prompt Tokens -->
-        <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 hover:border-violet-300/60 dark:hover:border-violet-800/60 hover:shadow-md hover:shadow-violet-500/5 transition-all duration-200 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-violet-50/50 to-transparent dark:from-violet-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-violet-500/25 dark:hover:ring-violet-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/[0.08]">
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Zap class="absolute -bottom-3 -right-3 size-24 text-violet-500/[0.03] dark:text-violet-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
           <div class="relative">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Prompt Tokens</span>
-              <div class="flex items-center justify-center size-9 rounded-xl bg-violet-50 dark:bg-violet-950/40 group-hover:bg-violet-100 dark:group-hover:bg-violet-950/60 transition-colors">
-                <Zap class="size-4 text-violet-600 dark:text-violet-400" />
-              </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-violet-600 dark:group-hover:text-violet-400">
+                {{ formatNumber(summary.totalPromptTokens) }}
+              </span>
+              <span class="size-1.5 rounded-full bg-violet-500 shrink-0 mb-1" />
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-              {{ formatNumber(summary.totalPromptTokens) }}
-            </div>
-            <p class="mt-1.5 text-xs text-surface-400">Input tokens sent</p>
+            <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Prompt Tokens</span>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Input tokens sent</p>
           </div>
         </div>
 
         <!-- Completion Tokens -->
-        <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 hover:border-amber-300/60 dark:hover:border-amber-800/60 hover:shadow-md hover:shadow-amber-500/5 transition-all duration-200 overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-amber-500/25 dark:hover:ring-amber-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/[0.08]">
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Sparkles class="absolute -bottom-3 -right-3 size-24 text-amber-500/[0.03] dark:text-amber-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
           <div class="relative">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Completion Tokens</span>
-              <div class="flex items-center justify-center size-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 group-hover:bg-amber-100 dark:group-hover:bg-amber-950/60 transition-colors">
-                <Sparkles class="size-4 text-amber-600 dark:text-amber-400" />
-              </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-amber-600 dark:group-hover:text-amber-400">
+                {{ formatNumber(summary.totalCompletionTokens) }}
+              </span>
+              <span class="size-1.5 rounded-full bg-amber-500 shrink-0 mb-1" />
             </div>
-            <div class="text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-              {{ formatNumber(summary.totalCompletionTokens) }}
-            </div>
-            <p class="mt-1.5 text-xs text-surface-400">Output tokens generated</p>
+            <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Completion Tokens</span>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Output tokens generated</p>
           </div>
         </div>
 
         <!-- Total Cost -->
-        <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 hover:border-emerald-300/60 dark:hover:border-emerald-800/60 hover:shadow-md hover:shadow-emerald-500/5 transition-all duration-200 overflow-hidden col-span-2 lg:col-span-1">
-          <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent dark:from-emerald-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-emerald-500/25 dark:hover:ring-emerald-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/[0.08] col-span-2 lg:col-span-1">
+          <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <DollarSign class="absolute -bottom-3 -right-3 size-24 text-emerald-500/[0.03] dark:text-emerald-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
           <div class="relative">
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Total Cost</span>
-              <div class="flex items-center justify-center size-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-950/60 transition-colors">
-                <DollarSign class="size-4 text-emerald-600 dark:text-emerald-400" />
-              </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl sm:text-4xl font-black tracking-tight tabular-nums leading-none transition-colors duration-300" :class="pricing.configured ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 'text-surface-300 dark:text-surface-600'">
+                {{ pricing.configured ? formatCost(totalCost) : '—' }}
+              </span>
+              <span class="size-1.5 rounded-full shrink-0 mb-1" :class="pricing.configured ? 'bg-emerald-500' : 'bg-surface-300 dark:bg-surface-600'" />
             </div>
-            <div class="text-3xl font-bold tracking-tight tabular-nums" :class="pricing.configured ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-300 dark:text-surface-600'">
-              {{ pricing.configured ? formatCost(totalCost) : '—' }}
-            </div>
-            <p class="mt-1.5 text-xs text-surface-400">
+            <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Total Cost</span>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">
               <template v-if="pricing.configured">Estimated from token usage</template>
               <template v-else>
                 <NuxtLink to="/dashboard/settings/ai" class="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300 underline underline-offset-2">Set pricing</NuxtLink> to track costs

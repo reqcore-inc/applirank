@@ -2,7 +2,7 @@
 import {
   X, User, Calendar, Clock, Hash, MessageSquare, FileText,
   ExternalLink, Mail, Phone, Upload, Download, Eye, Trash2,
-  ArrowLeft, AlertTriangle, Brain,
+  ArrowLeft, AlertTriangle, Brain, History,
 } from 'lucide-vue-next'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
 
@@ -34,7 +34,7 @@ const hasSubNav = computed(() => {
 // Tabs
 // ─────────────────────────────────────────────
 
-const activeTab = ref<'overview' | 'documents' | 'responses' | 'ai_analysis'>('overview')
+const activeTab = ref<'overview' | 'documents' | 'responses' | 'ai_analysis' | 'timeline'>('overview')
 
 // ─────────────────────────────────────────────
 // Fetch application detail
@@ -288,12 +288,109 @@ function onKeydown(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
+// ─────────────────────────────────────────────
+// Timeline data for the candidate
+// ─────────────────────────────────────────────
+
+interface TimelineEntry {
+  id: string
+  action: string
+  resourceType: string
+  resourceId: string
+  metadata: Record<string, unknown> | null
+  createdAt: string
+  actorName: string | null
+  actorEmail: string | null
+  resourceName: string | null
+  jobTitle: string | null
+  candidateName: string | null
+}
+
+const timelineItems = ref<TimelineEntry[]>([])
+const timelineLoading = ref(false)
+const timelineError = ref<string | null>(null)
+const timelineLoaded = ref(false)
+
+const timelineActionLabels: Record<string, string> = {
+  created: 'Created',
+  updated: 'Updated',
+  deleted: 'Deleted',
+  status_changed: 'Status changed',
+  comment_added: 'Comment added',
+  scored: 'Scored',
+  scheduled: 'Scheduled',
+}
+
+function formatTimelineDate(dateStr: string) {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function getTimelineActionColor(action: string): string {
+  switch (action) {
+    case 'created': return 'bg-green-500'
+    case 'status_changed': return 'bg-blue-500'
+    case 'updated': return 'bg-amber-500'
+    case 'deleted': return 'bg-danger-500'
+    case 'comment_added': return 'bg-violet-500'
+    case 'scored': return 'bg-teal-500'
+    case 'scheduled': return 'bg-brand-500'
+    default: return 'bg-surface-400'
+  }
+}
+
+function describeTimelineItem(item: TimelineEntry): string {
+  const actor = item.actorName ?? item.actorEmail ?? 'System'
+  const action = timelineActionLabels[item.action] ?? item.action
+  const resource = item.resourceType
+
+  if (item.action === 'status_changed' && item.metadata) {
+    const from = item.metadata.from_status ?? item.metadata.fromStatus
+    const to = item.metadata.to_status ?? item.metadata.toStatus
+    if (from && to) return `${actor} changed ${resource} status from ${from} to ${to}`
+  }
+
+  if (item.action === 'scored' && item.metadata) {
+    const score = item.metadata.score
+    if (score != null) return `${actor} scored ${resource} — ${score} pts`
+  }
+
+  return `${actor} ${action.toLowerCase()} ${resource}`
+}
+
+async function loadTimeline() {
+  if (!candidateId.value) return
+  timelineLoading.value = true
+  timelineError.value = null
+  try {
+    const result = await $fetch<{ items: TimelineEntry[] }>('/api/activity-log/candidate-timeline', {
+      query: { candidateId: candidateId.value },
+    })
+    timelineItems.value = result.items
+    timelineLoaded.value = true
+  } catch (err: any) {
+    timelineError.value = err?.data?.statusMessage ?? 'Failed to load timeline'
+  } finally {
+    timelineLoading.value = false
+  }
+}
+
+// Load timeline data lazily when tab is selected
+watch(activeTab, (tab) => {
+  if (tab === 'timeline' && !timelineLoaded.value && candidateId.value) {
+    loadTimeline()
+  }
+})
+
 // Reset state when switching to a different application
 watch(() => props.applicationId, () => {
   isEditingNotes.value = false
   activeTab.value = 'overview'
   uploadError.value = null
   showDocDeleteConfirm.value = null
+  timelineItems.value = []
+  timelineLoaded.value = false
+  timelineError.value = null
   closePreview()
 })
 
@@ -431,6 +528,16 @@ function formatInterviewDate(dateStr: string) {
           >
             <Brain class="size-3.5" />
             AI Analysis
+          </button>
+          <button
+            class="cursor-pointer px-3 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px inline-flex items-center gap-1.5"
+            :class="activeTab === 'timeline'
+              ? 'border-brand-600 text-brand-600'
+              : 'border-transparent text-surface-500 hover:text-surface-700 hover:border-surface-300 dark:hover:text-surface-300'"
+            @click="activeTab = 'timeline'"
+          >
+            <History class="size-3.5" />
+            Timeline
           </button>
         </div>
       </div>
@@ -880,6 +987,82 @@ function formatInterviewDate(dateStr: string) {
           <!-- ═══════════════════════════════════════ -->
           <div v-if="activeTab === 'ai_analysis'">
             <ScoreBreakdown :application-id="props.applicationId" @scored="refresh(); emit('updated')" />
+          </div>
+
+          <!-- ═══════════════════════════════════════ -->
+          <!-- TIMELINE TAB                            -->
+          <!-- ═══════════════════════════════════════ -->
+          <div v-if="activeTab === 'timeline'" class="space-y-1">
+            <!-- Loading -->
+            <div v-if="timelineLoading" class="text-center py-12 text-surface-400">
+              <div class="size-6 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin mx-auto mb-3" />
+              Loading timeline…
+            </div>
+
+            <!-- Error -->
+            <div
+              v-else-if="timelineError"
+              class="rounded-xl border border-danger-200/80 dark:border-danger-800/60 bg-danger-50 dark:bg-danger-950/40 p-5 text-center"
+            >
+              <AlertTriangle class="size-6 text-danger-400 mx-auto mb-2" />
+              <p class="text-sm text-danger-700 dark:text-danger-400">{{ timelineError }}</p>
+              <button
+                class="mt-3 text-sm text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
+                @click="loadTimeline"
+              >
+                Retry
+              </button>
+            </div>
+
+            <!-- Empty -->
+            <div
+              v-else-if="timelineItems.length === 0"
+              class="rounded-xl border border-surface-200/80 dark:border-surface-800/60 bg-white dark:bg-surface-950 p-8 text-center shadow-sm shadow-surface-900/[0.03] dark:shadow-none"
+            >
+              <div class="flex size-14 items-center justify-center rounded-2xl bg-surface-100 dark:bg-surface-800/60 mx-auto mb-3">
+                <History class="size-6 text-surface-400 dark:text-surface-500" />
+              </div>
+              <p class="text-sm font-medium text-surface-600 dark:text-surface-300">No activity recorded yet.</p>
+              <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Activity for this candidate will appear here.</p>
+            </div>
+
+            <!-- Timeline list -->
+            <div v-else class="relative">
+              <!-- Vertical line -->
+              <div class="absolute left-[11px] top-2 bottom-2 w-px bg-surface-200 dark:bg-surface-700" />
+
+              <div
+                v-for="item in timelineItems"
+                :key="item.id"
+                class="relative flex gap-3 py-2.5 group"
+              >
+                <!-- Dot -->
+                <div class="relative z-10 mt-1 shrink-0">
+                  <div
+                    class="size-[9px] rounded-full ring-2 ring-white dark:ring-surface-900"
+                    :class="getTimelineActionColor(item.action)"
+                  />
+                </div>
+
+                <!-- Content -->
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-surface-700 dark:text-surface-200 leading-snug">
+                    {{ describeTimelineItem(item) }}
+                  </p>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[11px] text-surface-400 dark:text-surface-500 tabular-nums">
+                      {{ formatTimelineDate(item.createdAt) }}
+                    </span>
+                    <span
+                      v-if="item.jobTitle"
+                      class="text-[10px] text-surface-400 dark:text-surface-500 bg-surface-100 dark:bg-surface-800 rounded px-1.5 py-0.5 truncate max-w-[140px]"
+                    >
+                      {{ item.jobTitle }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
         </template>

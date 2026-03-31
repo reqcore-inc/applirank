@@ -68,21 +68,23 @@ export function useSourceTracking(options?: {
   const to = computed(() => toValue(options?.to))
 
   // ─── Source stats ─────────────────────────
+  const queryParams = computed(() => {
+    const q: Record<string, string> = {}
+    if (jobId.value) q.jobId = jobId.value
+    if (from.value) q.from = from.value
+    if (to.value) q.to = to.value
+    return q
+  })
+
   const {
     data: stats,
     status: statsStatus,
     error: statsError,
     refresh: refreshStats,
   } = useFetch<SourceStats>('/api/source-tracking/stats', {
-    key: 'source-stats',
     headers: useRequestHeaders(['cookie']),
-    query: computed(() => {
-      const q: Record<string, string> = {}
-      if (jobId.value) q.jobId = jobId.value
-      if (from.value) q.from = from.value
-      if (to.value) q.to = to.value
-      return q
-    }),
+    query: queryParams,
+    watch: [queryParams],
   })
 
   const channelBreakdown = computed(() => stats.value?.channelBreakdown ?? [])

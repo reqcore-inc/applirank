@@ -417,10 +417,11 @@ const isCreatingCustomBoard = ref(false)
 async function createCustomBoardLink() {
   const name = customBoardName.value.trim()
   if (!name) return
-  const channel = `custom_${name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 50)}`
+  // Use a slug derived from the custom board name for local dedup only
+  const dedupeKey = `custom_${name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 50)}`
 
   // Prevent duplicates
-  if (customBoardLinks.value.some(l => l.channel === channel)) {
+  if (customBoardLinks.value.some(l => l.channel === dedupeKey)) {
     toast.warning('Duplicate board', `A custom link for "${name}" already exists.`)
     return
   }
@@ -431,15 +432,15 @@ async function createCustomBoardLink() {
       method: 'POST',
       body: {
         jobId: createdJobId.value,
-        channel,
+        channel: 'custom',
         name: `${form.value.title} — ${name}`,
       },
     })
     const base = `${requestUrl.protocol}//${requestUrl.host}`
     const trackUrl = `${base}/api/public/track/${encodeURIComponent(result.code)}`
-    customBoardLinks.value.push({ id: result.id, name, channel, code: result.code, url: trackUrl, copied: false })
+    customBoardLinks.value.push({ id: result.id, name, channel: dedupeKey, code: result.code, url: trackUrl, copied: false })
     customBoardName.value = ''
-    track('tracking_link_created', { channel, source: 'job_wizard_custom' })
+    track('tracking_link_created', { channel: 'custom', customName: name, source: 'job_wizard_custom' })
   } catch {
     toast.error(`Failed to create tracking link for "${name}"`)
   } finally {

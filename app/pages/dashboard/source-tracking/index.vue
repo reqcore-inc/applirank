@@ -29,6 +29,7 @@ onMounted(() => track('source_tracking_viewed'))
 // ─────────────────────────────────────────────
 
 const selectedJobId = ref<string | undefined>()
+const selectedChannel = ref<string | undefined>()
 const dateRange = ref<'7d' | '30d' | '90d' | 'all'>('30d')
 
 const dateFrom = computed(() => {
@@ -285,6 +286,11 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
+const filteredAttributed = computed(() => {
+  if (!selectedChannel.value) return recentAttributed.value
+  return recentAttributed.value.filter(a => a.channel === selectedChannel.value)
+})
+
 const showTab = ref<'overview' | 'links' | 'table'>('overview')
 </script>
 
@@ -391,7 +397,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
           :class="showTab === tab.key
             ? 'border-brand-600 text-brand-600 dark:text-brand-400 dark:border-brand-400'
             : 'border-transparent text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'"
-          @click="showTab = tab.key"
+          @click="showTab = tab.key; if (tab.key !== 'table') selectedChannel = undefined"
         >
           <component :is="tab.icon" class="size-4" />
           {{ tab.label }}
@@ -414,80 +420,84 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
         <!-- ─── Stat cards ─── -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-10">
           <!-- Tracked Applications -->
-          <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-transparent dark:from-brand-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-brand-500/25 dark:hover:ring-brand-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-500/[0.08]">
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Target class="absolute -bottom-3 -right-3 size-24 text-brand-500/[0.03] dark:text-brand-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
             <div class="relative">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Tracked</span>
-                <div class="flex items-center justify-center size-9 rounded-xl bg-brand-50 dark:bg-brand-950/40">
-                  <Target class="size-4 text-brand-600 dark:text-brand-400" />
-                </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                  {{ summary.totalTracked }}
+                </span>
+                <span class="size-1.5 rounded-full bg-brand-500 shrink-0 mb-1" />
               </div>
-              <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-                {{ summary.totalTracked }}
-              </div>
-              <p class="text-xs text-surface-400 mt-1.5">With source attribution</p>
+              <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Tracked</span>
+              <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">With source attribution</p>
             </div>
           </div>
 
           <!-- Attribution Rate -->
-          <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent dark:from-teal-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-teal-500/25 dark:hover:ring-teal-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-teal-500/[0.08]">
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Activity class="absolute -bottom-3 -right-3 size-24 text-teal-500/[0.03] dark:text-teal-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
             <div class="relative">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Attribution</span>
-                <div class="flex items-center justify-center size-9 rounded-xl bg-teal-50 dark:bg-teal-950/40">
-                  <Activity class="size-4 text-teal-600 dark:text-teal-400" />
-                </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-teal-600 dark:group-hover:text-teal-400">
+                  {{ summary.attributionRate }}%
+                </span>
+                <span class="size-1.5 rounded-full bg-teal-500 shrink-0 mb-1" />
               </div>
-              <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-                {{ summary.attributionRate }}%
-              </div>
-              <p class="text-xs text-surface-400 mt-1.5">Of all applications</p>
+              <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Attribution</span>
+              <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Of all applications</p>
             </div>
           </div>
 
           <!-- Active Links -->
-          <div class="group relative rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 p-5 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-violet-50/50 to-transparent dark:from-violet-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-violet-500/25 dark:hover:ring-violet-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/[0.08]">
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Link2 class="absolute -bottom-3 -right-3 size-24 text-violet-500/[0.03] dark:text-violet-400/[0.05] rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" />
             <div class="relative">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Active Links</span>
-                <div class="flex items-center justify-center size-9 rounded-xl bg-violet-50 dark:bg-violet-950/40">
-                  <Link2 class="size-4 text-violet-600 dark:text-violet-400" />
-                </div>
+              <div class="flex items-baseline gap-2">
+                <span class="text-3xl sm:text-4xl font-black tracking-tight text-surface-900 dark:text-surface-50 tabular-nums leading-none transition-colors duration-300 group-hover:text-violet-600 dark:group-hover:text-violet-400">
+                  {{ links.filter(l => l.isActive).length }}
+                </span>
+                <span class="size-1.5 rounded-full bg-violet-500 shrink-0 mb-1" />
               </div>
-              <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50 tracking-tight tabular-nums">
-                {{ links.filter(l => l.isActive).length }}
-              </div>
-              <p class="text-xs text-surface-400 mt-1.5">{{ totalLinks }} total created</p>
+              <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Active Links</span>
+              <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">{{ totalLinks }} total created</p>
             </div>
           </div>
 
           <!-- Untracked -->
-          <div class="group relative rounded-2xl border bg-white dark:bg-surface-900 p-5 overflow-hidden"
+          <div
+            class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate transition-all duration-300 hover:-translate-y-0.5"
             :class="summary.totalUntracked > 0
-              ? 'border-warning-200 dark:border-warning-900/50'
-              : 'border-surface-200/80 dark:border-surface-800'"
+              ? 'ring-1 ring-warning-400/30 dark:ring-warning-500/20 hover:ring-warning-500/40 dark:hover:ring-warning-400/30 shadow-sm shadow-warning-500/[0.06] hover:shadow-lg hover:shadow-warning-500/[0.12]'
+              : 'ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-surface-300/50 dark:hover:ring-surface-600/30 hover:shadow-lg hover:shadow-surface-500/[0.04]'"
           >
-            <div class="absolute inset-0 bg-gradient-to-br from-warning-50/50 to-transparent dark:from-warning-950/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <div
+              class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent transition-opacity duration-500"
+              :class="summary.totalUntracked > 0
+                ? 'via-warning-500 opacity-60 group-hover:opacity-100'
+                : 'via-surface-400 opacity-0 group-hover:opacity-40'"
+            />
+            <Eye class="absolute -bottom-3 -right-3 size-24 rotate-12 transition-transform duration-700 ease-out group-hover:rotate-3 group-hover:scale-110 pointer-events-none" :class="summary.totalUntracked > 0 ? 'text-warning-500/[0.04] dark:text-warning-400/[0.06]' : 'text-surface-400/[0.03] dark:text-surface-500/[0.05]'" />
             <div class="relative">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">Untracked</span>
-                <div class="flex items-center justify-center size-9 rounded-xl"
+              <div class="flex items-baseline gap-2">
+                <span
+                  class="text-3xl sm:text-4xl font-black tracking-tight tabular-nums leading-none transition-colors duration-300"
                   :class="summary.totalUntracked > 0
-                    ? 'bg-warning-50 dark:bg-warning-950/40'
-                    : 'bg-surface-100 dark:bg-surface-800'"
+                    ? 'text-warning-600 dark:text-warning-400 group-hover:text-warning-700 dark:group-hover:text-warning-300'
+                    : 'text-surface-900 dark:text-surface-50 group-hover:text-surface-600 dark:group-hover:text-surface-300'"
                 >
-                  <Eye class="size-4" :class="summary.totalUntracked > 0 ? 'text-warning-600 dark:text-warning-400' : 'text-surface-400'" />
-                </div>
+                  {{ summary.totalUntracked }}
+                </span>
+                <span class="relative shrink-0 mb-1">
+                  <span class="size-1.5 rounded-full block" :class="summary.totalUntracked > 0 ? 'bg-warning-500' : 'bg-surface-300 dark:bg-surface-600'" />
+                  <span v-if="summary.totalUntracked > 0" class="absolute inset-0 size-1.5 rounded-full bg-warning-500 animate-ping" />
+                </span>
               </div>
-              <div class="text-2xl sm:text-3xl font-bold tracking-tight tabular-nums"
-                :class="summary.totalUntracked > 0 ? 'text-warning-700 dark:text-warning-400' : 'text-surface-900 dark:text-surface-50'"
-              >
-                {{ summary.totalUntracked }}
-              </div>
-              <p class="text-xs mt-1.5" :class="summary.totalUntracked > 0 ? 'text-warning-600 dark:text-warning-400' : 'text-surface-400'">
+              <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Untracked</span>
+              <p class="text-[11px] mt-1" :class="summary.totalUntracked > 0 ? 'text-warning-500 dark:text-warning-500 font-medium' : 'text-surface-300 dark:text-surface-600'">
                 {{ summary.totalUntracked > 0 ? 'Without attribution' : 'All attributed' }}
               </p>
             </div>
@@ -521,10 +531,11 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
               </div>
 
               <div v-else class="px-6 py-5 space-y-4">
-                <div
+                <button
                   v-for="item in channelBreakdown"
                   :key="item.channel"
-                  class="group/bar"
+                  class="group/bar w-full text-left cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800/40 -mx-3 px-3 py-1.5 rounded-lg transition-colors"
+                  @click="selectedChannel = item.channel; showTab = 'table'"
                 >
                   <div class="flex items-center justify-between mb-1.5">
                     <div class="flex items-center gap-2">
@@ -549,7 +560,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                       :style="{ width: `${(item.count / maxChannelCount) * 100}%` }"
                     />
                   </div>
-                </div>
+                </button>
               </div>
             </div>
 
@@ -581,7 +592,12 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
-                    <tr v-for="(stages, channel) in funnel" :key="channel" class="hover:bg-surface-50 dark:hover:bg-surface-800/40">
+                    <tr
+                      v-for="(stages, channel) in funnel"
+                      :key="channel"
+                      class="hover:bg-surface-50 dark:hover:bg-surface-800/40 cursor-pointer"
+                      @click="selectedChannel = channel as string; showTab = 'table'"
+                    >
                       <td class="px-6 py-3">
                         <div class="flex items-center gap-2">
                           <div class="size-2 rounded-full" :class="getChannelColor(channel as string)" />
@@ -640,13 +656,14 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
               </div>
 
               <div v-else class="divide-y divide-surface-100 dark:divide-surface-800">
-                <div
+                <NuxtLink
                   v-for="link in topLinks.slice(0, 5)"
                   :key="link.id"
-                  class="px-5 py-3.5 hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors"
+                  :to="localePath(`/dashboard/source-tracking/${link.id}`)"
+                  class="block px-5 py-3.5 hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors cursor-pointer"
                 >
                   <div class="flex items-center justify-between mb-1">
-                    <span class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">{{ link.name }}</span>
+                    <span class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate hover:text-brand-600 dark:hover:text-brand-400 transition-colors">{{ link.name }}</span>
                     <span
                       class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset shrink-0 ml-2"
                       :class="getChannelBadge(link.channel)"
@@ -667,7 +684,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                       {{ Math.round((link.applicationCount / link.clickCount) * 100) }}% CVR
                     </span>
                   </div>
-                </div>
+                </NuxtLink>
               </div>
             </div>
 
@@ -803,7 +820,12 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                 <tr v-for="link in links" :key="link.id" class="hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors group">
                   <!-- Name + URL -->
                   <td class="px-5 py-3.5">
-                    <div class="font-medium text-surface-800 dark:text-surface-200 mb-0.5">{{ link.name }}</div>
+                    <NuxtLink
+                      :to="localePath(`/dashboard/source-tracking/${link.id}`)"
+                      class="font-medium text-surface-800 dark:text-surface-200 mb-0.5 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                    >
+                      {{ link.name }}
+                    </NuxtLink>
                     <div class="text-[11px] text-surface-400 dark:text-surface-500 font-mono truncate max-w-[200px]">
                       ?ref={{ link.code }}
                     </div>
@@ -889,7 +911,22 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
       <!-- TAB: Attribution Log                    -->
       <!-- ═══════════════════════════════════════ -->
       <div v-if="showTab === 'table'">
-        <div v-if="recentAttributed.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+        <!-- Channel filter chip -->
+        <div v-if="selectedChannel" class="mb-4 flex items-center gap-2">
+          <span class="text-xs text-surface-500 dark:text-surface-400">Filtered by:</span>
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset"
+            :class="getChannelBadge(selectedChannel)"
+          >
+            <span class="size-1.5 rounded-full" :class="getChannelColor(selectedChannel)" />
+            {{ getChannelLabel(selectedChannel) }}
+            <button class="ml-0.5 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="selectedChannel = undefined">
+              <X class="size-3" />
+            </button>
+          </span>
+        </div>
+
+        <div v-if="filteredAttributed.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
           <div class="mx-auto mb-4 flex items-center justify-center size-14 rounded-2xl bg-surface-100 dark:bg-surface-800">
             <Users class="size-6 text-surface-400 dark:text-surface-500" />
           </div>
@@ -913,7 +950,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                 </tr>
               </thead>
               <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
-                <tr v-for="app in recentAttributed" :key="app.applicationId" class="hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors">
+                <tr v-for="app in filteredAttributed" :key="app.applicationId" class="hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors">
                   <!-- Candidate -->
                   <td class="px-5 py-3.5">
                     <div class="flex items-center gap-2.5">
@@ -1017,7 +1054,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                 class="w-full rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-4 py-2.5 text-sm text-surface-900 dark:text-surface-100 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
               >
                 <optgroup label="Job Boards">
-                  <option v-for="ch in ['linkedin', 'indeed', 'glassdoor', 'ziprecruiter', 'monster', 'handshake', 'angellist', 'wellfound', 'dice', 'stackoverflow', 'weworkremotely', 'remoteok', 'builtin', 'hired', 'google_jobs']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>
+                  <option v-for="ch in ['linkedin', 'indeed', 'glassdoor', 'ziprecruiter', 'monster', 'handshake', 'angellist', 'wellfound', 'dice', 'stackoverflow', 'weworkremotely', 'remoteok', 'builtin', 'hired', 'lever', 'greenhouse_board', 'google_jobs']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>
                 </optgroup>
                 <optgroup label="Social Media">
                   <option v-for="ch in ['facebook', 'twitter', 'instagram', 'tiktok', 'reddit']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>

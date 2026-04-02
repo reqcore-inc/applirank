@@ -121,20 +121,29 @@ export function useTrackingLinks(options?: {
   const jobId = computed(() => toValue(options?.jobId))
   const channel = computed(() => toValue(options?.channel))
 
+  const fetchKey = computed(() => {
+    const parts = ['tracking-links']
+    if (jobId.value) parts.push(jobId.value)
+    if (channel.value) parts.push(channel.value)
+    return parts.join(':')
+  })
+
+  const linksUrl = computed(() => {
+    const params = new URLSearchParams()
+    if (jobId.value) params.set('jobId', jobId.value)
+    if (channel.value) params.set('channel', channel.value)
+    const qs = params.toString()
+    return `/api/tracking-links${qs ? `?${qs}` : ''}`
+  })
+
   const {
     data,
     status: fetchStatus,
     error,
     refresh,
-  } = useFetch<{ data: TrackingLink[]; total: number }>('/api/tracking-links', {
-    key: 'tracking-links',
+  } = useFetch<{ data: TrackingLink[]; total: number }>(linksUrl, {
+    key: fetchKey.value,
     headers: useRequestHeaders(['cookie']),
-    query: computed(() => {
-      const q: Record<string, string> = {}
-      if (jobId.value) q.jobId = jobId.value
-      if (channel.value) q.channel = channel.value
-      return q
-    }),
   })
 
   const links = computed<TrackingLink[]>(() => data.value?.data ?? [])

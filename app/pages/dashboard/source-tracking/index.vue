@@ -5,7 +5,7 @@ import {
   Activity, Target, Eye, MousePointerClick,
   CheckCircle2, XCircle, Clock, Filter,
   Copy, ToggleLeft, ToggleRight,
-  Trash2, ChevronDown, X,
+  Trash2, ChevronDown, ChevronUp, X,
 } from 'lucide-vue-next'
 
 definePageMeta({
@@ -28,7 +28,10 @@ onMounted(() => track('source_tracking_viewed'))
 // State
 // ─────────────────────────────────────────────
 
-const selectedJobId = ref<string | undefined>()
+const route = useRoute()
+
+// Initialize filters from query params (e.g. ?jobId=xxx&tab=links)
+const selectedJobId = ref<string | undefined>(route.query.jobId as string | undefined)
 const selectedChannel = ref<string | undefined>()
 const dateRange = ref<'7d' | '30d' | '90d' | 'all'>('30d')
 
@@ -291,7 +294,59 @@ const filteredAttributed = computed(() => {
   return recentAttributed.value.filter(a => a.channel === selectedChannel.value)
 })
 
-const showTab = ref<'overview' | 'links' | 'table'>('overview')
+// ─────────────────────────────────────────────
+// Tracking links table sorting
+// ─────────────────────────────────────────────
+
+type LinkSortKey = 'name' | 'channel' | 'clickCount' | 'applicationCount' | 'cvr' | 'isActive'
+const linkSortKey = ref<LinkSortKey>('clickCount')
+const linkSortAsc = ref(false)
+
+function toggleLinkSort(key: LinkSortKey) {
+  if (linkSortKey.value === key) {
+    linkSortAsc.value = !linkSortAsc.value
+  } else {
+    linkSortKey.value = key
+    linkSortAsc.value = key === 'name' || key === 'channel' // default asc for text columns
+  }
+}
+
+function getLinkCvr(link: { clickCount: number; applicationCount: number }) {
+  return link.clickCount > 0 ? link.applicationCount / link.clickCount : 0
+}
+
+const sortedLinks = computed(() => {
+  const sorted = [...links.value].sort((a, b) => {
+    let cmp = 0
+    switch (linkSortKey.value) {
+      case 'name':
+        cmp = a.name.localeCompare(b.name)
+        break
+      case 'channel':
+        cmp = a.channel.localeCompare(b.channel)
+        break
+      case 'clickCount':
+        cmp = a.clickCount - b.clickCount
+        break
+      case 'applicationCount':
+        cmp = a.applicationCount - b.applicationCount
+        break
+      case 'cvr':
+        cmp = getLinkCvr(a) - getLinkCvr(b)
+        break
+      case 'isActive':
+        cmp = Number(a.isActive) - Number(b.isActive)
+        break
+    }
+    return linkSortAsc.value ? cmp : -cmp
+  })
+  return sorted
+})
+
+const initialTab = (['overview', 'links', 'table'] as const).includes(route.query.tab as any)
+  ? (route.query.tab as 'overview' | 'links' | 'table')
+  : 'overview'
+const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
 </script>
 
 <template>
@@ -807,18 +862,30 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
             <table class="w-full text-sm">
               <thead>
                 <tr class="border-b border-surface-100 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-800/30">
-                  <th class="px-5 py-3 text-left text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Name</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Source</th>
+                  <th class="px-5 py-3 text-left text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('name')">
+                    <span class="inline-flex items-center gap-1">Name <component :is="linkSortKey === 'name' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'name' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('channel')">
+                    <span class="inline-flex items-center gap-1">Source <component :is="linkSortKey === 'channel' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'channel' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
                   <th class="px-4 py-3 text-left text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Job</th>
-                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Clicks</th>
-                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Apps</th>
-                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">CVR</th>
-                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('clickCount')">
+                    <span class="inline-flex items-center gap-1">Clicks <component :is="linkSortKey === 'clickCount' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'clickCount' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('applicationCount')">
+                    <span class="inline-flex items-center gap-1">Apps <component :is="linkSortKey === 'applicationCount' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'applicationCount' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('cvr')">
+                    <span class="inline-flex items-center gap-1">CVR <component :is="linkSortKey === 'cvr' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'cvr' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors" @click="toggleLinkSort('isActive')">
+                    <span class="inline-flex items-center gap-1">Status <component :is="linkSortKey === 'isActive' ? (linkSortAsc ? ChevronUp : ChevronDown) : ChevronDown" class="size-3" :class="linkSortKey === 'isActive' ? 'opacity-100' : 'opacity-0'" /></span>
+                  </th>
                   <th class="px-4 py-3 text-right text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
-                <tr v-for="link in links" :key="link.id" class="hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors group">
+                <tr v-for="link in sortedLinks" :key="link.id" class="hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors group">
                   <!-- Name + URL -->
                   <td class="px-5 py-3.5">
                     <NuxtLink
@@ -955,7 +1022,7 @@ const showTab = ref<'overview' | 'links' | 'table'>('overview')
                   <!-- Candidate -->
                   <td class="px-5 py-3.5">
                     <NuxtLink
-                      :to="localePath(`/dashboard/jobs/${app.jobId}/candidates`)"
+                      :to="localePath({ path: `/dashboard/jobs/${app.jobId}`, query: { stage: app.status } })"
                       class="flex items-center gap-2.5 group/candidate"
                     >
                       <div class="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-brand-100 to-brand-200 dark:from-brand-900/80 dark:to-brand-800/80 shrink-0 ring-1 ring-brand-200/50 dark:ring-brand-800/50">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileText, Link2, ClipboardCopy, Check, Plus, Copy, CheckCircle2, XCircle, ToggleLeft, ToggleRight, Trash2, Radio, ChevronDown, X } from 'lucide-vue-next'
+import { FileText, Link2, ClipboardCopy, Check, Plus, Copy, CheckCircle2, XCircle, ToggleLeft, ToggleRight, Trash2, Radio, ChevronDown, X, ExternalLink } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const localePath = useLocalePath()
 const jobId = route.params.id as string
 const toast = useToast()
 
@@ -294,7 +295,12 @@ async function copyTrackingUrl(code: string) {
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center gap-2">
             <Radio class="size-4 text-surface-500 dark:text-surface-400" />
-            <h2 class="text-sm font-semibold text-surface-700 dark:text-surface-300">Source Tracking Links</h2>
+            <NuxtLink
+              :to="localePath({ path: '/dashboard/source-tracking', query: { jobId } })"
+              class="text-sm font-semibold text-surface-700 dark:text-surface-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+            >
+              Source Tracking Links
+            </NuxtLink>
           </div>
           <button
             v-if="canManageLinks"
@@ -327,7 +333,13 @@ async function copyTrackingUrl(code: string) {
           >
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 mb-0.5">
-                <span class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">{{ link.name }}</span>
+                <NuxtLink
+                  :to="localePath(`/dashboard/source-tracking/${link.id}`)"
+                  class="text-sm font-medium text-surface-800 dark:text-surface-200 hover:text-brand-600 dark:hover:text-brand-400 truncate no-underline transition-colors"
+                  @click.stop
+                >
+                  {{ link.name }}
+                </NuxtLink>
                 <span
                   class="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset bg-surface-100 text-surface-600 ring-surface-200 dark:bg-surface-800 dark:text-surface-400 dark:ring-surface-700"
                 >
@@ -391,5 +403,123 @@ async function copyTrackingUrl(code: string) {
         <JobQuestions :job-id="jobId" />
       </div>
     </template>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- Modal: Create tracking link             -->
+    <!-- ═══════════════════════════════════════ -->
+    <Teleport to="body">
+      <div v-if="showCreateLinkModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showCreateLinkModal = false" />
+        <div class="relative w-full max-w-lg rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-2xl">
+          <div class="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
+            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Create Tracking Link</h2>
+            <button
+              class="p-1.5 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+              @click="showCreateLinkModal = false"
+            >
+              <X class="size-4" />
+            </button>
+          </div>
+          <form class="px-6 py-5 space-y-4" @submit.prevent="handleCreateLink">
+            <div>
+              <label for="link-name" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Link Name</label>
+              <input
+                id="link-name"
+                v-model="newLink.name"
+                type="text"
+                placeholder="e.g. LinkedIn Spring Campaign"
+                class="w-full rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-4 py-2.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label for="link-channel" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Source Channel</label>
+              <select
+                id="link-channel"
+                v-model="newLink.channel"
+                class="w-full rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-4 py-2.5 text-sm text-surface-900 dark:text-surface-100 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+              >
+                <optgroup label="Job Boards">
+                  <option v-for="ch in ['linkedin', 'indeed', 'glassdoor', 'ziprecruiter', 'monster', 'handshake', 'angellist', 'wellfound', 'dice', 'stackoverflow', 'weworkremotely', 'remoteok', 'builtin', 'hired', 'google_jobs']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>
+                </optgroup>
+                <optgroup label="Social Media">
+                  <option v-for="ch in ['facebook', 'twitter', 'instagram', 'tiktok', 'reddit']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option v-for="ch in ['referral', 'career_site', 'email', 'event', 'agency', 'direct', 'custom', 'other']" :key="ch" :value="ch">{{ getChannelLabel(ch) }}</option>
+                </optgroup>
+              </select>
+            </div>
+            <details class="group">
+              <summary class="flex items-center gap-2 text-sm font-medium text-surface-500 dark:text-surface-400 cursor-pointer select-none hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+                <ChevronDown class="size-4 transition-transform group-open:rotate-180" />
+                UTM Parameters (optional)
+              </summary>
+              <div class="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <label for="utm-source" class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1">utm_source</label>
+                  <input id="utm-source" v-model="newLink.utmSource" type="text" placeholder="linkedin" class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-xs text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all" />
+                </div>
+                <div>
+                  <label for="utm-medium" class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1">utm_medium</label>
+                  <input id="utm-medium" v-model="newLink.utmMedium" type="text" placeholder="social" class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-xs text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all" />
+                </div>
+                <div class="col-span-2">
+                  <label for="utm-campaign" class="block text-xs font-medium text-surface-500 dark:text-surface-400 mb-1">utm_campaign</label>
+                  <input id="utm-campaign" v-model="newLink.utmCampaign" type="text" placeholder="spring-hiring-2026" class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-xs text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all" />
+                </div>
+              </div>
+            </details>
+            <div class="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                class="rounded-xl px-4 py-2.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                @click="showCreateLinkModal = false"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                :disabled="!newLink.name.trim() || isCreatingLink"
+                class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm shadow-brand-600/15 transition-all"
+              >
+                {{ isCreatingLink ? 'Creating…' : 'Create Link' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- Modal: Delete tracking link confirmation -->
+    <!-- ═══════════════════════════════════════ -->
+    <Teleport to="body">
+      <div v-if="showDeleteLinkConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showDeleteLinkConfirm = false" />
+        <div class="relative w-full max-w-sm rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 shadow-2xl p-6 text-center">
+          <div class="mx-auto mb-4 flex items-center justify-center size-12 rounded-2xl bg-danger-50 dark:bg-danger-950/40">
+            <Trash2 class="size-5 text-danger-600 dark:text-danger-400" />
+          </div>
+          <h3 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-2">Delete Tracking Link?</h3>
+          <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">
+            Existing attribution data will be preserved, but new clicks won't be tracked.
+          </p>
+          <div class="flex items-center justify-center gap-3">
+            <button
+              class="rounded-xl px-4 py-2.5 text-sm font-medium text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+              @click="showDeleteLinkConfirm = false"
+            >
+              Cancel
+            </button>
+            <button
+              class="rounded-xl bg-danger-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-danger-700 transition-colors"
+              @click="handleDeleteLink"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>

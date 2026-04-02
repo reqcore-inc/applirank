@@ -749,9 +749,13 @@ async function handleSidebarUpdated() {
                       </span>
                     </div>
                     <div class="min-w-0">
-                      <div class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">
+                      <NuxtLink
+                        :to="localePath(`/dashboard/applications/${app.applicationId}`)"
+                        class="text-sm font-medium text-surface-800 dark:text-surface-200 hover:text-brand-600 dark:hover:text-brand-400 truncate no-underline transition-colors block"
+                        @click.stop
+                      >
                         {{ app.candidateFirstName }} {{ app.candidateLastName }}
-                      </div>
+                      </NuxtLink>
                       <div class="text-[11px] text-surface-400 truncate">{{ app.candidateEmail }}</div>
                     </div>
                   </div>

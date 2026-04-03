@@ -30,6 +30,14 @@ async function main() {
 
   if (org) {
     const orgId = org.id
+    // Invalidate sessions referencing the demo org so logged-in users
+    // are forced to re-authenticate after reseed
+    const deleted = await db.delete(schema.session)
+      .where(eq(schema.session.activeOrganizationId, orgId))
+      .returning({ id: schema.session.id })
+    if (deleted.length)
+      console.log(`🔒 Invalidated ${deleted.length} session(s) tied to demo org`)
+
     // Delete in dependency order to avoid FK violations
     // (some migrations may not have applied CASCADE correctly)
     await db.delete(schema.activityLog).where(eq(schema.activityLog.organizationId, orgId))

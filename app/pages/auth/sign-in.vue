@@ -26,6 +26,8 @@ if (route.query.live === '1') {
   password.value = config.public.liveDemoSecret
 }
 
+const isSessionExpired = computed(() => route.query.session === 'expired')
+
 async function handleSignIn() {
   error.value = ''
 
@@ -72,6 +74,10 @@ async function handleSignIn() {
 <template>
   <form class="flex flex-col gap-4" @submit.prevent="handleSignIn">
     <h2 class="text-xl font-semibold text-center text-surface-900 dark:text-surface-100 mb-2">Sign in to your account</h2>
+
+    <div v-if="isSessionExpired" class="rounded-md border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-950 p-3 text-sm text-brand-700 dark:text-brand-400">
+      The demo account was recently updated with fresh data. Please sign in again to continue exploring.
+    </div>
 
     <div v-if="error" class="rounded-md border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950 p-3 text-sm text-danger-700 dark:text-danger-400">{{ error }}</div>
 

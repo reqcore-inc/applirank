@@ -24,22 +24,34 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Generate a unique short code (8 chars, URL-safe)
-  const code = generateTrackingCode()
-
-  const [created] = await db.insert(trackingLink).values({
-    organizationId: orgId,
-    jobId: body.jobId ?? null,
-    channel: body.channel,
-    name: body.name,
-    code,
-    utmSource: body.utmSource ?? null,
-    utmMedium: body.utmMedium ?? null,
-    utmCampaign: body.utmCampaign ?? null,
-    utmTerm: body.utmTerm ?? null,
-    utmContent: body.utmContent ?? null,
-    createdById: userId,
-  }).returning()
+  // Generate a unique short code (8 chars, URL-safe) with collision retry
+  const MAX_RETRIES = 3
+  let created
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const code = generateTrackingCode()
+    try {
+      const [row] = await db.insert(trackingLink).values({
+        organizationId: orgId,
+        jobId: body.jobId ?? null,
+        channel: body.channel,
+        name: body.name,
+        code,
+        utmSource: body.utmSource ?? null,
+        utmMedium: body.utmMedium ?? null,
+        utmCampaign: body.utmCampaign ?? null,
+        utmTerm: body.utmTerm ?? null,
+        utmContent: body.utmContent ?? null,
+        createdById: userId,
+      }).returning()
+      created = row
+      break
+    } catch (err: unknown) {
+      const isUniqueViolation = err instanceof Error && err.message.includes('unique')
+      if (!isUniqueViolation || attempt === MAX_RETRIES - 1) {
+        throw err
+      }
+    }
+  }
 
   setResponseStatus(event, 201)
   return created

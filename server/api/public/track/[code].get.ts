@@ -1,6 +1,9 @@
 import { eq, sql } from 'drizzle-orm'
 import { trackingLink } from '../../../database/schema'
 
+/** Tracking codes are 8-char base64url strings */
+const TRACKING_CODE_RE = /^[A-Za-z0-9_-]{1,100}$/
+
 /**
  * GET /api/public/track/:code
  * Public endpoint — no auth required.
@@ -10,7 +13,7 @@ import { trackingLink } from '../../../database/schema'
  */
 export default defineEventHandler(async (event) => {
   const code = getRouterParam(event, 'code')
-  if (!code || code.length > 100) {
+  if (!code || !TRACKING_CODE_RE.test(code)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid tracking code' })
   }
 
@@ -32,7 +35,12 @@ export default defineEventHandler(async (event) => {
       .set({ clickCount: sql`${trackingLink.clickCount} + 1` })
       .where(eq(trackingLink.id, link.id))
       .then(() => {})
-      .catch(() => {})
+      .catch((err) => {
+        logWarn('tracking_link.click_increment_failed', {
+          tracking_link_id: link.id,
+          error_message: err instanceof Error ? err.message : String(err),
+        })
+      })
   }
 
   // Build redirect URL with ref param

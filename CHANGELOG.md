@@ -15,6 +15,74 @@ Format follows [Keep a Changelog](https://keepachangelog.com). Categories: **Add
 
 ---
 
+## [1.3.0](https://github.com/reqcore-inc/reqcore/compare/v1.2.0...v1.3.0) (2026-04-03)
+
+
+### ✨ Features
+
+* add AI configuration seeding and demo data reset script ([927cf1e](https://github.com/reqcore-inc/reqcore/commit/927cf1ed6fea90325e0dadf362b4ab2000c767f3))
+* add db:reseed script and implement demo organization deletion script ([f0f8b2e](https://github.com/reqcore-inc/reqcore/commit/f0f8b2e41ec3fa0c315b5cf9167e89e371da9d3f))
+* add Deploy on Railway badge to README, enhance ScoreBreakdown component with caching, and introduce DemoUpsellBanner component ([c372668](https://github.com/reqcore-inc/reqcore/commit/c372668570a16723870868c605382c0876cca3ab))
+* add document parsing functionality ([e6279d0](https://github.com/reqcore-inc/reqcore/commit/e6279d004612cc1544f1f1c9f957cef55bb4440e))
+* add robots.txt for SEO optimization and allow indexing of job board pages ([0c387ba](https://github.com/reqcore-inc/reqcore/commit/0c387ba70d0c46b26253f0fe62c26be72f7af2ca))
+* add Settings page for job management and update job tabs in AppTopBar ([7dba4da](https://github.com/reqcore-inc/reqcore/commit/7dba4dac492d31a75b2d5faab176cbe4a693960f))
+* add Source Tracking page with initial layout and SEO metadata ([750dc0b](https://github.com/reqcore-inc/reqcore/commit/750dc0bed5eb0daa790453ac7013485b525a7fa4))
+* add tracking link schemas for creation, update, and querying ([9d60aaf](https://github.com/reqcore-inc/reqcore/commit/9d60aaf694787a6e65f527fed313535a312aa808))
+* add tracking link schemas for creation, update, and querying ([558e054](https://github.com/reqcore-inc/reqcore/commit/558e054d71a8f8fc496d02f6876220ebf3f3bf83))
+* add WordExtractor type declarations and update document permissions ([6f66efd](https://github.com/reqcore-inc/reqcore/commit/6f66efdbf34dbf38f1c6867dd9995f8001047dc3))
+* **ai-analysis:** add AI analysis dashboard and stats endpoint with tests ([c09ea21](https://github.com/reqcore-inc/reqcore/commit/c09ea21741f63bf7b3c175418ff6ab552489c2d3))
+* **ai:** enhance AI scoring and configuration with rate limiting and error handling improvements ([71f0185](https://github.com/reqcore-inc/reqcore/commit/71f0185d55c029cd8e20525828b4d196a426bd73))
+* **analytics:** enhance PostHog consent management and user identification for GDPR compliance ([0632620](https://github.com/reqcore-inc/reqcore/commit/063262098bc4172c8ddecf6fa5a5740e45a9b338))
+* **api:** add candidate timeline endpoint and tracking link stats endpoint ([46e1e15](https://github.com/reqcore-inc/reqcore/commit/46e1e154b5346f90b9bad0cd46ba7665f300aa04))
+* **delete-demo-org:** invalidate sessions for demo organization before deletion ([b8ee811](https://github.com/reqcore-inc/reqcore/commit/b8ee81198f8f558ab921684ef1b27495fab0ab67))
+* enhance analytics consent management with cross-domain linking and event buffering ([7a9dd82](https://github.com/reqcore-inc/reqcore/commit/7a9dd82ede3ae275c97f66ebbcd8efba0d0b6353))
+* enhance analytics event handling by flushing pending events on consent and organization creation ([2212af8](https://github.com/reqcore-inc/reqcore/commit/2212af82b1d7ebb949bd3a50014fb40dd55ce8a9))
+* enhance event tracking by persisting pending events in sessionStorage ([95c48ce](https://github.com/reqcore-inc/reqcore/commit/95c48cee281e4a35b0f237bcb88668812ed13011))
+* enhance LanguageSwitcher component with drop-up option and impr… ([5aea684](https://github.com/reqcore-inc/reqcore/commit/5aea684d31412734786fd96b7816fc9322865936))
+* enhance LanguageSwitcher component with drop-up option and improve layout for candidate and job detail pages ([ccc829e](https://github.com/reqcore-inc/reqcore/commit/ccc829ea2f757a9beb1f8be9c317fb435ca0106a))
+* enhance mobile responsiveness and scrollbar visibility across components ([ab939bb](https://github.com/reqcore-inc/reqcore/commit/ab939bbd644264608e6788cfe48d04f71bb279d0))
+* enhance mobile responsiveness and scrollbar visibility across components ([5ecc098](https://github.com/reqcore-inc/reqcore/commit/5ecc098d777b2141c696d4687f3baa54c96de4b3))
+* enhance resume parser with PDF polyfills and dynamic import for pdf-parse ([2d6dea5](https://github.com/reqcore-inc/reqcore/commit/2d6dea5bb7a2d92150cca330cbd334526cd619e4))
+* enhance timeline functionality with collapsible sections and candidate grouping ([b8c6ab9](https://github.com/reqcore-inc/reqcore/commit/b8c6ab91f9b8d5dcb8e71186b4c10198ea394a10))
+* Implement AI scoring system with provider integration and criteria management ([6ba3159](https://github.com/reqcore-inc/reqcore/commit/6ba31596f7fe239611901b99c2c60f430166e84a))
+* Implement AI scoring system with provider integration and criteria management ([8158718](https://github.com/reqcore-inc/reqcore/commit/8158718f8421903c5df639bb5731f6361d39685f))
+* implement autoScoreApplication for AI-driven application scoring ([5222980](https://github.com/reqcore-inc/reqcore/commit/5222980ea02aa92fa44b048157717bc23c3e370a))
+* implement combined demo-check and sign-out endpoint for fresh sign-up flow ([a5632bd](https://github.com/reqcore-inc/reqcore/commit/a5632bd865610f6f1a4fb9196df9b95d06d9db93))
+* implement demo-aware signup redirect with server-side session check ([092d324](https://github.com/reqcore-inc/reqcore/commit/092d3241a96ff78b7ddc9068c1c0f8bfac6e00ba))
+* implement internationalization for navigation and hero sections across multiple languages ([7720fc8](https://github.com/reqcore-inc/reqcore/commit/7720fc85fb3dba24fda9f87dc595522e235504ef))
+* implement server-side demo organization check for fresh sign-up flow ([3075a17](https://github.com/reqcore-inc/reqcore/commit/3075a17cb9d87c64a81d947bd51efb5e99f34583))
+* implement Timeline page with activity log and infinite scroll functionality ([5b1c694](https://github.com/reqcore-inc/reqcore/commit/5b1c6941af4b4f203cc9ad0a784bce01b7e25017))
+* implement Timeline page with activity log and infinite scroll functionality ([abda1a3](https://github.com/reqcore-inc/reqcore/commit/abda1a3e325feb919d51e6887d0bf69c7c76bb0e))
+* implement tracking for various user actions and API events in the application ([674993c](https://github.com/reqcore-inc/reqcore/commit/674993c330ee1c3200015e8a51d243cfa662d40c))
+* improve demo organization check by ensuring demo slug is validated before redirecting ([b60b9bc](https://github.com/reqcore-inc/reqcore/commit/b60b9bc9a102c4086fb30cc32b0d90d057aaecea))
+* **jobs:** add remote status and experience level fields to job creation form ([405ee5b](https://github.com/reqcore-inc/reqcore/commit/405ee5bb9c2f7b7123ef6067855403b05410e869))
+* **jobs:** enhance job application form with AI integration warnings and improved field descriptions ([2bcae86](https://github.com/reqcore-inc/reqcore/commit/2bcae86ee89f51364f11a406ec2b26ff6ffcd936))
+* **logging:** integrate OpenTelemetry for structured logging to PostHog ([3f62f29](https://github.com/reqcore-inc/reqcore/commit/3f62f29793dffe3eea610c6c738cedd2f95104ed))
+* **logging:** refine log attributes type for improved type safety in PostHog API tracking ([38f46b3](https://github.com/reqcore-inc/reqcore/commit/38f46b3711e1fe3a200c86067a2ce2fe685c8ad6))
+* **logging:** replace console.error with structured logging for error handling across multiple modules and add Vitest setup for logging stubs ([ded88f8](https://github.com/reqcore-inc/reqcore/commit/ded88f8f683ee3f3038ca1ae4b95ba7d63ae63ad))
+* **logging:** replace console.error with structured logging for error handling across various modules ([4451b95](https://github.com/reqcore-inc/reqcore/commit/4451b954f7329ed9dc6bedb76225503551bbafec))
+* migrate analytics consent management from localStorage to cross-domain cookies ([59e5e33](https://github.com/reqcore-inc/reqcore/commit/59e5e33026451c640acea1ef9b977d617aec6fdd))
+* propagate source tracking parameters through job application flow ([60bdc55](https://github.com/reqcore-inc/reqcore/commit/60bdc55ef55390744aaa8555506cdd741352a323))
+* refactor demo session checks to use user email for demo account detection ([c747d24](https://github.com/reqcore-inc/reqcore/commit/c747d24f346f6169444abfee2d163ab221fe6cd2))
+* refactor demo sign-up flow by removing demo-fresh-signup endpoint and handling session checks in fresh-signup component ([58be8e0](https://github.com/reqcore-inc/reqcore/commit/58be8e0096005c8ffad56937134cc3abbc7126c8))
+* refactor demo sign-up flow by replacing POST endpoint with GET for better cookie handling ([e4268eb](https://github.com/reqcore-inc/reqcore/commit/e4268eb346df996379bae987705dada182fe78df))
+* refactor timeline component to simplify candidate grouping and remove unused action groups ([8d226c8](https://github.com/reqcore-inc/reqcore/commit/8d226c86819743f46a6b80d615d81c4be6f2c8ea))
+* **session-management:** implement session expiration handling and UI feedback for demo accounts ([3a6c1f4](https://github.com/reqcore-inc/reqcore/commit/3a6c1f40922df16520f679d58789e02aaa34e3ab))
+* **source-tracking:** add tracking links management and attribution ([8d25601](https://github.com/reqcore-inc/reqcore/commit/8d256017c9bed1a279cebaeda93fa5c34be27a29))
+* **source-tracking:** enhance tracking links management with dynamic URL generation and sorting functionality ([877d03c](https://github.com/reqcore-inc/reqcore/commit/877d03c1b515864f9204f3b9eeff6a7da53636f2))
+* **timeline:** enhance timeline action styles and status badges ([475e643](https://github.com/reqcore-inc/reqcore/commit/475e6433d665afb2bf364bd418319419685cc62b))
+* **timeline:** implement TimelineDateLink component for date navigation and update date displays across applications ([be4a438](https://github.com/reqcore-inc/reqcore/commit/be4a438047c830bf0f2d5ad59973398e231fc818))
+* **tracking-links:** implement collision handling for unique tracking code generation and enhance validation for tracking codes ([88489e6](https://github.com/reqcore-inc/reqcore/commit/88489e604485fb35b343ac8f795517eed1e1377e))
+* update button labels for clarity and consistency in job creation flow ([850383c](https://github.com/reqcore-inc/reqcore/commit/850383c81066470f665bc3fb323619f8a0c134d4))
+* update Open Graph image and disable exception autocapture in server config ([ad98fae](https://github.com/reqcore-inc/reqcore/commit/ad98faee2ee4678e8fbfc852add91e26c5184c15))
+* update scoring criteria steps in candidate application, job creation, and resume upload tests ([30d87f0](https://github.com/reqcore-inc/reqcore/commit/30d87f07583d4eba9dbf3db35a0e604425ebcfb9))
+
+
+### ♻️ Refactoring
+
+* update layout and styling for settings pages ([2cb9723](https://github.com/reqcore-inc/reqcore/commit/2cb97235c7f4a0282268edddbc2983d134f020a9))
+* update status and transition classes for improved UI consistency ([597f069](https://github.com/reqcore-inc/reqcore/commit/597f069962e0b0677d04f555dd9a6c74bdeaa6ce))
+
 ## [1.2.0](https://github.com/reqcore-inc/reqcore/compare/v1.1.0...v1.2.0) (2026-03-16)
 
 

@@ -35,9 +35,13 @@ const viewMode = ref<'picker' | 'create' | 'join'>('picker')
 // Auto-switch: if user already belongs to exactly one org, activate it
 // ─────────────────────────────────────────────
 const autoSwitched = ref(false)
+const { data: currentSession } = await authClient.useSession(useFetch)
 
 watch([orgs, isOrgsLoading], async ([orgList, loading]) => {
+  // Only auto-switch when user has exactly 1 org and no active org in session
+  // (i.e. first-time login after sign-up). Skip when user navigated here intentionally.
   if (loading || autoSwitched.value || viewMode.value !== 'picker') return
+  if (currentSession.value?.session?.activeOrganizationId) return
   if (orgList.length === 1) {
     const firstOrg = orgList[0]
     if (!firstOrg) return

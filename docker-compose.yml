@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:9000:9000" # S3 API — localhost only, never expose publicly
-      - "127.0.0.1:9001:9001" # MinIO Console → http://localhost:9001
+      - "127.0.0.1:9091:9001" # MinIO Console → http://localhost:9001
     environment:
       MINIO_ROOT_USER: ${STORAGE_USER}
       MINIO_ROOT_PASSWORD: ${STORAGE_PASSWORD}

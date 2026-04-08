@@ -69,11 +69,41 @@ async function handleSignIn() {
     await navigateTo(localePath('/dashboard'))
   }
 }
+
+async function handleKeycloakSignIn() {
+  isLoading.value = true
+  error.value = ''
+  try {
+    await authClient.signIn.oauth2({
+      providerId: 'keycloak',
+      callbackURL: localePath('/dashboard'),
+    })
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : 'SSO sign-in failed'
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
   <form class="flex flex-col gap-4" @submit.prevent="handleSignIn">
     <h2 class="text-xl font-semibold text-center text-surface-900 dark:text-surface-100 mb-2">Sign in to your account</h2>
+
+    <button
+      type="button"
+      :disabled="isLoading"
+      class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+      @click="handleKeycloakSignIn"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      Sign in with SSO
+    </button>
+
+    <div class="relative">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-surface-200 dark:border-surface-700"></div></div>
+      <div class="relative flex justify-center text-xs"><span class="bg-white dark:bg-surface-900 px-2 text-surface-400">or continue with email</span></div>
+    </div>
+
 
     <div v-if="isSessionExpired" class="rounded-md border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-950 p-3 text-sm text-brand-700 dark:text-brand-400">
       The demo account was recently updated with fresh data. Please sign in again to continue exploring.

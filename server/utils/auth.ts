@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { organization } from 'better-auth/plugins'
+import { organization, genericOAuth } from 'better-auth/plugins'
 import { ac, owner, admin, member } from '~~/shared/permissions'
 import { sendOrgInvitationEmail } from './email'
 import * as schema from '../database/schema'
@@ -99,6 +99,25 @@ function getAuth(): Auth {
           // 48 hours (default) — explicitly stated for auditability.
           invitationExpiresIn: 48 * 60 * 60,
         }),
+
+        // ── Keycloak SSO ──────────────────────────────────────────
+        ...(env.KC_CLIENT_ID && env.KC_CLIENT_SECRET && env.KC_DISCOVERY_URL
+          ? [genericOAuth({
+              config: [{
+                providerId: 'keycloak',
+                clientId: env.KC_CLIENT_ID,
+                clientSecret: env.KC_CLIENT_SECRET,
+                discoveryUrl: env.KC_DISCOVERY_URL,
+                scopes: ['openid', 'email', 'profile'],
+                pkce: true,
+                mapProfileToUser: (profile) => ({
+                  name: profile.name || `${profile.given_name || ''} ${profile.family_name || ''}`.trim(),
+                  email: profile.email,
+                  image: profile.picture,
+                }),
+              }],
+            })]
+          : []),
       ],
     }) as unknown as Auth
   }

@@ -88,6 +88,12 @@ const envSchema = z
     GOOGLE_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** Shared secret for authenticating cron/scheduled job requests (e.g., webhook renewal). */
     CRON_SECRET: emptyToUndefined.pipe(z.string().min(16)).optional(),
+    /** Keycloak OIDC client ID for SSO. */
+    KC_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** Keycloak OIDC client secret. */
+    KC_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** Keycloak OIDC discovery URL (.well-known/openid-configuration). */
+    KC_DISCOVERY_URL: emptyToUndefined.pipe(z.string().url()).optional(),
   })
   .superRefine((data, ctx) => {
     // BETTER_AUTH_URL can be derived at runtime from RAILWAY_PUBLIC_DOMAIN,

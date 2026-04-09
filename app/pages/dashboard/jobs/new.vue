@@ -268,7 +268,7 @@ const questionActionError = ref<string | null>(null)
 const nextQuestionId = ref(1)
 
 // Check if AI provider is configured
-const { data: aiConfigData } = useFetch('/api/ai-config', { key: 'ai-config-check' })
+const { data: aiConfigData } = useFetch('/api/ai-config', { key: 'ai-config-check', headers: useRequestHeaders(['cookie']) })
 const isAiConfigured = computed(() => {
   return aiConfigData.value && aiConfigData.value.provider && aiConfigData.value.hasApiKey
 })

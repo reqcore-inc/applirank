@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
         orderBy: (application, { desc }) => [desc(application.createdAt)],
       },
       documents: {
-        columns: { id: true, type: true, originalFilename: true, mimeType: true, createdAt: true },
+        columns: { id: true, type: true, originalFilename: true, mimeType: true, parsedContent: true, createdAt: true },
         orderBy: (document, { desc }) => [desc(document.createdAt)],
       },
     },
@@ -31,5 +31,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Not found' })
   }
 
-  return result
+  // Replace heavy parsedContent with a lightweight `parsed` boolean
+  const { documents, ...rest } = result
+  return {
+    ...rest,
+    documents: documents.map(({ parsedContent, ...doc }) => ({
+      ...doc,
+      parsed: parsedContent != null,
+    })),
+  }
 })

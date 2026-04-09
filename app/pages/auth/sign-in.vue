@@ -23,10 +23,8 @@ onMounted(() => track('signin_page_viewed'))
 
 if (route.query.live === '1') {
   email.value = config.public.liveDemoEmail
-  password.value = config.public.liveDemoSecret
+  password.value = config.public.liveDemoPasscode
 }
-
-const isSessionExpired = computed(() => route.query.session === 'expired')
 
 async function handleSignIn() {
   error.value = ''
@@ -104,10 +102,6 @@ async function handleKeycloakSignIn() {
       <div class="relative flex justify-center text-xs"><span class="bg-white dark:bg-surface-900 px-2 text-surface-400">or continue with email</span></div>
     </div>
 
-
-    <div v-if="isSessionExpired" class="rounded-md border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-950 p-3 text-sm text-brand-700 dark:text-brand-400">
-      The demo account was recently updated with fresh data. Please sign in again to continue exploring.
-    </div>
 
     <div v-if="error" class="rounded-md border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950 p-3 text-sm text-danger-700 dark:text-danger-400">{{ error }}</div>
 

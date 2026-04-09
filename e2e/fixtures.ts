@@ -20,7 +20,7 @@ function generateTestAccount(workerId: number): TestAccount {
   return {
     name: `E2E Tester ${id}`,
     email: `e2e-${id}@test.local`,
-    password: 'TestPassword123!',
+    password: process.env.E2E_TEST_PASSWORD || 'TestPassword123!',
     orgName: `E2E Org ${id}`,
     orgSlug: `e2e-org-${id}`,
   }

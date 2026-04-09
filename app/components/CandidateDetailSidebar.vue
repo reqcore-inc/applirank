@@ -2,7 +2,7 @@
 import {
   X, User, Calendar, Clock, Hash, MessageSquare, FileText,
   ExternalLink, Mail, Phone, Upload, Download, Eye, Trash2,
-  ArrowLeft, AlertTriangle, Brain, History,
+  ArrowLeft, AlertTriangle, Brain, History, RefreshCw,
 } from 'lucide-vue-next'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
 
@@ -176,6 +176,7 @@ const isUploading = ref(false)
 const uploadError = ref<string | null>(null)
 const showDocDeleteConfirm = ref<string | null>(null)
 const isDeletingDoc = ref(false)
+const reparsingDocId = ref<string | null>(null)
 
 const showPreview = ref(false)
 const previewUrl = ref<string | null>(null)
@@ -213,6 +214,26 @@ async function handleFileSelected(event: Event) {
   } finally {
     isUploading.value = false
     input.value = ''
+  }
+}
+
+async function handleReparse(docId: string) {
+  reparsingDocId.value = docId
+  try {
+    await $fetch(`/api/documents/${docId}/parse`, {
+      method: 'POST',
+      headers: useRequestHeaders(['cookie']),
+    })
+    toast.add({ title: 'Resume parsed successfully', type: 'success' })
+    await refreshCandidate()
+  } catch (err: any) {
+    toast.add({
+      title: 'Parse failed',
+      message: err?.data?.statusMessage ?? 'Could not extract text from this document.',
+      type: 'error',
+    })
+  } finally {
+    reparsingDocId.value = null
   }
 }
 
@@ -920,11 +941,23 @@ function formatInterviewDate(dateStr: string) {
                       <span class="text-xs text-surface-400">
                         {{ documentTypeLabels[doc.type] ?? doc.type }}
                         · {{ new Date(doc.createdAt).toLocaleDateString() }}
-                        <template v-if="doc.mimeType === 'application/pdf'"> · <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
+                        <template v-if="doc.parsed === false">
+                          · <span class="text-warning-500 dark:text-warning-400">Text extraction failed</span>
+                        </template>
+                        <template v-else-if="doc.mimeType === 'application/pdf'"> · <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
                       </span>
                     </div>
                   </div>
                   <div class="flex items-center gap-1 shrink-0" @click.stop>
+                    <button
+                      v-if="doc.parsed === false"
+                      :disabled="reparsingDocId === doc.id"
+                      class="rounded-lg p-1.5 text-warning-500 hover:text-brand-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors disabled:opacity-50"
+                      title="Retry text extraction"
+                      @click="handleReparse(doc.id)"
+                    >
+                      <RefreshCw class="size-4" :class="{ 'animate-spin': reparsingDocId === doc.id }" />
+                    </button>
                     <button
                       v-if="doc.mimeType === 'application/pdf'"
                       class="rounded-lg p-1.5 text-surface-400 hover:text-brand-600 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"

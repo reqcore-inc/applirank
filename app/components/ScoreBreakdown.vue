@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Brain, Sparkles, AlertTriangle, ChevronDown, ChevronUp, Loader2, BarChart3 } from 'lucide-vue-next'
+import { Brain, Sparkles, AlertTriangle, ChevronDown, ChevronUp, Loader2, BarChart3, RefreshCw } from 'lucide-vue-next'
 
 const props = defineProps<{
   applicationId: string
@@ -12,6 +12,8 @@ const emit = defineEmits<{
 const { track } = useTrack()
 const isAnalyzing = ref(false)
 const analyzeError = ref<string | null>(null)
+const parseFailedDocId = ref<string | null>(null)
+const isRetryingParse = ref(false)
 const expandedCriterion = ref<string | null>(null)
 
 const { data: scoreData, status, refresh } = useFetch(
@@ -66,6 +68,7 @@ function toggleCriterion(key: string) {
 async function runAnalysis() {
   isAnalyzing.value = true
   analyzeError.value = null
+  parseFailedDocId.value = null
   try {
     await $fetch(`/api/applications/${props.applicationId}/analyze`, {
       method: 'POST',
@@ -75,9 +78,33 @@ async function runAnalysis() {
     track('ai_analysis_run', { application_id: props.applicationId })
     emit('scored')
   } catch (err: any) {
+    const data = err?.data?.data
+    if (data?.code === 'PARSE_FAILED' && data?.documentId) {
+      parseFailedDocId.value = data.documentId
+    }
     analyzeError.value = err?.data?.statusMessage ?? 'Analysis failed. Make sure AI is configured in settings.'
   } finally {
     isAnalyzing.value = false
+  }
+}
+
+async function retryParse() {
+  if (!parseFailedDocId.value) return
+  isRetryingParse.value = true
+  analyzeError.value = null
+  try {
+    await $fetch(`/api/documents/${parseFailedDocId.value}/parse`, {
+      method: 'POST',
+      headers: useRequestHeaders(['cookie']),
+    })
+    parseFailedDocId.value = null
+    // Automatically re-run analysis after successful parse
+    await runAnalysis()
+  } catch (err: any) {
+    analyzeError.value = err?.data?.statusMessage ?? 'Failed to re-parse the resume. The file may be corrupted or image-based.'
+    parseFailedDocId.value = null
+  } finally {
+    isRetryingParse.value = false
   }
 }
 </script>
@@ -249,7 +276,19 @@ async function runAnalysis() {
       <AlertTriangle class="size-4 shrink-0 mt-0.5" />
       <div>
         {{ analyzeError }}
-        <button class="ml-1 underline" @click="analyzeError = null">Dismiss</button>
+        <div class="mt-2 flex items-center gap-2">
+          <button
+            v-if="parseFailedDocId"
+            :disabled="isRetryingParse"
+            class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-brand-600 rounded-md hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            @click="retryParse"
+          >
+            <Loader2 v-if="isRetryingParse" class="size-3 animate-spin" />
+            <RefreshCw v-else class="size-3" />
+            {{ isRetryingParse ? 'Re-parsing…' : 'Retry CV Parse' }}
+          </button>
+          <button class="underline" @click="analyzeError = null; parseFailedDocId = null">Dismiss</button>
+        </div>
       </div>
     </div>
   </div>

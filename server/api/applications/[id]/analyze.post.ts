@@ -68,6 +68,7 @@ export default defineEventHandler(async (event) => {
 
   // Fetch candidate documents (resume text)
   const docs = await db.select({
+    id: document.id,
     parsedContent: document.parsedContent,
     type: document.type,
   })
@@ -81,9 +82,17 @@ export default defineEventHandler(async (event) => {
   const resumeText = extractResumeText(resumeDoc?.parsedContent)
 
   if (!resumeText) {
+    // Resume document exists but parsing failed or was incomplete
+    if (resumeDoc) {
+      throw createError({
+        statusCode: 422,
+        statusMessage: 'Resume was uploaded but text extraction failed. Try re-parsing the document.',
+        data: { code: 'PARSE_FAILED', documentId: resumeDoc.id },
+      })
+    }
     throw createError({
       statusCode: 422,
-      statusMessage: 'No parsed resume found for this candidate. Upload a resume first.',
+      statusMessage: 'No resume found for this candidate. Upload a resume first.',
     })
   }
 

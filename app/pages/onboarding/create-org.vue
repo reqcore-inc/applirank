@@ -12,7 +12,7 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
-const { orgs, isOrgsLoading, switchOrg, createOrg } = useCurrentOrg()
+const { orgs, isOrgsLoading, switchOrg, createOrg, activeOrg } = useCurrentOrg()
 const { acceptInviteLink } = useInviteLinks()
 const localePath = useLocalePath()
 const { track } = useTrack()

@@ -11,20 +11,18 @@ type Auth = ReturnType<typeof betterAuth>;
 let _auth: Auth | undefined;
 
 /**
- * Runtime cache of OIDC endpoint origins discovered from IdP discovery documents.
+ * Fetch an OIDC discovery document and inject every endpoint origin into
+ * better-auth's live trusted-origins list so the SSO plugin trusts them
+ * during provider registration.
  *
- * Populated by `prefetchOidcEndpointOrigins()` before provider registration so
- * that better-auth's trusted-origins check passes for IdPs whose token/userinfo
- * endpoints live on a different domain than the issuer (e.g. Google).
- */
-const discoveredIdpOrigins = new Set<string>();
-
-/**
- * Fetch an OIDC discovery document and cache every endpoint origin so
- * better-auth trusts them during provider registration.
+ * Why: better-auth resolves `trustedOrigins` once at init and caches the
+ * result as a plain array. The SSO plugin then validates every URL in the
+ * discovery document (discovery endpoint, token_endpoint, jwks_uri, etc.)
+ * against that cached array. IdPs like Google use multiple domains
+ * (accounts.google.com vs oauth2.googleapis.com), so we must discover
+ * those origins and inject them into the live array before registration.
  *
- * Must be called **before** `auth.api.registerSSOProvider()` so the
- * origins are available when better-auth validates discovery endpoints.
+ * Must be called **before** `auth.api.registerSSOProvider()`.
  */
 export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<void> {
   const discoveryUrl = issuerUrl.replace(/\/+$/, "") + "/.well-known/openid-configuration";
@@ -32,7 +30,10 @@ export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<vo
     timeout: 10_000,
   });
 
-  // Extract origins from all *_endpoint fields in the discovery document
+  // Collect origins from all endpoint fields + the issuer itself
+  const newOrigins = new Set<string>();
+  try { newOrigins.add(new URL(issuerUrl).origin); } catch {}
+
   const endpointKeys = [
     "authorization_endpoint",
     "token_endpoint",
@@ -45,11 +46,17 @@ export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<vo
   for (const key of endpointKeys) {
     const value = res[key];
     if (typeof value === "string") {
-      try {
-        discoveredIdpOrigins.add(new URL(value).origin);
-      } catch {
-        // Skip malformed URLs
-      }
+      try { newOrigins.add(new URL(value).origin); } catch {}
+    }
+  }
+
+  // Push directly into better-auth's live trustedOrigins array so
+  // isTrustedOrigin() sees them immediately (it reads this.trustedOrigins).
+  const ctx = await (auth as any).$context;
+  const existing = new Set(ctx.trustedOrigins as string[]);
+  for (const origin of newOrigins) {
+    if (!existing.has(origin)) {
+      (ctx.trustedOrigins as string[]).push(origin);
     }
   }
 }
@@ -59,11 +66,11 @@ export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<vo
  *
  * Combines:
  *  1. App origins (base URL, configured origins, dev defaults)
- *  2. Origins auto-discovered from OIDC discovery documents
- *  3. Already-registered SSO provider issuers from the database
+ *  2. Already-registered SSO provider issuers from the database
  *
- * For IdPs that cannot be auto-discovered, add their origin to the
- * BETTER_AUTH_TRUSTED_ORIGINS environment variable.
+ * Additional IdP endpoint origins are injected at runtime by
+ * `prefetchOidcEndpointOrigins()` directly into the auth context.
+ * For edge cases, add origins to the BETTER_AUTH_TRUSTED_ORIGINS env var.
  */
 function resolveTrustedOrigins(baseUrl: string): (request?: Request) => Promise<string[]> {
   const configuredOrigins = env.BETTER_AUTH_TRUSTED_ORIGINS;
@@ -89,7 +96,7 @@ function resolveTrustedOrigins(baseUrl: string): (request?: Request) => Promise<
   );
 
   return async () => {
-    const allOrigins = [...staticOrigins, ...discoveredIdpOrigins];
+    const allOrigins = [...staticOrigins];
 
     // Load already-registered SSO provider issuers from the database
     try {

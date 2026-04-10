@@ -160,6 +160,11 @@ function getAuth(): Auth {
                     pkce: true,
                     requireIssuerValidation: true,
                     async mapProfileToUser(profile) {
+                      if (!profile.email) {
+                        throw new Error(
+                          "Email is required but was not provided by the identity provider. Ensure the 'email' scope is granted and the user has a verified email.",
+                        );
+                      }
                       return {
                         name:
                           profile.name ||

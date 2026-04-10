@@ -92,10 +92,13 @@ async function handleSignUp() {
 async function handleSsoSignUp() {
     isLoading.value = true;
     error.value = "";
+    const callbackURL = pendingInvitation.value
+        ? localePath(`/auth/accept-invitation/${pendingInvitation.value}`)
+        : localePath("/dashboard");
     try {
         await authClient.signIn.oauth2({
             providerId: "oidc",
-            callbackURL: localePath("/dashboard"),
+            callbackURL,
         });
     } catch (e: unknown) {
         error.value =

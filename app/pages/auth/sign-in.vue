@@ -54,10 +54,18 @@ async function handleSignIn() {
 
     isLoading.value = true;
 
-    const result = await authClient.signIn.email({
-        email: email.value,
-        password: password.value,
-    });
+    let result: Awaited<ReturnType<typeof authClient.signIn.email>>;
+    try {
+        result = await authClient.signIn.email({
+            email: email.value,
+            password: password.value,
+        });
+    } catch (e: unknown) {
+        error.value =
+            e instanceof Error ? e.message : "Sign-in failed. Please try again.";
+        isLoading.value = false;
+        return;
+    }
 
     if (result.error) {
         if (result.error.status === 500) {
@@ -95,10 +103,14 @@ async function handleSignIn() {
 async function handleSelfHostedSso() {
     isLoading.value = true;
     error.value = "";
+    const pendingInvitation = route.query.invitation as string | undefined;
+    const callbackURL = pendingInvitation
+        ? localePath(`/auth/accept-invitation/${pendingInvitation}`)
+        : localePath("/dashboard");
     try {
         await authClient.signIn.oauth2({
             providerId: "oidc",
-            callbackURL: localePath("/dashboard"),
+            callbackURL,
         });
     } catch (e: unknown) {
         error.value =
@@ -122,12 +134,19 @@ async function handleEnterpriseSso() {
 
     ssoRedirecting.value = true;
     error.value = "";
+    const pendingInvitation = route.query.invitation as string | undefined;
+    const callbackURL = pendingInvitation
+        ? localePath(`/auth/accept-invitation/${pendingInvitation}`)
+        : localePath("/dashboard");
+    const errorCallbackURL = pendingInvitation
+        ? localePath(`/auth/sign-in?invitation=${encodeURIComponent(pendingInvitation)}`)
+        : localePath("/auth/sign-in");
 
     try {
         const result = await authClient.signIn.sso({
             email: email.value,
-            callbackURL: localePath("/dashboard"),
-            errorCallbackURL: localePath("/auth/sign-in"),
+            callbackURL,
+            errorCallbackURL,
         });
 
         if (result.error) {

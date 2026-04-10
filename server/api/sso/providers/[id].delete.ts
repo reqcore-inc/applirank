@@ -16,20 +16,15 @@ export default defineEventHandler(async (event) => {
 
   const { id } = await getValidatedRouterParams(event, deleteSsoSchema.parse)
 
-  // Verify the provider belongs to this org before deleting
-  const existing = await db
-    .select({ id: ssoProvider.id })
-    .from(ssoProvider)
-    .where(and(eq(ssoProvider.id, id), eq(ssoProvider.organizationId, orgId)))
-    .limit(1)
-
-  if (!existing.length) {
-    throw createError({ statusCode: 404, statusMessage: 'SSO provider not found' })
-  }
-
-  await db
+  // Atomic delete — single query avoids TOCTOU race condition
+  const [deleted] = await db
     .delete(ssoProvider)
     .where(and(eq(ssoProvider.id, id), eq(ssoProvider.organizationId, orgId)))
+    .returning({ id: ssoProvider.id })
+
+  if (!deleted) {
+    throw createError({ statusCode: 404, statusMessage: 'SSO provider not found' })
+  }
 
   return { success: true }
 })

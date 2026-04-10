@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  Building2, Users, UserCircle, ChevronLeft, Settings, Plug, Brain,
+  Building2, Users, UserCircle, ChevronLeft, Settings, Plug, Brain, ShieldCheck,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -33,6 +33,13 @@ const settingsNav = [
     description: 'Models & API keys',
     to: '/dashboard/settings/ai',
     icon: Brain,
+    exact: true,
+  },
+  {
+    label: 'Single Sign-On',
+    description: 'Enterprise SSO',
+    to: '/dashboard/settings/sso',
+    icon: ShieldCheck,
     exact: true,
   },
   {

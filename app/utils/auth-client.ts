@@ -3,6 +3,7 @@ import {
   organizationClient,
   genericOAuthClient,
 } from "better-auth/client/plugins";
+import { ssoClient } from "@better-auth/sso/client";
 import { ac, owner, admin, member } from "~~/shared/permissions";
 
 export const authClient = createAuthClient({
@@ -12,5 +13,6 @@ export const authClient = createAuthClient({
       ac,
       roles: { owner, admin, member },
     }),
+    ssoClient(),
   ],
 });

@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, genericOAuth } from "better-auth/plugins";
+import { sso } from "@better-auth/sso";
+import { eq } from "drizzle-orm";
 import { ac, owner, admin, member } from "~~/shared/permissions";
 import { sendOrgInvitationEmail } from "./email";
 import * as schema from "../database/schema";
@@ -8,7 +10,12 @@ import * as schema from "../database/schema";
 type Auth = ReturnType<typeof betterAuth>;
 let _auth: Auth | undefined;
 
-function resolveTrustedOrigins(baseUrl: string): string[] {
+/**
+ * Resolve trusted origins for CSRF checks.
+ * Returns a callback when SSO is available so that per-org IdP origins
+ * are dynamically allowed during SSO registration/callback flows.
+ */
+function resolveTrustedOrigins(baseUrl: string): string[] | ((request?: Request) => Promise<string[]>) {
   const configuredOrigins = env.BETTER_AUTH_TRUSTED_ORIGINS;
   const baseOrigin = new URL(baseUrl);
   const isLocalBase =
@@ -27,9 +34,38 @@ function resolveTrustedOrigins(baseUrl: string): string[] {
         ]
       : [];
 
-  return Array.from(
+  const staticOrigins = Array.from(
     new Set([baseOrigin.origin, ...configuredOrigins, ...defaultDevOrigins]),
   );
+
+  // Dynamic trusted origins: SSO registration and callback flows need
+  // to trust the IdP's origin. We fetch registered SSO provider issuers
+  // from the database when the request targets SSO endpoints.
+  return async (request?: Request) => {
+    if (!request) return staticOrigins;
+
+    const url = request.url;
+    const isSsoFlow = url.includes("/sso/") || url.includes("/sign-in/sso");
+    if (!isSsoFlow) return staticOrigins;
+
+    // Dynamically load registered SSO provider issuers
+    try {
+      const providers = await db
+        .select({ issuer: schema.ssoProvider.issuer })
+        .from(schema.ssoProvider);
+
+      const idpOrigins = providers
+        .map((p) => {
+          try { return new URL(p.issuer).origin; } catch { return null; }
+        })
+        .filter((o): o is string => o !== null);
+
+      return Array.from(new Set([...staticOrigins, ...idpOrigins]));
+    } catch {
+      // Table may not exist yet (pre-migration) — fall back to static
+      return staticOrigins;
+    }
+  };
 }
 
 function resolveBetterAuthUrl(): string {
@@ -141,6 +177,33 @@ function getAuth(): Auth {
               }),
             ]
           : []),
+
+        // ── Enterprise SSO (per-organization OIDC, cloud-hosted) ─────────
+        // Each organization can register their own Identity Provider (Okta,
+        // Azure AD, Google Workspace, etc.). Users are auto-provisioned into
+        // the linked organization on first SSO login.
+        sso({
+          // Auto-provision SSO users into the linked organization
+          organizationProvisioning: {
+            disabled: false,
+            defaultRole: "member",
+          },
+          // Run provisioning on every login to keep profile data in sync
+          provisionUserOnEveryLogin: true,
+          provisionUser: async ({ user, userInfo }) => {
+            // Sync name/image from IdP on each login
+            if (userInfo.name || userInfo.image) {
+              await db
+                .update(schema.user)
+                .set({
+                  ...(userInfo.name ? { name: userInfo.name } : {}),
+                  ...(userInfo.image ? { image: userInfo.image } : {}),
+                  updatedAt: new Date(),
+                })
+                .where(eq(schema.user.id, user.id));
+            }
+          },
+        }),
       ],
     }) as unknown as Auth;
   }

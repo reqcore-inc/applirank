@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ShieldCheck } from "lucide-vue-next";
+
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
@@ -14,6 +16,7 @@ const email = ref("");
 const password = ref("");
 const error = ref("");
 const isLoading = ref(false);
+const ssoRedirecting = ref(false);
 const route = useRoute();
 const config = useRuntimeConfig();
 const localePath = useLocalePath();
@@ -29,6 +32,17 @@ if (route.query.live === "1") {
     email.value = config.public.liveDemoEmail;
     password.value = config.public.liveDemoPasscode;
 }
+
+// Handle SSO error callbacks
+onMounted(() => {
+    const ssoError = route.query.error as string | undefined;
+    if (ssoError) {
+        const description = route.query.error_description as string | undefined;
+        error.value =
+            description?.replace(/\+/g, " ") ||
+            "SSO authentication failed. Please try again.";
+    }
+});
 
 async function handleSignIn() {
     error.value = "";
@@ -75,7 +89,10 @@ async function handleSignIn() {
     }
 }
 
-async function handleSsoSignIn() {
+/**
+ * Self-hosted OIDC SSO — global provider configured via env vars.
+ */
+async function handleSelfHostedSso() {
     isLoading.value = true;
     error.value = "";
     try {
@@ -89,6 +106,42 @@ async function handleSsoSignIn() {
                 ? e.message
                 : "SSO sign-in failed. Please try again.";
         isLoading.value = false;
+    }
+}
+
+/**
+ * Enterprise SSO — per-organization provider routing by email domain.
+ * Uses Better Auth's SSO plugin: signIn.sso({ email, callbackURL })
+ */
+async function handleEnterpriseSso() {
+    if (!email.value) {
+        error.value =
+            "Enter your work email address to sign in with SSO.";
+        return;
+    }
+
+    ssoRedirecting.value = true;
+    error.value = "";
+
+    try {
+        const result = await authClient.signIn.sso({
+            email: email.value,
+            callbackURL: localePath("/dashboard"),
+            errorCallbackURL: localePath("/auth/sign-in"),
+        });
+
+        if (result.error) {
+            error.value =
+                result.error.message ??
+                "No SSO provider found for this email domain. Sign in with email and password instead.";
+            ssoRedirecting.value = false;
+        }
+    } catch (e: unknown) {
+        error.value =
+            e instanceof Error
+                ? e.message
+                : "SSO sign-in failed. Please try again.";
+        ssoRedirecting.value = false;
     }
 }
 </script>
@@ -108,13 +161,13 @@ async function handleSsoSignIn() {
             {{ error }}
         </div>
 
-        <!-- SSO sign-in — only shown when OIDC is configured via environment variables -->
+        <!-- Self-hosted OIDC SSO — only shown when global OIDC is configured via environment variables -->
         <template v-if="oidcEnabled">
             <button
                 type="button"
                 :disabled="isLoading"
                 class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                @click="handleSsoSignIn"
+                @click="handleSelfHostedSso"
             >
                 {{
                     isLoading
@@ -171,6 +224,33 @@ async function handleSsoSignIn() {
         >
             {{ isLoading ? "Signing in…" : "Sign in" }}
         </button>
+
+        <!-- Enterprise SSO button — always available on cloud, uses per-org providers -->
+        <template v-if="!oidcEnabled">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div
+                        class="w-full border-t border-surface-200 dark:border-surface-700"
+                    />
+                </div>
+                <div class="relative flex justify-center text-xs">
+                    <span
+                        class="bg-white dark:bg-surface-900 px-2 text-surface-400"
+                        >or</span
+                    >
+                </div>
+            </div>
+
+            <button
+                type="button"
+                :disabled="ssoRedirecting"
+                class="px-4 py-2.5 border border-surface-300 dark:border-surface-700 rounded-md text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                @click="handleEnterpriseSso"
+            >
+                <ShieldCheck class="size-4" />
+                {{ ssoRedirecting ? "Redirecting to your IdP…" : "Sign in with SSO" }}
+            </button>
+        </template>
 
         <p class="text-center text-sm text-surface-500 dark:text-surface-400">
             Don't have an account?

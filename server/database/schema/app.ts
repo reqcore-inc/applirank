@@ -92,6 +92,8 @@ export const application = pgTable('application', {
   score: integer('score'),
   notes: text('notes'),
   coverLetterText: text('cover_letter_text'),
+  viewedAt: timestamp('viewed_at'),
+  viewedBy: text('viewed_by').references(() => user.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ([

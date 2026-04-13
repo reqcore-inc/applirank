@@ -1,10 +1,11 @@
-import { eq, and } from 'drizzle-orm'
+import { eq, and, isNull } from 'drizzle-orm'
 import { application } from '../../database/schema'
 import { applicationIdParamSchema } from '../../utils/schemas/application'
 
 /**
  * GET /api/applications/:id
  * Single application detail with related candidate, job, and question responses.
+ * Also records the first time a recruiter views the application.
  */
 export default defineEventHandler(async (event) => {
   const session = await requirePermission(event, { application: ['read'] })
@@ -46,6 +47,14 @@ export default defineEventHandler(async (event) => {
 
   if (!result) {
     throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
+  // Record first view by a recruiter (fire-and-forget, non-blocking)
+  if (!result.viewedAt) {
+    db.update(application)
+      .set({ viewedAt: new Date(), viewedBy: session.user.id })
+      .where(and(eq(application.id, id), isNull(application.viewedAt)))
+      .catch(() => {})
   }
 
   return result

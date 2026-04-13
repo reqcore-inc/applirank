@@ -163,6 +163,8 @@ async function handleSubmit() {
     const hasAnyFiles = Object.keys(fileUploads.value).length > 0
       || !!resumeFile.value
 
+    let result: { success: boolean; portalToken?: string | null } | undefined
+
     if (hasAnyFiles) {
       // Use FormData when files are present
       const formData = new FormData()
@@ -201,13 +203,13 @@ async function handleSubmit() {
       if (utmTerm) formData.append('utmTerm', utmTerm)
       if (utmContent) formData.append('utmContent', utmContent)
 
-      await $fetch(`/api/public/jobs/${jobSlug}/apply`, {
+      result = await $fetch<{ success: boolean; portalToken?: string | null }>(`/api/public/jobs/${jobSlug}/apply`, {
         method: 'POST',
         body: formData,
       })
     } else {
       // No files — use JSON as before
-      await $fetch(`/api/public/jobs/${jobSlug}/apply`, {
+      result = await $fetch<{ success: boolean; portalToken?: string | null }>(`/api/public/jobs/${jobSlug}/apply`, {
         method: 'POST',
         body: {
           firstName: form.value.firstName.trim(),
@@ -228,7 +230,13 @@ async function handleSubmit() {
     }
 
     track('application_submitted', { slug: jobSlug })
-    await navigateTo(`/jobs/${jobSlug}/confirmation`)
+    // Redirect directly to the portal dashboard if we have a token,
+    // otherwise fall back to the confirmation page
+    if (result?.portalToken) {
+      await navigateTo(`/portal/t/${result.portalToken}?fresh=1`)
+    } else {
+      await navigateTo({ path: `/jobs/${jobSlug}/confirmation` })
+    }
   } catch (err: any) {
     const message = err.data?.statusMessage ?? 'Something went wrong. Please try again.'
     submitError.value = message

@@ -167,7 +167,7 @@ async function handleSocialSignUp(providerId: string) {
                     :key="provider.id"
                     type="button"
                     :disabled="!!socialLoading || isLoading"
-                    class="relative px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-750 hover:border-surface-300 dark:hover:border-surface-600"
+                    class="relative px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-600"
                     @click="handleSocialSignUp(provider.id)"
                 >
                     <template v-if="socialLoading === provider.id">
@@ -213,7 +213,7 @@ async function handleSocialSignUp(providerId: string) {
             <button
                 type="button"
                 :disabled="isLoading"
-                class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium cursor-pointer hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 @click="handleSsoSignUp"
             >
                 <template v-if="isLoading">Redirecting…</template>
@@ -294,7 +294,7 @@ async function handleSocialSignUp(providerId: string) {
         <button
             type="submit"
             :disabled="isLoading"
-            class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
             {{ isLoading ? "Creating account…" : "Sign up" }}
         </button>

@@ -222,7 +222,7 @@ async function handleSocialSignIn(providerId: string) {
                     :key="provider.id"
                     type="button"
                     :disabled="!!socialLoading || isLoading || ssoRedirecting"
-                    class="relative px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-750 hover:border-surface-300 dark:hover:border-surface-600"
+                    class="relative px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-600"
                     @click="handleSocialSignIn(provider.id)"
                 >
                     <template v-if="socialLoading === provider.id">
@@ -268,7 +268,7 @@ async function handleSocialSignIn(providerId: string) {
             <button
                 type="button"
                 :disabled="isLoading"
-                class="px-4 py-2.5 bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-lg text-sm font-semibold shadow-md hover:bg-surface-800 dark:hover:bg-surface-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 ring-1 ring-surface-700 dark:ring-surface-300"
+                class="px-4 py-2.5 bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-lg text-sm font-semibold shadow-md cursor-pointer hover:bg-surface-800 dark:hover:bg-surface-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 ring-1 ring-surface-700 dark:ring-surface-300"
                 @click="handleSelfHostedSso"
             >
                 <template v-if="isLoading">Redirecting…</template>
@@ -323,7 +323,7 @@ async function handleSocialSignIn(providerId: string) {
         <button
             type="submit"
             :disabled="isLoading"
-            class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
             {{ isLoading ? "Signing in…" : "Sign in" }}
         </button>
@@ -347,7 +347,7 @@ async function handleSocialSignIn(providerId: string) {
             <button
                 type="button"
                 :disabled="ssoRedirecting"
-                class="px-4 py-2.5 bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-lg text-sm font-semibold shadow-md hover:bg-surface-800 dark:hover:bg-surface-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 ring-1 ring-surface-700 dark:ring-surface-300"
+                class="px-4 py-2.5 bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-lg text-sm font-semibold shadow-md cursor-pointer hover:bg-surface-800 dark:hover:bg-surface-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 ring-1 ring-surface-700 dark:ring-surface-300"
                 @click="handleEnterpriseSso"
             >
                 <ShieldCheck class="size-4" />

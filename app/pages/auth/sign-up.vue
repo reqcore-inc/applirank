@@ -19,18 +19,18 @@ const error = ref("");
 const isLoading = ref(false);
 const localePath = useLocalePath();
 const { track } = useTrack();
-const config = useRuntimeConfig();
-const oidcEnabled = computed(() => config.public.oidcEnabled as boolean);
+const { data: authProviders } = await useFetch('/api/auth/providers');
+const oidcEnabled = computed(() => authProviders.value?.oidc ?? false);
 const oidcProviderName = computed(
-    () => (config.public.oidcProviderName as string) || "SSO",
+    () => authProviders.value?.oidcProviderName || "SSO",
 );
 const socialLoading = ref<string | null>(null);
 
 const socialProviders = computed(() => {
     const providers: { id: string; name: string }[] = [];
-    if (config.public.authGoogleEnabled) providers.push({ id: "google", name: "Google" });
-    if (config.public.authGithubEnabled) providers.push({ id: "github", name: "GitHub" });
-    if (config.public.authMicrosoftEnabled) providers.push({ id: "microsoft", name: "Microsoft" });
+    if (authProviders.value?.google) providers.push({ id: "google", name: "Google" });
+    if (authProviders.value?.github) providers.push({ id: "github", name: "GitHub" });
+    if (authProviders.value?.microsoft) providers.push({ id: "microsoft", name: "Microsoft" });
     return providers;
 });
 

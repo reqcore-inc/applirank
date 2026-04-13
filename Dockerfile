@@ -51,11 +51,8 @@ COPY --chown=reqcore:reqcore --from=builder /app/drizzle.config.ts ./drizzle.con
 COPY --chown=reqcore:reqcore --from=builder /app/node_modules ./node_modules
 COPY --chown=reqcore:reqcore --from=builder /app/server ./server
 
-COPY --chown=reqcore:reqcore docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x docker-entrypoint.sh
-
 USER reqcore
 
 EXPOSE 3000
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["node", ".output/server/index.mjs"]

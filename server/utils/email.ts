@@ -17,6 +17,88 @@ function getResendClient(): Resend | null {
 }
 
 /**
+ * Send an email verification link via Resend.
+ * Falls back to console.info when RESEND_API_KEY is not set.
+ *
+ * Called by Better Auth when requireEmailVerification is enabled.
+ * Not awaited by the caller (fire-and-forget) to prevent timing attacks.
+ */
+export async function sendVerificationEmail(data: {
+  user: { email: string; name: string }
+  url: string
+  token: string
+}): Promise<void> {
+  const resend = getResendClient()
+
+  if (!resend) {
+    console.info(
+      `[Reqcore] Verification email → ${data.user.email} | ` +
+      `Link: ${data.url}`,
+    )
+    return
+  }
+
+  const fromEmail = env.RESEND_FROM_EMAIL
+
+  const { error } = await resend.emails.send({
+    from: fromEmail,
+    to: [data.user.email],
+    subject: 'Verify your email address — Reqcore',
+    html: buildVerificationHtml({ url: data.url }),
+    text: buildVerificationText({ url: data.url }),
+    tags: [{ name: 'category', value: 'verification' }],
+  })
+
+  if (error) {
+    logError('email.verification_send_failed', {
+      provider: 'resend',
+      error_message: error.message,
+    })
+  }
+}
+
+/**
+ * Send a password reset link via Resend.
+ * Falls back to console.info when RESEND_API_KEY is not set.
+ *
+ * Called by Better Auth when sendResetPassword is configured.
+ * Not awaited by the caller (fire-and-forget) to prevent timing attacks.
+ */
+export async function sendPasswordResetEmail(data: {
+  user: { email: string; name: string }
+  url: string
+  token: string
+}): Promise<void> {
+  const resend = getResendClient()
+
+  if (!resend) {
+    console.info(
+      `[Reqcore] Password reset email → ${data.user.email} | ` +
+      `Link: ${data.url}`,
+    )
+    return
+  }
+
+  const fromEmail = env.RESEND_FROM_EMAIL
+
+  const { error } = await resend.emails.send({
+    from: fromEmail,
+    to: [data.user.email],
+    subject: 'Reset your password — Reqcore',
+    html: buildPasswordResetHtml({ url: data.url }),
+    text: buildPasswordResetText({ url: data.url }),
+    tags: [{ name: 'category', value: 'password-reset' }],
+  })
+
+  if (error) {
+    logError('email.password_reset_send_failed', {
+      provider: 'resend',
+      error_message: error.message,
+    })
+  }
+}
+
+/**
  * Send an organization invitation email via Resend.
  * Falls back to console.info when RESEND_API_KEY is not set.
  */
@@ -184,6 +266,140 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+}
+
+// ─────────────────────────────────────────────
+// Email verification & password reset templates
+// ─────────────────────────────────────────────
+
+function buildVerificationHtml(params: { url: string }): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify your email</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
+          <tr>
+            <td style="padding:32px 32px 24px;text-align:center;border-bottom:1px solid #f4f4f5;">
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">Reqcore</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <h2 style="margin:0 0 16px;font-size:18px;font-weight:600;color:#09090b;">Verify your email</h2>
+              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3f3f46;">
+                Click the button below to verify your email address and activate your account.
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${escapeHtml(params.url)}" target="_blank" rel="noopener noreferrer"
+                       style="display:inline-block;padding:12px 32px;background-color:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;line-height:1;">
+                      Verify Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#71717a;">
+                If you didn't create an account, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
+              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by Reqcore &mdash; Open-source applicant tracking</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+function buildVerificationText(params: { url: string }): string {
+  return [
+    'Verify your email address',
+    '',
+    'Click the link below to verify your email and activate your Reqcore account:',
+    params.url,
+    '',
+    'If you didn\'t create an account, you can safely ignore this email.',
+    '',
+    '— Reqcore',
+  ].join('\n')
+}
+
+function buildPasswordResetHtml(params: { url: string }): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset your password</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
+          <tr>
+            <td style="padding:32px 32px 24px;text-align:center;border-bottom:1px solid #f4f4f5;">
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">Reqcore</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <h2 style="margin:0 0 16px;font-size:18px;font-weight:600;color:#09090b;">Reset your password</h2>
+              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3f3f46;">
+                Click the button below to reset your password. This link will expire shortly.
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${escapeHtml(params.url)}" target="_blank" rel="noopener noreferrer"
+                       style="display:inline-block;padding:12px 32px;background-color:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;line-height:1;">
+                      Reset Password
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#71717a;">
+                If you didn't request a password reset, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
+              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by Reqcore &mdash; Open-source applicant tracking</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+function buildPasswordResetText(params: { url: string }): string {
+  return [
+    'Reset your password',
+    '',
+    'Click the link below to reset your Reqcore password:',
+    params.url,
+    '',
+    'If you didn\'t request this, you can safely ignore this email.',
+    '',
+    '— Reqcore',
+  ].join('\n')
 }
 
 // ─────────────────────────────────────────────

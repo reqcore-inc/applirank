@@ -3,6 +3,8 @@ import {
   text,
   timestamp,
   boolean,
+  integer,
+  bigint,
   index,
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
@@ -103,6 +105,21 @@ export const invitation = pgTable('invitation', {
 }, (t) => ([
   index('invitation_organization_id_idx').on(t.organizationId),
   index('invitation_email_idx').on(t.email),
+]))
+
+// ─────────────────────────────────────────────
+// Better Auth Rate Limit Table (database-backed)
+// ─────────────────────────────────────────────
+// Required when rateLimit.storage is set to "database" in the Better Auth config.
+// Stores per-IP request counts with sliding window timestamps.
+
+export const rateLimit = pgTable('rate_limit', {
+  id: text('id').primaryKey(),
+  key: text('key').notNull(),
+  count: integer('count').notNull(),
+  lastRequest: bigint('last_request', { mode: 'bigint' }).notNull(),
+}, (t) => ([
+  index('rate_limit_key_idx').on(t.key),
 ]))
 
 // ─────────────────────────────────────────────

@@ -27,8 +27,10 @@ interface RateLimitEntry {
  * Uses a sliding window algorithm — each request records a timestamp,
  * and only timestamps within the current window are counted.
  *
- * For production at scale, replace with a Redis-backed implementation
- * (e.g. `@upstash/ratelimit`) to handle multi-instance deployments.
+ * WARNING: This is an in-memory implementation that resets on restart and
+ * does not share state across instances. For production at scale, replace
+ * with a Redis-backed implementation (e.g. `@upstash/ratelimit`) to
+ * handle multi-instance deployments.
  *
  * @example
  * ```ts
@@ -43,6 +45,13 @@ interface RateLimitEntry {
 export function createRateLimiter(config: RateLimitConfig) {
   const { windowMs, maxRequests, message = 'Too many requests, please try again later' } = config
   const store = new Map<string, RateLimitEntry>()
+
+  if (process.env.NODE_ENV === 'production') {
+    console.warn(
+      '[Reqcore] In-memory rate limiter active. State resets on restart and is not shared across instances. ' +
+      'For horizontal scaling, replace with a Redis-backed implementation (e.g. @upstash/ratelimit).',
+    )
+  }
 
   // Periodically prune stale entries to prevent unbounded memory growth
   const PRUNE_INTERVAL = Math.max(windowMs * 2, 60_000)

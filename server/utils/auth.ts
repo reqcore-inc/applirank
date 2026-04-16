@@ -74,7 +74,7 @@ export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<vo
     throw createError({
       statusCode: 422,
       statusMessage: "Issuer URL must not target internal or private network addresses.",
-    })
+    });
   }
 
   const discoveryUrl = issuerUrl.replace(/\/+$/, "") + "/.well-known/openid-configuration";

@@ -322,6 +322,15 @@ async function handleSocialSignIn(providerId: string) {
             />
         </label>
 
+        <div class="flex justify-end -mt-2">
+            <NuxtLink
+                :to="$localePath('/auth/forgot-password')"
+                class="text-sm text-brand-600 dark:text-brand-400 hover:underline"
+            >
+                Forgot password?
+            </NuxtLink>
+        </div>
+
         <button
             type="submit"
             :disabled="isLoading"

@@ -3,12 +3,49 @@ import { eq, and, ne } from 'drizzle-orm'
 import { ssoProvider } from '~~/server/database/schema'
 import { prefetchOidcEndpointOrigins } from '~~/server/utils/auth'
 
+// Hostname/IP ranges that must never be contacted server-side (SSRF prevention)
+const BLOCKED_ISSUER_HOSTNAMES = new Set([
+  'localhost',
+  '169.254.169.254',          // AWS / Azure / DigitalOcean IMDS
+  'metadata.google.internal', // GCP IMDS
+  'metadata.internal',
+  'instance-data',
+])
+
+function isBlockedIssuerUrl(url: string): boolean {
+  let hostname: string
+  try {
+    hostname = new URL(url).hostname.toLowerCase()
+  } catch {
+    return true
+  }
+  if (BLOCKED_ISSUER_HOSTNAMES.has(hostname)) return true
+  const ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/)
+  if (ipv4) {
+    const [a, b] = [Number(ipv4[1]), Number(ipv4[2])]
+    if (a === 127 || a === 0) return true
+    if (a === 10) return true
+    if (a === 172 && b >= 16 && b <= 31) return true
+    if (a === 192 && b === 168) return true
+    if (a === 100 && b >= 64 && b <= 127) return true
+    if (a === 169 && b === 254) return true
+  }
+  if (hostname === '::1') return true
+  if (hostname.startsWith('fe80:')) return true
+  return false
+}
+
 const registerSsoSchema = z.object({
   providerId: z.string().min(1).max(64).regex(/^[a-z0-9-]+$/, 'Only lowercase alphanumeric and hyphens'),
-  issuer: z.string().url().refine(
-    (url) => url.startsWith('https://') || url.startsWith('http://'),
-    'Issuer URL must use HTTPS (or HTTP for local development)',
-  ),
+  issuer: z.string().url()
+    .refine(
+      (url) => url.startsWith('https://') || url.startsWith('http://'),
+      'Issuer URL must use HTTPS (or HTTP for local development)',
+    )
+    .refine(
+      (url) => !isBlockedIssuerUrl(url),
+      'Issuer URL must not target internal or private network addresses',
+    ),
   domain: z.string().min(1).max(253).regex(
     /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/,
     'Must be a valid domain (e.g. company.com)',

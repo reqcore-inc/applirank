@@ -30,7 +30,7 @@ async function handleRequestReset() {
     isLoading.value = true;
 
     try {
-        const result = await authClient.forgetPassword({
+        const result = await authClient.requestPasswordReset({
             email: email.value,
             redirectTo: `${window.location.origin}${localePath("/auth/reset-password")}`,
         });

@@ -10,6 +10,50 @@ import * as schema from "../database/schema";
 type Auth = ReturnType<typeof betterAuth>;
 let _auth: Auth | undefined;
 
+// ── SSRF blocklist ────────────────────────────────────────────────────────────
+// Prevent org admins from using SSO provider registration to probe the
+// internal network or cloud metadata services (OWASP A10 - SSRF).
+const BLOCKED_HOSTNAMES = new Set([
+  "localhost",
+  "169.254.169.254",          // AWS / Azure / DigitalOcean IMDS
+  "metadata.google.internal", // GCP IMDS
+  "metadata.internal",
+  "instance-data",            // older cloud-init
+])
+
+/**
+ * Returns true if the hostname resolves to a private, loopback, link-local,
+ * or well-known cloud metadata address that must not be contacted server-side.
+ */
+function isBlockedHost(urlString: string): boolean {
+  let hostname: string
+  try {
+    hostname = new URL(urlString).hostname.toLowerCase()
+  } catch {
+    return true // malformed URL → block
+  }
+  if (BLOCKED_HOSTNAMES.has(hostname)) return true
+
+  // IPv4 private / loopback ranges
+  const ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/)
+  if (ipv4) {
+    const [a, b] = [Number(ipv4[1]), Number(ipv4[2])]
+    if (a === 127) return true                          // 127.0.0.0/8  loopback
+    if (a === 0) return true                            // 0.0.0.0/8
+    if (a === 10) return true                           // 10.0.0.0/8   RFC 1918
+    if (a === 172 && b >= 16 && b <= 31) return true   // 172.16.0.0/12 RFC 1918
+    if (a === 192 && b === 168) return true             // 192.168.0.0/16 RFC 1918
+    if (a === 100 && b >= 64 && b <= 127) return true  // 100.64.0.0/10 CGNAT
+    if (a === 169 && b === 254) return true             // 169.254.0.0/16 link-local
+  }
+
+  // IPv6 loopback and link-local
+  if (hostname === "::1") return true
+  if (hostname.startsWith("fe80:") || hostname.startsWith("[fe80:")) return true
+
+  return false
+}
+
 /**
  * Fetch an OIDC discovery document and inject every endpoint origin into
  * better-auth's live trusted-origins list so the SSO plugin trusts them
@@ -25,6 +69,14 @@ let _auth: Auth | undefined;
  * Must be called **before** `auth.api.registerSSOProvider()`.
  */
 export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<void> {
+  // SSRF guard — reject internal/private addresses before any network call
+  if (isBlockedHost(issuerUrl)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Issuer URL must not target internal or private network addresses.",
+    })
+  }
+
   const discoveryUrl = issuerUrl.replace(/\/+$/, "") + "/.well-known/openid-configuration";
   const res = await $fetch<Record<string, unknown>>(discoveryUrl, {
     timeout: 10_000,

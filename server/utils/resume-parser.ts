@@ -99,6 +99,8 @@ export async function parseDocument(
 // ─── PDF Parser ───────────────────────────────────────────────────
 
 async function parsePdf(buffer: Buffer): Promise<ParsedResume | null> {
+  if (buffer.length === 0) return null
+
   // Polyfill browser globals before pdfjs-dist evaluates its module-level code
   ensurePdfjsPolyfills()
   const { PDFParse } = await import('pdf-parse')

@@ -56,6 +56,7 @@ jobs:
             name=reqcore/reqcore,enable=${{ vars.DOCKERHUB_USERNAME != '' }}
           tags: |
             type=edge,branch=main
+            type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-

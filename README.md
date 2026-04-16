@@ -8,6 +8,7 @@
 [![E2E Tests](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/e2e-tests.yml)
 [![PR Validation](https://github.com/reqcore-inc/reqcore/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/pr-validation.yml)
 [![Docker Integration](https://github.com/reqcore-inc/reqcore/actions/workflows/docker-readme-validation.yml/badge.svg)](https://github.com/reqcore-inc/reqcore/actions/workflows/docker-readme-validation.yml)
+[![Docker Image](https://ghcr-badge.egpl.dev/reqcore-inc/reqcore/latest_tag?trim=major&label=docker)](https://github.com/reqcore-inc/reqcore/pkgs/container/reqcore)
 
 [Live Demo](https://reqcore.com) · [Documentation](ARCHITECTURE.md) · [Roadmap](ROADMAP.md) · [Report Bug](https://github.com/reqcore-inc/reqcore/issues/new)
 
@@ -59,6 +60,29 @@ Hiring software shouldn't be complicated or expensive. Most applicant tracking s
 ## Quick Start
 
 > **Windows users:** Open [Git Bash](https://gitforwindows.org) and run all commands there instead of Command Prompt or PowerShell.
+
+---
+
+### Option A — Use the pre-built image (fastest)
+
+No cloning, no building. Pull the official image and run:
+
+```bash
+mkdir reqcore && cd reqcore
+curl -fsSLO https://raw.githubusercontent.com/reqcore-inc/reqcore/main/docker-compose.production.yml
+curl -fsSLO https://raw.githubusercontent.com/reqcore-inc/reqcore/main/setup.sh
+chmod +x setup.sh
+./setup.sh
+docker compose -f docker-compose.production.yml up -d
+```
+
+Open **[http://localhost:3000](http://localhost:3000)** and sign up. That's it.
+
+To update: `docker compose -f docker-compose.production.yml pull app && docker compose -f docker-compose.production.yml up -d`
+
+---
+
+### Option B — Build from source
 
 ---
 
@@ -152,6 +176,15 @@ Then sign in with:
 ### Updating to a new release
 
 When a new version of Reqcore is released, follow these steps **in order** to update your instance. Your data is safe — updates never delete the database or your uploaded files.
+
+#### Pre-built image users
+
+```bash
+docker compose -f docker-compose.production.yml pull app
+docker compose -f docker-compose.production.yml up -d
+```
+
+#### Build from source users
 
 **Step 1 — Pull the latest code**
 

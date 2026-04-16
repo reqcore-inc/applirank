@@ -1,0 +1,84 @@
+# docker-compose.production.yml
+#
+# Use this file to run Reqcore with the official pre-built Docker image
+# instead of building from source. No git clone or local build required.
+#
+# Quick start:
+#   1. Download this file and setup.sh from the repository
+#   2. Run:  ./setup.sh
+#   3. Run:  docker compose -f docker-compose.production.yml up -d
+#   4. Open: http://localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: reqcore_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "127.0.0.1:5432:5432" # Postgres — localhost only, never expose publicly
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio
+    container_name: reqcore_minio
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API — localhost only, never expose publicly
+      - "127.0.0.1:9001:9001" # MinIO Console → http://localhost:9001
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_USER}
+      MINIO_ROOT_PASSWORD: ${STORAGE_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ghcr.io/reqcore-inc/reqcore:latest
+    container_name: reqcore_app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Override localhost URLs with Docker-internal hostnames
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      S3_ENDPOINT: http://minio:9000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - backups_data:/data/backups
+
+  # Optional DB browser — run with: docker compose -f docker-compose.production.yml --profile tools up
+  adminer:
+    image: adminer
+    container_name: reqcore_adminer
+    restart: unless-stopped
+    profiles: [tools]
+    ports:
+      - "127.0.0.1:8080:8080" # Adminer → http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  minio_data:
+  backups_data:

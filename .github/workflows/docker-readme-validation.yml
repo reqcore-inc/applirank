@@ -23,7 +23,7 @@ jobs:
     steps:
       # ── 1. Clone ─────────────────────────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ── 2. setup.sh ──────────────────────────────────────────────────────────
       - name: Run setup.sh (new-user step 1)

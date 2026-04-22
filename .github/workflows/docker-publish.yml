@@ -22,7 +22,7 @@ jobs:
     steps:
       # ── 1. Checkout (needed for path context so .dockerignore is respected) ──
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # ── 2. Multi-platform support ───────────────────────────────────────────
       - name: Set up QEMU

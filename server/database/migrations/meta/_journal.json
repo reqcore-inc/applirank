@@ -162,6 +162,20 @@
       "when": 1776450000000,
       "tag": "0022_salary_negotiable",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1776500000000,
+      "tag": "0023_job_experience_level",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1776550000000,
+      "tag": "0024_candidate_quick_notes",
+      "breakpoints": true
     }
   ]
 }

@@ -1,25 +1,132 @@
 import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
+import type { Transporter } from 'nodemailer'
+
+// ─── Resend client ────────────────────────────────────────────────────────────
 
 let _resend: Resend | undefined
 
-/**
- * Returns a lazily-initialized Resend client.
- * Returns `null` when RESEND_API_KEY is not configured (dev/testing fallback).
- */
 function getResendClient(): Resend | null {
   const apiKey = env.RESEND_API_KEY
   if (!apiKey) return null
-
-  if (!_resend) {
-    _resend = new Resend(apiKey)
-  }
+  if (!_resend) _resend = new Resend(apiKey)
   return _resend
 }
 
+// ─── SMTP transporter ─────────────────────────────────────────────────────────
+
+let _smtp: Transporter | undefined
+
+function getSmtpTransporter(): Transporter | null {
+  if (!env.SMTP_HOST) return null
+  if (!_smtp) {
+    _smtp = nodemailer.createTransport({
+      host: env.SMTP_HOST,
+      port: env.SMTP_PORT,
+      secure: env.SMTP_SECURE,
+      ...(env.SMTP_USER && env.SMTP_PASS
+        ? { auth: { user: env.SMTP_USER, pass: env.SMTP_PASS } }
+        : {}),
+    })
+  }
+  return _smtp
+}
+
 /**
- * Send an email verification link via Resend.
- * Falls back to console.info when RESEND_API_KEY is not set.
- *
+ * Returns the configured sender address for the active email provider.
+ * SMTP uses SMTP_FROM; Resend uses RESEND_FROM_EMAIL.
+ * Exported for use in routes that need the organizer address (e.g. ICS generation).
+ */
+export function getFromEmail(): string {
+  return env.SMTP_HOST ? env.SMTP_FROM : env.RESEND_FROM_EMAIL
+}
+
+// ─── Internal unified send helper ────────────────────────────────────────────
+
+interface EmailMessage {
+  to: string
+  subject: string
+  html: string
+  text: string
+  /** Optional .ics binary attachment (calendar invite). */
+  icsAttachment?: Buffer
+  /** Resend-only metadata tags — silently ignored by SMTP. */
+  resendTags?: Array<{ name: string; value: string }>
+  /** Message logged to console when no provider is configured (dev fallback). */
+  logFallback: string
+  /** logError category used on transport failure. */
+  errorCategory: string
+}
+
+/**
+ * Route an outbound email through SMTP (preferred) → Resend → console fallback.
+ * Priority: SMTP_HOST set → use SMTP. Else RESEND_API_KEY set → use Resend.
+ * Otherwise logs the fallback message and returns (no error thrown).
+ * Throws on transport errors so callers can decide whether to swallow them.
+ */
+async function sendEmail(msg: EmailMessage): Promise<void> {
+  const from = getFromEmail()
+
+  // 1. SMTP — takes priority when SMTP_HOST is configured
+  const smtp = getSmtpTransporter()
+  if (smtp) {
+    try {
+      await smtp.sendMail({
+        from,
+        to: msg.to,
+        subject: msg.subject,
+        html: msg.html,
+        text: msg.text,
+        ...(msg.icsAttachment
+          ? { attachments: [{ filename: 'interview.ics', content: msg.icsAttachment, contentType: 'text/calendar; method=REQUEST' }] }
+          : {}),
+      })
+    }
+    catch (err) {
+      logError(msg.errorCategory, {
+        provider: 'smtp',
+        error_message: err instanceof Error ? err.message : String(err),
+      })
+      throw err
+    }
+    return
+  }
+
+  // 2. Resend
+  const resend = getResendClient()
+  if (resend) {
+    const resendAttachments = msg.icsAttachment
+      ? [{ filename: 'interview.ics', content: msg.icsAttachment.toString('base64'), content_type: 'text/calendar; method=REQUEST' }]
+      : undefined
+
+    const { error } = await resend.emails.send({
+      from,
+      to: [msg.to],
+      subject: msg.subject,
+      html: msg.html,
+      text: msg.text,
+      ...(resendAttachments ? { attachments: resendAttachments } : {}),
+      ...(msg.resendTags ? { tags: msg.resendTags } : {}),
+    })
+
+    if (error) {
+      logError(msg.errorCategory, {
+        provider: 'resend',
+        error_message: error.message,
+      })
+      throw new Error(error.message)
+    }
+    return
+  }
+
+  // 3. No provider configured — dev/test fallback
+  console.info(`[Reqcore] ${msg.logFallback}`)
+}
+
+// ─── Public send functions ────────────────────────────────────────────────────
+
+/**
+ * Send an email verification link.
  * Called by Better Auth when requireEmailVerification is enabled.
  * Not awaited by the caller (fire-and-forget) to prevent timing attacks.
  */
@@ -28,44 +135,24 @@ export async function sendVerificationEmail(data: {
   url: string
   token: string
 }): Promise<void> {
-  const resend = getResendClient()
-
-  if (!resend) {
-    console.warn('[Reqcore] Verification email suppressed — RESEND_API_KEY is not configured')
-    return
-  }
-
-  const fromEmail = env.RESEND_FROM_EMAIL
-
   try {
-    const { error } = await resend.emails.send({
-      from: fromEmail,
-      to: [data.user.email],
+    await sendEmail({
+      to: data.user.email,
       subject: 'Verify your email address — Reqcore',
       html: buildVerificationHtml({ url: data.url }),
       text: buildVerificationText({ url: data.url }),
-      tags: [{ name: 'category', value: 'verification' }],
+      resendTags: [{ name: 'category', value: 'verification' }],
+      logFallback: 'Verification email suppressed — no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
+      errorCategory: 'email.verification_send_failed',
     })
-
-    if (error) {
-      logError('email.verification_send_failed', {
-        provider: 'resend',
-        error_message: error.message,
-      })
-    }
   }
-  catch (err) {
-    logError('email.verification_send_failed', {
-      provider: 'resend',
-      error_message: err instanceof Error ? err.message : String(err),
-    })
+  catch {
+    // fire-and-forget — error already logged inside sendEmail
   }
 }
 
 /**
- * Send a password reset link via Resend.
- * Falls back to console.info when RESEND_API_KEY is not set.
- *
+ * Send a password reset link.
  * Called by Better Auth when sendResetPassword is configured.
  * Not awaited by the caller (fire-and-forget) to prevent timing attacks.
  */
@@ -74,43 +161,25 @@ export async function sendPasswordResetEmail(data: {
   url: string
   token: string
 }): Promise<void> {
-  const resend = getResendClient()
-
-  if (!resend) {
-    console.warn('[Reqcore] Password reset email suppressed — RESEND_API_KEY is not configured')
-    return
-  }
-
-  const fromEmail = env.RESEND_FROM_EMAIL
-
   try {
-    const { error } = await resend.emails.send({
-      from: fromEmail,
-      to: [data.user.email],
+    await sendEmail({
+      to: data.user.email,
       subject: 'Reset your password — Reqcore',
       html: buildPasswordResetHtml({ url: data.url }),
       text: buildPasswordResetText({ url: data.url }),
-      tags: [{ name: 'category', value: 'password-reset' }],
+      resendTags: [{ name: 'category', value: 'password-reset' }],
+      logFallback: 'Password reset email suppressed — no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
+      errorCategory: 'email.password_reset_send_failed',
     })
-
-    if (error) {
-      logError('email.password_reset_send_failed', {
-        provider: 'resend',
-        error_message: error.message,
-      })
-    }
   }
-  catch (err) {
-    logError('email.password_reset_send_failed', {
-      provider: 'resend',
-      error_message: err instanceof Error ? err.message : String(err),
-    })
+  catch {
+    // fire-and-forget — error already logged inside sendEmail
   }
 }
 
 /**
- * Send an organization invitation email via Resend.
- * Falls back to console.info when RESEND_API_KEY is not set.
+ * Send an organization invitation email.
+ * Falls back to console.info when no email provider is configured.
  */
 export async function sendOrgInvitationEmail(data: {
   id: string
@@ -119,25 +188,8 @@ export async function sendOrgInvitationEmail(data: {
   organization: { name: string }
   role: string
 }, inviteLink: string): Promise<void> {
-  const resend = getResendClient()
-
-  if (!resend) {
-    // Dev/test fallback — log invitation link to console
-    console.info(
-      `[Reqcore] Invitation email → ${data.email} | ` +
-      `Invited by ${data.inviter.user.name} (${data.inviter.user.email}) | ` +
-      `Org: ${data.organization.name} | ` +
-      `Role: ${data.role} | ` +
-      `Link: ${inviteLink}`,
-    )
-    return
-  }
-
-  const fromEmail = env.RESEND_FROM_EMAIL
-
-  const { error } = await resend.emails.send({
-    from: fromEmail,
-    to: [data.email],
+  await sendEmail({
+    to: data.email,
     subject: `You're invited to join ${data.organization.name} on Reqcore`,
     html: buildInvitationHtml({
       inviteeName: data.email,
@@ -153,21 +205,18 @@ export async function sendOrgInvitationEmail(data: {
       role: data.role,
       inviteLink,
     }),
-    tags: [
+    resendTags: [
       { name: 'category', value: 'invitation' },
       { name: 'organization', value: data.organization.name.slice(0, 256).replace(/[^a-zA-Z0-9_-]/g, '_') },
     ],
+    logFallback:
+      `Invitation email → ${data.email} | ` +
+      `Invited by ${data.inviter.user.name} (${data.inviter.user.email}) | ` +
+      `Org: ${data.organization.name} | ` +
+      `Role: ${data.role} | ` +
+      `Link: ${inviteLink}`,
+    errorCategory: 'email.invitation_send_failed',
   })
-
-  if (error) {
-    logError('email.invitation_send_failed', {
-      provider: 'resend',
-      error_message: error.message,
-    })
-    throw new Error(`Failed to send invitation email: ${error.message}`)
-  }
-
-  console.info(`[Reqcore] Invitation email sent to ${data.email} via Resend`)
 }
 
 // ─────────────────────────────────────────────
@@ -467,9 +516,9 @@ export function renderTemplate(template: string, data: InterviewEmailData): stri
 }
 
 /**
- * Send an interview invitation email to a candidate via Resend.
+ * Send an interview invitation email to a candidate.
  * Includes an .ics calendar attachment and response links when provided.
- * Falls back to console.info when RESEND_API_KEY is not set.
+ * Falls back to console.info when no email provider is configured.
  */
 export async function sendInterviewInvitationEmail(params: {
   subject: string
@@ -479,53 +528,27 @@ export async function sendInterviewInvitationEmail(params: {
   const renderedSubject = renderTemplate(params.subject, params.data)
   const renderedBody = renderTemplate(params.body, params.data)
 
-  const resend = getResendClient()
+  const icsBuffer = params.data.icsContent ? Buffer.from(params.data.icsContent) : undefined
 
-  if (!resend) {
-    console.info(
-      `[Reqcore] Interview invitation email → ${params.data.candidateEmail} | ` +
+  await sendEmail({
+    to: params.data.candidateEmail,
+    subject: renderedSubject,
+    html: buildInterviewInvitationHtml(renderedSubject, renderedBody, params.data),
+    text: buildInterviewInvitationText(renderedBody, params.data.responseUrls),
+    icsAttachment: icsBuffer,
+    resendTags: [
+      { name: 'category', value: 'interview-invitation' },
+      { name: 'interview', value: params.data.interviewTitle.slice(0, 256).replace(/[^a-zA-Z0-9_-]/g, '_') },
+    ],
+    logFallback:
+      `Interview invitation email → ${params.data.candidateEmail} | ` +
       `Subject: ${renderedSubject} | ` +
       `Interview: ${params.data.interviewTitle} | ` +
       `Date: ${params.data.interviewDate} at ${params.data.interviewTime}` +
       (params.data.icsContent ? ' | .ics attached' : '') +
       (params.data.responseUrls ? ' | response links included' : ''),
-    )
-    return
-  }
-
-  const fromEmail = env.RESEND_FROM_EMAIL
-
-  // Build attachments array — include .ics when available
-  const attachments = params.data.icsContent
-    ? [{
-        filename: 'interview.ics',
-        content: Buffer.from(params.data.icsContent).toString('base64'),
-        content_type: 'text/calendar; method=REQUEST',
-      }]
-    : undefined
-
-  const { error } = await resend.emails.send({
-    from: fromEmail,
-    to: [params.data.candidateEmail],
-    subject: renderedSubject,
-    html: buildInterviewInvitationHtml(renderedSubject, renderedBody, params.data),
-    text: buildInterviewInvitationText(renderedBody, params.data.responseUrls),
-    ...(attachments ? { attachments } : {}),
-    tags: [
-      { name: 'category', value: 'interview-invitation' },
-      { name: 'interview', value: params.data.interviewTitle.slice(0, 256).replace(/[^a-zA-Z0-9_-]/g, '_') },
-    ],
+    errorCategory: 'email.interview_invitation_send_failed',
   })
-
-  if (error) {
-    logError('email.interview_invitation_send_failed', {
-      provider: 'resend',
-      error_message: error.message,
-    })
-    throw new Error(`Failed to send interview invitation email: ${error.message}`)
-  }
-
-  console.info(`[Reqcore] Interview invitation email sent to ${params.data.candidateEmail} via Resend`)
 }
 
 function buildInterviewInvitationHtml(subject: string, bodyText: string, data: InterviewEmailData): string {

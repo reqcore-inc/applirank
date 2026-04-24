@@ -280,10 +280,10 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
               {{ job.location }}
             </span>
             <span
-              v-if="formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit)"
+              v-if="job.salaryNegotiable || formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit)"
               class="inline-flex items-center gap-1.5 rounded-full border border-success-200 dark:border-success-800 bg-success-50 dark:bg-success-950 px-3 py-1 text-xs font-semibold text-success-700 dark:text-success-300"
             >
-              {{ formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit) }}
+              {{ job.salaryNegotiable ? 'Negotiable' : formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryUnit) }}
             </span>
           </div>
 

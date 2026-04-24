@@ -104,6 +104,32 @@ export const envSchema = z
       .pipe(z.string().min(1))
       .optional()
       .default("Reqcore <noreply@reqcore.com>"),
+    /** SMTP hostname for outbound email (e.g. smtp.gmail.com). When set, SMTP is used instead of Resend. */
+    SMTP_HOST: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** SMTP port. Defaults to 587 (STARTTLS). Use 465 for implicit TLS, 25 for unencrypted. */
+    SMTP_PORT: z.preprocess(
+      (val) => {
+        if (typeof val === 'string' && val.trim() === '') return 587
+        if (val === undefined) return 587
+        const n = Number(val)
+        return Number.isNaN(n) ? val : n
+      },
+      z.number().int().min(1).max(65535).default(587),
+    ),
+    /** SMTP username for authentication. Omit for anonymous relay. */
+    SMTP_USER: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** SMTP password for authentication. Omit for anonymous relay. */
+    SMTP_PASS: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** Sender address for SMTP emails. Defaults to "Reqcore <noreply@reqcore.com>". */
+    SMTP_FROM: emptyToUndefined
+      .pipe(z.string().min(1))
+      .optional()
+      .default('Reqcore <noreply@reqcore.com>'),
+    /** Use implicit TLS on port 465. When false, uses STARTTLS (port 587). Defaults to false. */
+    SMTP_SECURE: z.preprocess(
+      (val) => typeof val === 'string' && val.trim() === '' ? false : val === 'true',
+      z.boolean().default(false),
+    ),
     /** Google OAuth2 Client ID for Calendar integration. Obtain from Google Cloud Console. */
     GOOGLE_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** Google OAuth2 Client Secret for Calendar integration. */
@@ -151,6 +177,15 @@ export const envSchema = z
         message:
           "BETTER_AUTH_URL is required when RAILWAY_PUBLIC_DOMAIN is not available",
       });
+    }
+
+    // SMTP: credentials without a host is a misconfiguration.
+    if (!data.SMTP_HOST && (data.SMTP_USER || data.SMTP_PASS)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SMTP_HOST'],
+        message: 'SMTP_HOST is required when SMTP_USER or SMTP_PASS is set.',
+      })
     }
 
     // OIDC SSO requires all three vars or none — partial config is a misconfiguration.
@@ -202,7 +237,7 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
             `Ensure these variables are set in your Railway service (Settings → Variables).\n` +
             `Required: DATABASE_URL, BETTER_AUTH_SECRET, S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET\n` +
             `Required when not on Railway: BETTER_AUTH_URL (or generate a Railway domain)\n` +
-            `Optional: BETTER_AUTH_TRUSTED_ORIGINS, S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG, RESEND_API_KEY, RESEND_FROM_EMAIL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_DISCOVERY_URL, OIDC_PROVIDER_NAME, AUTH_GOOGLE_CLIENT_ID, AUTH_GOOGLE_CLIENT_SECRET, AUTH_GITHUB_CLIENT_ID, AUTH_GITHUB_CLIENT_SECRET, AUTH_MICROSOFT_CLIENT_ID, AUTH_MICROSOFT_CLIENT_SECRET, AUTH_MICROSOFT_TENANT_ID\n`,
+            `Optional: BETTER_AUTH_TRUSTED_ORIGINS, S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG, RESEND_API_KEY, RESEND_FROM_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_SECURE, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_DISCOVERY_URL, OIDC_PROVIDER_NAME, AUTH_GOOGLE_CLIENT_ID, AUTH_GOOGLE_CLIENT_SECRET, AUTH_GITHUB_CLIENT_ID, AUTH_GITHUB_CLIENT_SECRET, AUTH_MICROSOFT_CLIENT_ID, AUTH_MICROSOFT_CLIENT_SECRET, AUTH_MICROSOFT_TENANT_ID\n`,
         );
         throw result.error;
       }

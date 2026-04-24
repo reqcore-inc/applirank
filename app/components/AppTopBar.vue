@@ -144,6 +144,22 @@ watch(() => route.path, () => {
   showGetStartedMenu.value = false
 })
 
+// ─────────────────────────────────────────────
+// New Job button
+// ─────────────────────────────────────────────
+
+const newJobResetSignal = useState('new-job-reset-signal', () => 0)
+
+function handleNewJobClick() {
+  const newJobPath = localePath('/dashboard/jobs/new')
+  if (route.path === newJobPath) {
+    // Already on the page: signal the wizard to reset instead of navigating
+    newJobResetSignal.value++
+  } else {
+    navigateTo(newJobPath)
+  }
+}
+
 // Close user menu on outside click
 const userMenuRef = useTemplateRef<HTMLElement>('userMenuRoot')
 function onClickOutsideUser(e: MouseEvent) {
@@ -264,13 +280,13 @@ onUnmounted(() => {
           </div>
 
           <!-- New Job button (desktop) -->
-          <NuxtLink
-            :to="$localePath('/dashboard/jobs/new')"
-            class="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:shadow-brand-600/25 active:bg-brand-800 transition-all duration-200 no-underline"
+          <button
+            class="hidden sm:inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm shadow-brand-600/20 hover:bg-brand-700 hover:shadow-md hover:shadow-brand-600/25 active:bg-brand-800 transition-all duration-200 border-0 cursor-pointer"
+            @click="handleNewJobClick"
           >
             <Plus class="size-3.5" />
             New Job
-          </NuxtLink>
+          </button>
 
           <!-- Org Switcher -->
           <div class="hidden lg:block ml-1">
@@ -494,13 +510,13 @@ onUnmounted(() => {
             </span>
           </NuxtLink>
 
-          <NuxtLink
-            :to="$localePath('/dashboard/jobs/new')"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-700 transition-colors no-underline sm:hidden mt-1"
+          <button
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-brand-600 text-white hover:bg-brand-700 transition-colors sm:hidden mt-1 border-0 cursor-pointer w-full"
+            @click="handleNewJobClick(); showMobileMenu = false"
           >
             <Plus class="size-4" />
             New Job
-          </NuxtLink>
+          </button>
 
           <!-- Get Started CTA (demo mode, mobile) -->
           <template v-if="isDemo">

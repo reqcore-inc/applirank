@@ -440,7 +440,37 @@ docker compose up --build -d
 
 By default, Reqcore logs email content to the console (useful for development). For production, configure a transactional email service.
 
-### Using Resend (Recommended)
+**Priority:** When `SMTP_HOST` is set, SMTP is used. Otherwise, if `RESEND_API_KEY` is set, Resend is used. If neither is configured, emails are logged to the console.
+
+### Option A: SMTP (recommended for self-hosted setups)
+
+SMTP works with any mail server — Postfix, Gmail, Exchange, Mailcow, Mailu, etc. No external service dependency.
+
+1. Add to your `.env` file:
+
+```bash
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=reqcore@example.com
+SMTP_PASS=your-smtp-password
+SMTP_FROM="Reqcore <noreply@example.com>"
+SMTP_SECURE=false    # true for implicit TLS (port 465), false for STARTTLS (port 587)
+```
+
+2. Restart: `docker compose up --build -d`
+
+**Common setups:**
+
+| Provider | SMTP_HOST | SMTP_PORT | SMTP_SECURE |
+|---|---|---|---|
+| Gmail (App Password) | `smtp.gmail.com` | `587` | `false` |
+| Outlook / Office 365 | `smtp.office365.com` | `587` | `false` |
+| Mailcow / Mailu | your server hostname | `587` | `false` |
+| Custom Postfix | your server hostname | `587` or `465` | `false` / `true` |
+
+> For Gmail, generate an [App Password](https://support.google.com/accounts/answer/185833) — your regular Gmail password will not work.
+
+### Option B: Resend
 
 1. Sign up at [resend.com](https://resend.com) (free tier: 3,000 emails/month)
 2. Verify your sending domain
@@ -453,11 +483,6 @@ RESEND_FROM_EMAIL="Reqcore <noreply@yourcompany.com>"
 ```
 
 5. Restart: `docker compose up --build -d`
-
-This enables:
-- Team member invitation emails
-- Interview scheduling notifications
-- Candidate communication emails
 
 ---
 

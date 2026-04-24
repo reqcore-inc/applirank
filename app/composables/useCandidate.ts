@@ -22,8 +22,11 @@ export function useCandidate(id: MaybeRefOrGetter<string>) {
   async function updateCandidate(payload: Partial<{
     firstName: string
     lastName: string
+    displayName: string | null
     email: string
     phone: string | null
+    gender: 'male' | 'female' | 'other' | 'prefer_not_to_say' | null
+    dateOfBirth: string | null
   }>) {
     try {
       const updated = await $fetch(`/api/candidates/${candidateId.value}`, {

@@ -27,6 +27,9 @@ export const questionTypeEnum = pgEnum('question_type', [
   'short_text', 'long_text', 'single_select', 'multi_select',
   'number', 'date', 'url', 'checkbox', 'file_upload',
 ])
+export const genderEnum = pgEnum('gender', ['male', 'female', 'other', 'prefer_not_to_say'])
+export const nameDisplayFormatEnum = pgEnum('name_display_format', ['first_last', 'last_first'])
+export const dateFormatEnum = pgEnum('date_format', ['mdy', 'dmy', 'ymd'])
 
 // ─────────────────────────────────────────────
 // ATS Domain Tables — ALL scoped by organizationId
@@ -49,6 +52,7 @@ export const job = pgTable('job', {
   salaryMax: integer('salary_max'),
   salaryCurrency: text('salary_currency'),
   salaryUnit: text('salary_unit'),
+  salaryNegotiable: boolean('salary_negotiable').notNull().default(false),
   remoteStatus: text('remote_status'),
   validThrough: timestamp('valid_through'),
   // ── Application form settings ──
@@ -71,12 +75,19 @@ export const candidate = pgTable('candidate', {
   organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
+  /** Optional display name override (e.g. for localized name ordering) */
+  displayName: text('display_name'),
   email: text('email').notNull(),
   phone: text('phone'),
+  /** Gender — stored as enum for structured filtering */
+  gender: genderEnum('gender'),
+  /** Date of birth — stored as text in ISO 8601 format (YYYY-MM-DD) to avoid timezone issues */
+  dateOfBirth: text('date_of_birth'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ([
   index('candidate_organization_id_idx').on(t.organizationId),
+  index('candidate_gender_idx').on(t.organizationId, t.gender),
   uniqueIndex('candidate_org_email_idx').on(t.organizationId, t.email),
 ]))
 
@@ -164,6 +175,28 @@ export const questionResponse = pgTable('question_response', {
   index('question_response_organization_id_idx').on(t.organizationId),
   index('question_response_application_id_idx').on(t.applicationId),
   index('question_response_question_id_idx').on(t.questionId),
+]))
+
+// ─────────────────────────────────────────────
+// Organization Localization Settings
+// ─────────────────────────────────────────────
+
+/**
+ * Per-organization localization preferences.
+ * Controls how candidate names and dates are displayed across the app.
+ * One row per organization — upserted on change.
+ */
+export const orgSettings = pgTable('org_settings', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  /** Controls whether names display as "First Last" or "Last First" */
+  nameDisplayFormat: nameDisplayFormatEnum('name_display_format').notNull().default('first_last'),
+  /** Controls the date display format across the app */
+  dateFormat: dateFormatEnum('date_format').notNull().default('mdy'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  uniqueIndex('org_settings_organization_id_idx').on(t.organizationId),
 ]))
 
 // ─────────────────────────────────────────────
@@ -702,4 +735,8 @@ export const applicationSourceRelations = relations(applicationSource, ({ one })
   organization: one(organization, { fields: [applicationSource.organizationId], references: [organization.id] }),
   application: one(application, { fields: [applicationSource.applicationId], references: [application.id] }),
   trackingLink: one(trackingLink, { fields: [applicationSource.trackingLinkId], references: [trackingLink.id] }),
+}))
+
+export const orgSettingsRelations = relations(orgSettings, ({ one }) => ({
+  organization: one(organization, { fields: [orgSettings.organizationId], references: [organization.id] }),
 }))

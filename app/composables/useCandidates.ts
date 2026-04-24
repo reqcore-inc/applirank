@@ -27,8 +27,11 @@ export function useCandidates(options?: {
   async function createCandidate(payload: {
     firstName: string
     lastName: string
+    displayName?: string
     email: string
     phone?: string
+    gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say'
+    dateOfBirth?: string
   }) {
     try {
       const created = await $fetch('/api/candidates', {

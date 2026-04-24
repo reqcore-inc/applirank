@@ -24,6 +24,10 @@ export default defineEventHandler(async (event) => {
     )
   }
 
+  if (query.gender) {
+    conditions.push(eq(candidate.gender, query.gender))
+  }
+
   const where = and(...conditions)
 
   const [data, total] = await Promise.all([
@@ -32,8 +36,11 @@ export default defineEventHandler(async (event) => {
         id: candidate.id,
         firstName: candidate.firstName,
         lastName: candidate.lastName,
+        displayName: candidate.displayName,
         email: candidate.email,
         phone: candidate.phone,
+        gender: candidate.gender,
+        dateOfBirth: candidate.dateOfBirth,
         createdAt: candidate.createdAt,
         updatedAt: candidate.updatedAt,
         applicationCount: sql<number>`count(${application.id})::int`,

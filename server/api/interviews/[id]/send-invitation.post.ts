@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm'
 import { interview, application, candidate, job, emailTemplate, organization } from '../../../database/schema'
 import { interviewIdParamSchema } from '../../../utils/schemas/interview'
 import { sendInterviewInvitationSchema, SYSTEM_TEMPLATES } from '../../../utils/schemas/emailTemplate'
-import { sendInterviewInvitationEmail, renderTemplate, type InterviewEmailData } from '../../../utils/email'
+import { sendInterviewInvitationEmail, renderTemplate, getFromEmail, type InterviewEmailData } from '../../../utils/email'
 import { generateInterviewICS } from '../../../utils/ical'
 import { buildResponseUrls } from '../../../utils/interview-token'
 
@@ -106,10 +106,7 @@ export default defineEventHandler(async (event) => {
   // Build template data
   const scheduledAt = new Date(interviewRecord.scheduledAt)
   const candidateName = `${app.candidate.firstName} ${app.candidate.lastName}`
-  const fromEmail = env.RESEND_FROM_EMAIL
-  if (!fromEmail) {
-    throw createError({ statusCode: 503, statusMessage: 'Email sending is not configured (RESEND_FROM_EMAIL missing)' })
-  }
+  const fromEmail = getFromEmail()
 
   // Derive the base URL for response links
   const baseUrl = env.BETTER_AUTH_URL

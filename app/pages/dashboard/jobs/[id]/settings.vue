@@ -34,10 +34,11 @@ const form = ref({
   location: '',
   type: 'full_time' as string,
   slug: '',
-  salaryMin: undefined as number | undefined,
-  salaryMax: undefined as number | undefined,
+  salaryMin: null as number | null,
+  salaryMax: null as number | null,
   salaryCurrency: '',
   salaryUnit: '' as string,
+  salaryNegotiable: false,
   remoteStatus: '' as string,
   validThrough: '',
   requireResume: false,
@@ -53,10 +54,11 @@ watch(job, (j) => {
       location: j.location ?? '',
       type: j.type ?? 'full_time',
       slug: j.slug ?? '',
-      salaryMin: j.salaryMin ?? undefined,
-      salaryMax: j.salaryMax ?? undefined,
+      salaryMin: j.salaryMin ?? null,
+      salaryMax: j.salaryMax ?? null,
       salaryCurrency: j.salaryCurrency ?? '',
       salaryUnit: j.salaryUnit ?? '',
+      salaryNegotiable: j.salaryNegotiable ?? false,
       remoteStatus: j.remoteStatus ?? '',
       validThrough: j.validThrough ? new Date(j.validThrough).toISOString().split('T')[0] ?? '' : '',
       requireResume: j.requireResume ?? false,
@@ -65,6 +67,16 @@ watch(job, (j) => {
     }
   }
 }, { immediate: true })
+
+// When "Negotiable" is toggled on, clear the salary range fields
+watch(() => form.value.salaryNegotiable, (negotiable) => {
+  if (negotiable) {
+    form.value.salaryMin = null
+    form.value.salaryMax = null
+    form.value.salaryCurrency = ''
+    form.value.salaryUnit = ''
+  }
+})
 
 // ─────────────────────────────────────────────
 // Validation
@@ -76,10 +88,11 @@ const editSchema = z.object({
   location: z.string().optional(),
   type: z.enum(['full_time', 'part_time', 'contract', 'internship']),
   slug: z.string().max(80).optional(),
-  salaryMin: z.coerce.number().int().min(0).optional(),
-  salaryMax: z.coerce.number().int().min(0).optional(),
+  salaryMin: z.union([z.coerce.number().int().min(0), z.null()]).optional(),
+  salaryMax: z.union([z.coerce.number().int().min(0), z.null()]).optional(),
   salaryCurrency: z.string().length(3).optional().or(z.literal('')),
   salaryUnit: z.enum(['YEAR', 'MONTH', 'HOUR']).optional().or(z.literal('')),
+  salaryNegotiable: z.boolean().optional(),
   remoteStatus: z.enum(['remote', 'hybrid', 'onsite']).optional().or(z.literal('')),
   validThrough: z.string().optional(),
   requireResume: z.boolean().optional(),
@@ -107,21 +120,23 @@ async function handleSave() {
   try {
     const payload: Record<string, unknown> = {
       title: form.value.title,
-      description: form.value.description || undefined,
-      location: form.value.location || undefined,
+      description: form.value.description || null,
+      location: form.value.location || null,
       type: form.value.type,
       slug: form.value.slug || undefined,
       requireResume: form.value.requireResume,
       requireCoverLetter: form.value.requireCoverLetter,
       autoScoreOnApply: form.value.autoScoreOnApply,
+      salaryNegotiable: form.value.salaryNegotiable,
+      // Always send salary fields so cleared values write null to the DB
+      salaryMin: form.value.salaryNegotiable ? null : (form.value.salaryMin ?? null),
+      salaryMax: form.value.salaryNegotiable ? null : (form.value.salaryMax ?? null),
+      salaryCurrency: form.value.salaryNegotiable ? null : (form.value.salaryCurrency || null),
+      salaryUnit: form.value.salaryNegotiable ? null : (form.value.salaryUnit || null),
+      remoteStatus: form.value.remoteStatus || null,
+      // Send null when cleared so the DB column is set to NULL
+      validThrough: form.value.validThrough ? new Date(form.value.validThrough) : null,
     }
-
-    if (form.value.salaryMin != null && form.value.salaryMin > 0) payload.salaryMin = form.value.salaryMin
-    if (form.value.salaryMax != null && form.value.salaryMax > 0) payload.salaryMax = form.value.salaryMax
-    if (form.value.salaryCurrency) payload.salaryCurrency = form.value.salaryCurrency
-    if (form.value.salaryUnit) payload.salaryUnit = form.value.salaryUnit
-    if (form.value.remoteStatus) payload.remoteStatus = form.value.remoteStatus
-    if (form.value.validThrough) payload.validThrough = new Date(form.value.validThrough)
 
     await updateJob(payload as any)
     track('job_settings_saved', { job_id: jobId })
@@ -338,63 +353,83 @@ const salaryUnitOptions = [
             Adding salary information improves visibility on Google Jobs.
           </p>
           <div class="space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Negotiable toggle -->
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                v-model="form.salaryNegotiable"
+                type="checkbox"
+                class="size-4 rounded border-surface-300 dark:border-surface-600 text-brand-600 focus:ring-brand-500"
+              />
               <div>
-                <label for="settings-salary-min" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                  Minimum Salary
-                </label>
-                <input
-                  id="settings-salary-min"
-                  v-model.number="form.salaryMin"
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 50000"
-                  class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                />
+                <span class="text-sm font-medium text-surface-900 dark:text-surface-100">Salary is negotiable</span>
+                <p class="text-xs text-surface-400 dark:text-surface-500">
+                  When checked, "Negotiable" is shown instead of a specific salary range. Salary fields below will be cleared.
+                </p>
               </div>
-              <div>
-                <label for="settings-salary-max" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                  Maximum Salary
-                </label>
-                <input
-                  id="settings-salary-max"
-                  v-model.number="form.salaryMax"
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 80000"
-                  class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                />
+            </label>
+
+            <!-- Salary range fields — hidden when negotiable -->
+            <template v-if="!form.salaryNegotiable">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="settings-salary-min" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                    Minimum Salary
+                  </label>
+                  <input
+                    id="settings-salary-min"
+                    v-model.number="form.salaryMin"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 50000"
+                    class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                    @change="if (!($event.target as HTMLInputElement).value) form.salaryMin = null"
+                  />
+                </div>
+                <div>
+                  <label for="settings-salary-max" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                    Maximum Salary
+                  </label>
+                  <input
+                    id="settings-salary-max"
+                    v-model.number="form.salaryMax"
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 80000"
+                    class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                    @change="if (!($event.target as HTMLInputElement).value) form.salaryMax = null"
+                  />
+                </div>
               </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label for="settings-currency" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                  Currency
-                </label>
-                <input
-                  id="settings-currency"
-                  v-model="form.salaryCurrency"
-                  type="text"
-                  maxlength="3"
-                  placeholder="e.g. USD, EUR, NOK"
-                  class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors uppercase"
-                />
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="settings-currency" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                    Currency
+                  </label>
+                  <input
+                    id="settings-currency"
+                    v-model="form.salaryCurrency"
+                    type="text"
+                    maxlength="3"
+                    placeholder="e.g. USD, EUR, NOK"
+                    class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors uppercase"
+                  />
+                </div>
+                <div>
+                  <label for="settings-salary-unit" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                    Pay Period
+                  </label>
+                  <select
+                    id="settings-salary-unit"
+                    v-model="form.salaryUnit"
+                    class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                  >
+                    <option v-for="opt in salaryUnitOptions" :key="opt.value" :value="opt.value">
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label for="settings-salary-unit" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                  Pay Period
-                </label>
-                <select
-                  id="settings-salary-unit"
-                  v-model="form.salaryUnit"
-                  class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                >
-                  <option v-for="opt in salaryUnitOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.label }}
-                  </option>
-                </select>
-              </div>
-            </div>
+            </template>
           </div>
         </section>
 
@@ -455,12 +490,23 @@ const salaryUnitOptions = [
             <label for="settings-valid-through" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
               Valid Through
             </label>
-            <input
-              id="settings-valid-through"
-              v-model="form.validThrough"
-              type="date"
-              class="w-full sm:w-64 rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-            />
+            <div class="flex items-center gap-2">
+              <input
+                id="settings-valid-through"
+                v-model="form.validThrough"
+                type="date"
+                class="w-full sm:w-64 rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+              />
+              <button
+                v-if="form.validThrough"
+                type="button"
+                class="text-xs text-surface-400 hover:text-danger-500 dark:hover:text-danger-400 transition-colors underline shrink-0"
+                @click="form.validThrough = ''"
+              >
+                Clear
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs text-surface-400 dark:text-surface-500">Leave blank if there is no fixed expiry date.</p>
           </div>
         </section>
 

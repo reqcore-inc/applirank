@@ -20,12 +20,20 @@ export function useJob(id: MaybeRefOrGetter<string>) {
   /** Update job fields (partial) and refresh both detail and list caches */
   async function updateJob(payload: Partial<{
     title: string
-    description: string
-    location: string
+    description: string | null
+    location: string | null
     type: 'full_time' | 'part_time' | 'contract' | 'internship'
     status: 'draft' | 'open' | 'closed' | 'archived'
+    salaryMin: number | null
+    salaryMax: number | null
+    salaryCurrency: string | null
+    salaryUnit: 'YEAR' | 'MONTH' | 'HOUR' | null
+    salaryNegotiable: boolean
+    remoteStatus: 'remote' | 'hybrid' | 'onsite' | null
+    validThrough: Date | null
     requireResume: boolean
     requireCoverLetter: boolean
+    autoScoreOnApply: boolean
   }>) {
     try {
       const updated = await $fetch(`/api/jobs/${jobId.value}`, {

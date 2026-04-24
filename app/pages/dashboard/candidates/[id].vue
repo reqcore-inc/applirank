@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, Clock, Briefcase, FileText, Plus, Upload, Download, Eye, X, AlertTriangle } from 'lucide-vue-next'
+import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, Clock, Briefcase, FileText, Plus, Upload, Download, Eye, X, AlertTriangle, Venus, Mars } from 'lucide-vue-next'
 import { z } from 'zod'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
 
@@ -14,6 +14,7 @@ const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
 
 const { candidate, status: fetchStatus, error, refresh, updateCandidate, deleteCandidate } = useCandidate(candidateId)
+const { formatCandidateName, formatDate } = useOrgSettings()
 
 useSeoMeta({
   title: computed(() =>
@@ -37,8 +38,11 @@ const isEditing = ref(false)
 const editForm = ref({
   firstName: '',
   lastName: '',
+  displayName: '',
   email: '',
   phone: '',
+  gender: '' as '' | 'male' | 'female' | 'other' | 'prefer_not_to_say',
+  dateOfBirth: '',
 })
 
 function startEdit() {
@@ -46,8 +50,11 @@ function startEdit() {
   editForm.value = {
     firstName: candidate.value.firstName,
     lastName: candidate.value.lastName,
+    displayName: candidate.value.displayName ?? '',
     email: candidate.value.email,
     phone: candidate.value.phone ?? '',
+    gender: (candidate.value.gender as '' | 'male' | 'female' | 'other' | 'prefer_not_to_say') ?? '',
+    dateOfBirth: candidate.value.dateOfBirth ?? '',
   }
   isEditing.value = true
 }
@@ -60,15 +67,30 @@ function cancelEdit() {
 const editSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(100),
   lastName: z.string().min(1, 'Last name is required').max(100),
+  displayName: z.string().max(200).optional(),
   email: z.string().min(1, 'Email is required').email('Invalid email address').max(255),
   phone: z.string().max(50).optional(),
+  gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say']).optional(),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD')
+    .refine((v) => {
+      const d = new Date(v)
+      return !isNaN(d.getTime()) && d.getFullYear() >= 1900 && d <= new Date()
+    }, 'Must be a valid past date')
+    .optional(),
 })
 
 const isSaving = ref(false)
 const editErrors = ref<Record<string, string>>({})
 
 async function handleSave() {
-  const result = editSchema.safeParse(editForm.value)
+  const result = editSchema.safeParse({
+    ...editForm.value,
+    gender: editForm.value.gender || undefined,
+    dateOfBirth: editForm.value.dateOfBirth || undefined,
+    displayName: editForm.value.displayName || undefined,
+  })
   if (!result.success) {
     editErrors.value = {}
     for (const issue of result.error.issues) {
@@ -84,8 +106,11 @@ async function handleSave() {
     await updateCandidate({
       firstName: editForm.value.firstName,
       lastName: editForm.value.lastName,
+      displayName: editForm.value.displayName || null,
       email: editForm.value.email,
       phone: editForm.value.phone || null,
+      gender: (editForm.value.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say') || null,
+      dateOfBirth: editForm.value.dateOfBirth || null,
     })
     isEditing.value = false
   } catch (err: any) {
@@ -131,6 +156,13 @@ const applicationStatusClasses: Record<string, string> = {
   offer: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-400',
   hired: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400',
   rejected: 'bg-surface-100 text-surface-500 dark:bg-surface-800 dark:text-surface-400',
+}
+
+const genderLabels: Record<string, string> = {
+  male: 'Male',
+  female: 'Female',
+  other: 'Other',
+  prefer_not_to_say: 'Prefer not to say',
 }
 
 const documentTypeLabels: Record<string, string> = {
@@ -303,7 +335,7 @@ function formatFileSize(bytes: number | null | undefined): string {
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div class="min-w-0">
             <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50 truncate mb-1">
-              {{ candidate.firstName }} {{ candidate.lastName }}
+              {{ formatCandidateName(candidate) }}
             </h1>
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-surface-500">
               <a
@@ -357,6 +389,24 @@ function formatFileSize(bytes: number | null | undefined): string {
               <dt class="text-surface-400">Phone</dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
                 {{ candidate.phone || '—' }}
+              </dd>
+            </div>
+            <div v-if="candidate.gender">
+              <dt class="text-surface-400">Gender</dt>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">
+                {{ genderLabels[candidate.gender] ?? candidate.gender }}
+              </dd>
+            </div>
+            <div v-if="candidate.dateOfBirth">
+              <dt class="text-surface-400">Date of Birth</dt>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">
+                {{ formatDate(candidate.dateOfBirth) }}
+              </dd>
+            </div>
+            <div v-if="candidate.displayName">
+              <dt class="text-surface-400">Display Name</dt>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">
+                {{ candidate.displayName }}
               </dd>
             </div>
             <div>
@@ -736,6 +786,55 @@ function formatFileSize(bytes: number | null | undefined): string {
             />
           </div>
 
+          <!-- Display Name -->
+          <div>
+            <label for="edit-displayName" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+              Display Name
+              <span class="ml-1 text-xs font-normal text-surface-400">(optional — overrides default name format)</span>
+            </label>
+            <input
+              id="edit-displayName"
+              v-model="editForm.displayName"
+              type="text"
+              placeholder="e.g. Nguyễn Văn A"
+              class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+            />
+          </div>
+
+          <!-- Gender + Date of Birth -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="edit-gender" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                Gender
+              </label>
+              <select
+                id="edit-gender"
+                v-model="editForm.gender"
+                class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+              >
+                <option value="">Not specified</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label for="edit-dateOfBirth" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                Date of Birth
+              </label>
+              <input
+                id="edit-dateOfBirth"
+                v-model="editForm.dateOfBirth"
+                type="date"
+                :max="new Date().toISOString().split('T')[0]"
+                class="w-full rounded-lg border px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                :class="editErrors.dateOfBirth ? 'border-danger-300' : 'border-surface-300 dark:border-surface-700'"
+              />
+              <p v-if="editErrors.dateOfBirth" class="mt-1 text-xs text-danger-600 dark:text-danger-400">{{ editErrors.dateOfBirth }}</p>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="flex items-center gap-3 pt-2">
             <button
@@ -763,7 +862,7 @@ function formatFileSize(bytes: number | null | undefined): string {
           <div class="relative bg-white dark:bg-surface-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
             <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-2">Delete Candidate</h3>
             <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">
-              Are you sure you want to delete <strong>{{ candidate.firstName }} {{ candidate.lastName }}</strong>?
+              Are you sure you want to delete <strong>{{ formatCandidateName(candidate) }}</strong>?
               This will also delete all their applications and documents. This action cannot be undone.
             </p>
             <div class="flex justify-end gap-2">

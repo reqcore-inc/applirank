@@ -315,6 +315,41 @@ onMounted(() => {
   restoreFormFromStorage()
 })
 
+// Reset all wizard state to initial values (called when user clicks "New Job" again)
+function resetState() {
+  currentStep.value = 1
+  form.value = {
+    title: '',
+    description: '',
+    location: '',
+    type: 'full_time',
+    experienceLevel: 'mid',
+    remoteStatus: undefined,
+  }
+  applicationForm.value = {
+    requireResume: true,
+    requireCoverLetter: false,
+    questions: [],
+  }
+  scoringCriteria.value = []
+  scoringMode.value = 'none'
+  autoScoreOnApply.value = false
+  isPublished.value = false
+  createdJobId.value = ''
+  createdJobSlug.value = ''
+  finalApplicationLink.value = ''
+  errors.value = {}
+  createdLinks.value = {}
+  customBoardLinks.value = []
+  clearFormStorage()
+}
+
+// Shared signal incremented by AppTopBar when the user is already on this page
+const newJobResetSignal = useState('new-job-reset-signal', () => 0)
+watch(newJobResetSignal, (next, prev) => {
+  if (next > prev) resetState()
+})
+
 // Auto-save when step changes or form data changes
 watch([currentStep, form, applicationForm, scoringCriteria, scoringMode, autoScoreOnApply], () => {
   saveFormToStorage()
@@ -485,8 +520,11 @@ function validateStep1(): boolean {
   return true
 }
 
+// Pure check with no side-effects so it never populates errors on its own
+const isStep1Valid = computed(() => formSchema.safeParse(form.value).success)
+
 const canGoNext = computed(() => {
-  if (currentStep.value === 1) return validateStep1()
+  if (currentStep.value === 1) return isStep1Valid.value
   return true
 })
 
@@ -742,7 +780,7 @@ const questionTypeLabels: Record<QuestionType, string> = {
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
       <div>
         <NuxtLink
-          :to="$localePath('/dashboard')"
+          :to="$localePath('/dashboard/jobs')"
           class="inline-flex items-center gap-1 text-sm text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 mb-2 transition-colors"
         >
           <ArrowLeft class="size-4" />
@@ -833,6 +871,7 @@ const questionTypeLabels: Record<QuestionType, string> = {
                     placeholder="e.g. Senior Frontend Engineer"
                     class="w-full rounded-lg border px-3 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     :class="errors.title ? 'border-danger-300 ring-1 ring-danger-100' : 'border-surface-300 dark:border-surface-700'"
+                    @blur="validateStep1"
                   />
                   <p v-if="errors.title" class="mt-1.5 text-xs text-danger-600 dark:text-danger-400 font-medium">{{ errors.title }}</p>
                   <p v-else class="mt-1.5 text-xs text-surface-500">80 characters left. No special characters.</p>

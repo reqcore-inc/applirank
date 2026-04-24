@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
       salaryMax: job.salaryMax,
       salaryCurrency: job.salaryCurrency,
       salaryUnit: job.salaryUnit,
+      salaryNegotiable: job.salaryNegotiable,
       remoteStatus: job.remoteStatus,
       validThrough: job.validThrough,
       requireResume: job.requireResume,

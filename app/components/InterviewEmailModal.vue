@@ -16,6 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const { templates, createTemplate, deleteTemplate, sendInvitation } = useEmailTemplates()
+const { formatPersonName } = useOrgSettings()
 
 // ─── System templates (from shared utility — auto-imported) ────
 
@@ -171,7 +172,7 @@ const canSend = computed(() => {
                   Send Interview Invitation
                 </h2>
                 <p class="text-xs text-surface-500 dark:text-surface-400">
-                  to {{ interview.candidateFirstName }} {{ interview.candidateLastName }} · {{ interview.candidateEmail }}
+                  to {{ formatPersonName(interview.candidateFirstName, interview.candidateLastName) }} · {{ interview.candidateEmail }}
                 </p>
               </div>
             </div>

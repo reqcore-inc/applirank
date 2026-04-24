@@ -16,15 +16,44 @@ export function useOrgSettings() {
    * Falls back to "First Last" if displayName is not set.
    */
   function formatCandidateName(candidate: {
-    firstName: string
-    lastName: string
+    firstName?: string | null
+    lastName?: string | null
     displayName?: string | null
   }): string {
     if (candidate.displayName?.trim()) return candidate.displayName.trim()
+    return formatPersonName(candidate.firstName, candidate.lastName)
+  }
+
+  /**
+   * Format a person's name from first/last parts according to the org's
+   * display preference. Use for shapes that don't carry a `displayName`
+   * (e.g. flattened API rows like `candidateFirstName` / `candidateLastName`).
+   */
+  function formatPersonName(
+    firstName: string | null | undefined,
+    lastName: string | null | undefined,
+    displayName?: string | null
+  ): string {
+    if (displayName?.trim()) return displayName.trim()
+    const first = (firstName ?? '').trim()
+    const last = (lastName ?? '').trim()
+    if (!first && !last) return ''
+    if (!first) return last
+    if (!last) return first
     if (nameDisplayFormat.value === 'last_first') {
-      return `${candidate.lastName} ${candidate.firstName}`
+      return `${last} ${first}`
     }
-    return `${candidate.firstName} ${candidate.lastName}`
+    return `${first} ${last}`
+  }
+
+  /**
+   * Format a full ISO timestamp (or Date) according to the org's date format.
+   * Returns an empty string for null/undefined values.
+   */
+  function formatDateTime(value: string | Date | null | undefined): string {
+    if (!value) return ''
+    const iso = typeof value === 'string' ? value : value.toISOString()
+    return formatDate(iso.slice(0, 10))
   }
 
   /**
@@ -59,7 +88,9 @@ export function useOrgSettings() {
     dateFormat,
     status,
     formatCandidateName,
+    formatPersonName,
     formatDate,
+    formatDateTime,
     updateSettings,
     refresh,
   }

@@ -46,6 +46,9 @@ const { candidates, total, fetchStatus, error, refresh } = useCandidates({
   dobTo: filterDobTo,
 })
 
+// Org localization (name + date format)
+const { formatCandidateName, formatDateTime } = useOrgSettings()
+
 // ── Sorting ───────────────────────────────────────────────────────────────────
 
 type SortKey = 'name' | 'email' | 'phone' | 'applications' | 'created'
@@ -70,7 +73,7 @@ const sortedCandidates = computed(() => {
   list.sort((a, b) => {
     switch (sortKey.value) {
       case 'name':
-        return dir * `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+        return dir * formatCandidateName(a).localeCompare(formatCandidateName(b))
       case 'email':
         return dir * a.email.localeCompare(b.email)
       case 'phone':
@@ -315,7 +318,7 @@ function cancelEditNotes() {
                   :to="$localePath(`/dashboard/candidates/${c.id}`)"
                   class="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors whitespace-nowrap"
                 >
-                  {{ c.firstName }} {{ c.lastName }}
+                  {{ formatCandidateName(c) }}
                 </NuxtLink>
               </td>
               <td class="px-4 py-3 text-surface-500 dark:text-surface-400">
@@ -345,7 +348,7 @@ function cancelEditNotes() {
                 <span v-else class="text-surface-300 dark:text-surface-600">0</span>
               </td>
               <td class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap">
-                <TimelineDateLink :date="c.createdAt">{{ new Date(c.createdAt).toLocaleDateString() }}</TimelineDateLink>
+                <TimelineDateLink :date="c.createdAt">{{ formatDateTime(c.createdAt) }}</TimelineDateLink>
               </td>
               <!-- Quick notes — inline editable -->
               <td class="px-4 py-3 hidden lg:table-cell" @click.stop>

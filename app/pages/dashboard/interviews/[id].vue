@@ -18,6 +18,7 @@ const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
 const { activeOrg } = useCurrentOrg()
 const { track } = useTrack()
+const { formatPersonName } = useOrgSettings()
 
 const { interview, status: fetchStatus, error, updateInterview, deleteInterview, refresh } = useInterview(interviewId)
 
@@ -408,7 +409,7 @@ const localePath = useLocalePath()
                   class="inline-flex items-center gap-1.5 hover:text-brand-600 dark:hover:text-brand-400 transition-colors group"
                 >
                   <UserRound class="size-4" />
-                  {{ interview.candidateFirstName }} {{ interview.candidateLastName }}
+                  {{ formatPersonName(interview.candidateFirstName, interview.candidateLastName) }}
                   <ExternalLink class="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </NuxtLink>
                 <NuxtLink
@@ -704,7 +705,7 @@ const localePath = useLocalePath()
             <div>
               <dt class="text-surface-400">Name</dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ interview.candidateFirstName }} {{ interview.candidateLastName }}
+                {{ formatPersonName(interview.candidateFirstName, interview.candidateLastName) }}
               </dd>
             </div>
             <div>

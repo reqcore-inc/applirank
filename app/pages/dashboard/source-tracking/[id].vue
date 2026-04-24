@@ -16,6 +16,7 @@ const route = useRoute()
 const localePath = useLocalePath()
 const toast = useToast()
 const { track } = useTrack()
+const { formatPersonName } = useOrgSettings()
 
 const linkId = computed(() => route.params.id as string)
 
@@ -754,7 +755,7 @@ async function handleSidebarUpdated() {
                         class="text-sm font-medium text-surface-800 dark:text-surface-200 hover:text-brand-600 dark:hover:text-brand-400 truncate no-underline transition-colors block"
                         @click.stop
                       >
-                        {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                        {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                       </NuxtLink>
                       <div class="text-[11px] text-surface-400 truncate">{{ app.candidateEmail }}</div>
                     </div>

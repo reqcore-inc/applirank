@@ -20,6 +20,7 @@ useSeoMeta({
 
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
+const { formatPersonName, formatDateTime } = useOrgSettings()
 
 // ─── Filters ──────────────────────────────────────────────────────
 const searchInput = ref('')
@@ -475,7 +476,7 @@ const statusCounts = computed(() => {
                 <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-surface-500 dark:text-surface-400">
                   <span class="inline-flex items-center gap-1">
                     <UserRound class="size-3.5" />
-                    {{ interviewItem.candidateFirstName }} {{ interviewItem.candidateLastName }}
+                    {{ formatPersonName(interviewItem.candidateFirstName, interviewItem.candidateLastName) }}
                   </span>
                   <span class="inline-flex items-center gap-1">
                     <Briefcase class="size-3.5" />
@@ -644,7 +645,7 @@ const statusCounts = computed(() => {
                   <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-surface-500 dark:text-surface-400">
                     <span class="inline-flex items-center gap-1">
                       <UserRound class="size-3" />
-                      {{ interviewItem.candidateFirstName }} {{ interviewItem.candidateLastName }}
+                      {{ formatPersonName(interviewItem.candidateFirstName, interviewItem.candidateLastName) }}
                     </span>
                     <span class="inline-flex items-center gap-1">
                       <component :is="typeIcons[interviewItem.type]" class="size-3" />

@@ -14,6 +14,8 @@ const toast = useToast()
 
 const { application, status: fetchStatus, error, updateApplication } = useApplication(applicationId)
 
+const { formatCandidateName } = useOrgSettings()
+
 useSeoMeta({
   title: computed(() =>
     application.value
@@ -154,7 +156,7 @@ function formatResponseValue(value: unknown): string {
         </p>
         <div class="mb-2 flex flex-wrap items-center gap-2 text-surface-400">
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50 truncate">
-            {{ application.candidate.firstName }} {{ application.candidate.lastName }}
+            {{ formatCandidateName(application.candidate) }}
           </h1>
           <span class="text-surface-400">→</span>
           <NuxtLink
@@ -220,7 +222,7 @@ function formatResponseValue(value: unknown): string {
                   :to="$localePath(`/dashboard/candidates/${application.candidate.id}`)"
                   class="text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition-colors"
                 >
-                  {{ application.candidate.firstName }} {{ application.candidate.lastName }}
+                  {{ formatCandidateName(application.candidate) }}
                 </NuxtLink>
               </dd>
             </div>

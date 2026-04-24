@@ -33,6 +33,8 @@ const transitionClasses: Record<string, string> = {
   hired: 'text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900',
   rejected: 'text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950',
 }
+
+const { formatPersonName, formatDateTime } = useOrgSettings()
 </script>
 
 <template>
@@ -42,7 +44,7 @@ const transitionClasses: Record<string, string> = {
       class="block mb-2 group"
     >
       <h4 class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors truncate">
-        {{ candidateFirstName }} {{ candidateLastName }}
+        {{ formatPersonName(candidateFirstName, candidateLastName) }}
       </h4>
       <div class="flex items-center gap-2 text-xs text-surface-400 mt-0.5">
         <a
@@ -60,7 +62,7 @@ const transitionClasses: Record<string, string> = {
     <div class="flex items-center justify-between text-xs text-surface-400">
       <span class="inline-flex items-center gap-1">
         <Calendar class="size-3" />
-        {{ new Date(createdAt).toLocaleDateString() }}
+        {{ formatDateTime(createdAt) }}
       </span>
       <span v-if="score != null" class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset"
         :class="score >= 75

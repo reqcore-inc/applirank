@@ -9,6 +9,8 @@ definePageMeta({
 const route = useRoute()
 const jobId = route.params.id as string
 
+const { formatPersonName } = useOrgSettings()
+
 // ─────────────────────────────────────────────
 // Fetch job info for page header
 // ─────────────────────────────────────────────
@@ -493,7 +495,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                       {{ getCandidateInitials(app.candidateFirstName, app.candidateLastName) }}
                     </div>
                     <span class="font-medium text-surface-900 dark:text-surface-100">
-                      {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                      {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                     </span>
                   </div>
                 </td>

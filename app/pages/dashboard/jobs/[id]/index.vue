@@ -21,6 +21,7 @@ const jobId = route.params.id as string
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const { track } = useTrack()
 const toast = useToast()
+const { formatPersonName } = useOrgSettings()
 
 // ─────────────────────────────────────────────
 // Job data (with update/delete support)
@@ -1643,7 +1644,7 @@ function closeDocPreview() {
               </div>
               <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-medium text-surface-900 dark:text-surface-100">
-                  {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                  {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                 </p>
                 <p class="mt-0.5 block truncate text-xs text-surface-500 dark:text-surface-400">{{ app.candidateEmail }}</p>
                 <div class="mt-1.5 flex items-center gap-2">
@@ -1721,7 +1722,7 @@ function closeDocPreview() {
                   <div class="min-w-0">
                     <div class="flex items-center gap-2.5">
                       <h2 class="text-xl font-semibold tracking-tight text-surface-900 dark:text-surface-50 truncate">
-                        {{ currentSummary.candidateFirstName }} {{ currentSummary.candidateLastName }}
+                        {{ formatPersonName(currentSummary.candidateFirstName, currentSummary.candidateLastName) }}
                       </h2>
                       <span
                         class="inline-flex shrink-0 items-center rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ring-1 ring-inset"

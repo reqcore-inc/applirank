@@ -59,6 +59,8 @@ const { applications, total, fetchStatus, error, refresh } = useApplications({
   status: statusFilter,
 })
 
+const { formatPersonName } = useOrgSettings()
+
 // ── Job filter (client-side) ──────────────────────────────────────────────────
 
 const activeJobId = ref<string | undefined>(undefined)
@@ -112,7 +114,8 @@ const filteredApplications = computed(() => {
   if (debouncedSearch.value) {
     const q = debouncedSearch.value
     list = list.filter(app =>
-      `${app.candidateFirstName} ${app.candidateLastName}`.toLowerCase().includes(q)
+      formatPersonName(app.candidateFirstName, app.candidateLastName).toLowerCase().includes(q)
+      || `${app.candidateFirstName} ${app.candidateLastName}`.toLowerCase().includes(q)
       || app.candidateEmail.toLowerCase().includes(q)
       || app.jobTitle.toLowerCase().includes(q),
     )
@@ -123,7 +126,7 @@ const filteredApplications = computed(() => {
   list.sort((a, b) => {
     switch (sortKey.value) {
       case 'name':
-        return dir * `${a.candidateFirstName} ${a.candidateLastName}`.localeCompare(`${b.candidateFirstName} ${b.candidateLastName}`)
+        return dir * formatPersonName(a.candidateFirstName, a.candidateLastName).localeCompare(formatPersonName(b.candidateFirstName, b.candidateLastName))
       case 'email':
         return dir * a.candidateEmail.localeCompare(b.candidateEmail)
       case 'job':
@@ -408,7 +411,7 @@ const statusLabels: Record<Status, string> = {
                   :to="$localePath(`/dashboard/applications/${app.id}`)"
                   class="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 transition-colors whitespace-nowrap"
                 >
-                  {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                  {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                 </NuxtLink>
               </td>
               <td class="px-4 py-3 text-surface-500 dark:text-surface-400 hidden lg:table-cell">

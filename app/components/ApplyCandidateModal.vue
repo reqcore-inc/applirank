@@ -37,6 +37,7 @@ const { data: candidateData, status: searchStatus } = useFetch('/api/candidates'
 
 const candidates = computed(() => candidateData.value?.data ?? [])
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
+const { formatCandidateName } = useOrgSettings()
 
 // Apply candidate
 const isApplying = ref(false)
@@ -117,7 +118,7 @@ async function applyCandidate(candidateId: string) {
             >
               <div class="min-w-0">
                 <p class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
-                  {{ c.firstName }} {{ c.lastName }}
+                  {{ formatCandidateName(c) }}
                 </p>
                 <p class="text-xs text-surface-400 truncate">{{ c.email }}</p>
               </div>

@@ -28,6 +28,7 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+.playwright-mcp/
 
 
 *.code-workspace

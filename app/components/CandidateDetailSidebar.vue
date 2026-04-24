@@ -19,6 +19,7 @@ const emit = defineEmits<{
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
 const { track } = useTrack()
+const { formatCandidateName } = useOrgSettings()
 
 // Detect if the job sub-nav bar is visible (adds 40px / 2.5rem)
 const route = useRoute()
@@ -467,7 +468,7 @@ function formatInterviewDate(dateStr: string) {
             </div>
             <div class="min-w-0">
               <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 truncate">
-                {{ application.candidate.firstName }} {{ application.candidate.lastName }}
+                {{ formatCandidateName(application.candidate) }}
               </h2>
               <div class="flex items-center gap-3 text-sm text-surface-500 dark:text-surface-400">
                 <a
@@ -617,7 +618,7 @@ function formatInterviewDate(dateStr: string) {
                 <div>
                   <dt class="text-xs font-medium text-surface-400 dark:text-surface-500 mb-1">Name</dt>
                   <dd class="text-surface-800 dark:text-surface-200 font-medium">
-                    {{ application.candidate.firstName }} {{ application.candidate.lastName }}
+                    {{ formatCandidateName(application.candidate) }}
                   </dd>
                 </div>
                 <div>

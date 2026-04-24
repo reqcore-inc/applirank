@@ -21,6 +21,7 @@ useSeoMeta({
 const localePath = useLocalePath()
 const { track } = useTrack()
 const toast = useToast()
+const { formatPersonName } = useOrgSettings()
 
 onMounted(() => track('source_tracking_viewed'))
 
@@ -814,7 +815,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
                   </div>
                   <div class="min-w-0 flex-1">
                     <div class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">
-                      {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                      {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                     </div>
                     <div class="text-xs text-surface-400 truncate">{{ app.jobTitle }}</div>
                   </div>
@@ -1032,7 +1033,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
                       </div>
                       <div class="min-w-0">
                         <div class="text-sm font-medium text-surface-800 dark:text-surface-200 truncate group-hover/candidate:text-brand-600 dark:group-hover/candidate:text-brand-400 transition-colors">
-                          {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                          {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                         </div>
                         <div class="text-[11px] text-surface-400 truncate">{{ app.candidateEmail }}</div>
                       </div>

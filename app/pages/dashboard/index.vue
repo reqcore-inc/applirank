@@ -19,6 +19,7 @@ useSeoMeta({
 const { activeOrg } = useCurrentOrg()
 const localePath = useLocalePath()
 const { track } = useTrack()
+const { formatPersonName } = useOrgSettings()
 
 onMounted(() => track('dashboard_viewed'))
 
@@ -458,7 +459,7 @@ const isEmpty = computed(() =>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 mb-0.5">
                     <span class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                      {{ app.candidateFirstName }} {{ app.candidateLastName }}
+                      {{ formatPersonName(app.candidateFirstName, app.candidateLastName) }}
                     </span>
                     <span
                       class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize shrink-0 ring-1 ring-inset"
@@ -518,7 +519,7 @@ const isEmpty = computed(() =>
               >
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-sm font-medium text-surface-900 dark:text-surface-100 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                    {{ interview.candidateFirstName }} {{ interview.candidateLastName }}
+                    {{ formatPersonName(interview.candidateFirstName, interview.candidateLastName) }}
                   </span>
                   <span class="inline-flex items-center rounded-full bg-brand-50 dark:bg-brand-950/40 px-2 py-0.5 text-[10px] font-semibold text-brand-700 dark:text-brand-400 shrink-0 ml-2">
                     {{ formatRelativeDate(interview.scheduledAt) }}

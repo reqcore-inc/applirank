@@ -653,6 +653,7 @@ async function handleSubmit(mode: 'publish' | 'draft' = publishChoice.value) {
       description: form.value.description || undefined,
       location: form.value.location || undefined,
       type: form.value.type,
+      experienceLevel: form.value.experienceLevel || undefined,
       remoteStatus: form.value.remoteStatus || undefined,
       requireResume: applicationForm.value.requireResume,
       requireCoverLetter: applicationForm.value.requireCoverLetter,

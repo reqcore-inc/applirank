@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
       phone: candidate.phone,
       gender: candidate.gender,
       dateOfBirth: candidate.dateOfBirth,
+      quickNotes: candidate.quickNotes,
       createdAt: candidate.createdAt,
       updatedAt: candidate.updatedAt,
     })

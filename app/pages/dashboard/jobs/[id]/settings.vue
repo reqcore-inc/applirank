@@ -40,6 +40,7 @@ const form = ref({
   salaryUnit: '' as string,
   salaryNegotiable: false,
   remoteStatus: '' as string,
+  experienceLevel: '' as string,
   validThrough: '',
   requireResume: false,
   requireCoverLetter: false,
@@ -60,6 +61,7 @@ watch(job, (j) => {
       salaryUnit: j.salaryUnit ?? '',
       salaryNegotiable: j.salaryNegotiable ?? false,
       remoteStatus: j.remoteStatus ?? '',
+      experienceLevel: j.experienceLevel ?? '',
       validThrough: j.validThrough ? new Date(j.validThrough).toISOString().split('T')[0] ?? '' : '',
       requireResume: j.requireResume ?? false,
       requireCoverLetter: j.requireCoverLetter ?? false,
@@ -94,6 +96,7 @@ const editSchema = z.object({
   salaryUnit: z.enum(['YEAR', 'MONTH', 'HOUR']).optional().or(z.literal('')),
   salaryNegotiable: z.boolean().optional(),
   remoteStatus: z.enum(['remote', 'hybrid', 'onsite']).optional().or(z.literal('')),
+  experienceLevel: z.enum(['junior', 'mid', 'senior', 'lead']).optional().or(z.literal('')),
   validThrough: z.string().optional(),
   requireResume: z.boolean().optional(),
   requireCoverLetter: z.boolean().optional(),
@@ -134,6 +137,7 @@ async function handleSave() {
       salaryCurrency: form.value.salaryNegotiable ? null : (form.value.salaryCurrency || null),
       salaryUnit: form.value.salaryNegotiable ? null : (form.value.salaryUnit || null),
       remoteStatus: form.value.remoteStatus || null,
+      experienceLevel: (form.value.experienceLevel as 'junior' | 'mid' | 'senior' | 'lead' | null) || null,
       // Send null when cleared so the DB column is set to NULL
       validThrough: form.value.validThrough ? new Date(form.value.validThrough) : null,
     }
@@ -208,6 +212,14 @@ const remoteOptions = [
   { value: 'remote', label: 'Remote' },
   { value: 'hybrid', label: 'Hybrid' },
   { value: 'onsite', label: 'On-site' },
+]
+
+const experienceLevelOptions = [
+  { value: '', label: 'Not specified' },
+  { value: 'junior', label: 'Junior' },
+  { value: 'mid', label: 'Mid-level' },
+  { value: 'senior', label: 'Senior' },
+  { value: 'lead', label: 'Lead' },
 ]
 
 const salaryUnitOptions = [
@@ -330,6 +342,22 @@ function onSalaryMaxChange(e: Event) {
                 class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
               >
                 <option v-for="opt in remoteOptions" :key="opt.value" :value="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Experience Level -->
+            <div>
+              <label for="settings-experience-level" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+                Experience Level
+              </label>
+              <select
+                id="settings-experience-level"
+                v-model="form.experienceLevel"
+                class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+              >
+                <option v-for="opt in experienceLevelOptions" :key="opt.value" :value="opt.value">
                   {{ opt.label }}
                 </option>
               </select>

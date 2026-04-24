@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
     phone: body.phone,
     gender: body.gender ?? null,
     dateOfBirth: body.dateOfBirth ?? null,
+    quickNotes: body.quickNotes ?? null,
   }).returning({
     id: candidate.id,
     firstName: candidate.firstName,

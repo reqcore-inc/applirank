@@ -7,11 +7,17 @@ import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
  */
 export function useCandidates(options?: {
   search?: Ref<string | undefined> | string
+  gender?: Ref<string | undefined> | string
+  dobFrom?: Ref<string | undefined> | string
+  dobTo?: Ref<string | undefined> | string
 }) {
   const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 
   const query = computed(() => ({
     ...(toValue(options?.search) && { search: toValue(options?.search) }),
+    ...(toValue(options?.gender) && { gender: toValue(options?.gender) }),
+    ...(toValue(options?.dobFrom) && { dobFrom: toValue(options?.dobFrom) }),
+    ...(toValue(options?.dobTo) && { dobTo: toValue(options?.dobTo) }),
   }))
 
   const { data, status: fetchStatus, error, refresh } = useFetch('/api/candidates', {

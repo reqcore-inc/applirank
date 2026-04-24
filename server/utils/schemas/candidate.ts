@@ -32,6 +32,7 @@ export const createCandidateSchema = z.object({
   phone: z.string().max(50).optional(),
   gender: z.enum(genderValues).optional(),
   dateOfBirth: dobSchema.optional(),
+  quickNotes: z.string().max(1000).optional(),
 })
 
 /** Schema for updating an existing candidate (all fields optional) */
@@ -48,6 +49,7 @@ export const updateCandidateSchema = z.object({
   phone: z.string().max(50).nullish(),
   gender: z.enum(genderValues).nullish(),
   dateOfBirth: dobSchema.nullish(),
+  quickNotes: z.string().max(1000).nullish(),
 })
 
 /** Schema for candidate list query params */
@@ -56,6 +58,8 @@ export const candidateQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().trim().max(200).optional(),
   gender: z.enum(genderValues).optional(),
+  dobFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'dobFrom must be YYYY-MM-DD').optional(),
+  dobTo: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'dobTo must be YYYY-MM-DD').optional(),
 })
 
 /** Reusable schema for `:id` route params */

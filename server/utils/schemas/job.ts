@@ -31,6 +31,8 @@ export const createJobSchema = z.object({
   requireCoverLetter: z.boolean().optional().default(false),
   /** Whether to automatically run AI scoring when a candidate applies */
   autoScoreOnApply: z.boolean().optional().default(false),
+  /** Experience level required for this role */
+  experienceLevel: z.enum(['junior', 'mid', 'senior', 'lead']).optional(),
 })
 
 /** Schema for updating an existing job (all fields optional, no defaults — PATCH semantics) */
@@ -51,7 +53,10 @@ export const updateJobSchema = z.object({
   validThrough: z.coerce.date().nullable().optional(),
   requireResume: z.boolean().optional(),
   requireCoverLetter: z.boolean().optional(),
+  /** Whether to automatically run AI scoring when a candidate applies */
   autoScoreOnApply: z.boolean().optional(),
+  /** Experience level required for this role */
+  experienceLevel: z.enum(['junior', 'mid', 'senior', 'lead']).nullable().optional(),
   status: z.enum(['draft', 'open', 'closed', 'archived']).optional(),
 })
 

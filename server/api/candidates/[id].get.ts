@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
       phone: true,
       gender: true,
       dateOfBirth: true,
+      quickNotes: true,
       createdAt: true,
       updatedAt: true,
     },

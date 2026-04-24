@@ -28,6 +28,7 @@ export const questionTypeEnum = pgEnum('question_type', [
   'number', 'date', 'url', 'checkbox', 'file_upload',
 ])
 export const genderEnum = pgEnum('gender', ['male', 'female', 'other', 'prefer_not_to_say'])
+export const experienceLevelEnum = pgEnum('experience_level', ['junior', 'mid', 'senior', 'lead'])
 export const nameDisplayFormatEnum = pgEnum('name_display_format', ['first_last', 'last_first'])
 export const dateFormatEnum = pgEnum('date_format', ['mdy', 'dmy', 'ymd'])
 
@@ -55,6 +56,8 @@ export const job = pgTable('job', {
   salaryNegotiable: boolean('salary_negotiable').notNull().default(false),
   remoteStatus: text('remote_status'),
   validThrough: timestamp('valid_through'),
+  /** Experience level required for this role */
+  experienceLevel: experienceLevelEnum('experience_level'),
   // ── Application form settings ──
   requireResume: boolean('require_resume').notNull().default(false),
   requireCoverLetter: boolean('require_cover_letter').notNull().default(false),
@@ -83,6 +86,8 @@ export const candidate = pgTable('candidate', {
   gender: genderEnum('gender'),
   /** Date of birth — stored as text in ISO 8601 format (YYYY-MM-DD) to avoid timezone issues */
   dateOfBirth: text('date_of_birth'),
+  /** Quick notes visible inline on the candidates list */
+  quickNotes: text('quick_notes'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ([

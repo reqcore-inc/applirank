@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-vue-next'
+import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown, SlidersHorizontal, X, StickyNote } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -22,8 +22,28 @@ watch(searchInput, (val) => {
   }, 300)
 })
 
+// ── Filters ───────────────────────────────────────────────────────────────────
+
+const showFilters = ref(false)
+const filterGender = ref<string | undefined>(undefined)
+const filterDobFrom = ref<string | undefined>(undefined)
+const filterDobTo = ref<string | undefined>(undefined)
+
+const activeFilterCount = computed(() =>
+  [filterGender.value, filterDobFrom.value, filterDobTo.value].filter(Boolean).length
+)
+
+function clearFilters() {
+  filterGender.value = undefined
+  filterDobFrom.value = undefined
+  filterDobTo.value = undefined
+}
+
 const { candidates, total, fetchStatus, error, refresh } = useCandidates({
   search: debouncedSearch,
+  gender: filterGender,
+  dobFrom: filterDobFrom,
+  dobTo: filterDobTo,
 })
 
 // ── Sorting ───────────────────────────────────────────────────────────────────
@@ -66,10 +86,39 @@ const sortedCandidates = computed(() => {
 
   return list
 })
+
+// ── Quick notes inline editing ────────────────────────────────────────────────
+
+const editingNotesId = ref<string | null>(null)
+const editingNotesValue = ref('')
+const isSavingNotes = ref(false)
+
+function startEditNotes(candidateId: string, currentNotes: string | null) {
+  editingNotesId.value = candidateId
+  editingNotesValue.value = currentNotes ?? ''
+}
+
+async function saveNotes(candidateId: string) {
+  isSavingNotes.value = true
+  try {
+    await $fetch(`/api/candidates/${candidateId}`, {
+      method: 'PATCH',
+      body: { quickNotes: editingNotesValue.value || null },
+    })
+    await refresh()
+  } finally {
+    isSavingNotes.value = false
+    editingNotesId.value = null
+  }
+}
+
+function cancelEditNotes() {
+  editingNotesId.value = null
+}
 </script>
 
 <template>
-  <div class="mx-auto max-w-5xl">
+  <div class="mx-auto max-w-6xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
@@ -87,15 +136,81 @@ const sortedCandidates = computed(() => {
       </NuxtLink>
     </div>
 
-    <!-- Search -->
-    <div class="relative mb-6">
-      <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-surface-400" />
-      <input
-        v-model="searchInput"
-        type="text"
-        placeholder="Search by name or email…"
-        class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-10 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-      />
+    <!-- Search + filter row -->
+    <div class="flex items-center gap-2 mb-4">
+      <div class="relative flex-1">
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-surface-400" />
+        <input
+          v-model="searchInput"
+          type="text"
+          placeholder="Search by name or email…"
+          class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-10 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+        />
+      </div>
+      <button
+        type="button"
+        class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-colors"
+        :class="showFilters || activeFilterCount > 0
+          ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-700 dark:bg-brand-950 dark:text-brand-300'
+          : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
+        @click="showFilters = !showFilters"
+      >
+        <SlidersHorizontal class="size-4" />
+        Filters
+        <span
+          v-if="activeFilterCount > 0"
+          class="inline-flex items-center justify-center size-4 rounded-full bg-brand-600 text-white text-xs font-semibold"
+        >{{ activeFilterCount }}</span>
+      </button>
+    </div>
+
+    <!-- Filter panel -->
+    <div
+      v-if="showFilters"
+      class="rounded-lg border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50 p-4 mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4"
+    >
+      <!-- Gender -->
+      <div>
+        <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Gender</label>
+        <select
+          v-model="filterGender"
+          class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+        >
+          <option :value="undefined">Any</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+          <option value="prefer_not_to_say">Prefer not to say</option>
+        </select>
+      </div>
+      <!-- Date of birth — from -->
+      <div>
+        <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Date of birth — from</label>
+        <input
+          v-model="filterDobFrom"
+          type="date"
+          class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+        />
+      </div>
+      <!-- Date of birth — to -->
+      <div>
+        <label class="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1">Date of birth — to</label>
+        <div class="flex items-center gap-2">
+          <input
+            v-model="filterDobTo"
+            type="date"
+            class="flex-1 rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+          />
+          <button
+            v-if="activeFilterCount > 0"
+            type="button"
+            class="text-xs text-surface-400 hover:text-danger-500 dark:hover:text-danger-400 transition-colors underline shrink-0"
+            @click="clearFilters"
+          >
+            Clear all
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Loading state -->
@@ -183,6 +298,9 @@ const sortedCandidates = computed(() => {
                   <ArrowUpDown v-else class="size-3.5 opacity-40" />
                 </button>
               </th>
+              <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden lg:table-cell w-52">
+                Quick notes
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-surface-100 dark:divide-surface-800">
@@ -228,6 +346,46 @@ const sortedCandidates = computed(() => {
               </td>
               <td class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap">
                 <TimelineDateLink :date="c.createdAt">{{ new Date(c.createdAt).toLocaleDateString() }}</TimelineDateLink>
+              </td>
+              <!-- Quick notes — inline editable -->
+              <td class="px-4 py-3 hidden lg:table-cell" @click.stop>
+                <div v-if="editingNotesId === c.id" class="flex items-start gap-1.5">
+                  <textarea
+                    v-model="editingNotesValue"
+                    rows="2"
+                    maxlength="1000"
+                    autofocus
+                    class="flex-1 rounded border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-800 px-2 py-1 text-xs text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+                    @keydown.enter.exact.prevent="saveNotes(c.id)"
+                    @keydown.escape="cancelEditNotes"
+                  />
+                  <div class="flex flex-col gap-1 shrink-0">
+                    <button
+                      type="button"
+                      :disabled="isSavingNotes"
+                      class="rounded bg-brand-600 px-2 py-0.5 text-xs text-white hover:bg-brand-700 disabled:opacity-50 transition-colors"
+                      @click="saveNotes(c.id)"
+                    >Save</button>
+                    <button
+                      type="button"
+                      class="rounded border border-surface-300 dark:border-surface-700 px-2 py-0.5 text-xs text-surface-500 hover:text-surface-700 transition-colors"
+                      @click="cancelEditNotes"
+                    >Cancel</button>
+                  </div>
+                </div>
+                <button
+                  v-else
+                  type="button"
+                  class="group/notes flex items-start gap-1 text-left w-full min-h-[1.5rem]"
+                  @click="startEditNotes(c.id, c.quickNotes ?? null)"
+                >
+                  <StickyNote class="size-3.5 shrink-0 mt-0.5 text-surface-300 dark:text-surface-600 group-hover/notes:text-brand-500 transition-colors" />
+                  <span
+                    v-if="c.quickNotes"
+                    class="text-xs text-surface-600 dark:text-surface-400 line-clamp-2 group-hover/notes:text-surface-900 dark:group-hover/notes:text-surface-100 transition-colors"
+                  >{{ c.quickNotes }}</span>
+                  <span v-else class="text-xs text-surface-300 dark:text-surface-600 group-hover/notes:text-surface-400 transition-colors italic">Add note…</span>
+                </button>
               </td>
             </tr>
           </tbody>

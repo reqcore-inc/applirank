@@ -148,6 +148,20 @@
       "when": 1776076881696,
       "tag": "0020_goofy_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1776400000000,
+      "tag": "0021_candidate_demographics_org_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1776450000000,
+      "tag": "0022_salary_negotiable",
+      "breakpoints": true
     }
   ]
 }

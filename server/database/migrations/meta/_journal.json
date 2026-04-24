@@ -148,6 +148,20 @@
       "when": 1776076881696,
       "tag": "0020_goofy_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1776080752775,
+      "tag": "0021_blushing_thing",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1776082244843,
+      "tag": "0022_mute_green_goblin",
+      "breakpoints": true
     }
   ]
 }

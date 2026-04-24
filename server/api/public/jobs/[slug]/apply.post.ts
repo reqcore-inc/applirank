@@ -648,8 +648,30 @@ export default defineEventHandler(async (event) => {
     is_returning_candidate: !!existingCandidate,
   })
 
+  // ─────────────────────────────────────────────
+  // 13. Generate portal access token for applicant dashboard
+  // ─────────────────────────────────────────────
+
+  let portalAccessToken: string | null = null
+  try {
+    portalAccessToken = await createPortalToken(
+      newApplication!.id,
+      candidateId,
+      orgId,
+    )
+  } catch (portalErr) {
+    // Portal token is best-effort — never fail an application for it
+    logWarn('application.portal_token_failed', {
+      application_id: newApplication?.id,
+      error_message: portalErr instanceof Error ? portalErr.message : String(portalErr),
+    })
+  }
+
   setResponseStatus(event, 201)
-  return { success: true }
+  return {
+    success: true,
+    portalToken: portalAccessToken,
+  }
 })
 
 // ─────────────────────────────────────────────

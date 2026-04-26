@@ -107,7 +107,6 @@ export default defineNuxtConfig({
       disable_session_recording: true,
       enable_recording_console_log: false,
       disable_surveys: true,
-      secure_cookie: true,
       capture_pageview: true,
       capture_pageleave: true,
       // ── Error tracking: capture unhandled errors and rejections ──
@@ -116,13 +115,22 @@ export default defineNuxtConfig({
         capture_unhandled_rejections: true,
         capture_console_errors: false,
       },
-      // ── Cookieless by default ──
-      // No cookies stored until user grants consent.  Events still flow for
-      // aggregate analytics.  On consent, persistence is upgraded to
-      // 'localStorage+cookie' via set_config() in the consent composable.
+      // ── Cookieless tracking — no consent banner needed ──
+      // `persistence: 'memory'` keeps the distinct_id in RAM only.  Nothing is
+      // written to cookies, localStorage, or sessionStorage, so the ePrivacy
+      // Directive (Art. 5(3)) "consent for storage" requirement does not apply.
+      //
+      // `person_profiles: 'identified_only'` means anonymous visitors flow as
+      // events without creating person profiles, while logged-in users get a
+      // stable profile keyed by their auth user-id (via posthog.identify()).
+      // This gives us funnel + retention analytics for real users without
+      // tracking anonymous visitors across sessions.
       persistence: "memory",
-      person_profiles: "never",
-      cross_subdomain_cookie: false,
+      person_profiles: "identified_only",
+      // ── GDPR: drop IP address from events ──
+      // PostHog uses $ip server-side for GeoIP, but we do not need it for the
+      // SaaS analytics use case.  Denylisting it minimises personal data sent.
+      property_denylist: ["$ip", "$initial_ip"],
     },
     serverConfig: {
       // Disabled: the @posthog/nuxt Nitro plugin captures ALL errors

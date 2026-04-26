@@ -5,79 +5,99 @@
  *
  * Must be called in `<script setup>` context (not in a plugin).
  *
- * Identity and group calls are gated on analytics consent so that events are
- * never sent before the user has opted in.  When a user grants consent during
- * their session (ConsentBanner), the watchers re-fire and identify them
- * immediately without requiring a page reload.
+ * Identity model
+ * --------------
+ * Logged-in users are ALWAYS identified by their opaque `user.id` so that
+ * funnel + retention analytics work even for visitors who never accept
+ * cookies.  Email and name are forwarded ONLY when the user has explicitly
+ * consented to analytics — keeping the dashboard PII-free for non-consenters
+ * while still letting consented users be looked up by email in PostHog.
+ *
+ * The watcher depends on `hasConsented`, so when a user clicks "Accept" in
+ * the banner the identify() call re-fires immediately and PostHog aliases
+ * the anonymous distinct id to the user id (preserving the in-session
+ * funnel from anonymous visit → signup → identified user).
  */
 export async function usePostHogIdentity() {
-  const { $posthogIdentifyUser, $posthogSetOrganization, $posthogReset, $posthogResetGroups } = useNuxtApp()
+  const { $posthogIdentifyUser, $posthogSetOrganization, $posthogReset, $posthogResetGroups, $posthogSetDemoFlag } = useNuxtApp()
 
   if (!$posthogIdentifyUser) return
 
   const { data: session } = await authClient.useSession(useFetch)
   const activeOrgState = authClient.useActiveOrganization()
 
-  // Share the consent reactive state.  useAnalyticsConsent also applies the
-  // stored consent flag to PostHog on the client, so calling it here means
-  // consent is active before the immediate watchers fire below.
   const { hasConsented } = useAnalyticsConsent()
 
-  // Watch session AND consent so identify re-fires when a new user accepts
-  // consent during their visit, and is skipped when PostHog is opted-out.
+  const config = useRuntimeConfig()
+  const liveDemoEmail = (config.public.liveDemoEmail as string | undefined) || ''
+  const demoOrgSlug = (config.public.demoOrgSlug as string | undefined) || ''
+
   watch(
     [() => session.value, hasConsented] as const,
     ([currentSession, consented], prev) => {
       const user = currentSession?.user
       const previousUser = (prev?.[0] as typeof session.value)?.user
 
-      if (user?.id && consented) {
-        // Forward person properties for opted-in users so they're identifiable
-        // in PostHog.  GDPR-safe: gated on explicit user consent.
-        ;($posthogIdentifyUser as (userId: string, properties?: Record<string, string | undefined>) => void)(
-          user.id,
-          {
+      if (user?.id) {
+        // Forward person properties (email, name) ONLY if consent was given.
+        // Without consent we still identify with the opaque user.id so
+        // returning users are stable in PostHog — but no PII is attached.
+        const identify = $posthogIdentifyUser as (
+          userId: string,
+          properties?: Record<string, string | undefined>,
+        ) => void
+        if (consented) {
+          identify(user.id, {
             email: user.email,
             name: user.name || undefined,
-          },
-        )
+          })
+        }
+        else {
+          identify(user.id)
+        }
+
+        // Demo tagging by user email — fires the moment the demo account
+        // signs in, even before an organisation context is loaded.
+        const setDemoFlag = $posthogSetDemoFlag as ((isDemo: boolean) => void) | undefined
+        if (setDemoFlag && liveDemoEmail) {
+          setDemoFlag(user.email === liveDemoEmail)
+        }
       }
       else if (previousUser?.id && !user?.id) {
         // Always reset on log-out regardless of consent state so that
         // no user identity leaks into the next anonymous session.
+        // Reset also clears the registered super properties (incl. is_demo).
         ($posthogReset as () => void)()
       }
     },
     { immediate: true },
   )
 
-  // Watch org AND consent for group analytics — same gating logic as above.
   watch(
     [() => activeOrgState.value?.data, hasConsented] as const,
     async ([org, consented]) => {
-      if (consented) {
-        if (org?.id) {
-          // Fetch the current member's role to enrich group properties — useful
-          // for debugging permission issues without exposing personal data.
-          let memberRole: string | undefined
-          try {
-            const { data } = await authClient.organization.getActiveMemberRole()
-            memberRole = data?.role ?? undefined
-          }
-          catch { /* non-critical; role is just an enrichment property */ }
-
-          // Only org id, name, and member role are forwarded; slug is omitted to minimise data.
-          ;($posthogSetOrganization as (org: { id: string, name?: string, member_role?: string }) => void)({
-            id: org.id,
-            name: org.name || undefined,
-            member_role: memberRole,
-          })
+      if (org?.id) {
+        // Forward org name only for consenters; anonymous users get an
+        // opaque org-id-only group so per-org metrics still aggregate.
+        const setOrg = $posthogSetOrganization as (org: { id: string, name?: string }) => void
+        if (consented) {
+          setOrg({ id: org.id, name: org.name || undefined })
         }
         else {
-          // Clear org group when user has no active organization to avoid
-          // attributing events to the previously selected org.
-          ($posthogResetGroups as (() => void) | undefined)?.()
+          setOrg({ id: org.id })
         }
+
+        // Demo tagging by org slug — covers self-hosted deployments
+        // where the demo org may be owned by a non-demo email account.
+        // We only set true here; the email-based watcher above handles
+        // clearing the flag when the user is not the demo user.
+        const setDemoFlag = $posthogSetDemoFlag as ((isDemo: boolean) => void) | undefined
+        if (setDemoFlag && demoOrgSlug && org.slug === demoOrgSlug) {
+          setDemoFlag(true)
+        }
+      }
+      else {
+        ($posthogResetGroups as (() => void) | undefined)?.()
       }
     },
     { immediate: true },

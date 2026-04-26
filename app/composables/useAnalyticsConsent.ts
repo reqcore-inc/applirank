@@ -1,16 +1,23 @@
 /**
  * Composable for managing PostHog analytics consent.
  *
- * Cookieless tracking is ALWAYS active — no consent needed.
- * Accepting analytics upgrades to full cookie-based tracking
- * (UTM, sessions, identity). Declining keeps cookieless mode.
+ * Two-tier model
+ * --------------
+ * - **No choice yet OR declined**: PostHog runs in cookieless mode
+ *   (`persistence: 'memory'`, `person_profiles: 'identified_only'`).
+ *   Logged-in users are still identified by their opaque user.id (so we
+ *   can count returning users and per-user metrics) but no email/name is
+ *   forwarded and nothing is stored on the visitor's device.
+ *
+ * - **Accepted**: PostHog persistence is upgraded to `localStorage+cookie`
+ *   so the distinct id survives reloads, then `identify(userId, { email,
+ *   name })` is re-fired with full PII.  PostHog automatically aliases the
+ *   current anonymous distinct id → user id, stitching the pre-signup
+ *   funnel into the user's profile.
  */
 
 /** Cookie name — shared across reqcore-web and applirank */
 export const CONSENT_COOKIE_NAME = 'reqcore-consent'
-
-/** @deprecated Old localStorage key — used only for one-time migration */
-const LEGACY_STORAGE_KEY = 'reqcore-analytics-consent'
 
 type ConsentState = 'granted' | 'denied' | null
 
@@ -32,32 +39,26 @@ export function useAnalyticsConsent() {
     sameSite: 'lax',
   })
 
-  // One-time migration: move consent from localStorage to cookie for users
-  // who consented before this change, then clean up localStorage.
-  if (import.meta.client && !consentCookie.value) {
-    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
-    if (legacy === 'granted' || legacy === 'denied') {
-      consentCookie.value = legacy
-      localStorage.removeItem(LEGACY_STORAGE_KEY)
-    }
-  }
-
   const hasConsented = computed(() => consentCookie.value === 'granted')
   const hasDeclined = computed(() => consentCookie.value === 'denied')
   const needsConsent = computed(() => !consentCookie.value)
 
   function acceptAnalytics() {
     consentCookie.value = 'granted'
-    if (import.meta.client) localStorage.removeItem(LEGACY_STORAGE_KEY)
     if (!ph) return
-    // Upgrade from cookieless to full cookie-based persistence
+
+    // Upgrade from cookieless to cookie+localStorage persistence so the
+    // distinct id survives reloads and new tabs.  After this, the watcher
+    // in `usePostHogIdentity` (which depends on `hasConsented`) re-fires
+    // and re-identifies the user with full PII — that identify() call
+    // automatically aliases the current anonymous distinct id → user id.
     ph.set_config({
       persistence: 'localStorage+cookie',
-      person_profiles: 'identified_only',
       cross_subdomain_cookie: true,
     })
-    // Register UTM + attribution now that we have persistence
+
     if (import.meta.client) {
+      // Capture UTM + first-touch attribution now that we have persistence
       const params = new URLSearchParams(window.location.search)
       const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const
       const utmProps: Record<string, string> = {}
@@ -83,8 +84,8 @@ export function useAnalyticsConsent() {
 
   function declineAnalytics() {
     consentCookie.value = 'denied'
-    if (import.meta.client) localStorage.removeItem(LEGACY_STORAGE_KEY)
-    // No action needed — cookieless tracking continues without cookies or person profiles
+    // No PostHog action needed — cookieless mode (memory + identified_only)
+    // continues, no person profile properties are sent, no cookies are set.
   }
 
   return {

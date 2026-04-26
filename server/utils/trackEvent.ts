@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { isDemoOrgId } from './demoOrg'
 
 interface TrackSession {
   user: { id: string }
@@ -12,6 +13,9 @@ interface TrackSession {
  * - `distinctId` from the authenticated session
  * - `organization` group for org-scoped analytics
  * - Request context: HTTP method, path, user agent
+ * - `is_demo: true` when the active organisation matches the configured
+ *   demo org — lets PostHog funnels filter the demo session out so it
+ *   does not skew metrics.
  *
  * Usage in API handlers:
  *   const session = await requirePermission(event, { application: ['update'] })
@@ -23,33 +27,42 @@ export function trackEvent(
   eventName: string,
   properties?: Record<string, unknown>,
 ): void {
-  try {
-    const ph = useServerPostHog()
-    if (!ph) return
+  // Resolve the demo flag asynchronously, then capture. We swallow any
+  // tracking errors so they never break the primary operation.
+  const orgId = session?.session?.activeOrganizationId
+  void isDemoOrgId(orgId)
+    .catch(() => false)
+    .then((isDemo) => {
+      try {
+        const ph = useServerPostHog()
+        if (!ph) return
 
-    const userId = session?.user?.id || 'anonymous'
-    const orgId = session?.session?.activeOrganizationId
+        const userId = session?.user?.id || 'anonymous'
 
-    const headers = getHeaders(event)
-    const method = getMethod(event)
-    const path = getRequestURL(event).pathname
+        const headers = getHeaders(event)
+        const method = getMethod(event)
+        const path = getRequestURL(event).pathname
 
-    ph.capture({
-      distinctId: userId,
-      event: eventName,
-      groups: orgId ? { organization: orgId } : undefined,
-      properties: {
-        // Request context — invaluable for debugging per-user issues
-        $request_method: method,
-        $request_path: path,
-        $user_agent: headers['user-agent'],
-        ...properties,
-      },
+        ph.capture({
+          distinctId: userId,
+          event: eventName,
+          groups: orgId ? { organization: orgId } : undefined,
+          properties: {
+            // Request context — invaluable for debugging per-user issues
+            $request_method: method,
+            $request_path: path,
+            $user_agent: headers['user-agent'],
+            // Demo tag — funnels & dashboards filter `is_demo != true`
+            // to exclude the public demo session from real-user metrics.
+            is_demo: isDemo,
+            ...properties,
+          },
+        })
+      }
+      catch {
+        // Tracking must never break the primary operation
+      }
     })
-  }
-  catch {
-    // Tracking must never break the primary operation
-  }
 }
 
 /**

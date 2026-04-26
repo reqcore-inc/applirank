@@ -4,10 +4,12 @@
  * Two-tier model
  * --------------
  * - **No choice yet OR declined**: PostHog runs in cookieless mode
- *   (`persistence: 'memory'`, `person_profiles: 'identified_only'`).
- *   Logged-in users are still identified by their opaque user.id (so we
- *   can count returning users and per-user metrics) but no email/name is
- *   forwarded and nothing is stored on the visitor's device.
+ *   (`persistence: 'sessionStorage'`, `person_profiles: 'identified_only'`).
+ *   The distinct id lives in the tab's sessionStorage — stable across
+ *   navigations within the visit (so funnels work for anonymous users)
+ *   but wiped when the tab closes (no cross-session tracking).  Logged-in
+ *   users are still identified by their opaque user.id (so we can count
+ *   returning users and per-user metrics) but no email/name is forwarded.
  *
  * - **Accepted**: PostHog persistence is upgraded to `localStorage+cookie`
  *   so the distinct id survives reloads, then `identify(userId, { email,
@@ -84,8 +86,8 @@ export function useAnalyticsConsent() {
 
   function declineAnalytics() {
     consentCookie.value = 'denied'
-    // No PostHog action needed — cookieless mode (memory + identified_only)
-    // continues, no person profile properties are sent, no cookies are set.
+    // No PostHog action needed — cookieless mode (sessionStorage +
+    // identified_only) continues, no cross-session cookies are set.
   }
 
   return {

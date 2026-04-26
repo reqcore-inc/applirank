@@ -115,17 +115,25 @@ export default defineNuxtConfig({
         capture_unhandled_rejections: true,
         capture_console_errors: false,
       },
-      // ── Cookieless tracking — no consent banner needed ──
-      // `persistence: 'memory'` keeps the distinct_id in RAM only.  Nothing is
-      // written to cookies, localStorage, or sessionStorage, so the ePrivacy
-      // Directive (Art. 5(3)) "consent for storage" requirement does not apply.
+      // ── Cookieless tracking — default for visitors who haven't accepted ──
+      // `persistence: 'sessionStorage'` keeps the distinct_id in the tab's
+      // sessionStorage only.  Nothing is written to cookies or persistent
+      // localStorage, and the id is wiped when the tab closes — there is no
+      // cross-session tracking and no cross-site identifier (sessionStorage
+      // is per-origin, per-tab).
+      //
+      // We deliberately avoid `persistence: 'memory'` here: with memory
+      // persistence every page navigation regenerates the distinct_id,
+      // which silently shatters any multi-page funnel (signup → onboarding
+      // → dashboard → jobs) for unconsented users — every step is attributed
+      // to a different anonymous person, so funnel conversion appears as 0.
       //
       // `person_profiles: 'identified_only'` means anonymous visitors flow as
       // events without creating person profiles, while logged-in users get a
       // stable profile keyed by their auth user-id (via posthog.identify()).
-      // This gives us funnel + retention analytics for real users without
-      // tracking anonymous visitors across sessions.
-      persistence: "memory",
+      // This gives us reliable funnel + retention analytics for real users
+      // without persistently tracking anonymous visitors across sessions.
+      persistence: "sessionStorage",
       person_profiles: "identified_only",
       // ── GDPR: drop IP address from events ──
       // PostHog uses $ip server-side for GeoIP, but we do not need it for the
@@ -241,12 +249,11 @@ export default defineNuxtConfig({
   // Route rules — ISR for public job pages
   // ─────────────────────────────────────────────
   routeRules: {
-    // ── PostHog reverse proxy — bypasses ad blockers by routing through reqcore.com ──
-    // NOTE: Targets are hardcoded to the EU data center (eu.i.posthog.com).
-    // If you use the US data center, set POSTHOG_HOST=https://us.i.posthog.com
-    // and update these two proxy targets to us-assets.i.posthog.com / us.i.posthog.com.
-    "/ingest/static/**": { proxy: "https://eu-assets.i.posthog.com/static/**" },
-    "/ingest/**": { proxy: "https://eu.i.posthog.com/**" },
+    // ── PostHog reverse proxy ──
+    // Handled by server/routes/ingest/[...path].ts (which routes /ingest/static/**
+    // to eu-assets.i.posthog.com and everything else to eu.i.posthog.com).
+    // Defining routeRules here would be shadowed by the server route, so we
+    // intentionally do not declare them.
     "/jobs": { isr: 3600 },
     "/jobs/**": { isr: 3600 },
     ...localizedPublicRouteRules,

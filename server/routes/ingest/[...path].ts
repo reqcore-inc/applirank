@@ -9,7 +9,14 @@ export default defineEventHandler(async (event) => {
   const path = getRouterParam(event, 'path') || ''
   const query = getQuery(event)
   const qs = new URLSearchParams(query as Record<string, string>).toString()
-  const target = `https://eu.i.posthog.com/${path}${qs ? `?${qs}` : ''}`
+
+  // Static assets (autocapture scripts, web-vitals, etc.) live on the
+  // assets host. Everything else (capture, decide, flags) goes to the
+  // main ingestion host.
+  const host = path.startsWith('static/')
+    ? 'https://eu-assets.i.posthog.com'
+    : 'https://eu.i.posthog.com'
+  const target = `${host}/${path}${qs ? `?${qs}` : ''}`
 
   return proxyRequest(event, target, {
     headers: {

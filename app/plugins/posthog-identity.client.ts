@@ -86,12 +86,17 @@ export default defineNuxtPlugin({
     // The marketing site (reqcore.com) appends ?ph_did=<distinct_id> to links
     // pointing here.  If present, alias the marketing visitor's distinct id
     // to this session so the full journey is stitched together in PostHog.
+    //
+    // We alias regardless of consent: this only links two anonymous distinct
+    // ids that PostHog already has — it doesn't add any PII or persistent
+    // storage. Without this stitching, every cross-domain user appears as
+    // two separate people and funnels report ~0% conversion.
     const marketingDistinctId = url.searchParams.get('ph_did')
     // Validate format: PostHog distinct IDs are typically UUIDs or short
     // alphanumeric strings.  Reject anything outside that to prevent
     // passing arbitrary untrusted input to posthog.alias().
     const isValidDistinctId = marketingDistinctId && /^[\w-]{10,100}$/.test(marketingDistinctId)
-    if (isValidDistinctId && consentCookie.value === 'granted') {
+    if (isValidDistinctId) {
       posthog.alias(marketingDistinctId)
       url.searchParams.delete('ph_did')
       urlModified = true

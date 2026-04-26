@@ -2,7 +2,7 @@
  * Verifies the two-tier PostHog consent + identity model.
  *
  * Default state (no consent / declined):
- *   - persistence: 'memory' (no cookies, no localStorage)
+ *   - persistence: 'sessionStorage' (no cookies, wiped when tab closes)
  *   - person_profiles: 'identified_only'
  *   - logged-in users identified by opaque user.id ONLY (no PII)
  *   - org group set with id ONLY
@@ -24,8 +24,11 @@ const read = (rel: string) => readFileSync(resolve(ROOT, rel), 'utf8')
 describe('PostHog default cookieless config', () => {
   const nuxtConfig = read('nuxt.config.ts')
 
-  it('uses memory-only persistence by default (no storage without consent)', () => {
-    expect(nuxtConfig).toMatch(/persistence:\s*["']memory["']/)
+  it('uses sessionStorage persistence by default (cookieless, stable per tab)', () => {
+    // sessionStorage gives a stable distinct_id within the visit so
+    // multi-page funnels work for unconsented users, but is wiped when
+    // the tab closes — no cross-session tracking, no cookies set.
+    expect(nuxtConfig).toMatch(/persistence:\s*["']sessionStorage["']/)
   })
 
   it('creates person profiles only for identified users', () => {
@@ -171,8 +174,14 @@ describe('Cross-domain consent forwarding (marketing → app)', () => {
     expect(identityPlugin).toMatch(/ref\.hostname\.endsWith\(['"]\.reqcore\.com['"]/)
   })
 
-  it('only aliases the marketing distinct id when consent is already granted', () => {
-    expect(identityPlugin).toMatch(/isValidDistinctId && consentCookie\.value === ['"]granted['"]/)
+  it('aliases the marketing distinct id whenever it is valid (cross-domain stitching is not consent-gated)', () => {
+    // Aliasing only links two anonymous distinct ids PostHog already has
+    // — it adds no PII or persistent storage. Gating on consent would
+    // make cross-domain funnels (cta_clicked → signup_page_viewed) report
+    // ~0% conversion for the vast majority of (unconsented) users.
+    expect(identityPlugin).toMatch(/if\s*\(\s*isValidDistinctId\s*\)\s*\{[\s\S]*?posthog\.alias\(marketingDistinctId\)/)
+    // And explicitly NOT gated on consent.
+    expect(identityPlugin).not.toMatch(/isValidDistinctId\s*&&\s*consentCookie/)
   })
 
   it('validates the marketing distinct id format before passing to alias()', () => {

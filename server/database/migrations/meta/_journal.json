@@ -176,6 +176,20 @@
       "when": 1776550000000,
       "tag": "0024_candidate_quick_notes",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1777199840612,
+      "tag": "0025_chatbot_persistence",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1777200000000,
+      "tag": "0026_multi_ai_configs",
+      "breakpoints": true
     }
   ]
 }

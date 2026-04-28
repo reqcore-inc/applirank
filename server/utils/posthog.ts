@@ -20,6 +20,12 @@ export function useServerPostHog(): PostHog | null {
     return null
   }
 
+  // POSTHOG_FEATURE_FLAGS_KEY is the "Feature Flags Secure API Key" from
+  // PostHog → Project Settings → Feature Flags.  When set, the server SDK
+  // fetches flag definitions on startup and evaluates them locally — no
+  // per-request network round trip, and much faster flag checks.
+  const featureFlagsKey = process.env.POSTHOG_FEATURE_FLAGS_KEY
+
   client = new PostHog(publicKey, {
     host: host || 'https://eu.i.posthog.com',
     // Flush events every 10 seconds or 20 events, whichever comes first
@@ -27,6 +33,10 @@ export function useServerPostHog(): PostHog | null {
     flushInterval: 10_000,
     // Enable automatic capture of uncaught exceptions and unhandled rejections
     enableExceptionAutocapture: true,
+    // Local evaluation: periodically fetches flag definitions so checks are
+    // fast and free of per-request API calls.  Only active when the secure
+    // API key is configured.
+    ...(featureFlagsKey ? { personalApiKey: featureFlagsKey } : {}),
   })
 
   // Register super properties included with every server-side event

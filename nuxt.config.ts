@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import { readEnvFlagOverrides } from "./shared/feature-flags";
 
 const railwayEnvironmentName =
   process.env.RAILWAY_ENVIRONMENT_NAME?.toLowerCase() ?? "";
@@ -238,6 +239,12 @@ export default defineNuxtConfig({
       ),
       /** Display name for the SSO provider button */
       oidcProviderName: process.env.OIDC_PROVIDER_NAME || "SSO",
+      /**
+       * Feature flag overrides forced by env vars (FEATURE_FLAG_*).
+       * Self-hosters use these to enable/disable flags without running PostHog.
+       * See `shared/feature-flags.ts` for the full registry and resolution order.
+       */
+      featureFlagOverrides: readEnvFlagOverrides(),
     },
   },
 

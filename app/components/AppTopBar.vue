@@ -6,6 +6,7 @@ import {
   ChevronDown, Menu, X, Users, ChevronLeft,
   LayoutDashboard, Calendar, ArrowUpCircle,
   Cloud, Server, Sparkles, Radio, History,
+  MessageCircle,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -103,6 +104,8 @@ const { data: feedbackConfig } = useFetch('/api/feedback/config', {
 
 const isFeedbackEnabled = computed(() => feedbackConfig.value?.enabled === true)
 
+const showChatbot = useFeatureFlagEnabled('chatbot-experience')
+
 const jobTabs = computed(() => {
   if (!activeJobId.value) return []
   const base = `/dashboard/jobs/${activeJobId.value}`
@@ -130,6 +133,28 @@ const mainNav: Array<{ label: string; to: string; icon: typeof Briefcase; exact:
   { label: 'AI Analysis', to: '/dashboard/ai-analysis', icon: Sparkles, exact: true },
   { label: 'Settings', to: '/dashboard/settings', icon: Settings, exact: false },
 ]
+
+// Items shown only when their feature flag is enabled. Filtered into mainNav
+// reactively so the gating happens at render time (PostHog flags load async).
+const flaggedNav = computed(() => {
+  const items: Array<{ label: string; to: string; icon: typeof Briefcase; exact: boolean; afterLabel: string }> = []
+  if (showChatbot.value) {
+    items.push({ label: 'Assistant', to: '/dashboard/chatbot', icon: MessageCircle, exact: false, afterLabel: 'AI Analysis' })
+  }
+  return items
+})
+
+const navItems = computed(() => {
+  const merged = [...mainNav]
+  for (const item of flaggedNav.value) {
+    const idx = merged.findIndex((n) => n.label === item.afterLabel)
+    const insertAt = idx >= 0 ? idx + 1 : merged.length
+    merged.splice(insertAt, 0, {
+      label: item.label, to: item.to, icon: item.icon, exact: item.exact,
+    })
+  }
+  return merged
+})
 
 function isActiveRoute(to: string, exact: boolean) {
   const localizedTo = localePath(to)
@@ -196,7 +221,7 @@ onUnmounted(() => {
           <!-- Desktop nav links -->
           <nav class="hidden md:flex items-center gap-0.5">
             <NuxtLink
-              v-for="item in mainNav"
+              v-for="item in navItems"
               :key="item.to"
               :to="$localePath(item.to)"
               class="relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 no-underline"
@@ -371,7 +396,7 @@ onUnmounted(() => {
                 <!-- Mobile-only items -->
                 <div class="md:hidden border-b border-surface-100 dark:border-surface-800 py-1">
                   <NuxtLink
-                    v-for="item in mainNav"
+                    v-for="item in navItems"
                     :key="item.to"
                     :to="$localePath(item.to)"
                     class="flex items-center gap-2.5 px-4 py-2 text-sm text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100 transition-colors no-underline"
@@ -471,7 +496,7 @@ onUnmounted(() => {
           </nav>
 
           <div class="ml-auto flex items-center gap-2 shrink-0">
-            <div id="job-sub-nav-actions" />
+            <div id="job-sub-nav-actions" class="flex items-center gap-2" />
           </div>
         </div>
       </div>
@@ -492,7 +517,7 @@ onUnmounted(() => {
       >
         <nav class="px-4 py-3 flex flex-col gap-1">
           <NuxtLink
-            v-for="item in mainNav"
+            v-for="item in navItems"
             :key="item.to"
             :to="$localePath(item.to)"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all no-underline"

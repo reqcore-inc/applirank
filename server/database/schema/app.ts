@@ -10,7 +10,7 @@ import {
   uniqueIndex,
   numeric,
 } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import { organization, user } from './auth'
 
 // ─────────────────────────────────────────────
@@ -530,6 +530,8 @@ export const applicationSource = pgTable('application_source', {
 export const aiConfig = pgTable('ai_config', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  /** Friendly display name shown in the picker (e.g. "GPT-4o (production)"). */
+  name: text('name').notNull().default('Default'),
   provider: text('provider').notNull().default('openai'),
   model: text('model').notNull().default('gpt-4o-mini'),
   /** AES-256-GCM encrypted API key — NEVER returned to client */
@@ -541,10 +543,17 @@ export const aiConfig = pgTable('ai_config', {
   inputPricePer1m: numeric('input_price_per_1m', { precision: 10, scale: 4 }),
   /** Price per 1M output tokens in USD (e.g. "10.00") */
   outputPricePer1m: numeric('output_price_per_1m', { precision: 10, scale: 4 }),
+  /** When true, this configuration is used by the chatbot when no per-conversation override is set. At most one row per org. */
+  isDefaultChatbot: boolean('is_default_chatbot').notNull().default(false),
+  /** When true, this configuration is used for applicant analysis (manual + auto). At most one row per org. */
+  isDefaultAnalysis: boolean('is_default_analysis').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => ([
-  uniqueIndex('ai_config_organization_id_idx').on(t.organizationId),
+  index('ai_config_organization_id_idx').on(t.organizationId),
+  // Partial unique indexes enforce at most one default per purpose per org.
+  uniqueIndex('ai_config_default_chatbot_idx').on(t.organizationId).where(sql`${t.isDefaultChatbot} = true`),
+  uniqueIndex('ai_config_default_analysis_idx').on(t.organizationId).where(sql`${t.isDefaultAnalysis} = true`),
 ]))
 
 /**
@@ -744,4 +753,132 @@ export const applicationSourceRelations = relations(applicationSource, ({ one })
 
 export const orgSettingsRelations = relations(orgSettings, ({ one }) => ({
   organization: one(organization, { fields: [orgSettings.organizationId], references: [organization.id] }),
+}))
+
+// ─────────────────────────────────────────────
+// Chatbot — per-user persisted state
+// ─────────────────────────────────────────────
+// Conversations, folders and custom AI agents are PRIVATE to the creating user
+// (scoped by both organizationId AND userId). The chatbot itself runs against
+// org-wide data via tool calls, but the chat history and user preferences
+// (custom system prompts, folder organisation) never leak between users.
+
+export const chatbotMessageRoleEnum = pgEnum('chatbot_message_role', ['user', 'assistant'])
+
+/**
+ * Custom AI agents — user-defined personas with their own system prompt.
+ * Each user manages their own private list. isDefault marks the one that
+ * gets pre-selected when starting a new conversation.
+ */
+export const chatbotAgent = pgTable('chatbot_agent', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  /** Short description shown next to the name in the picker. */
+  description: text('description'),
+  /** Lucide icon name (e.g. 'Sparkles'). Optional; UI falls back to a default. */
+  icon: text('icon'),
+  /** The custom system prompt appended/replacing the base assistant prompt. */
+  systemPrompt: text('system_prompt').notNull(),
+  /** Default temperature override (0..2). Null → use server default. */
+  temperature: numeric('temperature', { precision: 3, scale: 2 }),
+  isDefault: boolean('is_default').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('chatbot_agent_org_user_idx').on(t.organizationId, t.userId),
+]))
+
+/**
+ * Folders for organising conversations in the sidebar. Per-user.
+ */
+export const chatbotFolder = pgTable('chatbot_folder', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  /** Lucide icon name. Optional. */
+  icon: text('icon'),
+  /** Manual sort order, ascending. */
+  position: integer('position').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('chatbot_folder_org_user_idx').on(t.organizationId, t.userId),
+]))
+
+/**
+ * A persisted chatbot conversation. Belongs to a user, optionally filed under
+ * a folder, optionally bound to a specific custom agent.
+ */
+export const chatbotConversation = pgTable('chatbot_conversation', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  folderId: text('folder_id').references(() => chatbotFolder.id, { onDelete: 'set null' }),
+  agentId: text('agent_id').references(() => chatbotAgent.id, { onDelete: 'set null' }),
+  /** AI configuration last used for this conversation. Falls back to org chatbot default. */
+  aiConfigId: text('ai_config_id').references(() => aiConfig.id, { onDelete: 'set null' }),
+  /** Human-friendly title. Auto-generated from the first user message if absent. */
+  title: text('title').notNull().default('New chat'),
+  /** Scope at the time of last message: { kind: 'organization' } or { kind: 'job', jobId } */
+  scope: jsonb('scope').notNull().$type<{ kind: 'organization' | 'job'; jobId?: string }>(),
+  /** Whether extended thinking was enabled for the most recent turn. */
+  thinking: boolean('thinking').notNull().default(false),
+  /** Pinned to the top of the sidebar list. */
+  pinned: boolean('pinned').notNull().default(false),
+  /** Cached preview of last message — avoids loading messages just for the list. */
+  lastMessagePreview: text('last_message_preview'),
+  lastMessageAt: timestamp('last_message_at'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => ([
+  index('chatbot_conversation_org_user_idx').on(t.organizationId, t.userId),
+  index('chatbot_conversation_folder_idx').on(t.folderId),
+  index('chatbot_conversation_last_message_at_idx').on(t.userId, t.lastMessageAt),
+]))
+
+/**
+ * Persisted message belonging to a conversation. We mirror the wire shape of
+ * ChatbotMessage but normalize a few server-side fields (toolCalls, sources).
+ */
+export const chatbotMessage = pgTable('chatbot_message', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  conversationId: text('conversation_id').notNull().references(() => chatbotConversation.id, { onDelete: 'cascade' }),
+  organizationId: text('organization_id').notNull().references(() => organization.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  role: chatbotMessageRoleEnum('role').notNull(),
+  content: text('content').notNull().default(''),
+  reasoning: text('reasoning'),
+  /** Persisted ChatbotToolCall[]. */
+  toolCalls: jsonb('tool_calls').$type<unknown[]>(),
+  /** Persisted ChatbotSource[] (jobs / candidates / applications referenced). */
+  sources: jsonb('sources').$type<unknown[]>(),
+  /** Attachment metadata snapshots (no raw file content). */
+  attachments: jsonb('attachments').$type<unknown[]>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => ([
+  index('chatbot_message_conversation_idx').on(t.conversationId, t.createdAt),
+]))
+
+export const chatbotAgentRelations = relations(chatbotAgent, ({ many }) => ({
+  conversations: many(chatbotConversation),
+}))
+
+export const chatbotFolderRelations = relations(chatbotFolder, ({ many }) => ({
+  conversations: many(chatbotConversation),
+}))
+
+export const chatbotConversationRelations = relations(chatbotConversation, ({ one, many }) => ({
+  organization: one(organization, { fields: [chatbotConversation.organizationId], references: [organization.id] }),
+  user: one(user, { fields: [chatbotConversation.userId], references: [user.id] }),
+  folder: one(chatbotFolder, { fields: [chatbotConversation.folderId], references: [chatbotFolder.id] }),
+  agent: one(chatbotAgent, { fields: [chatbotConversation.agentId], references: [chatbotAgent.id] }),
+  aiConfig: one(aiConfig, { fields: [chatbotConversation.aiConfigId], references: [aiConfig.id] }),
+  messages: many(chatbotMessage),
+}))
+
+export const chatbotMessageRelations = relations(chatbotMessage, ({ one }) => ({
+  conversation: one(chatbotConversation, { fields: [chatbotMessage.conversationId], references: [chatbotConversation.id] }),
 }))

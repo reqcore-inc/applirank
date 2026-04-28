@@ -44,7 +44,7 @@ onUnmounted(() => document.removeEventListener('click', onClickOutside))
 
     <div
       v-if="isOpen"
-      class="absolute top-[calc(100%+4px)] left-0 right-0 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-md shadow-lg z-50 overflow-hidden"
+      class="absolute top-[calc(100%+4px)] left-0 min-w-full w-max bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-md shadow-lg z-50 overflow-hidden"
     >
       <div v-if="isSwitching" class="px-3 py-3 text-center text-[13px] text-surface-500 dark:text-surface-400">
         Switching…

@@ -234,6 +234,8 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
 
 <template>
   <div>
+    <JobSubNavActions :job-id="jobId" />
+
     <!-- Loading -->
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-12 gap-3">
       <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />

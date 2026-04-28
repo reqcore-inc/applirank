@@ -5,12 +5,13 @@
  */
 import { eq, and } from 'drizzle-orm'
 import {
-  application, aiConfig, scoringCriterion, criterionScore,
+  application, scoringCriterion, criterionScore,
   analysisRun, document,
 } from '../../database/schema'
 import { scoreApplication, computeCompositeScore } from './scoring'
 import type { CriterionDefinition } from './scoring'
 import type { SupportedProvider } from './provider'
+import { loadAiConfig } from './loadConfig'
 import { extractResumeText } from '../resume-parser'
 
 export async function autoScoreApplication(applicationId: string, orgId: string) {
@@ -23,10 +24,12 @@ export async function autoScoreApplication(applicationId: string, orgId: string)
   })
   if (!app) return
 
-  const config = await db.query.aiConfig.findFirst({
-    where: eq(aiConfig.organizationId, orgId),
-  })
-  if (!config) return
+  let config
+  try {
+    config = await loadAiConfig(orgId, { purpose: 'analysis' })
+  } catch {
+    return
+  }
 
   const criteria = await db.select().from(scoringCriterion)
     .where(and(

@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { Brain, Sparkles, AlertTriangle, ChevronDown, ChevronUp, Loader2, BarChart3, RefreshCw } from 'lucide-vue-next'
 
+interface AiConfigOption {
+  id: string
+  name: string
+  provider: string
+  model: string
+  isDefaultAnalysis: boolean
+  hasApiKey: boolean
+}
+
 const props = defineProps<{
   applicationId: string
 }>()
@@ -24,6 +33,21 @@ const { data: scoreData, status, refresh } = useFetch(
     watch: [() => props.applicationId],
   },
 )
+
+// Available AI configurations the user can pick from for this analysis run.
+// `selectedAiConfigId === null` means "use the org's default analysis config".
+const { data: aiConfigsData } = useFetch<AiConfigOption[]>('/api/ai-config', {
+  key: 'ai-configs-analysis-picker',
+  headers: useRequestHeaders(['cookie']),
+  default: () => [],
+})
+const aiConfigOptions = computed<AiConfigOption[]>(() =>
+  (aiConfigsData.value ?? []).filter((c) => c.hasApiKey),
+)
+const defaultAnalysisConfig = computed(() =>
+  aiConfigOptions.value.find((c) => c.isDefaultAnalysis) ?? null,
+)
+const selectedAiConfigId = ref<string | null>(null)
 
 // Cache last successful data so switching candidates doesn't flash "Loading scores…"
 const cachedScoreData = ref(scoreData.value)
@@ -73,9 +97,10 @@ async function runAnalysis() {
     await $fetch(`/api/applications/${props.applicationId}/analyze`, {
       method: 'POST',
       headers: useRequestHeaders(['cookie']),
+      body: { aiConfigId: selectedAiConfigId.value },
     })
     await refresh()
-    track('ai_analysis_run', { application_id: props.applicationId })
+    track('ai_analysis_run', { application_id: props.applicationId, ai_config_id: selectedAiConfigId.value })
     emit('scored')
   } catch (err: any) {
     const data = err?.data?.data
@@ -122,15 +147,27 @@ async function retryParse() {
             <p class="text-sm font-medium text-surface-600 dark:text-surface-300">No AI analysis yet</p>
           </div>
         </div>
-        <button
-          :disabled="isAnalyzing"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          @click="runAnalysis"
-        >
-          <Loader2 v-if="isAnalyzing" class="size-3.5 animate-spin" />
-          <Sparkles v-else class="size-3.5" />
-          {{ isAnalyzing ? 'Analyzing…' : 'Run Analysis' }}
-        </button>
+        <div class="flex items-center gap-1.5">
+          <select
+            v-if="aiConfigOptions.length > 1"
+            v-model="selectedAiConfigId"
+            :disabled="isAnalyzing"
+            class="rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-2 py-1.5 text-xs text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer max-w-[140px] truncate"
+            :title="selectedAiConfigId ?? 'Use org default'"
+          >
+            <option :value="null">Default{{ defaultAnalysisConfig ? ` (${defaultAnalysisConfig.name})` : '' }}</option>
+            <option v-for="c in aiConfigOptions" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+          <button
+            :disabled="isAnalyzing"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            @click="runAnalysis"
+          >
+            <Loader2 v-if="isAnalyzing" class="size-3.5 animate-spin" />
+            <Sparkles v-else class="size-3.5" />
+            {{ isAnalyzing ? 'Analyzing…' : 'Run Analysis' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -150,13 +187,24 @@ async function retryParse() {
             </div>
             <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Composite Score</h3>
           </div>
-          <button
-            :disabled="isAnalyzing"
-            class="text-xs text-brand-600 dark:text-brand-400 hover:underline disabled:opacity-50"
-            @click="runAnalysis"
-          >
-            {{ isAnalyzing ? 'Re-scoring…' : 'Re-score' }}
-          </button>
+          <div class="flex items-center gap-1.5">
+            <select
+              v-if="aiConfigOptions.length > 1"
+              v-model="selectedAiConfigId"
+              :disabled="isAnalyzing"
+              class="rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-2 py-1 text-[11px] text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer max-w-[140px] truncate"
+            >
+              <option :value="null">Default{{ defaultAnalysisConfig ? ` (${defaultAnalysisConfig.name})` : '' }}</option>
+              <option v-for="c in aiConfigOptions" :key="c.id" :value="c.id">{{ c.name }}</option>
+            </select>
+            <button
+              :disabled="isAnalyzing"
+              class="text-xs text-brand-600 dark:text-brand-400 hover:underline disabled:opacity-50"
+              @click="runAnalysis"
+            >
+              {{ isAnalyzing ? 'Re-scoring…' : 'Re-score' }}
+            </button>
+          </div>
         </div>
 
         <div class="flex items-baseline gap-2">

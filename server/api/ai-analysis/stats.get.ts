@@ -18,14 +18,27 @@ export default defineEventHandler(async (event) => {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
   const thirtyDaysAgoISO = thirtyDaysAgo.toISOString()
 
-  // Fetch pricing config in parallel with stats
-  const pricingConfig = await db.query.aiConfig.findFirst({
+  // Fetch pricing from ALL configs in the org so historical model breakdown
+  // can be priced correctly even if the user has multiple configurations.
+  const pricingConfigs = await db.query.aiConfig.findMany({
     where: eq(aiConfig.organizationId, orgId),
     columns: {
+      provider: true,
+      model: true,
       inputPricePer1m: true,
       outputPricePer1m: true,
+      isDefaultAnalysis: true,
     },
   })
+
+  const pricingByModel = new Map<string, { inputPricePer1m: number | null, outputPricePer1m: number | null }>()
+  for (const c of pricingConfigs) {
+    pricingByModel.set(`${c.provider}::${c.model}`, {
+      inputPricePer1m: c.inputPricePer1m != null ? Number(c.inputPricePer1m) : null,
+      outputPricePer1m: c.outputPricePer1m != null ? Number(c.outputPricePer1m) : null,
+    })
+  }
+  const defaultAnalysisConfig = pricingConfigs.find(c => c.isDefaultAnalysis) ?? pricingConfigs[0] ?? null
 
   const [
     totalRuns,
@@ -109,8 +122,8 @@ export default defineEventHandler(async (event) => {
 
   const usage = tokenUsage[0]
 
-  const inputPrice = pricingConfig?.inputPricePer1m ? Number(pricingConfig.inputPricePer1m) : null
-  const outputPrice = pricingConfig?.outputPricePer1m ? Number(pricingConfig.outputPricePer1m) : null
+  const inputPrice = defaultAnalysisConfig?.inputPricePer1m != null ? Number(defaultAnalysisConfig.inputPricePer1m) : null
+  const outputPrice = defaultAnalysisConfig?.outputPricePer1m != null ? Number(defaultAnalysisConfig.outputPricePer1m) : null
 
   return {
     pricing: {
@@ -144,13 +157,20 @@ export default defineEventHandler(async (event) => {
       candidateName: `${r.candidateFirstName} ${r.candidateLastName}`,
       jobTitle: r.jobTitle,
     })),
-    modelBreakdown: modelBreakdown.map(m => ({
-      provider: m.provider,
-      model: m.model,
-      runCount: Number(m.runCount),
-      totalPromptTokens: Number(m.totalPromptTokens ?? 0),
-      totalCompletionTokens: Number(m.totalCompletionTokens ?? 0),
-      totalTokens: Number(m.totalPromptTokens ?? 0) + Number(m.totalCompletionTokens ?? 0),
-    })),
+    modelBreakdown: modelBreakdown.map((m) => {
+      const price = pricingByModel.get(`${m.provider}::${m.model}`)
+      const promptTokens = Number(m.totalPromptTokens ?? 0)
+      const completionTokens = Number(m.totalCompletionTokens ?? 0)
+      return {
+        provider: m.provider,
+        model: m.model,
+        runCount: Number(m.runCount),
+        totalPromptTokens: promptTokens,
+        totalCompletionTokens: completionTokens,
+        totalTokens: promptTokens + completionTokens,
+        inputPricePer1m: price?.inputPricePer1m ?? null,
+        outputPricePer1m: price?.outputPricePer1m ?? null,
+      }
+    }),
   }
 })

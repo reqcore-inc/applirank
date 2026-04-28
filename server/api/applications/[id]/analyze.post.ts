@@ -1,16 +1,21 @@
 import { eq, and } from 'drizzle-orm'
 import {
-  application, aiConfig, scoringCriterion, criterionScore,
+  application, scoringCriterion, criterionScore,
   analysisRun, document, candidate,
 } from '../../../database/schema'
 import { scoreApplication, computeCompositeScore } from '../../../utils/ai/scoring'
 import type { CriterionDefinition } from '../../../utils/ai/scoring'
 import type { SupportedProvider } from '../../../utils/ai/provider'
+import { loadAiConfig } from '../../../utils/ai/loadConfig'
 import { extractResumeText } from '../../../utils/resume-parser'
 import { createRateLimiter } from '../../../utils/rateLimit'
 import { z } from 'zod'
 
 const paramsSchema = z.object({ id: z.string().min(1) })
+const bodySchema = z.object({
+  /** Optional override; falls back to the org's analysis default. */
+  aiConfigId: z.string().min(1).nullable().optional(),
+}).partial().optional()
 const limiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20, message: 'Too many AI analysis requests. Please wait before retrying.' })
 
 /**
@@ -23,6 +28,9 @@ export default defineEventHandler(async (event) => {
   const session = await requirePermission(event, { scoring: ['create'] })
   const orgId = session.session.activeOrganizationId
   const { id: applicationId } = await getValidatedRouterParams(event, paramsSchema.parse)
+  // Body is optional — GET-style "just run with defaults" stays valid.
+  const body = await readBody(event).catch(() => null)
+  const parsedBody = body ? bodySchema.parse(body) : null
 
   // Fetch application with candidate, job, and documents
   const app = await db.query.application.findFirst({
@@ -41,16 +49,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Application not found' })
   }
 
-  // Fetch AI config
-  const config = await db.query.aiConfig.findFirst({
-    where: eq(aiConfig.organizationId, orgId),
+  // Fetch AI config (override → analysis default → 422)
+  const config = await loadAiConfig(orgId, {
+    purpose: 'analysis',
+    preferId: parsedBody?.aiConfigId ?? null,
   })
-  if (!config) {
-    throw createError({
-      statusCode: 422,
-      statusMessage: 'AI provider not configured. Set up your AI provider in Settings first.',
-    })
-  }
 
   // Fetch scoring criteria for this job
   const criteria = await db.select().from(scoringCriterion)

@@ -14,23 +14,33 @@ const safeBaseUrl = z.string().url().max(500)
   }, 'URL must not target internal metadata endpoints')
 
 export const createAiConfigSchema = z.object({
+  name: z.string().min(1).max(80).trim(),
   provider: z.enum(['openai', 'anthropic', 'google', 'openai_compatible']),
   model: z.string().min(1).max(200),
-  apiKey: z.string().min(1).max(500).optional(),
+  apiKey: z.string().min(1).max(500),
   baseUrl: safeBaseUrl.nullish(),
-  maxTokens: z.number().int().min(256).max(32768).optional().default(4096),
+  // Modern frontier models support 100K+ output tokens. Cap generously to avoid blocking power users.
+  maxTokens: z.number().int().min(256).max(200000).optional().default(16384),
   inputPricePer1m: z.number().min(0).max(9999).nullish(),
   outputPricePer1m: z.number().min(0).max(9999).nullish(),
+  isDefaultChatbot: z.boolean().optional().default(false),
+  isDefaultAnalysis: z.boolean().optional().default(false),
 })
 
 export const updateAiConfigSchema = z.object({
+  name: z.string().min(1).max(80).trim().optional(),
   provider: z.enum(['openai', 'anthropic', 'google', 'openai_compatible']).optional(),
   model: z.string().min(1).max(200).optional(),
   apiKey: z.string().min(1).max(500).optional(),
   baseUrl: safeBaseUrl.nullish(),
-  maxTokens: z.number().int().min(256).max(32768).optional(),
+  maxTokens: z.number().int().min(256).max(200000).optional(),
   inputPricePer1m: z.number().min(0).max(9999).nullish(),
   outputPricePer1m: z.number().min(0).max(9999).nullish(),
+})
+
+export const setAiConfigDefaultSchema = z.object({
+  /** Which "purpose" slots to claim for this configuration. */
+  purposes: z.array(z.enum(['chatbot', 'analysis'])).min(1),
 })
 
 // ─── Scoring Criterion Schemas ────────────────────────────────────

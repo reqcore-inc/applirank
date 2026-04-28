@@ -267,10 +267,12 @@ const linkCopied = ref(false)
 const questionActionError = ref<string | null>(null)
 const nextQuestionId = ref(1)
 
-// Check if AI provider is configured
-const { data: aiConfigData } = useFetch('/api/ai-config', { key: 'ai-config-check', headers: useRequestHeaders(['cookie']) })
+// Check if at least one AI provider is configured with a valid API key.
+// /api/ai-config returns an array of configurations now (multi-config era).
+interface AiConfigCheckRow { hasApiKey: boolean }
+const { data: aiConfigData } = useFetch<AiConfigCheckRow[]>('/api/ai-config', { key: 'ai-config-check', headers: useRequestHeaders(['cookie']) })
 const isAiConfigured = computed(() => {
-  return aiConfigData.value && aiConfigData.value.provider && aiConfigData.value.hasApiKey
+  return Array.isArray(aiConfigData.value) && aiConfigData.value.some((c) => c.hasApiKey)
 })
 
 // Auto-save to localStorage

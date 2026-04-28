@@ -3,32 +3,39 @@ import { aiConfig } from '../../database/schema'
 
 /**
  * GET /api/ai-config
- * Fetch the organization's AI provider configuration.
- * Returns config WITHOUT the API key (security: never expose encrypted keys).
- * Includes a boolean `hasApiKey` indicating whether a key is configured.
+ *
+ * List ALL AI configurations for the active organization, ordered with
+ * defaults first then by recency. Never returns the encrypted API key —
+ * only a `hasApiKey` boolean.
  */
 export default defineEventHandler(async (event) => {
   const session = await requirePermission(event, { scoring: ['read'] })
   const orgId = session.session.activeOrganizationId
 
-  const config = await db.query.aiConfig.findFirst({
+  const rows = await db.query.aiConfig.findMany({
     where: eq(aiConfig.organizationId, orgId),
     columns: {
       id: true,
+      name: true,
       provider: true,
       model: true,
       baseUrl: true,
       maxTokens: true,
       inputPricePer1m: true,
       outputPricePer1m: true,
+      isDefaultChatbot: true,
+      isDefaultAnalysis: true,
       apiKeyEncrypted: true,
       createdAt: true,
       updatedAt: true,
     },
+    orderBy: (t, { desc }) => [desc(t.isDefaultChatbot), desc(t.isDefaultAnalysis), desc(t.createdAt)],
   })
 
-  if (!config) return null
-
-  const { apiKeyEncrypted, ...rest } = config
-  return { ...rest, hasApiKey: Boolean(apiKeyEncrypted) }
+  return rows.map(({ apiKeyEncrypted, ...rest }) => ({
+    ...rest,
+    inputPricePer1m: rest.inputPricePer1m != null ? Number(rest.inputPricePer1m) : null,
+    outputPricePer1m: rest.outputPricePer1m != null ? Number(rest.outputPricePer1m) : null,
+    hasApiKey: Boolean(apiKeyEncrypted),
+  }))
 })

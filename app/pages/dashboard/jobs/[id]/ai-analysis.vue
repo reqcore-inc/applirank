@@ -296,6 +296,8 @@ function resetCriteria() {
 
 <template>
   <div class="mx-auto max-w-3xl">
+    <JobSubNavActions :job-id="jobId" />
+
     <!-- Loading -->
     <div v-if="jobFetchStatus === 'pending' || criteriaFetchStatus === 'pending'" class="text-center py-12 text-surface-400">
       Loading…

@@ -17,9 +17,10 @@ Everything you need to deploy, manage, and update your own Reqcore applicant tra
 9. [Custom Domain & HTTPS](#custom-domain--https)
 10. [Email Configuration](#email-configuration)
 11. [Security Best Practices](#security-best-practices)
-12. [Monitoring & Health Checks](#monitoring--health-checks)
-13. [Troubleshooting](#troubleshooting)
-14. [FAQ](#faq)
+12. [Feature Flags](#feature-flags)
+13. [Monitoring & Health Checks](#monitoring--health-checks)
+14. [Troubleshooting](#troubleshooting)
+15. [FAQ](#faq)
 
 ---
 
@@ -589,6 +590,45 @@ The SSO button appears automatically on the sign-in and sign-up pages.
 - **Issuer validation** (RFC 9207) is enforced to prevent OAuth mix-up attacks
 - **OIDC discovery** automatically fetches and validates all provider endpoints
 - SSO is **completely opt-in** — it has zero impact when the environment variables are not set
+
+---
+
+## Feature Flags
+
+Reqcore ships some features behind **feature flags** so they can be tested in production before being released to everyone. The full list of flags lives in [`shared/feature-flags.ts`](shared/feature-flags.ts).
+
+### How it works for self-hosters
+
+Every flag has a safe **default value** baked into the code. You get that default automatically — **no PostHog account or external service required**.
+
+If you want to opt into an experimental feature (or disable a stable one), set an environment variable matching the pattern:
+
+```bash
+FEATURE_FLAG_<UPPERCASE_KEY_WITH_UNDERSCORES>=true
+```
+
+Examples:
+
+```bash
+# Enable the new chatbot experience for everyone on this instance
+FEATURE_FLAG_CHATBOT_EXPERIENCE=true
+
+# Force-disable a flag that defaults to on
+FEATURE_FLAG_SOMETHING_ELSE=false
+```
+
+Restart the container after editing `.env`. Env-var overrides win over any PostHog rollout, so this is the authoritative knob for self-hosters.
+
+### Resolution order
+
+1. URL query string (e.g. `?ff_chatbot-experience=true`) — handy for QA
+2. Env var override (`FEATURE_FLAG_*`) — what you'll use 99% of the time
+3. PostHog rollout — only applies when `POSTHOG_PUBLIC_KEY` is set
+4. Registry default from `shared/feature-flags.ts`
+
+### I want to use PostHog for gradual rollout
+
+Optional. Set `POSTHOG_PUBLIC_KEY` and `POSTHOG_HOST` in `.env`, then create a flag in your PostHog project with a key matching the registry (e.g. `chatbot-experience`). For server-side flags without per-request HTTP calls, also set `POSTHOG_FEATURE_FLAGS_KEY` to a personal API key with the **Feature Flags: read** scope.
 
 ---
 

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Brain, Sparkles, TrendingUp, AlertTriangle, CheckCircle2,
   XCircle, Zap, Clock, BarChart3, Activity, AlertCircle, DollarSign,
@@ -10,7 +10,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'AI Analysis — Reqcore',
+  title: 'AI Analysis â€” WWMate',
   robots: 'noindex, nofollow',
 })
 
@@ -39,7 +39,7 @@ const successRate = computed(() => {
   return Math.round((summary.value.completedRuns / summary.value.totalRuns) * 100)
 })
 
-// ─── Cost computations ───
+// â”€â”€â”€ Cost computations â”€â”€â”€
 function calcCost(promptTokens: number, completionTokens: number): number | null {
   const ip = pricing.value.inputPricePer1m
   const op = pricing.value.outputPricePer1m
@@ -69,13 +69,13 @@ function formatNumber(n: number): string {
 }
 
 function formatCost(cost: number | null): string {
-  if (cost == null) return '—'
+  if (cost == null) return 'â€”'
   if (cost < 0.01) return '<$0.01'
   return `$${cost.toFixed(2)}`
 }
 
 function formatCostPrecise(cost: number | null): string {
-  if (cost == null) return '—'
+  if (cost == null) return 'â€”'
   if (cost < 0.001) return '<$0.001'
   if (cost < 0.01) return `$${cost.toFixed(4)}`
   return `$${cost.toFixed(2)}`
@@ -118,7 +118,7 @@ function statusBadgeClass(status: string): string {
 
 <template>
   <div class="mx-auto max-w-6xl">
-    <!-- ─── Loading skeleton ─── -->
+    <!-- â”€â”€â”€ Loading skeleton â”€â”€â”€ -->
     <div v-if="fetchStatus === 'pending'">
       <div class="mb-10">
         <div class="h-8 w-48 bg-surface-200 dark:bg-surface-700 rounded-lg animate-pulse mb-2" />
@@ -148,7 +148,7 @@ function statusBadgeClass(status: string): string {
       </div>
     </div>
 
-    <!-- ─── Error ─── -->
+    <!-- â”€â”€â”€ Error â”€â”€â”€ -->
     <div
       v-else-if="error"
       class="rounded-2xl border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950/60 p-5 text-sm text-danger-700 dark:text-danger-400 flex items-center gap-3"
@@ -158,7 +158,7 @@ function statusBadgeClass(status: string): string {
       <button class="underline ml-auto font-medium cursor-pointer" @click="refresh()">Retry</button>
     </div>
 
-    <!-- ─── Empty state (no runs at all) ─── -->
+    <!-- â”€â”€â”€ Empty state (no runs at all) â”€â”€â”€ -->
     <div v-else-if="summary.totalRuns === 0" class="flex flex-col items-center justify-center py-24">
       <div class="rounded-3xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-14 text-center max-w-md shadow-sm">
         <div class="mx-auto mb-8 flex items-center justify-center size-18 rounded-2xl bg-gradient-to-br from-brand-500 to-violet-600 shadow-lg shadow-brand-500/20">
@@ -173,9 +173,9 @@ function statusBadgeClass(status: string): string {
       </div>
     </div>
 
-    <!-- ─── Dashboard content ─── -->
+    <!-- â”€â”€â”€ Dashboard content â”€â”€â”€ -->
     <template v-else>
-      <!-- ─── Header ─── -->
+      <!-- â”€â”€â”€ Header â”€â”€â”€ -->
       <div class="flex items-center justify-between mb-10">
         <div>
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50 tracking-tight">AI Analysis</h1>
@@ -183,7 +183,7 @@ function statusBadgeClass(status: string): string {
         </div>
       </div>
 
-      <!-- ─── Stat cards ─── -->
+      <!-- â”€â”€â”€ Stat cards â”€â”€â”€ -->
       <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
         <!-- Total Runs -->
         <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-brand-500/25 dark:hover:ring-brand-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-500/[0.08]">
@@ -267,7 +267,7 @@ function statusBadgeClass(status: string): string {
           <div class="relative">
             <div class="flex items-baseline gap-2">
               <span class="text-3xl sm:text-4xl font-black tracking-tight tabular-nums leading-none transition-colors duration-300" :class="pricing.configured ? 'text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 'text-surface-300 dark:text-surface-600'">
-                {{ pricing.configured ? formatCost(totalCost) : '—' }}
+                {{ pricing.configured ? formatCost(totalCost) : 'â€”' }}
               </span>
               <span class="size-1.5 rounded-full shrink-0 mb-1" :class="pricing.configured ? 'bg-emerald-500' : 'bg-surface-300 dark:bg-surface-600'" />
             </div>
@@ -282,7 +282,7 @@ function statusBadgeClass(status: string): string {
         </div>
       </div>
 
-      <!-- ─── Usage chart (last 30 days) ─── -->
+      <!-- â”€â”€â”€ Usage chart (last 30 days) â”€â”€â”€ -->
       <div v-if="dailyRuns.length > 0" class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden mb-6">
         <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
           <div class="flex items-center gap-3">
@@ -290,7 +290,7 @@ function statusBadgeClass(status: string): string {
               <BarChart3 class="size-5" />
             </div>
             <div>
-              <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Usage — Last 30 Days</h2>
+              <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Usage â€” Last 30 Days</h2>
               <p class="text-sm text-surface-500 dark:text-surface-400">Daily run counts and token consumption</p>
             </div>
           </div>
@@ -371,7 +371,7 @@ function statusBadgeClass(status: string): string {
         </div>
       </div>
 
-      <!-- ─── Model breakdown ─── -->
+      <!-- â”€â”€â”€ Model breakdown â”€â”€â”€ -->
       <div v-if="modelBreakdown.length > 0" class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden mb-6">
         <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
           <div class="flex items-center gap-3">
@@ -419,7 +419,7 @@ function statusBadgeClass(status: string): string {
         </div>
       </div>
 
-      <!-- ─── Recent runs ─── -->
+      <!-- â”€â”€â”€ Recent runs â”€â”€â”€ -->
       <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden">
         <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
           <div class="flex items-center gap-3">
@@ -487,7 +487,7 @@ function statusBadgeClass(status: string): string {
                   >
                     {{ run.compositeScore }}
                   </span>
-                  <span v-else class="text-surface-400">—</span>
+                  <span v-else class="text-surface-400">â€”</span>
                 </td>
                 <td class="px-4 py-3 hidden md:table-cell">
                   <code class="rounded bg-surface-100 px-1.5 py-0.5 text-[11px] font-mono text-surface-600 dark:bg-surface-800 dark:text-surface-400">{{ run.model }}</code>
@@ -496,11 +496,11 @@ function statusBadgeClass(status: string): string {
                   <span v-if="run.promptTokens != null">
                     {{ formatNumber((run.promptTokens ?? 0) + (run.completionTokens ?? 0)) }}
                   </span>
-                  <span v-else>—</span>
+                  <span v-else>â€”</span>
                 </td>
                 <td v-if="pricing.configured" class="px-4 py-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400 hidden md:table-cell">
                   <span v-if="run.promptTokens != null">{{ formatCostPrecise(calcCost(run.promptTokens ?? 0, run.completionTokens ?? 0)) }}</span>
-                  <span v-else>—</span>
+                  <span v-else>â€”</span>
                 </td>
                 <td class="px-4 py-3 text-right text-xs text-surface-500 dark:text-surface-400 whitespace-nowrap">
                   {{ formatDateTime(run.createdAt) }}
@@ -513,3 +513,4 @@ function statusBadgeClass(status: string): string {
     </template>
   </div>
 </template>
+

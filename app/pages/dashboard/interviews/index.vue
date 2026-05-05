@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Calendar, Clock, Search, X, ChevronDown, Video, Phone,
   Building2, Code2, FileText, UsersRound, MoreHorizontal,
@@ -13,7 +13,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Interviews — Reqcore',
+  title: 'Interviews â€” WWMate',
   description: 'Manage all scheduled interviews',
   robots: 'noindex, nofollow',
 })
@@ -22,7 +22,7 @@ const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 const toast = useToast()
 const { formatPersonName, formatDateTime } = useOrgSettings()
 
-// ─── Filters ──────────────────────────────────────────────────────
+// â”€â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const searchInput = ref('')
 const debouncedSearch = ref('')
 
@@ -45,7 +45,7 @@ const { interviews, total, status: fetchStatus, error, refresh, updateInterview,
   limit: 100,
 })
 
-// ─── Filtered + sorted ───────────────────────────────────────────
+// â”€â”€â”€ Filtered + sorted â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const filteredInterviews = computed(() => {
   let list = [...interviews.value]
 
@@ -78,7 +78,7 @@ const groupedByDate = computed(() => {
   return groups
 })
 
-// ─── Status styling ──────────────────────────────────────────────
+// â”€â”€â”€ Status styling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const statusConfig: Record<InterviewStatus, { label: string; icon: any; class: string; dot: string }> = {
   scheduled: {
     label: 'Scheduled',
@@ -161,7 +161,7 @@ function getCandidateInitials(firstName?: string, lastName?: string) {
   return `${first}${last}`.toUpperCase() || 'C'
 }
 
-// ─── Edit modal state ────────────────────────────────────────────
+// â”€â”€â”€ Edit modal state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showEditModal = ref(false)
 const editingInterview = ref<typeof interviews.value[number] | null>(null)
 const editForm = reactive({
@@ -233,7 +233,7 @@ async function handleSaveEdit() {
   }
 }
 
-// ─── Delete ──────────────────────────────────────────────────────
+// â”€â”€â”€ Delete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showDeleteConfirm = ref(false)
 const deletingInterview = ref<typeof interviews.value[number] | null>(null)
 const isDeleting = ref(false)
@@ -258,7 +258,7 @@ async function handleDelete() {
   }
 }
 
-// ─── Quick status change ─────────────────────────────────────────
+// â”€â”€â”€ Quick status change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { INTERVIEW_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 function getAllowedTransitions(status: string): InterviewStatus[] {
@@ -274,7 +274,7 @@ async function quickStatusChange(interviewItem: typeof interviews.value[number],
   }
 }
 
-// ─── More menu (per-row) ─────────────────────────────────────────
+// â”€â”€â”€ More menu (per-row) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const openMenuId = ref<string | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
 
@@ -291,7 +291,7 @@ function handleClickOutsideMenu(e: MouseEvent) {
 onMounted(() => document.addEventListener('click', handleClickOutsideMenu))
 onUnmounted(() => document.removeEventListener('click', handleClickOutsideMenu))
 
-// ─── Counts ──────────────────────────────────────────────────────
+// â”€â”€â”€ Counts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const statusCounts = computed(() => {
   const counts: Record<InterviewStatus, number> = { scheduled: 0, completed: 0, cancelled: 0, no_show: 0 }
   for (const i of interviews.value) {
@@ -328,7 +328,7 @@ const statusCounts = computed(() => {
         <input
           v-model="searchInput"
           type="text"
-          placeholder="Search interviews, candidates, jobs…"
+          placeholder="Search interviews, candidates, jobsâ€¦"
           class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 py-2 pl-10 pr-9 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-colors"
         />
         <button
@@ -492,7 +492,7 @@ const statusCounts = computed(() => {
                   </TimelineDateLink>
                   <span class="inline-flex items-center gap-1">
                     <Clock class="size-3.5" />
-                    {{ formatTime(interviewItem.scheduledAt) }} · {{ interviewItem.duration }}min
+                    {{ formatTime(interviewItem.scheduledAt) }} Â· {{ interviewItem.duration }}min
                   </span>
                   <span class="inline-flex items-center gap-1">
                     <component :is="typeIcons[interviewItem.type] || Video" class="size-3.5" />
@@ -795,7 +795,7 @@ const statusCounts = computed(() => {
                 id="edit-interview-location"
                 v-model="editForm.location"
                 type="text"
-                placeholder="Zoom link, office address…"
+                placeholder="Zoom link, office addressâ€¦"
                 class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
               />
             </div>
@@ -806,7 +806,7 @@ const statusCounts = computed(() => {
                 id="edit-interview-notes"
                 v-model="editForm.notes"
                 rows="3"
-                placeholder="Topics to cover…"
+                placeholder="Topics to coverâ€¦"
                 class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors resize-none"
               />
             </div>
@@ -824,7 +824,7 @@ const statusCounts = computed(() => {
                 :disabled="isSaving"
                 class="cursor-pointer rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {{ isSaving ? 'Saving…' : 'Save Changes' }}
+                {{ isSaving ? 'Savingâ€¦' : 'Save Changes' }}
               </button>
             </div>
           </form>
@@ -854,7 +854,7 @@ const statusCounts = computed(() => {
               class="cursor-pointer rounded-lg bg-danger-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="handleDelete"
             >
-              {{ isDeleting ? 'Deleting…' : 'Delete' }}
+              {{ isDeleting ? 'Deletingâ€¦' : 'Delete' }}
             </button>
           </div>
         </div>
@@ -862,3 +862,4 @@ const statusCounts = computed(() => {
     </Teleport>
   </div>
 </template>
+

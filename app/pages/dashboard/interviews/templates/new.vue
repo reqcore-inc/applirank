@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, Save, Eye, EyeOff, Mail, AlertCircle, FileText,
 } from 'lucide-vue-next'
@@ -9,7 +9,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'New Template — Email Templates — Reqcore',
+  title: 'New Template â€” Email Templates â€” WWMate',
   description: 'Create a new interview invitation email template',
   robots: 'noindex, nofollow',
 })
@@ -18,7 +18,7 @@ const localePath = useLocalePath()
 const { createTemplate } = useEmailTemplates()
 const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 
-// ─── Form state ──────────────────────────────────────────────────
+// â”€â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const form = reactive({
   name: '',
   subject: '',
@@ -35,14 +35,14 @@ const canSave = computed(() =>
   && form.body.trim().length > 0,
 )
 
-// ─── Preview ─────────────────────────────────────────────────────
+// â”€â”€â”€ Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const sampleVariables: Record<string, string> = {
   candidateName: 'Alex Johnson',
   candidateFirstName: 'Alex',
   candidateLastName: 'Johnson',
   candidateEmail: 'alex@example.com',
   jobTitle: 'Senior Frontend Engineer',
-  interviewTitle: 'Technical Interview — Round 2',
+  interviewTitle: 'Technical Interview â€” Round 2',
   interviewDate: 'Monday, March 16, 2026',
   interviewTime: '2:00 PM',
   interviewDuration: '60',
@@ -55,7 +55,7 @@ const sampleVariables: Record<string, string> = {
 const previewSubject = computed(() => renderTemplatePreview(form.subject, sampleVariables))
 const previewBody = computed(() => renderTemplatePreview(form.body, sampleVariables))
 
-// ─── Save ────────────────────────────────────────────────────────
+// â”€â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleCreate() {
   saveError.value = ''
   if (!canSave.value) {
@@ -120,7 +120,7 @@ async function handleCreate() {
           @click="handleCreate"
         >
           <Save class="size-4" />
-          {{ isSaving ? 'Creating…' : 'Create Template' }}
+          {{ isSaving ? 'Creatingâ€¦' : 'Create Template' }}
         </button>
       </div>
     </div>
@@ -171,7 +171,7 @@ async function handleCreate() {
             id="template-body"
             v-model="form.body"
             rows="18"
-            placeholder="Write your invitation email here. Use {{variables}} for dynamic content…"
+            placeholder="Write your invitation email here. Use {{variables}} for dynamic contentâ€¦"
             class="w-full rounded-lg border border-surface-200 dark:border-surface-700 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none font-mono text-[13px] leading-relaxed"
           />
         </div>
@@ -199,13 +199,13 @@ async function handleCreate() {
               <div>
                 <span class="text-[10px] uppercase tracking-wider font-semibold text-surface-400 block mb-1">Subject</span>
                 <p class="text-sm font-semibold text-surface-800 dark:text-surface-200">
-                  {{ previewSubject || 'Enter a subject line…' }}
+                  {{ previewSubject || 'Enter a subject lineâ€¦' }}
                 </p>
               </div>
               <div class="border-t border-surface-100 dark:border-surface-800 pt-4">
                 <span class="text-[10px] uppercase tracking-wider font-semibold text-surface-400 block mb-2">Body</span>
                 <div class="text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap leading-relaxed">
-                  {{ previewBody || 'Start writing to see a preview…' }}
+                  {{ previewBody || 'Start writing to see a previewâ€¦' }}
                 </div>
               </div>
             </div>
@@ -240,3 +240,4 @@ async function handleCreate() {
     </div>
   </div>
 </template>
+

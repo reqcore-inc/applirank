@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Building2, UserPlus, Loader2, AlertTriangle, Check } from 'lucide-vue-next'
 
 definePageMeta({
@@ -6,8 +6,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Accept Invitation — Reqcore',
-  description: 'Accept an organization invitation on Reqcore',
+  title: 'Accept Invitation â€” WWMate',
+  description: 'Accept an organization invitation on WWMate',
   robots: 'noindex, nofollow',
 })
 
@@ -16,9 +16,9 @@ const localePath = useLocalePath()
 
 const invitationId = computed(() => route.params.id as string)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // State
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isAccepting = ref(false)
 const error = ref('')
 const success = ref(false)
@@ -28,9 +28,9 @@ const joinedOrgName = ref('')
 const { data: session } = await authClient.useSession(useFetch)
 const isAuthenticated = computed(() => !!session.value?.user)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Auto-accept when authenticated
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleAccept() {
   if (!isAuthenticated.value || !invitationId.value) return
 
@@ -88,7 +88,7 @@ onMounted(() => {
     <div class="text-center">
       <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">You're in!</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">
-        Invitation accepted. Redirecting to dashboard…
+        Invitation accepted. Redirecting to dashboardâ€¦
       </p>
     </div>
   </div>
@@ -96,7 +96,7 @@ onMounted(() => {
   <!-- Accepting state (auto-accept in progress) -->
   <div v-else-if="isAccepting" class="flex flex-col items-center gap-3 py-8">
     <div class="size-6 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
-    <p class="text-sm text-surface-500 dark:text-surface-400">Accepting invitation…</p>
+    <p class="text-sm text-surface-500 dark:text-surface-400">Accepting invitationâ€¦</p>
   </div>
 
   <!-- Error state -->
@@ -124,7 +124,7 @@ onMounted(() => {
     </div>
   </div>
 
-  <!-- Not authenticated — prompt sign in/up -->
+  <!-- Not authenticated â€” prompt sign in/up -->
   <div v-else class="flex flex-col gap-5">
     <div class="text-center">
       <div class="flex items-center justify-center size-12 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 mx-auto mb-4">
@@ -132,7 +132,7 @@ onMounted(() => {
       </div>
       <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-1">Accept invitation</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">
-        You've been invited to join an organization on Reqcore.
+        You've been invited to join an organization on WWMate.
       </p>
     </div>
 
@@ -156,3 +156,4 @@ onMounted(() => {
     </div>
   </div>
 </template>
+

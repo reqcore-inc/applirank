@@ -1,4 +1,4 @@
-# Contributor Covenant Code of Conduct
+﻿# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
@@ -36,7 +36,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at security@reqcore.com.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at security@WWMate.com.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
@@ -76,3 +76,4 @@ This Code of Conduct is adapted from the [Contributor Covenant](https://www.cont
 Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder](https://github.com/mozilla/diversity).
 
 For answers to common questions about this code of conduct, see https://www.contributor-covenant.org/faq.
+

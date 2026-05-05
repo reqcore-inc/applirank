@@ -1,50 +1,51 @@
-{
+﻿{
   "common": {
-    "language": "Ngôn ngữ",
-    "selectLanguage": "Chọn ngôn ngữ",
-    "save": "Lưu",
-    "cancel": "Hủy"
+    "language": "NgÃ´n ngá»¯",
+    "selectLanguage": "Chá»n ngÃ´n ngá»¯",
+    "save": "LÆ°u",
+    "cancel": "Há»§y"
   },
   "home": {
     "nav": {
-      "features": "Tính năng",
-      "openPositions": "Vị trí tuyển dụng",
-      "roadmap": "Lộ trình",
+      "features": "TÃ­nh nÄƒng",
+      "openPositions": "Vá»‹ trÃ­ tuyá»ƒn dá»¥ng",
+      "roadmap": "Lá»™ trÃ¬nh",
       "blog": "Blog",
       "github": "GitHub",
-      "dashboard": "Bảng điều khiển",
-      "logIn": "Đăng nhập",
-      "signUp": "Đăng ký"
+      "dashboard": "Báº£ng Ä‘iá»u khiá»ƒn",
+      "logIn": "ÄÄƒng nháº­p",
+      "signUp": "ÄÄƒng kÃ½"
     },
-    "badge": "ATS mã nguồn mở cho đội ngũ phát triển",
+    "badge": "ATS mÃ£ nguá»“n má»Ÿ cho Ä‘á»™i ngÅ© phÃ¡t triá»ƒn",
     "hero": {
-      "titleLine1": "Tuyển dụng của bạn.",
-      "titleHighlight": "Hạ tầng của bạn.",
-      "subtitle": "Theo dõi ứng viên mã nguồn mở được xây dựng cho các đội tự vận hành.",
-      "goToDashboard": "Đi đến bảng điều khiển",
-      "signIn": "Đăng nhập",
-      "createAccount": "Tạo tài khoản",
-      "ctaDemo": "Thử demo trực tiếp",
-      "ctaStart": "Xem trên GitHub",
-      "hint": "Phiên bản mã nguồn mở sớm — thử demo với dữ liệu mẫu, không cần đăng ký"
+      "titleLine1": "Tuyá»ƒn dá»¥ng cá»§a báº¡n.",
+      "titleHighlight": "Háº¡ táº§ng cá»§a báº¡n.",
+      "subtitle": "Theo dÃµi á»©ng viÃªn mÃ£ nguá»“n má»Ÿ Ä‘Æ°á»£c xÃ¢y dá»±ng cho cÃ¡c Ä‘á»™i tá»± váº­n hÃ nh.",
+      "goToDashboard": "Äi Ä‘áº¿n báº£ng Ä‘iá»u khiá»ƒn",
+      "signIn": "ÄÄƒng nháº­p",
+      "createAccount": "Táº¡o tÃ i khoáº£n",
+      "ctaDemo": "Thá»­ demo trá»±c tiáº¿p",
+      "ctaStart": "Xem trÃªn GitHub",
+      "hint": "PhiÃªn báº£n mÃ£ nguá»“n má»Ÿ sá»›m â€” thá»­ demo vá»›i dá»¯ liá»‡u máº«u, khÃ´ng cáº§n Ä‘Äƒng kÃ½"
     },
     "pillars": {
       "yourData": {
-        "label": "Dữ liệu của bạn",
-        "desc": "Postgres + MinIO trên hạ tầng của bạn. Không có gì rời khỏi mạng của bạn."
+        "label": "Dá»¯ liá»‡u cá»§a báº¡n",
+        "desc": "Postgres + MinIO trÃªn háº¡ táº§ng cá»§a báº¡n. KhÃ´ng cÃ³ gÃ¬ rá»i khá»i máº¡ng cá»§a báº¡n."
       },
       "auditable": {
-        "label": "Kiểm toán hoàn toàn",
-        "desc": "Mã nguồn mở — mọi dòng logic matching đều có thể xem và tùy chỉnh."
+        "label": "Kiá»ƒm toÃ¡n hoÃ n toÃ n",
+        "desc": "MÃ£ nguá»“n má»Ÿ â€” má»i dÃ²ng logic matching Ä‘á»u cÃ³ thá»ƒ xem vÃ  tÃ¹y chá»‰nh."
       },
       "unlimitedSeats": {
-        "label": "Không giới hạn người dùng",
-        "desc": "Thêm toàn bộ đội tuyển dụng của bạn. Không tính phí theo người dùng, không bao giờ."
+        "label": "KhÃ´ng giá»›i háº¡n ngÆ°á»i dÃ¹ng",
+        "desc": "ThÃªm toÃ n bá»™ Ä‘á»™i tuyá»ƒn dá»¥ng cá»§a báº¡n. KhÃ´ng tÃ­nh phÃ­ theo ngÆ°á»i dÃ¹ng, khÃ´ng bao giá»."
       }
     },
     "footer": {
-      "source": "Mã nguồn",
-      "tagline": "Reqcore — theo dõi ứng viên mã nguồn mở"
+      "source": "MÃ£ nguá»“n",
+      "tagline": "WWMate â€” theo dÃµi á»©ng viÃªn mÃ£ nguá»“n má»Ÿ"
     }
   }
 }
+

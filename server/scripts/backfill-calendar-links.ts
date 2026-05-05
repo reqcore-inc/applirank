@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Backfills google_calendar_event_link for interviews that already have
  * a google_calendar_event_id but are missing the direct link.
  *
@@ -16,9 +16,9 @@ import { google } from 'googleapis'
 import { decrypt } from '../utils/encryption'
 import * as schema from '../database/schema'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Config
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const processWithLoadEnv = process as NodeJS.Process & {
   loadEnvFile?: (path?: string) => void
@@ -36,7 +36,7 @@ if (!connectionString) {
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET
-const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL || 'https://reqcore.com'
+const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL || 'https://WWMate.com'
 
 if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !BETTER_AUTH_SECRET) {
   console.error('ERROR: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and BETTER_AUTH_SECRET are required')
@@ -46,12 +46,12 @@ if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !BETTER_AUTH_SECRET) {
 const client = postgres(connectionString, { max: 1 })
 const db = drizzle(client, { schema })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function main() {
-  console.log('Fetching interviews missing google_calendar_event_link…')
+  console.log('Fetching interviews missing google_calendar_event_linkâ€¦')
 
   const interviews = await db
     .select({
@@ -114,7 +114,7 @@ async function main() {
     try {
       const cal = await getCalandarClientForUser(iv.createdById)
       if (!cal) {
-        console.warn(`  [SKIP] ${iv.id} — no calendar integration for user ${iv.createdById}`)
+        console.warn(`  [SKIP] ${iv.id} â€” no calendar integration for user ${iv.createdById}`)
         failed++
         continue
       }
@@ -133,7 +133,7 @@ async function main() {
 
       const htmlLink = response.data.htmlLink
       if (!htmlLink) {
-        console.warn(`  [SKIP] ${iv.id} — event had no htmlLink`)
+        console.warn(`  [SKIP] ${iv.id} â€” event had no htmlLink`)
         failed++
         continue
       }
@@ -142,11 +142,11 @@ async function main() {
         .set({ googleCalendarEventLink: htmlLink })
         .where(eq(schema.interview.id, iv.id))
 
-      console.log(`  [OK] ${iv.id} → ${htmlLink}`)
+      console.log(`  [OK] ${iv.id} â†’ ${htmlLink}`)
       updated++
     }
     catch (err: any) {
-      console.error(`  [ERROR] ${iv.id} — ${err?.message ?? err}`)
+      console.error(`  [ERROR] ${iv.id} â€” ${err?.message ?? err}`)
       failed++
     }
   }
@@ -157,3 +157,4 @@ async function main() {
 main()
   .catch(err => { console.error(err); process.exit(1) })
   .finally(() => client.end())
+

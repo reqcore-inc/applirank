@@ -1,8 +1,8 @@
-# Reqcore — System Architecture
+﻿# WWMate â€” System Architecture
 
 ## Overview
 
-Reqcore is a **Nuxt 4** full-stack application following a monolithic architecture with clear separation between client (`app/`) and server (`server/`) code. The system supports both **managed deployment** on Railway and **self-hosted deployment** via Docker Compose.
+WWMate is a **Nuxt 4** full-stack application following a monolithic architecture with clear separation between client (`app/`) and server (`server/`) code. The system supports both **managed deployment** on Railway and **self-hosted deployment** via Docker Compose.
 
 ## Technology Stack
 
@@ -26,131 +26,131 @@ Reqcore is a **Nuxt 4** full-stack application following a monolithic architectu
 ## Directory Structure
 
 ```
-reqcore/
-├── app/                          # Client source (Nuxt 4 srcDir)
-│   ├── app.vue                   # Root component
-│   ├── assets/
-│   │   └── css/main.css           # Tailwind CSS entry point + @theme tokens
-│   ├── components/               # Auto-imported Vue components
-│   │   └── AppSidebar.vue        # Main sidebar with dynamic job context nav
-│   ├── composables/              # Auto-imported composables (useXxx)
-│   ├── layouts/                  # Layout components
-│   │   ├── dashboard.vue         # Sidebar + full-width main (pages set own max-w + mx-auto)
-│   │   ├── auth.vue              # Centered card for sign-in/sign-up
-│   │   └── public.vue            # Simple header/footer for public pages
-│   ├── middleware/                # Client-side route middleware
-│   ├── pages/                    # File-based routing
-│   │   ├── index.vue             # Public landing page (dark theme)
-│   │   ├── roadmap.vue           # Public roadmap (horizontal timeline)
-│   │   ├── blog/
-│   │   │   ├── index.vue         # Blog listing (dark theme)
-│   │   │   └── [...slug].vue     # Blog article detail (dark theme, prose)
-│   │   ├── dashboard/
-│   │   │   └── jobs/
-│   │   │       └── [id]/
-│   │   │           ├── index.vue          # Job overview
-│   │   │           ├── pipeline.vue       # Kanban board (full width)
-│   │   │           ├── candidates.vue     # Data table with detail sidebar
-│   │   │           └── application-form.vue # Questions + shareable link
-│   ├── plugins/                  # Client-side Nuxt plugins
-│   └── utils/                    # Auto-imported utilities
-│       └── auth-client.ts        # Better Auth Vue client
-├── server/                       # Nitro server (at project root)
-│   ├── api/                      # API routes (/api/*)
-│   │   ├── auth/[...all].ts      # Better Auth catch-all
-│   │   ├── jobs/                 # Authenticated job CRUD + questions
-│   │   │   ├── [id].get.ts       # GET /api/jobs/:id
-│   │   │   └── [id]/questions/   # Custom question management
-│   │   ├── documents/                # Document access endpoints
-│   │   │   ├── [id].delete.ts        # DELETE /api/documents/:id
-│   │   │   └── [id]/
-│   │   │       ├── download.get.ts    # GET /api/documents/:id/download (server-proxied)
-│   │   │       └── preview.get.ts     # GET /api/documents/:id/preview (PDF streaming)
-│   │   └── public/jobs/          # Unauthenticated public job board
-│   │       ├── index.get.ts      # GET /api/public/jobs (list open jobs)
-│   │       ├── [slug].get.ts     # GET /api/public/jobs/:slug
-│   │       └── [slug]/
-│   │           └── apply.post.ts # POST /api/public/jobs/:slug/apply
-│   ├── database/
-│   │   ├── schema/               # Drizzle ORM table definitions
-│   │   │   ├── app.ts            # Domain tables (job, candidate, etc.)
-│   │   │   ├── auth.ts           # Better Auth tables (DO NOT MODIFY)
-│   │   │   └── index.ts          # Re-exports all schemas
-│   │   └── migrations/           # Generated SQL migrations
-│   ├── middleware/                # Global server middleware
-│   ├── plugins/
-│   │   ├── migrations.ts         # Auto-apply migrations on startup
-│   │   ├── posthog.ts            # PostHog server-side capture + filtered error hook
-│   │   └── s3-bucket.ts          # Ensure S3 bucket exists + enforce private policy
-│   └── utils/                    # Auto-imported server utilities
-│       ├── auth.ts               # Better Auth instance
-│       ├── db.ts                 # Drizzle client + connection pool
-│       ├── env.ts                # Zod-validated environment variables
-│       ├── requireAuth.ts        # Auth guard (throws 401/403)
-│       ├── s3.ts                 # S3/MinIO client, upload, delete, bucket policy
-│       ├── slugify.ts            # URL slug generation for public job pages
-│       ├── rateLimit.ts          # IP-based sliding window rate limiter (in-memory, single-instance)
-│       ├── pgDumpEnv.ts          # Allowlist of env vars passed to pg_dump (no secret leak)
-│       └── schemas/              # Shared Zod validation schemas
-│           ├── document.ts       # MIME types, file limits, sanitizeFilename()
-│           ├── job.ts            # Job create/update schemas
-│           ├── candidate.ts      # Candidate schemas
-│           └── application.ts    # Application schemas
-├── content/                      # Markdown content (@nuxt/content v3)
-│   └── blog/                     # Blog articles (*.md with YAML frontmatter)
-├── public/                       # Static assets
-├── docker-compose.yml            # Postgres + MinIO + Adminer
-├── drizzle.config.ts             # Drizzle Kit configuration
-├── content.config.ts             # Nuxt Content collection definitions
-├── nuxt.config.ts                # Nuxt configuration
-└── package.json                  # npm dependencies
+WWMate/
+â”œâ”€â”€ app/                          # Client source (Nuxt 4 srcDir)
+â”‚   â”œâ”€â”€ app.vue                   # Root component
+â”‚   â”œâ”€â”€ assets/
+â”‚   â”‚   â””â”€â”€ css/main.css           # Tailwind CSS entry point + @theme tokens
+â”‚   â”œâ”€â”€ components/               # Auto-imported Vue components
+â”‚   â”‚   â””â”€â”€ AppSidebar.vue        # Main sidebar with dynamic job context nav
+â”‚   â”œâ”€â”€ composables/              # Auto-imported composables (useXxx)
+â”‚   â”œâ”€â”€ layouts/                  # Layout components
+â”‚   â”‚   â”œâ”€â”€ dashboard.vue         # Sidebar + full-width main (pages set own max-w + mx-auto)
+â”‚   â”‚   â”œâ”€â”€ auth.vue              # Centered card for sign-in/sign-up
+â”‚   â”‚   â””â”€â”€ public.vue            # Simple header/footer for public pages
+â”‚   â”œâ”€â”€ middleware/                # Client-side route middleware
+â”‚   â”œâ”€â”€ pages/                    # File-based routing
+â”‚   â”‚   â”œâ”€â”€ index.vue             # Public landing page (dark theme)
+â”‚   â”‚   â”œâ”€â”€ roadmap.vue           # Public roadmap (horizontal timeline)
+â”‚   â”‚   â”œâ”€â”€ blog/
+â”‚   â”‚   â”‚   â”œâ”€â”€ index.vue         # Blog listing (dark theme)
+â”‚   â”‚   â”‚   â””â”€â”€ [...slug].vue     # Blog article detail (dark theme, prose)
+â”‚   â”‚   â”œâ”€â”€ dashboard/
+â”‚   â”‚   â”‚   â””â”€â”€ jobs/
+â”‚   â”‚   â”‚       â””â”€â”€ [id]/
+â”‚   â”‚   â”‚           â”œâ”€â”€ index.vue          # Job overview
+â”‚   â”‚   â”‚           â”œâ”€â”€ pipeline.vue       # Kanban board (full width)
+â”‚   â”‚   â”‚           â”œâ”€â”€ candidates.vue     # Data table with detail sidebar
+â”‚   â”‚   â”‚           â””â”€â”€ application-form.vue # Questions + shareable link
+â”‚   â”œâ”€â”€ plugins/                  # Client-side Nuxt plugins
+â”‚   â””â”€â”€ utils/                    # Auto-imported utilities
+â”‚       â””â”€â”€ auth-client.ts        # Better Auth Vue client
+â”œâ”€â”€ server/                       # Nitro server (at project root)
+â”‚   â”œâ”€â”€ api/                      # API routes (/api/*)
+â”‚   â”‚   â”œâ”€â”€ auth/[...all].ts      # Better Auth catch-all
+â”‚   â”‚   â”œâ”€â”€ jobs/                 # Authenticated job CRUD + questions
+â”‚   â”‚   â”‚   â”œâ”€â”€ [id].get.ts       # GET /api/jobs/:id
+â”‚   â”‚   â”‚   â””â”€â”€ [id]/questions/   # Custom question management
+â”‚   â”‚   â”œâ”€â”€ documents/                # Document access endpoints
+â”‚   â”‚   â”‚   â”œâ”€â”€ [id].delete.ts        # DELETE /api/documents/:id
+â”‚   â”‚   â”‚   â””â”€â”€ [id]/
+â”‚   â”‚   â”‚       â”œâ”€â”€ download.get.ts    # GET /api/documents/:id/download (server-proxied)
+â”‚   â”‚   â”‚       â””â”€â”€ preview.get.ts     # GET /api/documents/:id/preview (PDF streaming)
+â”‚   â”‚   â””â”€â”€ public/jobs/          # Unauthenticated public job board
+â”‚   â”‚       â”œâ”€â”€ index.get.ts      # GET /api/public/jobs (list open jobs)
+â”‚   â”‚       â”œâ”€â”€ [slug].get.ts     # GET /api/public/jobs/:slug
+â”‚   â”‚       â””â”€â”€ [slug]/
+â”‚   â”‚           â””â”€â”€ apply.post.ts # POST /api/public/jobs/:slug/apply
+â”‚   â”œâ”€â”€ database/
+â”‚   â”‚   â”œâ”€â”€ schema/               # Drizzle ORM table definitions
+â”‚   â”‚   â”‚   â”œâ”€â”€ app.ts            # Domain tables (job, candidate, etc.)
+â”‚   â”‚   â”‚   â”œâ”€â”€ auth.ts           # Better Auth tables (DO NOT MODIFY)
+â”‚   â”‚   â”‚   â””â”€â”€ index.ts          # Re-exports all schemas
+â”‚   â”‚   â””â”€â”€ migrations/           # Generated SQL migrations
+â”‚   â”œâ”€â”€ middleware/                # Global server middleware
+â”‚   â”œâ”€â”€ plugins/
+â”‚   â”‚   â”œâ”€â”€ migrations.ts         # Auto-apply migrations on startup
+â”‚   â”‚   â”œâ”€â”€ posthog.ts            # PostHog server-side capture + filtered error hook
+â”‚   â”‚   â””â”€â”€ s3-bucket.ts          # Ensure S3 bucket exists + enforce private policy
+â”‚   â””â”€â”€ utils/                    # Auto-imported server utilities
+â”‚       â”œâ”€â”€ auth.ts               # Better Auth instance
+â”‚       â”œâ”€â”€ db.ts                 # Drizzle client + connection pool
+â”‚       â”œâ”€â”€ env.ts                # Zod-validated environment variables
+â”‚       â”œâ”€â”€ requireAuth.ts        # Auth guard (throws 401/403)
+â”‚       â”œâ”€â”€ s3.ts                 # S3/MinIO client, upload, delete, bucket policy
+â”‚       â”œâ”€â”€ slugify.ts            # URL slug generation for public job pages
+â”‚       â”œâ”€â”€ rateLimit.ts          # IP-based sliding window rate limiter (in-memory, single-instance)
+â”‚       â”œâ”€â”€ pgDumpEnv.ts          # Allowlist of env vars passed to pg_dump (no secret leak)
+â”‚       â””â”€â”€ schemas/              # Shared Zod validation schemas
+â”‚           â”œâ”€â”€ document.ts       # MIME types, file limits, sanitizeFilename()
+â”‚           â”œâ”€â”€ job.ts            # Job create/update schemas
+â”‚           â”œâ”€â”€ candidate.ts      # Candidate schemas
+â”‚           â””â”€â”€ application.ts    # Application schemas
+â”œâ”€â”€ content/                      # Markdown content (@nuxt/content v3)
+â”‚   â””â”€â”€ blog/                     # Blog articles (*.md with YAML frontmatter)
+â”œâ”€â”€ public/                       # Static assets
+â”œâ”€â”€ docker-compose.yml            # Postgres + MinIO + Adminer
+â”œâ”€â”€ drizzle.config.ts             # Drizzle Kit configuration
+â”œâ”€â”€ content.config.ts             # Nuxt Content collection definitions
+â”œâ”€â”€ nuxt.config.ts                # Nuxt configuration
+â””â”€â”€ package.json                  # npm dependencies
 ```
 
 ## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Browser                           │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  Nuxt App (Vue 3 + SSR)                      │   │
-│  │  • Pages / Components / Composables          │   │
-│  │  • Better Auth Vue Client (authClient)       │   │
-│  │  • useFetch / $fetch → /api/*                │   │
-│  └──────────────────┬───────────────────────────┘   │
-└─────────────────────┼───────────────────────────────┘
-                      │ HTTPS
-┌─────────────────────┼───────────────────────────────┐
-│  Cloudflare CDN     │                                │
-│  • DNS (CNAME → Railway domain)                     │
-│  • DDoS protection, edge caching                    │
-│  • AI bot blocking                                  │
-└─────────────────────┼───────────────────────────────┘
-                      │ HTTPS
-┌─────────────────────┼───────────────────────────────┐
-│  Railway Project                                     │
-│  ┌──────────────────▼───────────────────────────┐   │
-│  │  Nuxt Service (auto-built from GitHub)        │   │
-│  │  Build: npm run build                         │   │
-│  │  Start: node .output/server/index.mjs         │   │
-│  │  PORT: $PORT (Railway-provided)               │   │
-│  └──────────┬───────────────────┬───────────────┘   │
-│             │ private network   │ S3 API             │
-│  ┌──────────▼──────┐   ┌───────▼────────────────┐   │
-│  │  PostgreSQL     │   │  Storage Bucket        │   │
-│  │  (Railway DB)   │   │  (S3-compatible)       │   │
-│  │  $DATABASE_URL  │   │  $S3_ENDPOINT          │   │
-│  └─────────────────┘   └────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                    Browser                           â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚
+â”‚  â”‚  Nuxt App (Vue 3 + SSR)                      â”‚   â”‚
+â”‚  â”‚  â€¢ Pages / Components / Composables          â”‚   â”‚
+â”‚  â”‚  â€¢ Better Auth Vue Client (authClient)       â”‚   â”‚
+â”‚  â”‚  â€¢ useFetch / $fetch â†’ /api/*                â”‚   â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                      â”‚ HTTPS
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Cloudflare CDN     â”‚                                â”‚
+â”‚  â€¢ DNS (CNAME â†’ Railway domain)                     â”‚
+â”‚  â€¢ DDoS protection, edge caching                    â”‚
+â”‚  â€¢ AI bot blocking                                  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                      â”‚ HTTPS
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Railway Project                                     â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚
+â”‚  â”‚  Nuxt Service (auto-built from GitHub)        â”‚   â”‚
+â”‚  â”‚  Build: npm run build                         â”‚   â”‚
+â”‚  â”‚  Start: node .output/server/index.mjs         â”‚   â”‚
+â”‚  â”‚  PORT: $PORT (Railway-provided)               â”‚   â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚
+â”‚             â”‚ private network   â”‚ S3 API             â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”‚
+â”‚  â”‚  PostgreSQL     â”‚   â”‚  Storage Bucket        â”‚   â”‚
+â”‚  â”‚  (Railway DB)   â”‚   â”‚  (S3-compatible)       â”‚   â”‚
+â”‚  â”‚  $DATABASE_URL  â”‚   â”‚  $S3_ENDPOINT          â”‚   â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ## Key Architectural Decisions
 
 ### 1. Multi-Tenancy via Organization Plugin
 
-Every domain table (`job`, `candidate`, `application`, `document`) has an `organizationId` foreign key. Tenant isolation is enforced at the **application layer** — every database query MUST include an `organizationId` filter derived from `session.session.activeOrganizationId`.
+Every domain table (`job`, `candidate`, `application`, `document`) has an `organizationId` foreign key. Tenant isolation is enforced at the **application layer** â€” every database query MUST include an `organizationId` filter derived from `session.session.activeOrganizationId`.
 
 ```
-Request → Auth Guard → Extract orgId from session → Scope all queries by orgId
+Request â†’ Auth Guard â†’ Extract orgId from session â†’ Scope all queries by orgId
 ```
 
 **The org ID NEVER comes from user input** (body, query, URL params). This is the #1 security invariant.
@@ -184,7 +184,7 @@ During server-side rendering, browser cookies are not automatically forwarded to
 
 Documents (resumes, cover letters) are stored in an S3-compatible object store (Railway Storage Buckets in production, MinIO for local development). Each document record in Postgres stores a `storageKey` (the S3 object key) while the actual file binary lives in the bucket. This separates metadata from blob storage.
 
-Document access is **always server-proxied** — both download and preview endpoints stream file bytes through the authenticated Nitro server. Presigned S3 URLs are never exposed to clients, preventing URL sharing or leakage of sensitive candidate data.
+Document access is **always server-proxied** â€” both download and preview endpoints stream file bytes through the authenticated Nitro server. Presigned S3 URLs are never exposed to clients, preventing URL sharing or leakage of sensitive candidate data.
 
 Key security measures:
 - **Private bucket policy**: Railway Buckets are private by default. For MinIO (local dev), any public bucket policy is deleted on every startup (`server/plugins/s3-bucket.ts`)
@@ -195,17 +195,17 @@ Key security measures:
 - **Preview restricted to PDF**: Only `application/pdf` files can be previewed inline; DOC/DOCX (which can contain macros) must be downloaded
 - **Cache headers**: `Cache-Control: private, no-store` on both download and preview
 - **X-Frame-Options**: Global `DENY` with `SAMEORIGIN` override for the preview endpoint only
-- **S3 path style**: Configurable via `S3_FORCE_PATH_STYLE` env var — `true` for MinIO (path-style URLs), `false` for Railway Buckets / AWS S3 (virtual-hosted-style URLs)
+- **S3 path style**: Configurable via `S3_FORCE_PATH_STYLE` env var â€” `true` for MinIO (path-style URLs), `false` for Railway Buckets / AWS S3 (virtual-hosted-style URLs)
 
 ## Data Model
 
 ```
 organization (Better Auth)
-├── job (draft → open → closed → archived)
-│   └── application (new → screening → interview → offer → hired/rejected)
-│       └── candidate
-│           └── document (resume, cover_letter — stored in S3-compatible bucket)
-└── member (user ↔ organization with role)
+â”œâ”€â”€ job (draft â†’ open â†’ closed â†’ archived)
+â”‚   â””â”€â”€ application (new â†’ screening â†’ interview â†’ offer â†’ hired/rejected)
+â”‚       â””â”€â”€ candidate
+â”‚           â””â”€â”€ document (resume, cover_letter â€” stored in S3-compatible bucket)
+â””â”€â”€ member (user â†” organization with role)
 ```
 
 All domain tables belong to exactly one organization. Candidates are deduplicated within each org by email (`uniqueIndex(organizationId, email)`).
@@ -220,11 +220,11 @@ When a page file `pages/[id].vue` and a directory `pages/[id]/` coexist, Nuxt tr
 
 ### 9. Public vs Authenticated Routes
 
-Public-facing endpoints live under `server/api/public/` and require no authentication. They only expose data for resources in an `open` state (e.g., jobs). Public pages live under `app/pages/jobs/` and use the `public` layout. The landing page (`app/pages/index.vue`), roadmap page (`app/pages/roadmap.vue`), and blog pages (`app/pages/blog/`) are also public — they use the dark theme with no layout.
+Public-facing endpoints live under `server/api/public/` and require no authentication. They only expose data for resources in an `open` state (e.g., jobs). Public pages live under `app/pages/jobs/` and use the `public` layout. The landing page (`app/pages/index.vue`), roadmap page (`app/pages/roadmap.vue`), and blog pages (`app/pages/blog/`) are also public â€” they use the dark theme with no layout.
 
 ### 10. SEO & Structured Data
 
-Reqcore uses `@nuxtjs/seo` for comprehensive search engine optimization:
+WWMate uses `@nuxtjs/seo` for comprehensive search engine optimization:
 
 | Feature | Implementation |
 |---------|---------------|
@@ -253,18 +253,18 @@ Blog articles are Markdown files in `content/blog/` powered by `@nuxt/content` v
 
 | Boundary | Enforcement |
 |----------|-------------|
-| Authentication | `requireAuth(event)` — throws 401 if no session |
-| Organization membership | Better Auth org plugin — users can only access orgs they belong to |
+| Authentication | `requireAuth(event)` â€” throws 401 if no session |
+| Organization membership | Better Auth org plugin â€” users can only access orgs they belong to |
 | Tenant data isolation | Every query includes `eq(table.organizationId, orgId)` |
 | Input validation | Zod v4 schemas via `readValidatedBody` / `getValidatedQuery` |
 | Rate limiting | `createRateLimiter()` on public endpoints (sliding window by IP) |
-| Document access | Server-proxied streaming — no presigned URLs exposed to clients |
+| Document access | Server-proxied streaming â€” no presigned URLs exposed to clients |
 | Document upload | MIME validation via magic bytes, filename sanitization, per-candidate limits |
 | Security headers | Global Nitro route rules: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `X-XSS-Protection`, `Permissions-Policy` |
 | Environment secrets | Validated at startup, never exposed to client |
 ## Deployment Architecture
 
-Reqcore runs on **Railway** with **Cloudflare** as CDN/DNS:
+WWMate runs on **Railway** with **Cloudflare** as CDN/DNS:
 
 | Component | Role |
 |-----------|------|
@@ -276,7 +276,7 @@ Reqcore runs on **Railway** with **Cloudflare** as CDN/DNS:
 ### Deploy Workflow
 
 ```bash
-# Push to main branch — Railway auto-builds and deploys
+# Push to main branch â€” Railway auto-builds and deploys
 git push origin main
 
 # Build: npm run build (detected from package.json)
@@ -297,7 +297,7 @@ Variables are configured in the Railway dashboard or via `railway variables`. Se
 | `S3_REGION` | `${{Bucket.REGION}}` |
 | `S3_FORCE_PATH_STYLE` | `false` |
 | `BETTER_AUTH_SECRET` | Manual (sealed) |
-| `BETTER_AUTH_URL` | Production: `https://reqcore.com` · PR/preview: `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
+| `BETTER_AUTH_URL` | Production: `https://WWMate.com` Â· PR/preview: `https://${{RAILWAY_PUBLIC_DOMAIN}}` |
 
 For zero manual PR setup, define `BETTER_AUTH_URL` as `https://${{RAILWAY_PUBLIC_DOMAIN}}` in your Railway preview/PR environment (or shared variables scoped to previews).
 ## Local Development Services
@@ -309,3 +309,4 @@ For zero manual PR setup, define `BETTER_AUTH_URL` as `https://${{RAILWAY_PUBLIC
 | MinIO Console | http://localhost:9001 | Storage GUI |
 | MinIO S3 API | http://localhost:9000 | S3 endpoint |
 | PostgreSQL | localhost:5432 | Database |
+

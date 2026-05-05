@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Briefcase, Plus, Bell,
   Kanban, FileText, LogOut, Table2,
@@ -58,9 +58,9 @@ async function handleSignOut() {
   await navigateTo(localePath('/auth/sign-in'))
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Dynamic job context
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const activeJobId = computed(() => {
   const baseName = getRouteBaseName(route)
@@ -120,9 +120,9 @@ const jobTabs = computed(() => {
   ]
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main navigation
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const mainNav: Array<{ label: string; to: string; icon: typeof Briefcase; exact: boolean; comingSoon?: boolean }> = [
   { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, exact: true },
@@ -175,9 +175,9 @@ watch(() => route.path, () => {
   showGetStartedMenu.value = false
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // New Job button
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const newJobResetSignal = useState('new-job-reset-signal', () => 0)
 
@@ -215,13 +215,13 @@ onUnmounted(() => {
       <div class="flex h-14 items-center justify-between px-4 lg:px-6">
         <!-- Left: Logo + Nav -->
         <div class="flex items-center gap-1 lg:gap-2">
-          <!-- Logo — links to marketing site (reqcore.com), not app root -->
+          <!-- Logo â€” links to marketing site (WWMate.com), not app root -->
           <a
             :href="useRuntimeConfig().public.marketingUrl"
             class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg no-underline hover:bg-surface-100/60 dark:hover:bg-surface-800/60 transition-colors mr-1 lg:mr-4"
           >
-            <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="size-7 shrink-0 object-contain" />
-            <span class="text-[15px] font-bold text-surface-900 dark:text-surface-100 hidden sm:block tracking-tight">Reqcore</span>
+            <img src="/eagle-mascot-logo.png" alt="WWMate mascot" class="size-7 shrink-0 object-contain" />
+            <span class="text-[15px] font-bold text-surface-900 dark:text-surface-100 hidden sm:block tracking-tight">WWMate</span>
           </a>
 
           <!-- Desktop nav links -->
@@ -331,11 +331,11 @@ onUnmounted(() => {
                     </div>
                     <div>
                       <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover/item:text-brand-700 dark:group-hover/item:text-brand-300 transition-colors">Cloud Hosted</div>
-                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Start free in seconds — we handle hosting, updates &amp; backups</div>
+                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Start free in seconds â€” we handle hosting, updates &amp; backups</div>
                     </div>
                   </NuxtLink>
                   <a
-                    href="https://github.com/reqcore-inc/reqcore#quick-start"
+                    href="https://github.com/WWMate-inc/WWMate#quick-start"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-50 dark:hover:bg-surface-800/60 no-underline group/item"
@@ -345,7 +345,7 @@ onUnmounted(() => {
                     </div>
                     <div>
                       <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover/item:text-surface-700 dark:group-hover/item:text-surface-200 transition-colors">Self-Host</div>
-                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Deploy on your own infrastructure — full control, 100% free</div>
+                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Deploy on your own infrastructure â€” full control, 100% free</div>
                     </div>
                   </a>
                 </div>
@@ -500,7 +500,7 @@ onUnmounted(() => {
                     @click="handleSignOut"
                   >
                     <LogOut class="size-4" />
-                    {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
+                    {{ isSigningOut ? 'Signing outâ€¦' : 'Sign out' }}
                   </button>
                 </div>
               </div>
@@ -626,16 +626,16 @@ onUnmounted(() => {
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950/60 transition-colors no-underline"
               >
                 <Cloud class="size-4" />
-                Cloud Hosted — Start Free
+                Cloud Hosted â€” Start Free
               </NuxtLink>
               <a
-                href="https://github.com/reqcore-inc/reqcore#quick-start"
+                href="https://github.com/WWMate-inc/WWMate#quick-start"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors no-underline mt-1"
               >
                 <Server class="size-4" />
-                Self-Host — Deploy Free
+                Self-Host â€” Deploy Free
               </a>
             </div>
           </template>
@@ -652,3 +652,4 @@ onUnmounted(() => {
   <!-- Feedback modal -->
   <FeedbackModal v-if="showFeedbackModal" @close="showFeedbackModal = false" />
 </template>
+

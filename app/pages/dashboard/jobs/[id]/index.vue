@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, ArrowRight, Briefcase, Calendar, Clock, Hash, UserRound, Mail, MessageSquare,
   FileText, Paperclip, Download, Eye, Phone, Search, ExternalLink,
@@ -24,15 +24,15 @@ const { track } = useTrack()
 const toast = useToast()
 const { formatPersonName } = useOrgSettings()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Job data (with update/delete support)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { job: jobData, status: jobFetchStatus, error: jobError } = useJob(jobId)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Applications data
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const {
   data: appData,
@@ -63,9 +63,9 @@ const focusedApplications = computed(() =>
 // Search within the focused list
 const searchTerm = ref('')
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Filters & Sorting
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortOption = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc' | 'score-desc' | 'score-asc' | 'updated-desc'
 type ScoreFilter = 'all' | 'high' | 'medium' | 'low' | 'none'
@@ -318,9 +318,9 @@ const showSection = computed(() => ({
   timeline: detailTab.value === 'timeline',
 }))
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Timeline
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface TimelineEntry {
   id: string
@@ -401,7 +401,7 @@ function describeTimelineItem(item: TimelineEntry): string {
 
   if (item.action === 'scored' && item.metadata) {
     const score = item.metadata.score
-    if (score != null) return `${actor} scored ${resource} — ${score} pts`
+    if (score != null) return `${actor} scored ${resource} â€” ${score} pts`
   }
 
   return `${actor} ${action.toLowerCase()} ${resource}`
@@ -530,14 +530,14 @@ watch([detailTab, timelineCandidateId], () => {
 
 useSeoMeta({
   title: computed(() =>
-    jobData.value ? `Pipeline — ${jobData.value.title} — Reqcore` : 'Pipeline — Reqcore',
+    jobData.value ? `Pipeline â€” ${jobData.value.title} â€” WWMate` : 'Pipeline â€” WWMate',
   ),
   robots: 'noindex, nofollow',
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Application status transitions
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const statusBadgeClasses: Record<string, string> = {
   new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
@@ -573,7 +573,7 @@ function formatStatusLabel(status: string) {
 function formatResponseValue(value: unknown): string {
   if (Array.isArray(value)) return value.join(', ')
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  return String(value ?? '—')
+  return String(value ?? 'â€”')
 }
 
 function formatDocumentType(value: SwipeDocument['type']) {
@@ -635,9 +635,9 @@ function selectCandidate(index: number) {
 
 const isMutating = ref(false)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Interview scheduling sidebar
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showInterviewSidebar = ref(false)
 const interviewTargetApplication = ref<{ id: string; name: string } | null>(null)
@@ -678,9 +678,9 @@ async function handleInterviewScheduled() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Interviews for this job
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { data: jobInterviewsData, refresh: refreshJobInterviews } = useFetch<{ data: Interview[] }>('/api/interviews', {
   key: `pipeline-job-interviews-${jobId}`,
@@ -746,9 +746,9 @@ function isInterviewUpcoming(dateStr: string) {
   return new Date(dateStr) > new Date()
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Interview inline editing
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type InterviewStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show'
 
@@ -944,7 +944,7 @@ async function changeStatus(status: string) {
 
     // After the moved candidate disappears from the list, the items that came after
     // it shift up by one index. currentIndex now naturally points to the next
-    // candidate — no change needed. We only clamp if currentIndex is now out of
+    // candidate â€” no change needed. We only clamp if currentIndex is now out of
     // bounds (i.e. the moved candidate was the last item in the filtered list).
     const newLen = filteredApplications.value.length
     if (newLen > 0 && currentIndex.value >= newLen) {
@@ -968,9 +968,9 @@ function goToNextCard() {
   currentIndex.value += 1
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fullscreen (focus) mode
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isFullscreen = ref(false)
 const pipelineContainer = useTemplateRef<HTMLElement>('pipelineContainer')
 const teleportTarget = computed(() => isFullscreen.value && pipelineContainer.value ? pipelineContainer.value : 'body')
@@ -1061,9 +1061,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyNavigation)
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Job status transitions (Publish, Close, etc.)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const jobStatusBadgeClasses: Record<string, string> = {
   draft: 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400',
@@ -1115,9 +1115,9 @@ const isLoading = computed(() => {
   return jobFetchStatus.value === 'pending' || appFetchStatus.value === 'pending'
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Document preview
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { getPreviewUrl } = useDocuments()
 
@@ -1162,7 +1162,7 @@ function closeDocPreview() {
     <!-- Loading -->
     <div v-if="isLoading" class="flex flex-1 flex-col items-center justify-center gap-3">
       <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
-      <p class="text-sm font-medium text-surface-400 dark:text-surface-500">Loading pipeline…</p>
+      <p class="text-sm font-medium text-surface-400 dark:text-surface-500">Loading pipelineâ€¦</p>
     </div>
 
     <!-- Error -->
@@ -1182,11 +1182,11 @@ function closeDocPreview() {
       <Teleport to="#job-sub-nav-actions">
         <div class="hidden sm:flex items-center gap-2 text-[10px] font-medium text-surface-400 dark:text-surface-500">
           <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
-            <span class="font-mono text-[10px]">↑↓</span>
+            <span class="font-mono text-[10px]">â†‘â†“</span>
             <span>candidates</span>
           </div>
           <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
-            <span class="font-mono text-[10px]">←→</span>
+            <span class="font-mono text-[10px]">â†â†’</span>
             <span>stages</span>
           </div>
           <div class="flex items-center gap-1 rounded-md bg-surface-100/80 px-2 py-0.5 dark:bg-surface-800/60">
@@ -1196,9 +1196,9 @@ function closeDocPreview() {
         </div>
       </Teleport>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- PIPELINE STATUS TABS                     -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div class="shrink-0 border-b border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900">
         <div class="flex items-center gap-1 overflow-x-auto scrollbar-thin sm:scrollbar-none px-3 sm:px-5 py-2">
           <button
@@ -1241,12 +1241,12 @@ function closeDocPreview() {
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- THREE-PANEL LAYOUT                       -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div class="flex flex-1 min-h-0 overflow-hidden">
 
-        <!-- LEFT PANEL — Candidate list (desktop only; mobile uses bottom bar) -->
+        <!-- LEFT PANEL â€” Candidate list (desktop only; mobile uses bottom bar) -->
         <div
           class="hidden md:flex md:w-72 md:shrink-0 flex-col border-r border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900"
         >
@@ -1258,7 +1258,7 @@ function closeDocPreview() {
               <input
                 v-model="searchTerm"
                 type="text"
-                placeholder="Search candidates…"
+                placeholder="Search candidatesâ€¦"
                 class="w-full rounded-lg border border-surface-200/80 bg-surface-50/80 py-2 pl-8 pr-3 text-sm text-surface-900 placeholder:text-surface-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-surface-700/80 dark:bg-surface-800/60 dark:text-surface-100 dark:placeholder:text-surface-500 dark:focus:border-brand-500 dark:focus:ring-brand-500/20 transition-all duration-150"
                 @focus="closePanels"
               />
@@ -1478,7 +1478,7 @@ function closeDocPreview() {
           </div>
         </div>
 
-        <!-- CENTER PANEL — Candidate detail -->
+        <!-- CENTER PANEL â€” Candidate detail -->
         <div
           class="flex flex-1 flex-col overflow-hidden"
         >
@@ -1583,14 +1583,14 @@ function closeDocPreview() {
                       >
                         <Loader2 v-if="isScoringIndividual" class="size-3 animate-spin" />
                         <Brain v-else class="size-3" />
-                        {{ isScoringIndividual ? 'Scoring…' : (currentSummary.score != null ? 'Re-score' : 'Score Candidate') }}
+                        {{ isScoringIndividual ? 'Scoringâ€¦' : (currentSummary.score != null ? 'Re-score' : 'Score Candidate') }}
                       </button>
                       <TimelineDateLink :date="currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
                         <Clock class="size-3" />
                         Applied {{ new Date(currentSummary.createdAt).toLocaleDateString() }}
                       </TimelineDateLink>
                       <span v-if="currentSummary.updatedAt !== currentSummary.createdAt" class="inline-flex items-center gap-1 text-[11px] text-surface-400 dark:text-surface-500">
-                        · <TimelineDateLink :date="currentSummary.updatedAt">Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}</TimelineDateLink>
+                        Â· <TimelineDateLink :date="currentSummary.updatedAt">Updated {{ new Date(currentSummary.updatedAt).toLocaleDateString() }}</TimelineDateLink>
                       </span>
                     </div>
                   </div>
@@ -1770,7 +1770,7 @@ function closeDocPreview() {
             <div class="bg-surface-50/80 dark:bg-surface-950/80 px-4 sm:px-6 py-5 sm:py-8">
               <div v-if="detailFetchStatus === 'pending' && !resolvedCurrentApplication" class="flex flex-col items-center justify-center py-12">
                 <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
-                <p class="mt-3 text-sm text-surface-400">Loading details…</p>
+                <p class="mt-3 text-sm text-surface-400">Loading detailsâ€¦</p>
               </div>
 
               <template v-else>
@@ -1852,7 +1852,7 @@ function closeDocPreview() {
                             {{ iv.title }}
                           </p>
                           <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                            <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTime(iv.scheduledAt) }}</TimelineDateLink> · {{ iv.duration }} min · {{ interviewTypeLabels[iv.type] ?? iv.type }}
+                            <TimelineDateLink :date="iv.scheduledAt">{{ formatInterviewDateTime(iv.scheduledAt) }}</TimelineDateLink> Â· {{ iv.duration }} min Â· {{ interviewTypeLabels[iv.type] ?? iv.type }}
                           </p>
                           <div v-if="iv.googleCalendarEventId" class="mt-1">
                             <a
@@ -1958,7 +1958,7 @@ function closeDocPreview() {
                             class="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             @click.stop="handleReschedule"
                           >
-                            {{ isRescheduling ? 'Saving…' : 'Reschedule' }}
+                            {{ isRescheduling ? 'Savingâ€¦' : 'Reschedule' }}
                           </button>
                         </div>
                       </div>
@@ -2084,7 +2084,7 @@ function closeDocPreview() {
                               <input
                                 v-model="interviewEditForm.location"
                                 type="text"
-                                placeholder="Zoom link, office address…"
+                                placeholder="Zoom link, office addressâ€¦"
                                 class="w-full rounded-lg border border-surface-200 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-colors"
                                 @click.stop
                               />
@@ -2095,7 +2095,7 @@ function closeDocPreview() {
                               <textarea
                                 v-model="interviewEditForm.notes"
                                 rows="3"
-                                placeholder="Interview notes…"
+                                placeholder="Interview notesâ€¦"
                                 class="w-full rounded-lg border border-surface-200 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 transition-colors"
                                 @click.stop
                               />
@@ -2144,7 +2144,7 @@ function closeDocPreview() {
                                 class="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 @click.stop="saveInterviewEdit"
                               >
-                                {{ isInterviewSaving ? 'Saving…' : 'Save Changes' }}
+                                {{ isInterviewSaving ? 'Savingâ€¦' : 'Save Changes' }}
                               </button>
                             </div>
                           </div>
@@ -2192,7 +2192,7 @@ function closeDocPreview() {
                           {{ doc.originalFilename }}
                         </p>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                          {{ formatDocumentType(doc.type) }} · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
+                          {{ formatDocumentType(doc.type) }} Â· <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
                         </p>
                       </div>
                     </div>
@@ -2282,7 +2282,7 @@ function closeDocPreview() {
                 <!-- Loading -->
                 <div v-if="timelineLoading" class="text-center py-12 text-surface-400">
                   <div class="size-6 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin mx-auto mb-3" />
-                  Loading timeline…
+                  Loading timelineâ€¦
                 </div>
 
                 <!-- Error -->
@@ -2368,9 +2368,9 @@ function closeDocPreview() {
 
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- MOBILE BOTTOM CANDIDATE BAR              -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div
         v-if="filteredApplications.length > 0"
         class="md:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-surface-200/80 bg-white dark:border-surface-800/60 dark:bg-surface-900"
@@ -2440,9 +2440,9 @@ function closeDocPreview() {
       </div>
     </template>
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- MODALS                                   -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 
     <!-- Interview Schedule Sidebar -->
     <InterviewScheduleSidebar
@@ -2511,3 +2511,4 @@ function closeDocPreview() {
     </Teleport>
   </div>
 </template>
+

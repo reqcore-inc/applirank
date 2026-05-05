@@ -1,16 +1,16 @@
-/**
+﻿/**
  * AES-256-GCM encryption for sensitive data at rest (OAuth tokens, API keys).
  *
  * Uses HKDF-SHA-256 to derive a 256-bit encryption key from the application
- * secret with a fixed info label ("reqcore-aes-256-gcm-v1"). This ensures the
+ * secret with a fixed info label ("WWMate-aes-256-gcm-v1"). This ensures the
  * AES key is cryptographically distinct from the raw BETTER_AUTH_SECRET used
- * by Better Auth for session signing — re-using the same key across different
+ * by Better Auth for session signing â€” re-using the same key across different
  * primitives weakens both.
  *
  * Each encryption produces a unique random IV (12 bytes) and auth tag (16 bytes).
  * Format: base64(iv + authTag + ciphertext)
  *
- * ── Key migration ─────────────────────────────────────────────────────────
+ * â”€â”€ Key migration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Prior to this version, deriveKey() used SHA-256(secret) directly.
  * The new HKDF derivation produces a different key, so `decrypt()` tries the
  * new key first and falls back to the legacy SHA-256 key transparently.
@@ -31,7 +31,7 @@ const AUTH_TAG_LENGTH = 16
  */
 function deriveKey(secret: string): Buffer {
   return Buffer.from(
-    hkdfSync('sha256', secret, '', 'reqcore-aes-256-gcm-v1', 32),
+    hkdfSync('sha256', secret, '', 'WWMate-aes-256-gcm-v1', 32),
   )
 }
 
@@ -83,7 +83,7 @@ export function decrypt(encryptedBase64: string, secret: string): string | null 
   const legacy = _decryptWithKey(encryptedBase64, deriveKeyLegacy(secret))
   if (legacy !== null) {
     // Log so operators can track migration progress and eventually retire this path.
-    console.warn('[encryption] Decrypted with legacy SHA-256 key — value should be re-encrypted with the current HKDF key.')
+    console.warn('[encryption] Decrypted with legacy SHA-256 key â€” value should be re-encrypted with the current HKDF key.')
   }
   return legacy
 }
@@ -114,3 +114,4 @@ function _decryptWithKey(encryptedBase64: string, key: Buffer): string | null {
     return null
   }
 }
+

@@ -1,6 +1,6 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
- * Settings → AI → New
+ * Settings â†’ AI â†’ New
  *
  * Full-page form for adding a new AI configuration. Replaces the old modal
  * for a calmer, less dense experience.
@@ -10,7 +10,7 @@ import { Loader2, AlertTriangle } from 'lucide-vue-next'
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Add AI model — Reqcore',
+  title: 'Add AI model â€” WWMate',
   description: 'Connect a new AI provider and model.',
 })
 
@@ -96,3 +96,4 @@ function onCancel() {
     />
   </div>
 </template>
+

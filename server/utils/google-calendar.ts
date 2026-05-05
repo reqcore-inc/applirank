@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Google Calendar integration utility.
  *
  * Handles OAuth2 flow, token management, event CRUD, and webhook setup
@@ -9,9 +9,9 @@ import { eq, and } from 'drizzle-orm'
 import { encrypt, decrypt } from './encryption'
 import { calendarIntegration, interview } from '../database/schema'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // OAuth2 Client
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Check if Google Calendar integration is configured.
@@ -40,7 +40,7 @@ function createOAuth2Client(redirectUri: string) {
 function getRedirectUri(): string {
   const baseUrl = env.BETTER_AUTH_URL
     || (env.RAILWAY_PUBLIC_DOMAIN ? `https://${env.RAILWAY_PUBLIC_DOMAIN}` : '')
-    || 'https://reqcore.com'
+    || 'https://WWMate.com'
   return `${baseUrl}/api/calendar/google/callback`
 }
 
@@ -74,7 +74,7 @@ export async function exchangeCodeForTokens(code: string): Promise<{
   const { tokens } = await oauth2Client.getToken(code)
 
   if (!tokens.access_token || !tokens.refresh_token) {
-    throw new Error('Failed to obtain OAuth tokens — ensure consent prompt is shown')
+    throw new Error('Failed to obtain OAuth tokens â€” ensure consent prompt is shown')
   }
 
   // Fetch the connected Google account email
@@ -86,7 +86,7 @@ export async function exchangeCodeForTokens(code: string): Promise<{
     email = userInfo.data.email ?? null
   }
   catch {
-    // Non-critical — email is for display only
+    // Non-critical â€” email is for display only
   }
 
   return {
@@ -96,9 +96,9 @@ export async function exchangeCodeForTokens(code: string): Promise<{
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Token Management
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Get an authenticated Google Calendar client for a user.
@@ -215,7 +215,7 @@ export async function removeCalendarIntegration(userId: string): Promise<void> {
       }
     }
     catch (err) {
-      // Non-critical — channel may have already expired
+      // Non-critical â€” channel may have already expired
       logWarn('calendar.webhook_channel_stop_failed', {
         posthog_distinct_id: userId,
         error_message: err instanceof Error ? err.message : String(err),
@@ -226,9 +226,9 @@ export async function removeCalendarIntegration(userId: string): Promise<void> {
   await db.delete(calendarIntegration).where(eq(calendarIntegration.userId, userId))
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Calendar Event CRUD
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -448,9 +448,9 @@ export async function cancelCalendarEvent(
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Webhook (Push Notifications) for Two-Way Sync
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Set up a Google Calendar webhook to receive push notifications
@@ -478,13 +478,13 @@ export async function setupCalendarWebhook(userId: string): Promise<boolean> {
       })
     }
     catch {
-      // Ignore — may have already expired
+      // Ignore â€” may have already expired
     }
   }
 
   const baseUrl = env.BETTER_AUTH_URL
     || (env.RAILWAY_PUBLIC_DOMAIN ? `https://${env.RAILWAY_PUBLIC_DOMAIN}` : '')
-    || 'https://reqcore.com'
+    || 'https://WWMate.com'
 
   const channelId = crypto.randomUUID()
   const calendarId = integration.calendarId || 'primary'
@@ -560,7 +560,7 @@ export async function performIncrementalSync(userId: string): Promise<void> {
         params.syncToken = integration.syncToken
       }
       else if (!integration.syncToken && !pageToken) {
-        // First sync — only look at future events
+        // First sync â€” only look at future events
         params.timeMin = new Date().toISOString()
       }
 
@@ -584,7 +584,7 @@ export async function performIncrementalSync(userId: string): Promise<void> {
               .where(eq(calendarIntegration.userId, userId))
             return performIncrementalSync(userId)
           }
-          // Already cleared syncToken but still getting 410 — bail out
+          // Already cleared syncToken but still getting 410 â€” bail out
           logError('calendar.persistent_410_error', {
             posthog_distinct_id: userId,
           })
@@ -678,6 +678,7 @@ async function syncEventAttendeeStatus(event: calendar_v3.Schema$Event): Promise
 
   console.info(
     `[Calendar] Synced candidate response for interview ${interviewRecord.id}: ` +
-    `${interviewRecord.candidateResponse} → ${newStatus}`,
+    `${interviewRecord.candidateResponse} â†’ ${newStatus}`,
   )
 }
+

@@ -1,5 +1,5 @@
-name: Feature request
-description: Propose an improvement to Reqcore
+﻿name: Feature request
+description: Propose an improvement to WWMate
 labels:
   - enhancement
 body:
@@ -21,7 +21,7 @@ body:
     id: solution
     attributes:
       label: Proposed solution
-      description: What should Reqcore do?
+      description: What should WWMate do?
       placeholder: Add a ... page / API / workflow that ...
     validations:
       required: true
@@ -46,5 +46,6 @@ body:
       options:
         - label: I searched existing issues and did not find a duplicate.
           required: true
-        - label: This request aligns with Reqcore's ownership/transparency/privacy direction.
+        - label: This request aligns with WWMate's ownership/transparency/privacy direction.
           required: false
+

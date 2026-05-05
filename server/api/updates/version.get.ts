@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+﻿import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
 /**
@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
     'utf-8',
   ).then(JSON.parse) as { version: string }
 
-  const owner = 'reqcore-inc'
-  const repo = 'reqcore'
+  const owner = 'WWMate-inc'
+  const repo = 'WWMate'
 
   try {
     const response = await fetch(
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': `Reqcore/${currentVersion}`,
+          'User-Agent': `WWMate/${currentVersion}`,
         },
         signal: AbortSignal.timeout(10_000),
       },
@@ -89,3 +89,4 @@ function isNewerVersion(current: string, latest: string): boolean {
   }
   return false
 }
+

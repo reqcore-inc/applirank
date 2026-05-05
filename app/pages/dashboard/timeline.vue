@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Clock, Briefcase, Users, User, FileText, Calendar,
   Plus, Trash2, Edit3, UserPlus, UserMinus,
@@ -16,7 +16,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Timeline — Reqcore',
+  title: 'Timeline â€” WWMate',
   description: 'Full activity timeline for your organization',
 })
 
@@ -35,9 +35,9 @@ const {
   loadMore,
 } = useTimeline()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Search
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const searchQuery = ref('')
 
@@ -137,9 +137,9 @@ onMounted(async () => {
   }
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Filters
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const filters = [
   { key: undefined, label: 'All activity', icon: History },
@@ -153,9 +153,9 @@ async function setFilter(type?: string) {
   await loadInitial(type)
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Collapsible state
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const collapsedSections = reactive(new Set<string>())
 
@@ -168,9 +168,9 @@ function sectionKey(date: string, section: { jobId?: string, type: string }) {
   return `${date}::${section.jobId ?? section.type}`
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Infinite scroll
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const scrollSentinel = useTemplateRef<HTMLElement>('scrollSentinel')
 
@@ -188,9 +188,9 @@ onMounted(() => {
   onUnmounted(() => observer.disconnect())
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Scroll to today
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const todayRef = ref<HTMLElement | null>(null)
 
@@ -198,9 +198,9 @@ function scrollToToday() {
   todayRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Action / resource styling helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface ActionStyle {
   icon: typeof Plus
@@ -330,8 +330,8 @@ function getStatusChangeDescription(metadata: Record<string, unknown> | null): s
   if (!metadata) return null
   const from = metadata.fromStatus ?? metadata.from
   const to = metadata.toStatus ?? metadata.to
-  if (from && to) return `${from} → ${to}`
-  if (to) return `→ ${to}`
+  if (from && to) return `${from} â†’ ${to}`
+  if (to) return `â†’ ${to}`
   return null
 }
 
@@ -388,7 +388,7 @@ function getEventDescription(item: TimelineItem): string {
 
 <template>
   <div class="mx-auto max-w-4xl">
-    <!-- ─── Page header ─── -->
+    <!-- â”€â”€â”€ Page header â”€â”€â”€ -->
     <div class="mb-6">
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -437,7 +437,7 @@ function getEventDescription(item: TimelineItem): string {
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search by name, date, or keyword…"
+            placeholder="Search by name, date, or keywordâ€¦"
             class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-8 pr-8 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-400 dark:focus:border-brand-600 transition-colors"
           />
           <button
@@ -451,7 +451,7 @@ function getEventDescription(item: TimelineItem): string {
       </div>
     </div>
 
-    <!-- ─── Loading skeleton ─── -->
+    <!-- â”€â”€â”€ Loading skeleton â”€â”€â”€ -->
     <div v-if="isLoading" class="space-y-4">
       <div v-for="i in 3" :key="i">
         <div class="h-4 w-28 bg-surface-200 dark:bg-surface-700 rounded animate-pulse mb-2" />
@@ -469,7 +469,7 @@ function getEventDescription(item: TimelineItem): string {
       </div>
     </div>
 
-    <!-- ─── Error state ─── -->
+    <!-- â”€â”€â”€ Error state â”€â”€â”€ -->
     <div
       v-else-if="error"
       class="rounded-lg border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950/60 p-4 text-sm text-danger-700 dark:text-danger-400 flex items-center gap-3"
@@ -481,7 +481,7 @@ function getEventDescription(item: TimelineItem): string {
       </button>
     </div>
 
-    <!-- ─── Empty state ─── -->
+    <!-- â”€â”€â”€ Empty state â”€â”€â”€ -->
     <div
       v-else-if="dayGroups.length === 0"
       class="flex flex-col items-center justify-center py-20"
@@ -506,14 +506,14 @@ function getEventDescription(item: TimelineItem): string {
       </div>
     </div>
 
-    <!-- ─── No search results ─── -->
+    <!-- â”€â”€â”€ No search results â”€â”€â”€ -->
     <div
       v-else-if="filteredDayGroups.length === 0 && searchQuery.trim()"
       class="flex flex-col items-center justify-center py-16"
     >
       <Search class="size-8 text-surface-300 dark:text-surface-600 mb-3" />
       <p class="text-sm font-medium text-surface-500 dark:text-surface-400">
-        No results for “{{ searchQuery.trim() }}”
+        No results for â€œ{{ searchQuery.trim() }}â€
       </p>
       <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">
         Try searching by name, date, or keyword
@@ -526,7 +526,7 @@ function getEventDescription(item: TimelineItem): string {
       </button>
     </div>
 
-    <!-- ─── Timeline ─── -->
+    <!-- â”€â”€â”€ Timeline â”€â”€â”€ -->
     <div v-else class="relative">
       <!-- Vertical timeline line -->
       <div class="absolute left-3.5 top-0 bottom-0 w-px bg-surface-200 dark:bg-surface-800" />
@@ -582,7 +582,7 @@ function getEventDescription(item: TimelineItem): string {
                 {{ formatFullDate(group.date) }}
               </span>
               <span class="text-[11px] text-surface-400 dark:text-surface-500 tabular-nums">
-                · {{ group.items.length }}
+                Â· {{ group.items.length }}
               </span>
             </div>
           </div>
@@ -716,7 +716,7 @@ function getEventDescription(item: TimelineItem): string {
       <div ref="scrollSentinel" class="relative mt-6">
         <div v-if="isLoadingMore" class="flex items-center justify-center gap-2 py-6 text-xs text-surface-500 dark:text-surface-400">
           <Loader2 class="size-3.5 animate-spin" />
-          Loading more…
+          Loading moreâ€¦
         </div>
         <div v-else-if="hasMore" class="flex justify-center py-4">
           <button
@@ -735,3 +735,4 @@ function getEventDescription(item: TimelineItem): string {
     </div>
   </div>
 </template>
+

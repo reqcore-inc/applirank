@@ -1,6 +1,6 @@
-# Contributing to Reqcore
+﻿# Contributing to WWMate
 
-Thanks for contributing to Reqcore.
+Thanks for contributing to WWMate.
 
 ## Before You Start
 
@@ -11,8 +11,8 @@ Thanks for contributing to Reqcore.
 ## Development Setup
 
 ```bash
-git clone https://github.com/reqcore-inc/reqcore.git
-cd reqcore
+git clone https://github.com/WWMate-inc/WWMate.git
+cd WWMate
 cp .env.example .env
 docker compose up -d
 npm install
@@ -28,7 +28,7 @@ npm run dev
 
 ### DCO Sign-off (Required)
 
-Reqcore uses the Developer Certificate of Origin (DCO) instead of a CLA.
+WWMate uses the Developer Certificate of Origin (DCO) instead of a CLA.
 
 Sign every commit with:
 
@@ -65,3 +65,4 @@ If your changes affect behavior, architecture, or roadmap status, update:
 ## Code of Conduct
 
 By participating, you agree to follow [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+

@@ -1,21 +1,21 @@
-import type { H3Event } from 'h3'
+﻿import type { H3Event } from 'h3'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // In-memory sliding window rate limiter
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // Warn loudly at startup when the process appears to be running as one of
 // several replicas. Each replica holds its own in-memory state, so the
-// effective limit seen by any single client is maxRequests × replicaCount.
+// effective limit seen by any single client is maxRequests Ã— replicaCount.
 // Under horizontal scaling, terminate rate limiting at the edge instead:
 // Cloudflare WAF, Caddy `rate_limit`, nginx `limit_req`, or a Redis-backed
-// limiter. See SELF-HOSTING.md → "Scaling horizontally".
+// limiter. See SELF-HOSTING.md â†’ "Scaling horizontally".
 const _replicaCount = Number(process.env.RAILWAY_REPLICA_COUNT ?? 0)
 if (_replicaCount > 1) {
   console.warn(
     `[rateLimit] WARNING: RAILWAY_REPLICA_COUNT=${_replicaCount}. `
-    + 'The in-memory rate limiter is NOT shared across replicas — effective limits are '
-    + `${_replicaCount}× higher than configured. Move rate limiting to the edge.`,
+    + 'The in-memory rate limiter is NOT shared across replicas â€” effective limits are '
+    + `${_replicaCount}Ã— higher than configured. Move rate limiting to the edge.`,
   )
 }
 
@@ -39,17 +39,17 @@ interface RateLimitEntry {
 /**
  * Create a reusable rate limiter scoped by client IP.
  *
- * Uses a sliding window algorithm — each request records a timestamp,
+ * Uses a sliding window algorithm â€” each request records a timestamp,
  * and only timestamps within the current window are counted.
  *
  * State is per-process and per-limiter: each call to createRateLimiter()
  * builds its own Map, so two limiters never share buckets even when their
  * window/max are identical.
  *
- * Reqcore is designed as a single-instance self-hosted app (Docker Compose
+ * WWMate is designed as a single-instance self-hosted app (Docker Compose
  * on one VPS). If you need to run multiple replicas behind a load balancer,
- * terminate rate limiting at the edge instead — Cloudflare WAF, Caddy
- * `rate_limit`, or nginx `limit_req`. See SELF-HOSTING.md → "Scaling
+ * terminate rate limiting at the edge instead â€” Cloudflare WAF, Caddy
+ * `rate_limit`, or nginx `limit_req`. See SELF-HOSTING.md â†’ "Scaling
  * horizontally" for the rationale.
  *
  * @example
@@ -139,7 +139,7 @@ function getClientIp(event: H3Event): string {
   if (trustedProxy) {
     const socketIp = getRequestIP(event)
     if (socketIp === trustedProxy) {
-      // Request came from the trusted proxy — read the forwarded header
+      // Request came from the trusted proxy â€” read the forwarded header
       const forwarded = getHeader(event, 'x-forwarded-for')
       if (forwarded) {
         const firstIp = forwarded.split(',')[0]?.trim()
@@ -154,3 +154,4 @@ function getClientIp(event: H3Event): string {
   // Default: use the socket remote address (cannot be spoofed)
   return getRequestIP(event) ?? '0.0.0.0'
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Server-side check: is the current session a demo account?
  *
  * Used by the fresh-signup page to reliably detect demo sessions
@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
     return { hasSession: false, isDemo: false }
   }
 
-  const demoEmail = (useRuntimeConfig().public.liveDemoEmail as string) || 'demo@reqcore.com'
+  const demoEmail = (useRuntimeConfig().public.liveDemoEmail as string) || 'demo@WWMate.com'
 
   return { hasSession: true, isDemo: session.user.email === demoEmail }
 })
+

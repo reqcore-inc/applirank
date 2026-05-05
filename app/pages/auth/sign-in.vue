@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ShieldCheck } from "lucide-vue-next";
 
 definePageMeta({
@@ -7,8 +7,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-    title: "Sign In — Reqcore",
-    description: "Sign in to your Reqcore account",
+    title: "Sign In â€” WWMate",
+    description: "Sign in to your WWMate account",
     robots: "noindex, nofollow",
 });
 
@@ -109,7 +109,7 @@ async function handleSignIn() {
 }
 
 /**
- * Self-hosted OIDC SSO — global provider configured via env vars.
+ * Self-hosted OIDC SSO â€” global provider configured via env vars.
  */
 async function handleSelfHostedSso() {
     isLoading.value = true;
@@ -133,7 +133,7 @@ async function handleSelfHostedSso() {
 }
 
 /**
- * Enterprise SSO — per-organization provider routing by email domain.
+ * Enterprise SSO â€” per-organization provider routing by email domain.
  * Uses Better Auth's SSO plugin: signIn.sso({ email, callbackURL })
  */
 async function handleEnterpriseSso() {
@@ -176,7 +176,7 @@ async function handleEnterpriseSso() {
 }
 
 /**
- * Social sign-in — Google, GitHub, Microsoft.
+ * Social sign-in â€” Google, GitHub, Microsoft.
  * Uses better-auth's built-in signIn.social() which handles the full OAuth redirect flow.
  */
 async function handleSocialSignIn(providerId: string) {
@@ -229,7 +229,7 @@ async function handleSocialSignIn(providerId: string) {
                 >
                     <template v-if="socialLoading === provider.id">
                         <svg class="animate-spin size-4 text-surface-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                        Redirecting…
+                        Redirectingâ€¦
                     </template>
                     <template v-else>
                         <!-- Google icon -->
@@ -265,7 +265,7 @@ async function handleSocialSignIn(providerId: string) {
             </div>
         </template>
 
-        <!-- Self-hosted OIDC SSO — only shown when global OIDC is configured via environment variables -->
+        <!-- Self-hosted OIDC SSO â€” only shown when global OIDC is configured via environment variables -->
         <template v-if="oidcEnabled">
             <button
                 type="button"
@@ -273,7 +273,7 @@ async function handleSocialSignIn(providerId: string) {
                 class="px-4 py-2.5 bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-lg text-sm font-semibold shadow-md cursor-pointer hover:bg-surface-800 dark:hover:bg-surface-100 disabled:opacity-60 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 ring-1 ring-surface-700 dark:ring-surface-300"
                 @click="handleSelfHostedSso"
             >
-                <template v-if="isLoading">Redirecting…</template>
+                <template v-if="isLoading">Redirectingâ€¦</template>
                 <template v-else>
                     <ShieldCheck class="size-4" />
                     Sign in with {{ oidcProviderName }}
@@ -336,10 +336,10 @@ async function handleSocialSignIn(providerId: string) {
             :disabled="isLoading"
             class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-            {{ isLoading ? "Signing in…" : "Sign in" }}
+            {{ isLoading ? "Signing inâ€¦" : "Sign in" }}
         </button>
 
-        <!-- Enterprise SSO button — always available on cloud, uses per-org providers -->
+        <!-- Enterprise SSO button â€” always available on cloud, uses per-org providers -->
         <template v-if="!oidcEnabled">
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
@@ -362,7 +362,7 @@ async function handleSocialSignIn(providerId: string) {
                 @click="handleEnterpriseSso"
             >
                 <ShieldCheck class="size-4" />
-                {{ ssoRedirecting ? "Redirecting to your IdP…" : "Sign in with SSO" }}
+                {{ ssoRedirecting ? "Redirecting to your IdPâ€¦" : "Sign in with SSO" }}
                 <span v-if="!ssoRedirecting" class="inline-flex items-center rounded-full bg-white/15 dark:bg-surface-900/15 px-1.5 py-0.5 text-[10px] font-medium text-white/80 dark:text-surface-900/80 ring-1 ring-white/20 dark:ring-surface-900/20">Beta</span>
             </button>
         </template>
@@ -384,3 +384,4 @@ async function handleSocialSignIn(providerId: string) {
         </p>
     </form>
 </template>
+

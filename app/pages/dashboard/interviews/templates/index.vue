@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, Plus, Mail, Trash2, Sparkles, Lock,
   FileText, ChevronRight,
@@ -10,7 +10,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Email Templates — Reqcore',
+  title: 'Email Templates â€” WWMate',
   description: 'Manage interview invitation email templates',
   robots: 'noindex, nofollow',
 })
@@ -137,7 +137,7 @@ async function handleDelete() {
       <!-- Loading state -->
       <div v-if="fetchStatus === 'pending'" class="flex items-center gap-3 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-8 justify-center">
         <div class="size-5 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
-        <span class="text-sm text-surface-400">Loading templates…</span>
+        <span class="text-sm text-surface-400">Loading templatesâ€¦</span>
       </div>
 
       <!-- Empty state -->
@@ -236,7 +236,7 @@ async function handleDelete() {
                 class="flex-1 cursor-pointer rounded-xl bg-danger-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 @click="handleDelete"
               >
-                {{ deletingId ? 'Deleting…' : 'Delete' }}
+                {{ deletingId ? 'Deletingâ€¦' : 'Delete' }}
               </button>
             </div>
           </div>
@@ -245,3 +245,4 @@ async function handleDelete() {
     </Teleport>
   </div>
 </template>
+

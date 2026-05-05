@@ -1,4 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+﻿// https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
 import { readEnvFlagOverrides } from "./shared/feature-flags";
 
@@ -6,21 +6,21 @@ const railwayEnvironmentName =
   process.env.RAILWAY_ENVIRONMENT_NAME?.toLowerCase() ?? "";
 const railwayPublicDomain =
   process.env.RAILWAY_PUBLIC_DOMAIN?.toLowerCase() ?? "";
-const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || "https://reqcore.com";
+const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || "https://WWMate.com";
 const i18nDefaultLocale = "en";
 const i18nLocales = [
   { code: "en", language: "en-US", name: "English", file: "en.json" },
   {
     code: "es",
     language: "es-ES",
-    name: "Español",
+    name: "EspaÃ±ol",
     file: "es.json",
     partial: true,
   },
   {
     code: "fr",
     language: "fr-FR",
-    name: "Français",
+    name: "FranÃ§ais",
     file: "fr.json",
     partial: true,
   },
@@ -31,11 +31,11 @@ const i18nLocales = [
     file: "de.json",
     partial: true,
   },
-  { code: "nb", language: "nb-NO", name: "Norsk Bokmål", file: "nb.json" },
+  { code: "nb", language: "nb-NO", name: "Norsk BokmÃ¥l", file: "nb.json" },
   {
     code: "vi",
     language: "vi-VN",
-    name: "Tiếng Việt",
+    name: "Tiáº¿ng Viá»‡t",
     file: "vi.json",
     partial: true,
   },
@@ -88,9 +88,9 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/main.css"],
 
-  // ─────────────────────────────────────────────
-  // PostHog — privacy-focused product analytics & feature flags
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // PostHog â€” privacy-focused product analytics & feature flags
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Enable source maps so PostHog error tracking can display readable stack traces
   sourcemap: { client: "hidden" },
 
@@ -99,34 +99,34 @@ export default defineNuxtConfig({
     publicKey: process.env.POSTHOG_PUBLIC_KEY || "",
     host: process.env.POSTHOG_HOST || "https://eu.i.posthog.com",
     clientConfig: {
-      // ── Reverse proxy: route PostHog through reqcore.com to bypass ad blockers ──
+      // â”€â”€ Reverse proxy: route PostHog through WWMate.com to bypass ad blockers â”€â”€
       // Requests to /ingest/** are proxied by Nitro to eu.i.posthog.com
       api_host: "/ingest",
       ui_host: "https://eu.posthog.com",
-      // ── Privacy: disable invasive features ──
+      // â”€â”€ Privacy: disable invasive features â”€â”€
       autocapture: false,
       disable_session_recording: true,
       enable_recording_console_log: false,
       disable_surveys: true,
       capture_pageview: true,
       capture_pageleave: true,
-      // ── Error tracking: capture unhandled errors and rejections ──
+      // â”€â”€ Error tracking: capture unhandled errors and rejections â”€â”€
       capture_exceptions: {
         capture_unhandled_errors: true,
         capture_unhandled_rejections: true,
         capture_console_errors: false,
       },
-      // ── Cookieless tracking — default for visitors who haven't accepted ──
+      // â”€â”€ Cookieless tracking â€” default for visitors who haven't accepted â”€â”€
       // `persistence: 'sessionStorage'` keeps the distinct_id in the tab's
       // sessionStorage only.  Nothing is written to cookies or persistent
-      // localStorage, and the id is wiped when the tab closes — there is no
+      // localStorage, and the id is wiped when the tab closes â€” there is no
       // cross-session tracking and no cross-site identifier (sessionStorage
       // is per-origin, per-tab).
       //
       // We deliberately avoid `persistence: 'memory'` here: with memory
       // persistence every page navigation regenerates the distinct_id,
-      // which silently shatters any multi-page funnel (signup → onboarding
-      // → dashboard → jobs) for unconsented users — every step is attributed
+      // which silently shatters any multi-page funnel (signup â†’ onboarding
+      // â†’ dashboard â†’ jobs) for unconsented users â€” every step is attributed
       // to a different anonymous person, so funnel conversion appears as 0.
       //
       // `person_profiles: 'identified_only'` means anonymous visitors flow as
@@ -136,7 +136,7 @@ export default defineNuxtConfig({
       // without persistently tracking anonymous visitors across sessions.
       persistence: "sessionStorage",
       person_profiles: "identified_only",
-      // ── GDPR: drop IP address from events ──
+      // â”€â”€ GDPR: drop IP address from events â”€â”€
       // PostHog uses $ip server-side for GeoIP, but we do not need it for the
       // SaaS analytics use case.  Denylisting it minimises personal data sent.
       property_denylist: ["$ip", "$initial_ip"],
@@ -157,18 +157,18 @@ export default defineNuxtConfig({
     langDir: "locales",
     detectBrowserLanguage: {
       useCookie: true,
-      cookieKey: "reqcore_i18n_redirected",
+      cookieKey: "WWMate_i18n_redirected",
       redirectOn: "root",
     },
     vueI18n: "./i18n.config.ts",
   },
 
-  // ─────────────────────────────────────────────
-  // Global <head> — lang, title template, favicon
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Global <head> â€” lang, title template, favicon
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   app: {
     head: {
-      titleTemplate: "%s — Reqcore",
+      titleTemplate: "%s â€” WWMate",
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -187,34 +187,34 @@ export default defineNuxtConfig({
       ],
       // Dark-mode init script is injected in app/app.vue via useHead() with
       // the per-request nonce so it is allowed by the nonce-based CSP.
-      // Plausible removed — PostHog handles all analytics
+      // Plausible removed â€” PostHog handles all analytics
     },
   },
 
   runtimeConfig: {
     public: {
-      /** Base URL of the marketing site (reqcore-web) for cross-domain links */
+      /** Base URL of the marketing site (WWMate-web) for cross-domain links */
       marketingUrl:
-        process.env.NUXT_PUBLIC_MARKETING_URL || "https://reqcore.com",
-      /** Cookie domain for cross-subdomain sharing (e.g. '.reqcore.com') */
+        process.env.NUXT_PUBLIC_MARKETING_URL || "https://WWMate.com",
+      /** Cookie domain for cross-subdomain sharing (e.g. '.WWMate.com') */
       cookieDomain: process.env.NUXT_PUBLIC_COOKIE_DOMAIN || "",
       // PostHog runtimeConfig is managed by @posthog/nuxt via posthogConfig above.
       // Override at runtime with NUXT_PUBLIC_POSTHOG_PUBLIC_KEY / NUXT_PUBLIC_POSTHOG_HOST.
       /** When set, the dashboard shows a read-only demo banner for this org slug */
       demoOrgSlug:
-        process.env.DEMO_ORG_SLUG || (isRailwayPreview ? "reqcore-demo" : ""),
+        process.env.DEMO_ORG_SLUG || (isRailwayPreview ? "WWMate-demo" : ""),
       /** Public live-demo account email used to prefill sign-in */
       liveDemoEmail: (() => {
         const email =
           process.env.LIVE_DEMO_EMAIL ||
           process.env.DEMO_EMAIL ||
-          "demo@reqcore.com";
+          "demo@WWMate.com";
         // Guard against stale applirank.com domain from old env vars
         if (email.endsWith("@applirank.com")) {
           console.warn(
-            "[config] Stale demo email detected (applirank.com domain) — falling back to demo@reqcore.com",
+            "[config] Stale demo email detected (applirank.com domain) â€” falling back to demo@WWMate.com",
           );
-          return "demo@reqcore.com";
+          return "demo@WWMate.com";
         }
         return email;
       })(),
@@ -240,7 +240,7 @@ export default defineNuxtConfig({
        */
       // Cast: Nuxt narrows public runtime config from the registry's literal
       // `defaultValue` types (boolean here), but env overrides can also be
-      // multivariate strings — and entries are partial. The override map is
+      // multivariate strings â€” and entries are partial. The override map is
       // validated at runtime by `parseFlagOverride`, so the cast is safe.
       featureFlagOverrides: readEnvFlagOverrides() as Record<
         string,
@@ -253,11 +253,11 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  // ─────────────────────────────────────────────
-  // Route rules — ISR for public job pages
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Route rules â€” ISR for public job pages
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   routeRules: {
-    // ── PostHog reverse proxy ──
+    // â”€â”€ PostHog reverse proxy â”€â”€
     // Handled by server/routes/ingest/[...path].ts (which routes /ingest/static/**
     // to eu-assets.i.posthog.com and everything else to eu.i.posthog.com).
     // Defining routeRules here would be shadowed by the server route, so we
@@ -278,14 +278,14 @@ export default defineNuxtConfig({
           "Strict-Transport-Security":
             "max-age=63072000; includeSubDomains; preload",
           // Content-Security-Policy is set dynamically with a per-request
-          // nonce in server/middleware/csp.ts — do NOT add a static CSP here
+          // nonce in server/middleware/csp.ts â€” do NOT add a static CSP here
           // as it would override the nonce and break the XSS protection.
           // Block indexing for all non-public routes by default;
           // overridden below for /jobs/** which should be indexable.
           "X-Robots-Tag": "noindex, nofollow",
         },
       },
-      // Public job board pages — allow indexing
+      // Public job board pages â€” allow indexing
       "/jobs/**": {
         headers: {
           "X-Robots-Tag": "index, follow",
@@ -296,7 +296,7 @@ export default defineNuxtConfig({
           "X-Robots-Tag": "index, follow",
         },
       },
-      // Localized job board pages — allow indexing
+      // Localized job board pages â€” allow indexing
       ...localizedJobsRobotsRules,
       // Allow same-origin framing for inline PDF preview in the sidebar iframe
       "/api/documents/*/preview": {
@@ -309,3 +309,4 @@ export default defineNuxtConfig({
     },
   },
 });
+

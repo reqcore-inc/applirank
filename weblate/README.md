@@ -1,4 +1,4 @@
-# Weblate — Translation Management for Reqcore
+﻿# Weblate â€” Translation Management for WWMate
 
 This directory contains everything needed to deploy a self-hosted
 [Weblate](https://weblate.org/) instance on **Railway** (or any Docker host)
@@ -22,38 +22,38 @@ so that community translators can contribute without touching the codebase direc
 ## How it works
 
 ```
-┌────────────────────────────┐
-│  Developer adds/edits      │
-│  i18n/locales/en.json      │
-│  (English source strings)  │
-└────────────┬───────────────┘
-             │  push to main
-             ▼
-┌────────────────────────────┐
-│  GitHub repo               │
-│  reqcore-inc/reqcore        │
-│  branch: main              │
-└────────────┬───────────────┘
-             │  Weblate pulls changes
-             ▼
-┌────────────────────────────┐
-│  Weblate instance          │
-│  translate.reqcore.com     │
-│                            │
-│  Translators work here     │
-│  via a web UI — no Git     │
-│  knowledge required        │
-└────────────┬───────────────┘
-             │  Weblate opens a PR
-             ▼
-┌────────────────────────────┐
-│  GitHub PR                 │
-│  i18n/locales/vi.json      │
-│  i18n/locales/nb.json      │
-│                            │
-│  Maintainer reviews &      │
-│  merges the PR             │
-└────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Developer adds/edits      â”‚
+â”‚  i18n/locales/en.json      â”‚
+â”‚  (English source strings)  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+             â”‚  push to main
+             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  GitHub repo               â”‚
+â”‚  WWMate-inc/WWMate        â”‚
+â”‚  branch: main              â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+             â”‚  Weblate pulls changes
+             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Weblate instance          â”‚
+â”‚  translate.WWMate.com     â”‚
+â”‚                            â”‚
+â”‚  Translators work here     â”‚
+â”‚  via a web UI â€” no Git     â”‚
+â”‚  knowledge required        â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+             â”‚  Weblate opens a PR
+             â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  GitHub PR                 â”‚
+â”‚  i18n/locales/vi.json      â”‚
+â”‚  i18n/locales/nb.json      â”‚
+â”‚                            â”‚
+â”‚  Maintainer reviews &      â”‚
+â”‚  merges the PR             â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 **In short:** developers maintain English strings in `en.json`. Weblate detects
@@ -65,8 +65,8 @@ requests with the finished translations. Translators never need to touch Git.
 | Code | Language | Status |
 |------|----------|--------|
 | `en` | English | Source language (maintained by developers) |
-| `vi` | Vietnamese (Tiếng Việt) | Community translation |
-| `nb` | Norwegian Bokmål | Community translation |
+| `vi` | Vietnamese (Tiáº¿ng Viá»‡t) | Community translation |
+| `nb` | Norwegian BokmÃ¥l | Community translation |
 
 ---
 
@@ -80,37 +80,37 @@ You need **one** of the following depending on your deployment target:
 | Local (development) | [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) v2+ |
 
 For GitHub integration (both targets):
-- A **GitHub Personal Access Token (PAT)** with `repo` scope — [create one here](https://github.com/settings/tokens/new?scopes=repo&description=Weblate+Reqcore)
+- A **GitHub Personal Access Token (PAT)** with `repo` scope â€” [create one here](https://github.com/settings/tokens/new?scopes=repo&description=Weblate+WWMate)
 - Or the [Weblate GitHub App](https://docs.weblate.org/en/latest/admin/continuous.html#github-setup) installed on the repo (recommended for production)
 
 ---
 
 ## Option A: Deploy on Railway (production)
 
-> Deploy Weblate as a **separate Railway project** from the main Reqcore app.
+> Deploy Weblate as a **separate Railway project** from the main WWMate app.
 > Weblate has its own database, Redis, and resource needs.
 
 ### Step 1: Create the Railway project
 
 1. Go to [railway.com/new](https://railway.com/new) and click **Empty project**
-2. Name it something like `reqcore-weblate`
+2. Name it something like `WWMate-weblate`
 
 ### Step 2: Add PostgreSQL
 
-1. Inside the project, click **+ New** → **Database** → **Add PostgreSQL**
+1. Inside the project, click **+ New** â†’ **Database** â†’ **Add PostgreSQL**
 2. Railway provisions it automatically. Note the internal connection variables
    (you'll reference them in Step 4)
 
 ### Step 3: Add Redis
 
-1. Click **+ New** → **Database** → **Add Redis**
-2. Same as above — Railway handles provisioning
+1. Click **+ New** â†’ **Database** â†’ **Add Redis**
+2. Same as above â€” Railway handles provisioning
 
 ### Step 4: Add the Weblate service
 
-1. Click **+ New** → **Docker Image**
+1. Click **+ New** â†’ **Docker Image**
 2. Enter the image: `weblate/weblate:5.17`
-3. Under **Settings** → **Networking**, set the port to `8080`
+3. Under **Settings** â†’ **Networking**, set the port to `8080`
 4. Go to the **Variables** tab and add the variables below
 
 #### Required environment variables
@@ -118,41 +118,41 @@ For GitHub integration (both targets):
 Copy these into the Variables tab. Replace `<placeholders>` with real values.
 
 ```env
-# ─── Weblate core ───────────────────────────────────
-WEBLATE_SITE_TITLE=Reqcore Translations
+# â”€â”€â”€ Weblate core â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+WEBLATE_SITE_TITLE=WWMate Translations
 WEBLATE_SITE_DOMAIN=<your-railway-domain-or-custom-domain>
-WEBLATE_ADMIN_EMAIL=admin@reqcore.com
+WEBLATE_ADMIN_EMAIL=admin@WWMate.com
 WEBLATE_ADMIN_PASSWORD=<choose-a-strong-password>
 
-# ─── Database ──────────────────────────────────────
+# â”€â”€â”€ Database â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Use Railway's reference variables to auto-fill these:
 #   ${{Postgres.PGHOST}}, ${{Postgres.PGPORT}}, etc.
 # Or paste the raw values from the PostgreSQL service's
-# "Connect" tab → "Variables" section.
+# "Connect" tab â†’ "Variables" section.
 POSTGRES_HOST=${{Postgres.PGHOST}}
 POSTGRES_PORT=${{Postgres.PGPORT}}
 POSTGRES_DATABASE=${{Postgres.PGDATABASE}}
 POSTGRES_USER=${{Postgres.PGUSER}}
 POSTGRES_PASSWORD=${{Postgres.PGPASSWORD}}
 
-# ─── Redis ─────────────────────────────────────────
-# Same approach — use Railway reference variables:
+# â”€â”€â”€ Redis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Same approach â€” use Railway reference variables:
 REDIS_HOST=${{Redis.REDISHOST}}
 REDIS_PORT=${{Redis.REDISPORT}}
 
-# ─── GitHub integration ────────────────────────────
+# â”€â”€â”€ GitHub integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Create a PAT at: https://github.com/settings/tokens
 # Required scope: repo
-WEBLATE_GITHUB_USERNAME=reqcore-weblate-bot
+WEBLATE_GITHUB_USERNAME=WWMate-weblate-bot
 WEBLATE_GITHUB_TOKEN=<your-github-pat>
 
-# ─── Registration & access ─────────────────────────
+# â”€â”€â”€ Registration & access â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 WEBLATE_REGISTRATION_OPEN=1
 WEBLATE_REQUIRE_LOGIN=0
 
-# ─── Railway-specific ──────────────────────────────
+# â”€â”€â”€ Railway-specific â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Pango can't initialize in Railway's container (no D-Bus).
-# Silence the check — not needed for core translation.
+# Silence the check â€” not needed for core translation.
 WEBLATE_SILENCED_SYSTEM_CHECKS=weblate.C024
 # Accept requests from any hostname (or set to your specific domain):
 WEBLATE_ALLOWED_HOSTS=*
@@ -163,8 +163,8 @@ WEBLATE_ENABLE_HTTPS=1
 WEBLATE_IP_PROXY_HEADER=HTTP_X_FORWARDED_FOR
 WEBLATE_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
 
-# ─── Email (optional, for notifications) ───────────
-WEBLATE_DEFAULT_FROM_EMAIL=noreply@reqcore.com
+# â”€â”€â”€ Email (optional, for notifications) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+WEBLATE_DEFAULT_FROM_EMAIL=noreply@WWMate.com
 ```
 
 > **Tip:** Railway's reference variables (`${{Postgres.PGHOST}}` etc.) are
@@ -173,17 +173,17 @@ WEBLATE_DEFAULT_FROM_EMAIL=noreply@reqcore.com
 
 ### Step 5: Custom domain (optional but recommended)
 
-1. In the Weblate service → **Settings** → **Networking** → **Custom Domain**
-2. Add `translate.reqcore.com`
+1. In the Weblate service â†’ **Settings** â†’ **Networking** â†’ **Custom Domain**
+2. Add `translate.WWMate.com`
 3. In your DNS provider, create a **CNAME** record:
    - Name: `translate`
    - Target: the Railway-provided domain (e.g. `weblate-production-xxxx.up.railway.app`)
-4. Update `WEBLATE_SITE_DOMAIN` to match: `translate.reqcore.com`
+4. Update `WEBLATE_SITE_DOMAIN` to match: `translate.WWMate.com`
 
 ### Step 6: Deploy
 
 Click **Deploy** in Railway. First boot takes 2-5 minutes while Weblate runs
-database migrations. Watch the deploy logs — you should see:
+database migrations. Watch the deploy logs â€” you should see:
 
 ```
 Weblate is running on http://0.0.0.0:8080
@@ -205,9 +205,9 @@ docker compose up -d
 ```
 
 This starts three containers:
-- **weblate** — the Weblate web UI on `http://localhost:8080`
-- **weblate-db** — PostgreSQL 16 for Weblate's own data
-- **weblate-redis** — Redis 7 for caching and task queues
+- **weblate** â€” the Weblate web UI on `http://localhost:8080`
+- **weblate-db** â€” PostgreSQL 16 for Weblate's own data
+- **weblate-redis** â€” Redis 7 for caching and task queues
 
 ### Step 2: Wait for initialization
 
@@ -229,7 +229,7 @@ Open `http://localhost:8080` in your browser.
 - **Username:** `admin`
 - **Password:** `admin`
 
-> **⚠️ Change the admin password immediately** in Weblate → User settings → Password.
+> **âš ï¸ Change the admin password immediately** in Weblate â†’ User settings â†’ Password.
 
 ### Step 4: Clean up
 
@@ -249,20 +249,20 @@ Weblate is running.
 
 ### Step 1: Create the project
 
-1. Go to Weblate → **+ Add** (top menu) → **Create new translation project**
+1. Go to Weblate â†’ **+ Add** (top menu) â†’ **Create new translation project**
 2. Fill in:
 
 | Field | Value |
 |-------|-------|
-| Project name | `Reqcore` |
-| Project slug | `reqcore` |
-| Project website | `https://reqcore.com` |
+| Project name | `WWMate` |
+| Project slug | `WWMate` |
+| Project website | `https://WWMate.com` |
 
 3. Click **Save**
 
 ### Step 2: Add the translation component
 
-1. Inside the Reqcore project, click **+ Add new translation component**
+1. Inside the WWMate project, click **+ Add new translation component**
 2. Choose **From version control system**
 3. Fill in:
 
@@ -271,7 +271,7 @@ Weblate is running.
 | Component name | `Web App` |
 | Component slug | `web-app` |
 | Version control system | `GitHub` |
-| Source code repository | `https://github.com/reqcore-inc/reqcore.git` |
+| Source code repository | `https://github.com/WWMate-inc/WWMate.git` |
 | Repository branch | `main` |
 | File mask | `i18n/locales/*.json` |
 | Monolingual base language file | `i18n/locales/en.json` |
@@ -283,7 +283,7 @@ Weblate is running.
 
 Weblate will clone the repo and discover existing locale files. This may take
 a minute. Once done, you'll see the available languages (English, Vietnamese,
-Norwegian Bokmål) with their translation progress.
+Norwegian BokmÃ¥l) with their translation progress.
 
 ### What is "JSON nested structure file"?
 
@@ -302,9 +302,9 @@ The locale files use nested JSON keys like:
 }
 ```
 
-Weblate presents each leaf key (e.g. `nav → features`) as a separate
+Weblate presents each leaf key (e.g. `nav â†’ features`) as a separate
 translatable string. Translators see the English source value and type
-the translation — no need to understand JSON syntax.
+the translation â€” no need to understand JSON syntax.
 
 ---
 
@@ -314,20 +314,20 @@ This enables Weblate to **push translations back** to the repo as pull requests.
 
 ### Step 1: Configure push settings
 
-1. In Weblate → **Reqcore** project → **Web App** component → **Manage** → **Settings**
+1. In Weblate â†’ **WWMate** project â†’ **Web App** component â†’ **Manage** â†’ **Settings**
 2. Go to the **Version control** tab
 3. Set these fields:
 
 | Field | Value |
 |-------|-------|
-| Push URL | `git@github.com:reqcore-inc/reqcore.git` |
-| Push branch | _(leave empty — Weblate creates feature branches)_ |
+| Push URL | `git@github.com:WWMate-inc/WWMate.git` |
+| Push branch | _(leave empty â€” Weblate creates feature branches)_ |
 
 4. Click **Save**
 
 ### Step 2: Configure commit settings
 
-1. Still in Settings → **Version control** tab
+1. Still in Settings â†’ **Version control** tab
 2. Scroll to **Commit settings**:
 
 | Field | Value |
@@ -337,11 +337,11 @@ This enables Weblate to **push translations back** to the repo as pull requests.
 | Committer email | `noreply@weblate.org` |
 | Merge style | `Rebase` |
 
-3. Enable **☑ Automatically push changes**
+3. Enable **â˜‘ Automatically push changes**
 
 ### Step 3: Install add-ons
 
-1. Go to **Manage** → **Add-ons**
+1. Go to **Manage** â†’ **Add-ons**
 2. Install these two:
 
 | Add-on | Purpose |
@@ -351,18 +351,18 @@ This enables Weblate to **push translations back** to the repo as pull requests.
 
 ### Step 4: Verify the connection
 
-1. Go to **Manage** → **Repository maintenance**
-2. Click **Push** — if successful, you'll see a green notification
+1. Go to **Manage** â†’ **Repository maintenance**
+2. Click **Push** â€” if successful, you'll see a green notification
 3. If it fails, check:
    - The GitHub PAT has `repo` scope
-   - The PAT belongs to a user with write access to `reqcore-inc/reqcore`
+   - The PAT belongs to a user with write access to `WWMate-inc/WWMate`
    - The push URL is correct
 
 > **Alternative: GitHub App (recommended for production)**
 >
 > Instead of a PAT, you can install the
 > [Weblate GitHub App](https://docs.weblate.org/en/latest/admin/continuous.html#github-setup)
-> on the `reqcore-inc/reqcore` repository. This is more secure (fine-grained
+> on the `WWMate-inc/WWMate` repository. This is more secure (fine-grained
 > permissions, automatic token rotation) and easier to manage for organizations.
 
 ---
@@ -385,9 +385,9 @@ Edit `nuxt.config.ts` and add the new locale to the `i18n.locales` array:
 i18n: {
   locales: [
     { code: 'en', name: 'English', file: 'en.json' },
-    { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' },
-    { code: 'nb', name: 'Norsk Bokmål', file: 'nb.json' },
-    { code: 'fr', name: 'Français', file: 'fr.json' },  // ← add this
+    { code: 'vi', name: 'Tiáº¿ng Viá»‡t', file: 'vi.json' },
+    { code: 'nb', name: 'Norsk BokmÃ¥l', file: 'nb.json' },
+    { code: 'fr', name: 'FranÃ§ais', file: 'fr.json' },  // â† add this
   ],
   // ...
 }
@@ -404,7 +404,7 @@ git push
 ### 4. Sync in Weblate
 
 Weblate automatically detects the new file on its next pull (usually within
-minutes). Or force it: **Manage** → **Repository maintenance** → **Pull**.
+minutes). Or force it: **Manage** â†’ **Repository maintenance** â†’ **Pull**.
 
 The new language will appear in the Weblate UI, ready for translators.
 
@@ -412,14 +412,14 @@ The new language will appear in the Weblate UI, ready for translators.
 
 ## Translator guide
 
-This section is for **translators** — no coding or Git experience required.
+This section is for **translators** â€” no coding or Git experience required.
 
 ### Getting started
 
-1. Open the Weblate instance (e.g. `translate.reqcore.com`)
+1. Open the Weblate instance (e.g. `translate.WWMate.com`)
 2. Click **Register** to create an account (or sign in with GitHub if enabled)
-3. From the dashboard, click **Reqcore** → **Web App**
-4. Click your language (e.g. Vietnamese, Norwegian Bokmål)
+3. From the dashboard, click **WWMate** â†’ **Web App**
+4. Click your language (e.g. Vietnamese, Norwegian BokmÃ¥l)
 
 ### Translating strings
 
@@ -433,18 +433,18 @@ You'll see a list of strings organized by their key path (e.g. `nav.features`,
 #### Tips for translators
 
 - **Placeholders like `{highlight}` or `{forever}`:** These are dynamic values
-  inserted at runtime. Keep them exactly as-is in your translation — just move
+  inserted at runtime. Keep them exactly as-is in your translation â€” just move
   them to where they belong grammatically in your language.
   
-  Example (English): `Cancel anytime — your talent pool stays with you {forever}.`
+  Example (English): `Cancel anytime â€” your talent pool stays with you {forever}.`
   
-  Example (Vietnamese): `Hủy bất cứ lúc nào — nhóm nhân tài của bạn ở lại với bạn {forever}.`
+  Example (Vietnamese): `Há»§y báº¥t cá»© lÃºc nÃ o â€” nhÃ³m nhÃ¢n tÃ i cá»§a báº¡n á»Ÿ láº¡i vá»›i báº¡n {forever}.`
 
 - **Context:** Click the key name (e.g. `hero.subtitle`) to see where it's
   used. The key path gives a hint: `nav.*` = navigation bar, `hero.*` = hero
   section, `auth.*` = login/signup pages, etc.
 
-- **Glossary:** Check if the project has a glossary (sidebar → Glossary) for
+- **Glossary:** Check if the project has a glossary (sidebar â†’ Glossary) for
   consistent translation of recurring terms like "pipeline", "candidate",
   "self-hosted".
 
@@ -477,7 +477,7 @@ When reviewing:
 
 1. **Spot-check** a few key translations, especially user-facing strings like
    button labels and error messages
-2. **Verify JSON validity** — Weblate always produces valid JSON, but a quick
+2. **Verify JSON validity** â€” Weblate always produces valid JSON, but a quick
    glance doesn't hurt
 3. **Merge** when satisfied. Squash-merge is fine since Weblate already squashes
    internally
@@ -517,14 +517,14 @@ For strings that contain bold/highlighted text within a sentence, use the
 `i18n-t` component with named slots:
 
 ```vue
-<!-- ✅ Correct: lets translators reorder the sentence -->
+<!-- âœ… Correct: lets translators reorder the sentence -->
 <i18n-t keypath="manifesto.p1" tag="p">
   <template #highlight>
     <span class="font-bold">{{ $t('manifesto.p1Highlight') }}</span>
   </template>
 </i18n-t>
 
-<!-- ❌ Wrong: hardcodes English word order -->
+<!-- âŒ Wrong: hardcodes English word order -->
 <p>{{ $t('manifesto.p1Before') }} <span>{{ $t('manifesto.p1Bold') }}</span> {{ $t('manifesto.p1After') }}</p>
 ```
 
@@ -545,15 +545,15 @@ The corresponding locale file:
 ### Weblate can't clone the repo
 
 - Make sure the GitHub PAT hasn't expired
-- Verify the repo URL: `https://github.com/reqcore-inc/reqcore.git`
-- Check Weblate logs: **Manage** → **Repository maintenance** → **Log**
+- Verify the repo URL: `https://github.com/WWMate-inc/WWMate.git`
+- Check Weblate logs: **Manage** â†’ **Repository maintenance** â†’ **Log**
 
 ### Weblate can't push / create PRs
 
 - Check that the PAT has `repo` scope
-- Ensure `Push URL` is set to `git@github.com:reqcore-inc/reqcore.git`
+- Ensure `Push URL` is set to `git@github.com:WWMate-inc/WWMate.git`
 - If using SSH, make sure Weblate has the SSH key configured:
-  **Weblate Admin** → **SSH keys** → add a deploy key to the repo
+  **Weblate Admin** â†’ **SSH keys** â†’ add a deploy key to the repo
 
 ### Translations not showing up in the app
 
@@ -565,7 +565,7 @@ The corresponding locale file:
 ### First boot takes too long
 
 Weblate runs database migrations on first start. This can take 2-5 minutes.
-Check logs with `docker compose logs -f weblate` — look for
+Check logs with `docker compose logs -f weblate` â€” look for
 `Weblate is running on http://0.0.0.0:8080`.
 
 ### How to reset the admin password
@@ -576,3 +576,4 @@ docker compose exec weblate weblate changepassword admin
 
 # Railway: use the Railway shell feature in the Weblate service
 ```
+

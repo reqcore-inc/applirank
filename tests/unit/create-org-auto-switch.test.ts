@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 
 /**
  * Unit tests for the auto-switch guard logic in create-org.vue.
@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest'
  * because that means the user intentionally navigated to create-org
  * (e.g. via the org switcher's "+ Create organization" link).
  *
- * Regression test for: https://github.com/reqcore-inc/reqcore/issues/131
+ * Regression test for: https://github.com/WWMate-inc/WWMate/issues/131
  */
 
 interface AutoSwitchContext {
@@ -84,3 +84,4 @@ describe('create-org auto-switch guard', () => {
     ).toBe(false)
   })
 })
+

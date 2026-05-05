@@ -1,5 +1,5 @@
-/**
- * useSavedViews — manages a list of named, customizable filter/sort "views"
+﻿/**
+ * useSavedViews â€” manages a list of named, customizable filter/sort "views"
  * persisted in localStorage, scoped per page (e.g. "candidates", "applications").
  *
  * Each view stores an arbitrary settings object (filters + sort + visible columns)
@@ -13,7 +13,7 @@ export interface SavedView<T = Record<string, unknown>> {
   settings: T
 }
 
-const STORAGE_PREFIX = 'reqcore:saved-views:'
+const STORAGE_PREFIX = 'WWMate:saved-views:'
 
 function genId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36)
@@ -117,3 +117,4 @@ export function useSavedViews<T extends Record<string, unknown>>(scope: string, 
     clearActive,
   }
 }
+

@@ -1,9 +1,9 @@
-/**
- * Seeds the database with realistic demo data for Reqcore.
+﻿/**
+ * Seeds the database with realistic demo data for WWMate.
  *
  * Creates:
- * - 1 demo user (demo@reqcore.com / demo1234)
- * - 1 organization ("Reqcore Demo")
+ * - 1 demo user (demo@WWMate.com / demo1234)
+ * - 1 organization ("WWMate Demo")
  * - 5 jobs with varying statuses
  * - 30 candidates
  * - 65+ applications across all pipeline stages
@@ -17,7 +17,7 @@
  * Usage: npx tsx server/scripts/seed.ts
  * Requires DATABASE_URL in .env (loaded via dotenv or shell env).
  *
- * Idempotent — checks if demo org exists before running.
+ * Idempotent â€” checks if demo org exists before running.
  */
 
 import { drizzle } from 'drizzle-orm/postgres-js'
@@ -27,9 +27,9 @@ import { hashPassword } from 'better-auth/crypto'
 import * as schema from '../database/schema'
 import { encrypt } from '../utils/encryption'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Config
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const processWithLoadEnv = process as NodeJS.Process & {
   loadEnvFile?: (path?: string) => void
@@ -74,25 +74,25 @@ if (!DATABASE_URL) {
   process.exit(1)
 }
 
-const DEMO_EMAIL = 'demo@reqcore.com'
+const DEMO_EMAIL = 'demo@WWMate.com'
 const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? 'demo1234'
-const DEMO_ORG_NAME = 'Reqcore Demo'
-const DEMO_ORG_SLUG = 'reqcore-demo'
+const DEMO_ORG_NAME = 'WWMate Demo'
+const DEMO_ORG_SLUG = 'WWMate-demo'
 
-// Legacy values from the old applirank.com domain — cleaned up on seed
+// Legacy values from the old applirank.com domain â€” cleaned up on seed
 const LEGACY_DEMO_EMAIL = 'demo@applirank.com'
 const LEGACY_ORG_SLUG = 'applirank-demo'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Database connection
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const client = postgres(DATABASE_URL, { max: 1 })
 const db = drizzle(client, { schema })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function id(): string {
   return crypto.randomUUID()
@@ -133,21 +133,21 @@ function generateSlug(title: string, uuid: string): string {
   return `${base}-${shortId}`
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Seed Data Definitions
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const JOBS_DATA = [
   {
     title: 'Senior Full-Stack Engineer',
-    description: `We're hiring a Senior Full-Stack Engineer to help scale the core Reqcore platform used by growing hiring teams. You will own high-impact features across product, API, and data layers using TypeScript, Nuxt, and PostgreSQL in a pragmatic, fast-moving environment.\n\n**What you'll do**\n- Deliver end-to-end features from discovery and technical design to production rollout\n- Shape architecture decisions for multi-tenant workflows, performance, and reliability\n- Partner with product and design to turn recruiter pain points into elegant UX\n- Raise engineering quality through thoughtful code review, testing, and observability\n- Mentor team members and improve development standards across the stack\n\n**What we're looking for**\n- 5+ years building and shipping production web applications\n- Strong TypeScript proficiency across frontend and backend services\n- Experience with modern component architectures (Vue, React, or similar)\n- Practical PostgreSQL skills including query tuning and schema evolution\n- Familiarity with CI/CD, Dockerized environments, and cloud deployment workflows\n- Clear communication and ownership mindset in cross-functional teams\n\n**Nice to have**\n- Experience building internal tools, ATS/HR products, or workflow-heavy B2B software\n- Interest in transparent, explainable AI experiences`,
+    description: `We're hiring a Senior Full-Stack Engineer to help scale the core WWMate platform used by growing hiring teams. You will own high-impact features across product, API, and data layers using TypeScript, Nuxt, and PostgreSQL in a pragmatic, fast-moving environment.\n\n**What you'll do**\n- Deliver end-to-end features from discovery and technical design to production rollout\n- Shape architecture decisions for multi-tenant workflows, performance, and reliability\n- Partner with product and design to turn recruiter pain points into elegant UX\n- Raise engineering quality through thoughtful code review, testing, and observability\n- Mentor team members and improve development standards across the stack\n\n**What we're looking for**\n- 5+ years building and shipping production web applications\n- Strong TypeScript proficiency across frontend and backend services\n- Experience with modern component architectures (Vue, React, or similar)\n- Practical PostgreSQL skills including query tuning and schema evolution\n- Familiarity with CI/CD, Dockerized environments, and cloud deployment workflows\n- Clear communication and ownership mindset in cross-functional teams\n\n**Nice to have**\n- Experience building internal tools, ATS/HR products, or workflow-heavy B2B software\n- Interest in transparent, explainable AI experiences`,
     location: 'Berlin, Germany (Hybrid)',
     type: 'full_time' as const,
     status: 'open' as const,
   },
   {
     title: 'Product Designer',
-    description: `Join Reqcore as a Product Designer and craft the daily workflows used by recruiters to evaluate talent fairly and efficiently. You'll collaborate closely with engineering and product to design intuitive, high-trust experiences across dashboard, pipeline, and candidate flows.\n\n**What you'll do**\n- Lead design work from discovery through polished UI and production handoff\n- Translate complex hiring workflows into clear, low-friction user journeys\n- Run lightweight research and usability testing with real recruiting users\n- Evolve our design system and interaction patterns for speed and consistency\n- Partner with engineers to ensure high-quality implementation and accessibility\n\n**What we're looking for**\n- 3+ years in product design, ideally in B2B SaaS or workflow tools\n- Strong portfolio demonstrating end-to-end problem-solving and measurable outcomes\n- Advanced Figma skills including components, variants, and prototyping\n- Experience balancing visual polish with delivery constraints\n- Solid understanding of accessibility, hierarchy, and information architecture\n\n**Nice to have**\n- Experience designing data-rich interfaces or collaborative tooling\n- Familiarity with recruiting, HR, or marketplace products`,
+    description: `Join WWMate as a Product Designer and craft the daily workflows used by recruiters to evaluate talent fairly and efficiently. You'll collaborate closely with engineering and product to design intuitive, high-trust experiences across dashboard, pipeline, and candidate flows.\n\n**What you'll do**\n- Lead design work from discovery through polished UI and production handoff\n- Translate complex hiring workflows into clear, low-friction user journeys\n- Run lightweight research and usability testing with real recruiting users\n- Evolve our design system and interaction patterns for speed and consistency\n- Partner with engineers to ensure high-quality implementation and accessibility\n\n**What we're looking for**\n- 3+ years in product design, ideally in B2B SaaS or workflow tools\n- Strong portfolio demonstrating end-to-end problem-solving and measurable outcomes\n- Advanced Figma skills including components, variants, and prototyping\n- Experience balancing visual polish with delivery constraints\n- Solid understanding of accessibility, hierarchy, and information architecture\n\n**Nice to have**\n- Experience designing data-rich interfaces or collaborative tooling\n- Familiarity with recruiting, HR, or marketplace products`,
     location: 'Remote (EU)',
     type: 'full_time' as const,
     status: 'open' as const,
@@ -161,14 +161,14 @@ const JOBS_DATA = [
   },
   {
     title: 'Technical Writer (Part-Time)',
-    description: `We're hiring a part-time Technical Writer to make Reqcore documentation clear, actionable, and enterprise-ready. Your work will directly improve product adoption by helping recruiters, admins, and developers succeed quickly.\n\n**What you'll do**\n- Create and maintain setup guides, API docs, and troubleshooting playbooks\n- Improve onboarding flows for first-time teams and self-hosted deployments\n- Standardize tone, structure, and quality across product documentation\n- Work with engineering and product to document new releases and migrations\n- Identify knowledge gaps from support and feedback loops\n\n**What we're looking for**\n- 2+ years writing technical documentation for software products\n- Ability to explain complex systems in simple, practical language\n- Strong Markdown/docs-as-code workflow habits\n- Attention to clarity, consistency, and user intent\n- Experience editing developer-facing and operations-focused content\n\n**Nice to have**\n- Open-source documentation contributions\n- Familiarity with hiring/recruiting software terminology`,
+    description: `We're hiring a part-time Technical Writer to make WWMate documentation clear, actionable, and enterprise-ready. Your work will directly improve product adoption by helping recruiters, admins, and developers succeed quickly.\n\n**What you'll do**\n- Create and maintain setup guides, API docs, and troubleshooting playbooks\n- Improve onboarding flows for first-time teams and self-hosted deployments\n- Standardize tone, structure, and quality across product documentation\n- Work with engineering and product to document new releases and migrations\n- Identify knowledge gaps from support and feedback loops\n\n**What we're looking for**\n- 2+ years writing technical documentation for software products\n- Ability to explain complex systems in simple, practical language\n- Strong Markdown/docs-as-code workflow habits\n- Attention to clarity, consistency, and user intent\n- Experience editing developer-facing and operations-focused content\n\n**Nice to have**\n- Open-source documentation contributions\n- Familiarity with hiring/recruiting software terminology`,
     location: 'Remote (EU)',
     type: 'part_time' as const,
     status: 'open' as const,
   },
   {
     title: 'Frontend Engineering Intern',
-    description: `Start your frontend career on a real product with real users. In this 6-month internship, you'll contribute production code to Reqcore while learning modern frontend engineering practices from an experienced team.\n\n**What you'll work on**\n- Build and ship Vue/Nuxt interface components used in daily recruiting workflows\n- Improve usability, accessibility, and performance of existing screens\n- Collaborate in code reviews and iterative delivery cycles\n- Learn how product, design, and engineering collaborate in a modern SaaS team\n\n**What we're looking for**\n- Currently enrolled in computer science, software engineering, or equivalent program\n- Strong foundations in HTML, CSS, and JavaScript\n- Basic familiarity with TypeScript and component-based frameworks is a plus\n- Curiosity, coachability, and attention to detail\n- Ability to communicate clearly and ask good questions\n\n**Internship details**\n- Structured mentorship, weekly feedback, and clear growth goals\n- Opportunity to present shipped work at the end of the internship`,
+    description: `Start your frontend career on a real product with real users. In this 6-month internship, you'll contribute production code to WWMate while learning modern frontend engineering practices from an experienced team.\n\n**What you'll work on**\n- Build and ship Vue/Nuxt interface components used in daily recruiting workflows\n- Improve usability, accessibility, and performance of existing screens\n- Collaborate in code reviews and iterative delivery cycles\n- Learn how product, design, and engineering collaborate in a modern SaaS team\n\n**What we're looking for**\n- Currently enrolled in computer science, software engineering, or equivalent program\n- Strong foundations in HTML, CSS, and JavaScript\n- Basic familiarity with TypeScript and component-based frameworks is a plus\n- Curiosity, coachability, and attention to detail\n- Ability to communicate clearly and ask good questions\n\n**Internship details**\n- Structured mentorship, weekly feedback, and clear growth goals\n- Opportunity to present shipped work at the end of the internship`,
     location: 'Berlin, Germany (On-site)',
     type: 'internship' as const,
     status: 'draft' as const,
@@ -177,7 +177,7 @@ const JOBS_DATA = [
 
 const CANDIDATES_DATA = [
   { firstName: 'Emma', lastName: 'Schmidt', email: 'emma.schmidt@example.com', phone: '+49 170 1234567' },
-  { firstName: 'Liam', lastName: 'Müller', email: 'liam.mueller@example.com', phone: '+49 171 2345678' },
+  { firstName: 'Liam', lastName: 'MÃ¼ller', email: 'liam.mueller@example.com', phone: '+49 171 2345678' },
   { firstName: 'Sofia', lastName: 'Dubois', email: 'sofia.dubois@example.com', phone: '+33 6 12 34 56 78' },
   { firstName: 'Noah', lastName: 'van der Berg', email: 'noah.vdberg@example.com', phone: '+31 6 12345678' },
   { firstName: 'Olivia', lastName: 'Rossi', email: 'olivia.rossi@example.com', phone: '+39 320 1234567' },
@@ -186,7 +186,7 @@ const CANDIDATES_DATA = [
   { firstName: 'Yuki', lastName: 'Tanaka', email: 'yuki.tanaka@example.com', phone: '+81 90 1234 5678' },
   { firstName: 'Lucas', lastName: 'Andersson', email: 'lucas.andersson@example.com', phone: '+46 70 123 45 67' },
   { firstName: 'Priya', lastName: 'Sharma', email: 'priya.sharma@example.com', phone: '+91 98765 43210' },
-  { firstName: 'Mateo', lastName: 'García', email: 'mateo.garcia@example.com', phone: '+34 612 345 678' },
+  { firstName: 'Mateo', lastName: 'GarcÃ­a', email: 'mateo.garcia@example.com', phone: '+34 612 345 678' },
   { firstName: 'Aisha', lastName: 'Hassan', email: 'aisha.hassan@example.com', phone: '+971 50 123 4567' },
   { firstName: 'Felix', lastName: 'Weber', email: 'felix.weber@example.com', phone: '+49 172 3456789' },
   { firstName: 'Chloe', lastName: 'Martin', email: 'chloe.martin@example.com', phone: '+33 7 12 34 56 78' },
@@ -232,10 +232,10 @@ const DEVOPS_QUESTIONS = [
   { type: 'single_select' as const, label: 'Preferred CI/CD platform', options: ['GitHub Actions', 'GitLab CI', 'Jenkins', 'CircleCI', 'Other'], required: true },
 ]
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Application distribution map
 // Ensures realistic pipeline distribution across all stages
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type AppStatus = 'new' | 'screening' | 'interview' | 'offer' | 'hired' | 'rejected'
 
@@ -246,7 +246,7 @@ interface ApplicationAssignment {
   notes?: string
 }
 
-// Job 0: Senior Full-Stack Engineer — high volume, full funnel
+// Job 0: Senior Full-Stack Engineer â€” high volume, full funnel
 const JOB_0_APPS: ApplicationAssignment[] = [
   { candidateIndex: 0, status: 'hired', score: 96, notes: 'Outstanding architecture interview and strong leadership examples. Accepted offer.' },
   { candidateIndex: 1, status: 'offer', score: 92, notes: 'Excellent systems design and pragmatic decision-making. Offer package in final approval.' },
@@ -264,7 +264,7 @@ const JOB_0_APPS: ApplicationAssignment[] = [
   { candidateIndex: 13, status: 'rejected', score: 39, notes: 'Limited backend ownership in recent roles.' },
 ]
 
-// Job 1: Product Designer — strong mid-funnel representation
+// Job 1: Product Designer â€” strong mid-funnel representation
 const JOB_1_APPS: ApplicationAssignment[] = [
   { candidateIndex: 14, status: 'offer', score: 91, notes: 'Exceptional portfolio depth and design-system leadership. Preparing offer.' },
   { candidateIndex: 15, status: 'interview', score: 88, notes: 'Strong product thinking and workshop facilitation skills.' },
@@ -280,7 +280,7 @@ const JOB_1_APPS: ApplicationAssignment[] = [
   { candidateIndex: 25, status: 'rejected', score: 41, notes: 'Limited product discovery and usability testing examples.' },
 ]
 
-// Job 2: DevOps Engineer — healthy pipeline for a contract position
+// Job 2: DevOps Engineer â€” healthy pipeline for a contract position
 const JOB_2_APPS: ApplicationAssignment[] = [
   { candidateIndex: 5, status: 'hired', score: 94, notes: 'Strong container orchestration and observability setup. Contract signed.' },
   { candidateIndex: 6, status: 'offer', score: 90, notes: 'Excellent platform reliability background. Offer sent.' },
@@ -295,7 +295,7 @@ const JOB_2_APPS: ApplicationAssignment[] = [
   { candidateIndex: 13, status: 'rejected', score: 40, notes: 'Primary experience with legacy on-prem tooling; limited cloud-native track record.' },
 ]
 
-// Job 3: Technical Writer — consistent pipeline quality
+// Job 3: Technical Writer â€” consistent pipeline quality
 const JOB_3_APPS: ApplicationAssignment[] = [
   { candidateIndex: 12, status: 'offer', score: 90, notes: 'Clear, structured writing samples and strong docs-as-code workflow.' },
   { candidateIndex: 14, status: 'interview', score: 86, notes: 'Great API documentation examples and editorial discipline.' },
@@ -309,7 +309,7 @@ const JOB_3_APPS: ApplicationAssignment[] = [
   { candidateIndex: 29, status: 'rejected', score: 43, notes: 'Limited experience with developer-focused documentation.' },
 ]
 
-// Job 4: Frontend Engineering Intern — active early-career funnel
+// Job 4: Frontend Engineering Intern â€” active early-career funnel
 const JOB_4_APPS: ApplicationAssignment[] = [
   { candidateIndex: 0, status: 'interview', score: 88, notes: 'Impressive internship project quality and thoughtful code reviews in GitHub profile.' },
   { candidateIndex: 2, status: 'interview', score: 84, notes: 'Strong fundamentals in Vue and Tailwind. Team fit interview scheduled.' },
@@ -325,9 +325,9 @@ const JOB_4_APPS: ApplicationAssignment[] = [
 
 const JOB_APPLICATIONS = [JOB_0_APPS, JOB_1_APPS, JOB_2_APPS, JOB_3_APPS, JOB_4_APPS]
 
-// ─────────────────────────────────────────────
-// AI Scoring — Criteria definitions per job
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// AI Scoring â€” Criteria definitions per job
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type CriterionCategory = 'technical' | 'experience' | 'soft_skills' | 'education' | 'culture' | 'custom'
 
@@ -341,12 +341,12 @@ interface ScoringCriterionSeed {
   displayOrder: number
 }
 
-// Job 0: Senior Full-Stack Engineer — technical rubric
+// Job 0: Senior Full-Stack Engineer â€” technical rubric
 const JOB_0_CRITERIA: ScoringCriterionSeed[] = [
   {
     key: 'core_tech_stack',
     name: 'Core Tech Stack Match',
-    description: 'How well the candidate\'s technical skills match TypeScript, Vue/Nuxt, and PostgreSQL — the primary technologies required for this role.',
+    description: 'How well the candidate\'s technical skills match TypeScript, Vue/Nuxt, and PostgreSQL â€” the primary technologies required for this role.',
     category: 'technical',
     maxScore: 10,
     weight: 70,
@@ -390,7 +390,7 @@ const JOB_0_CRITERIA: ScoringCriterionSeed[] = [
   },
 ]
 
-// Job 1: Product Designer — design-specific rubric
+// Job 1: Product Designer â€” design-specific rubric
 const JOB_1_CRITERIA: ScoringCriterionSeed[] = [
   {
     key: 'portfolio_quality',
@@ -439,7 +439,7 @@ const JOB_1_CRITERIA: ScoringCriterionSeed[] = [
   },
 ]
 
-// Job 2: DevOps Engineer — infrastructure rubric
+// Job 2: DevOps Engineer â€” infrastructure rubric
 const JOB_2_CRITERIA: ScoringCriterionSeed[] = [
   {
     key: 'infrastructure',
@@ -490,10 +490,10 @@ const JOB_2_CRITERIA: ScoringCriterionSeed[] = [
 
 const JOB_CRITERIA = [JOB_0_CRITERIA, JOB_1_CRITERIA, JOB_2_CRITERIA]
 
-// ─────────────────────────────────────────────
-// AI Scoring — Per-application criterion scores
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// AI Scoring â€” Per-application criterion scores
 // Each entry scores one application across all criteria for its job.
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface CriterionScoreSeed {
   criterionKey: string
@@ -514,9 +514,9 @@ interface ApplicationScoringSeed {
 }
 
 const AI_SCORING_DATA: ApplicationScoringSeed[] = [
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 0: Senior Full-Stack Engineer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // Emma Schmidt (hired, score: 96)
   {
@@ -543,7 +543,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'relevant_experience', maxScore: 10, applicantScore: 9, confidence: 90,
-        evidence: '7 years of production web application development. Last 4 years at B2B SaaS companies building workflow-heavy internal tools. Previous role involved building a recruitment-adjacent HR platform, directly relevant to Reqcore\'s domain.',
+        evidence: '7 years of production web application development. Last 4 years at B2B SaaS companies building workflow-heavy internal tools. Previous role involved building a recruitment-adjacent HR platform, directly relevant to WWMate\'s domain.',
         strengths: ['7 years of progressive web development experience', 'B2B SaaS background with workflow-heavy product experience', 'Direct HR/recruitment domain experience from previous role'],
         gaps: ['No open-source project maintainership mentioned'],
       },
@@ -556,14 +556,14 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     ],
   },
 
-  // Liam Müller (offer, score: 92)
+  // Liam MÃ¼ller (offer, score: 92)
   {
     jobIndex: 0, candidateIndex: 1, compositeScore: 92,
     summary: 'Very strong senior engineer with excellent systems thinking and pragmatic technical decision-making. Deep PostgreSQL optimization knowledge and solid full-stack delivery track record. Minor gap in frontend framework depth but compensated by outstanding backend architecture skills.',
     scores: [
       {
         criterionKey: 'core_tech_stack', maxScore: 10, applicantScore: 9, confidence: 91,
-        evidence: 'Resume shows 5 years of TypeScript backend development with Node.js and extensive PostgreSQL expertise. Vue experience limited to 1.5 years but includes Nuxt 2 → 3 migration. Strong database layer with custom ORM abstractions.',
+        evidence: 'Resume shows 5 years of TypeScript backend development with Node.js and extensive PostgreSQL expertise. Vue experience limited to 1.5 years but includes Nuxt 2 â†’ 3 migration. Strong database layer with custom ORM abstractions.',
         strengths: ['Deep TypeScript backend expertise with type-safe API design', 'Strong PostgreSQL skills including performance tuning and indexing strategies', 'Hands-on Nuxt migration experience showing modern framework adoption'],
         gaps: ['Vue/Nuxt experience (1.5 years) is less deep than backend skills'],
       },
@@ -717,7 +717,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'core_tech_stack', maxScore: 10, applicantScore: 7, confidence: 80,
         evidence: 'Resume shows 4 years of TypeScript primarily on the backend with Express and Fastify. React experience noted but Vue is listed under "learning." PostgreSQL usage confirmed through API development.',
         strengths: ['Strong TypeScript backend skills with Express and Fastify', 'PostgreSQL experience through production API work', 'Active learner with Vue listed as current focus'],
-        gaps: ['No production Vue or Nuxt experience — currently learning', 'Frontend framework experience is React-based, not Vue'],
+        gaps: ['No production Vue or Nuxt experience â€” currently learning', 'Frontend framework experience is React-based, not Vue'],
       },
       {
         criterionKey: 'system_design', maxScore: 10, applicantScore: 7, confidence: 77,
@@ -755,7 +755,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'core_tech_stack', maxScore: 10, applicantScore: 7, confidence: 76,
         evidence: 'Resume lists TypeScript (3 years), Node.js backend development, and PostgreSQL. Vue mentioned as "used in current project" without depth indicators. No Nuxt experience.',
         strengths: ['3 years of TypeScript with backend focus', 'PostgreSQL production usage confirmed'],
-        gaps: ['Vue experience appears shallow — current project only', 'No Nuxt or SSR framework experience'],
+        gaps: ['Vue experience appears shallow â€” current project only', 'No Nuxt or SSR framework experience'],
       },
       {
         criterionKey: 'system_design', maxScore: 10, applicantScore: 7, confidence: 74,
@@ -771,7 +771,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'relevant_experience', maxScore: 10, applicantScore: 8, confidence: 82,
-        evidence: '4 years of web development. Current role at a multi-tenant SaaS company building B2B collaboration tools. Strong domain relevance for Reqcore.',
+        evidence: '4 years of web development. Current role at a multi-tenant SaaS company building B2B collaboration tools. Strong domain relevance for WWMate.',
         strengths: ['Current multi-tenant SaaS experience directly relevant', 'B2B collaboration tool background matches ATS workflow needs'],
         gaps: ['4 years total experience is moderate for senior level'],
       },
@@ -791,9 +791,9 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     scores: [
       {
         criterionKey: 'core_tech_stack', maxScore: 10, applicantScore: 6, confidence: 74,
-        evidence: 'Resume shows strong TypeScript and Node.js backend (4 years). Frontend experience is React and Next.js — no Vue or Nuxt. PostgreSQL is well-demonstrated with query optimization examples.',
+        evidence: 'Resume shows strong TypeScript and Node.js backend (4 years). Frontend experience is React and Next.js â€” no Vue or Nuxt. PostgreSQL is well-demonstrated with query optimization examples.',
         strengths: ['Strong TypeScript backend skills (4 years)', 'PostgreSQL expertise with query optimization examples', 'Modern framework experience (React/Next.js) showing frontend capability'],
-        gaps: ['No Vue or Nuxt experience — entirely React-based frontend background', 'Framework switch would require ramp-up time'],
+        gaps: ['No Vue or Nuxt experience â€” entirely React-based frontend background', 'Framework switch would require ramp-up time'],
       },
       {
         criterionKey: 'system_design', maxScore: 10, applicantScore: 7, confidence: 76,
@@ -822,9 +822,9 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     ],
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 1: Product Designer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // David Kim (offer, score: 91)
   {
@@ -835,7 +835,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'portfolio_quality', maxScore: 10, applicantScore: 9, confidence: 94,
         evidence: 'Portfolio showcases 6 end-to-end case studies with clear problem statements, research insights, design iterations, and measurable outcomes. One project demonstrated a 35% reduction in user onboarding time through redesigned information architecture.',
         strengths: ['End-to-end case studies with measurable business outcomes', 'Clear design narrative from problem to solution with data', 'High visual polish and consistent design system application'],
-        gaps: ['Most portfolio work is from a single company — limited diversity of contexts'],
+        gaps: ['Most portfolio work is from a single company â€” limited diversity of contexts'],
       },
       {
         criterionKey: 'design_process', maxScore: 10, applicantScore: 9, confidence: 92,
@@ -873,7 +873,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'portfolio_quality', maxScore: 10, applicantScore: 8, confidence: 89,
         evidence: 'Portfolio features 4 case studies with strong problem framing and research-driven insights. Impact metrics included for 2 projects. Visual presentation is clean but not as polished as top-tier candidates.',
         strengths: ['Strong problem framing with research-backed insights', 'Impact metrics tied to business outcomes in key projects', 'Clear design rationale throughout case studies'],
-        gaps: ['Visual polish could be elevated in portfolio presentation', 'Only 4 case studies — could show broader range'],
+        gaps: ['Visual polish could be elevated in portfolio presentation', 'Only 4 case studies â€” could show broader range'],
       },
       {
         criterionKey: 'design_process', maxScore: 10, applicantScore: 9, confidence: 90,
@@ -895,7 +895,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'domain_knowledge', maxScore: 10, applicantScore: 8, confidence: 83,
-        evidence: 'Experience designing CRM and customer support tools — adjacent to HR/recruitment workflows. Resume mentions designing complex state management UIs with multi-step forms.',
+        evidence: 'Experience designing CRM and customer support tools â€” adjacent to HR/recruitment workflows. Resume mentions designing complex state management UIs with multi-step forms.',
         strengths: ['CRM tool design experience adjacent to ATS workflows', 'Complex multi-step form and state management UI experience'],
         gaps: ['No direct recruitment or HR product experience'],
       },
@@ -971,7 +971,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'domain_knowledge', maxScore: 10, applicantScore: 7, confidence: 79,
-        evidence: 'Experience designing healthcare and public sector tools — accessibility-focused domains. No direct B2B SaaS or workflow tool experience mentioned.',
+        evidence: 'Experience designing healthcare and public sector tools â€” accessibility-focused domains. No direct B2B SaaS or workflow tool experience mentioned.',
         strengths: ['Healthcare and public sector design with high accessibility standards', 'Experience with compliance-heavy design requirements'],
         gaps: ['No B2B SaaS or workflow tool experience', 'No recruitment or HR domain background'],
       },
@@ -998,7 +998,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       {
         criterionKey: 'ux_visual_craft', maxScore: 10, applicantScore: 7, confidence: 76,
         evidence: 'Portfolio shows clean, functional interfaces with good usability. Technical feasibility awareness in all designs. Visual craft is solid but room for growth in visual sophistication.',
-        strengths: ['Designs are technically feasible — strong implementation awareness', 'Clean, functional interfaces with good usability'],
+        strengths: ['Designs are technically feasible â€” strong implementation awareness', 'Clean, functional interfaces with good usability'],
         gaps: ['Visual sophistication and design system depth could improve'],
       },
       {
@@ -1010,7 +1010,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       {
         criterionKey: 'domain_knowledge', maxScore: 10, applicantScore: 6, confidence: 73,
         evidence: 'Previous engineering role at a consumer app company. Design work focused on developer tools. Limited B2B SaaS or workflow product experience.',
-        strengths: ['Developer tools design — technical product experience'],
+        strengths: ['Developer tools design â€” technical product experience'],
         gaps: ['No B2B SaaS product design experience', 'No workflow tool or HR domain exposure'],
       },
     ],
@@ -1054,14 +1054,14 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     ],
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 2: DevOps Engineer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // James O'Brien (hired, score: 94)
   {
     jobIndex: 2, candidateIndex: 5, compositeScore: 94,
-    summary: 'Exceptional DevOps engineer with deep container orchestration expertise, outstanding CI/CD pipeline design, and strong security awareness. Demonstrates production ownership across hosted and self-hosted environments — precisely the profile needed for this role.',
+    summary: 'Exceptional DevOps engineer with deep container orchestration expertise, outstanding CI/CD pipeline design, and strong security awareness. Demonstrates production ownership across hosted and self-hosted environments â€” precisely the profile needed for this role.',
     scores: [
       {
         criterionKey: 'infrastructure', maxScore: 10, applicantScore: 10, confidence: 94,
@@ -1103,9 +1103,9 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     scores: [
       {
         criterionKey: 'infrastructure', maxScore: 10, applicantScore: 8, confidence: 88,
-        evidence: 'Resume shows 5 years of Linux system administration and Docker expertise. Managed bare-metal and cloud infrastructure on AWS and Hetzner. Docker Compose for service orchestration — no production Kubernetes.',
+        evidence: 'Resume shows 5 years of Linux system administration and Docker expertise. Managed bare-metal and cloud infrastructure on AWS and Hetzner. Docker Compose for service orchestration â€” no production Kubernetes.',
         strengths: ['Deep Linux system administration expertise (5 years)', 'Multi-cloud experience across AWS and Hetzner', 'Docker expertise with production deployment experience'],
-        gaps: ['No production Kubernetes experience — Docker Compose only', 'Limited container orchestration at scale'],
+        gaps: ['No production Kubernetes experience â€” Docker Compose only', 'Limited container orchestration at scale'],
       },
       {
         criterionKey: 'cicd_automation', maxScore: 10, applicantScore: 9, confidence: 90,
@@ -1143,7 +1143,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'infrastructure', maxScore: 10, applicantScore: 7, confidence: 82,
         evidence: 'Resume shows Docker and cloud infrastructure management on AWS. Kubernetes listed under "proficient" but production experience limited to staging environments. Good Linux fundamentals.',
         strengths: ['Docker production experience on AWS', 'Linux system administration fundamentals', 'Kubernetes knowledge (staging environment level)'],
-        gaps: ['Kubernetes experience limited to staging — not production', 'Single cloud provider experience (AWS only)'],
+        gaps: ['Kubernetes experience limited to staging â€” not production', 'Single cloud provider experience (AWS only)'],
       },
       {
         criterionKey: 'cicd_automation', maxScore: 10, applicantScore: 9, confidence: 91,
@@ -1179,9 +1179,9 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     scores: [
       {
         criterionKey: 'infrastructure', maxScore: 10, applicantScore: 7, confidence: 80,
-        evidence: 'Resume shows Docker Compose production deployments and DigitalOcean cloud management. Some AWS experience. Limited IaC depth — mentions "shell scripts for provisioning" rather than Terraform.',
+        evidence: 'Resume shows Docker Compose production deployments and DigitalOcean cloud management. Some AWS experience. Limited IaC depth â€” mentions "shell scripts for provisioning" rather than Terraform.',
         strengths: ['Docker Compose production deployment experience', 'Multi-cloud exposure (DigitalOcean and AWS)', 'Practical troubleshooting and debugging skills'],
-        gaps: ['No IaC tools (Terraform, Pulumi) — relies on shell scripts', 'No container orchestration beyond Docker Compose'],
+        gaps: ['No IaC tools (Terraform, Pulumi) â€” relies on shell scripts', 'No container orchestration beyond Docker Compose'],
       },
       {
         criterionKey: 'cicd_automation', maxScore: 10, applicantScore: 8, confidence: 85,
@@ -1248,7 +1248,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
     ],
   },
 
-  // Mateo García (screening, score: 76)
+  // Mateo GarcÃ­a (screening, score: 76)
   {
     jobIndex: 2, candidateIndex: 10, compositeScore: 76,
     summary: 'Relevant Docker and IaC experience with a good automation mindset. Resume shows potential but depth of operational experience needs validation. Recruiter follow-up pending to assess production readiness.',
@@ -1263,7 +1263,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'cicd_automation', maxScore: 10, applicantScore: 7, confidence: 78,
         evidence: 'Resume mentions "GitHub Actions for build and deploy" and "Bash automation scripts for deployment." Basic CI/CD pipeline operation.',
         strengths: ['GitHub Actions for build and deployment', 'Bash automation scripting'],
-        gaps: ['Basic pipeline operation — no advanced features described', 'No pipeline optimization or complex workflow experience'],
+        gaps: ['Basic pipeline operation â€” no advanced features described', 'No pipeline optimization or complex workflow experience'],
       },
       {
         criterionKey: 'observability', maxScore: 10, applicantScore: 6, confidence: 72,
@@ -1281,15 +1281,15 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
         criterionKey: 'relevant_experience', maxScore: 10, applicantScore: 7, confidence: 76,
         evidence: '3 years of DevOps-adjacent work transitioning from system administration. Current role combines sys admin and DevOps responsibilities.',
         strengths: ['System administration foundation transitioning to DevOps', '3 years of progressive infrastructure experience'],
-        gaps: ['Still transitioning from sys admin — DevOps depth developing', 'No SaaS product support experience'],
+        gaps: ['Still transitioning from sys admin â€” DevOps depth developing', 'No SaaS product support experience'],
       },
     ],
   },
 ]
 
-// ─────────────────────────────────────────────
-// Interview definitions — realistic multi-stage loops
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Interview definitions â€” realistic multi-stage loops
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface InterviewSeed {
   jobIndex: number
@@ -1310,11 +1310,11 @@ interface InterviewSeed {
 }
 
 const INTERVIEWS_DATA: InterviewSeed[] = [
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 0: Senior Full-Stack Engineer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // Emma Schmidt (hired) — full 3-round loop, all completed
+  // Emma Schmidt (hired) â€” full 3-round loop, all completed
   {
     jobIndex: 0, candidateIndex: 0,
     title: 'Initial Phone Screen',
@@ -1328,7 +1328,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 0, candidateIndex: 0,
-    title: 'Technical Interview — System Design & Coding',
+    title: 'Technical Interview â€” System Design & Coding',
     type: 'technical', status: 'completed',
     daysOffset: -12, hour: 14, duration: 90,
     location: 'Google Meet',
@@ -1339,17 +1339,17 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 0, candidateIndex: 0,
-    title: 'Final Panel — Culture & Leadership',
+    title: 'Final Panel â€” Culture & Leadership',
     type: 'panel', status: 'completed',
     daysOffset: -7, hour: 11, duration: 60,
-    location: 'Reqcore HQ, Friedrichstraße 123, Berlin',
+    location: 'WWMate HQ, FriedrichstraÃŸe 123, Berlin',
     notes: 'Unanimous strong hire from the panel. Great leadership examples and clear alignment with team values. Offer approved.',
     interviewers: ['Thomas Berger', 'Sarah Chen', 'Lisa Hoffmann'],
     candidateResponse: 'accepted',
     timezone: 'Europe/Berlin',
   },
 
-  // Liam Müller (offer) — 3 rounds completed, offer pending
+  // Liam MÃ¼ller (offer) â€” 3 rounds completed, offer pending
   {
     jobIndex: 0, candidateIndex: 1,
     title: 'Recruiter Screen',
@@ -1363,7 +1363,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 0, candidateIndex: 1,
-    title: 'Technical Deep-Dive — Full-Stack Architecture',
+    title: 'Technical Deep-Dive â€” Full-Stack Architecture',
     type: 'technical', status: 'completed',
     daysOffset: -10, hour: 15, duration: 90,
     location: 'Google Meet',
@@ -1384,7 +1384,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Berlin',
   },
 
-  // Sofia Dubois (offer) — 2 rounds completed
+  // Sofia Dubois (offer) â€” 2 rounds completed
   {
     jobIndex: 0, candidateIndex: 2,
     title: 'Introductory Call',
@@ -1398,7 +1398,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 0, candidateIndex: 2,
-    title: 'Technical Assessment — Live Coding',
+    title: 'Technical Assessment â€” Live Coding',
     type: 'technical', status: 'completed',
     daysOffset: -8, hour: 14, minute: 30, duration: 75,
     location: 'Google Meet',
@@ -1408,7 +1408,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Paris',
   },
 
-  // Noah van der Berg (interview) — 1 completed, 1 upcoming
+  // Noah van der Berg (interview) â€” 1 completed, 1 upcoming
   {
     jobIndex: 0, candidateIndex: 3,
     title: 'Recruiter Phone Screen',
@@ -1422,7 +1422,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 0, candidateIndex: 3,
-    title: 'Technical Interview — Architecture & Problem Solving',
+    title: 'Technical Interview â€” Architecture & Problem Solving',
     type: 'technical', status: 'scheduled',
     daysOffset: 3, hour: 14, duration: 90,
     location: 'Google Meet',
@@ -1432,7 +1432,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Amsterdam',
   },
 
-  // Olivia Rossi (interview) — 1 upcoming
+  // Olivia Rossi (interview) â€” 1 upcoming
   {
     jobIndex: 0, candidateIndex: 4,
     title: 'Initial Video Screen',
@@ -1445,7 +1445,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Rome',
   },
 
-  // James O\'Brien (interview) — 1 upcoming, pending response
+  // James O\'Brien (interview) â€” 1 upcoming, pending response
   {
     jobIndex: 0, candidateIndex: 5,
     title: 'Phone Screen',
@@ -1458,11 +1458,11 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/London',
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 1: Product Designer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // David Kim (offer) — 2 rounds completed
+  // David Kim (offer) â€” 2 rounds completed
   {
     jobIndex: 1, candidateIndex: 14,
     title: 'Portfolio Review & Design Discussion',
@@ -1486,7 +1486,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Asia/Seoul',
   },
 
-  // Elena Petrova (interview) — 1 upcoming
+  // Elena Petrova (interview) â€” 1 upcoming
   {
     jobIndex: 1, candidateIndex: 15,
     title: 'Portfolio Walkthrough & Design Process',
@@ -1499,7 +1499,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Berlin',
   },
 
-  // Alexander Johansson (interview) — 1 upcoming, tentative response
+  // Alexander Johansson (interview) â€” 1 upcoming, tentative response
   {
     jobIndex: 1, candidateIndex: 16,
     title: 'Introductory Design Interview',
@@ -1512,7 +1512,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Stockholm',
   },
 
-  // Maria Costa (interview) — 1 completed, 1 upcoming
+  // Maria Costa (interview) â€” 1 completed, 1 upcoming
   {
     jobIndex: 1, candidateIndex: 17,
     title: 'Initial Screening Call',
@@ -1536,14 +1536,14 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Lisbon',
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 2: DevOps Engineer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // James O\'Brien (hired) — 2 rounds completed
+  // James O\'Brien (hired) â€” 2 rounds completed
   {
     jobIndex: 2, candidateIndex: 5,
-    title: 'Technical Screen — Infrastructure & CI/CD',
+    title: 'Technical Screen â€” Infrastructure & CI/CD',
     type: 'technical', status: 'completed',
     daysOffset: -20, hour: 14, duration: 60,
     location: 'Google Meet',
@@ -1554,7 +1554,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 2, candidateIndex: 5,
-    title: 'System Design — Deployment Architecture',
+    title: 'System Design â€” Deployment Architecture',
     type: 'technical', status: 'completed',
     daysOffset: -14, hour: 11, duration: 90,
     location: 'Google Meet',
@@ -1564,7 +1564,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/London',
   },
 
-  // Amara Okafor (offer) — 2 rounds completed
+  // Amara Okafor (offer) â€” 2 rounds completed
   {
     jobIndex: 2, candidateIndex: 6,
     title: 'Introductory Technical Call',
@@ -1588,10 +1588,10 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Africa/Lagos',
   },
 
-  // Yuki Tanaka (interview) — 1 upcoming
+  // Yuki Tanaka (interview) â€” 1 upcoming
   {
     jobIndex: 2, candidateIndex: 7,
-    title: 'Technical Assessment — Container Orchestration',
+    title: 'Technical Assessment â€” Container Orchestration',
     type: 'technical', status: 'scheduled',
     daysOffset: 3, hour: 9, duration: 60,
     location: 'Google Meet',
@@ -1601,7 +1601,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Asia/Tokyo',
   },
 
-  // Lucas Andersson (interview) — 1 completed, 1 upcoming
+  // Lucas Andersson (interview) â€” 1 completed, 1 upcoming
   {
     jobIndex: 2, candidateIndex: 8,
     title: 'Initial Phone Screen',
@@ -1615,7 +1615,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 2, candidateIndex: 8,
-    title: 'Technical Deep-Dive — Infrastructure as Code',
+    title: 'Technical Deep-Dive â€” Infrastructure as Code',
     type: 'technical', status: 'scheduled',
     daysOffset: 8, hour: 14, duration: 75,
     location: 'Google Meet',
@@ -1625,11 +1625,11 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Stockholm',
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 3: Technical Writer
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // Felix Weber (offer) — 2 rounds completed
+  // Felix Weber (offer) â€” 2 rounds completed
   {
     jobIndex: 3, candidateIndex: 12,
     title: 'Writing Sample Review & Discussion',
@@ -1653,7 +1653,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Berlin',
   },
 
-  // David Kim (interview) — 1 upcoming
+  // David Kim (interview) â€” 1 upcoming
   {
     jobIndex: 3, candidateIndex: 14,
     title: 'Technical Writing Assessment Review',
@@ -1666,7 +1666,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Asia/Seoul',
   },
 
-  // Alexander Johansson (interview) — 1 cancelled + rescheduled
+  // Alexander Johansson (interview) â€” 1 cancelled + rescheduled
   {
     jobIndex: 3, candidateIndex: 16,
     title: 'Introductory Call',
@@ -1690,14 +1690,14 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Stockholm',
   },
 
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Job 4: Frontend Engineering Intern
-  // ──────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // Emma Schmidt (interview) — 1 completed, 1 upcoming
+  // Emma Schmidt (interview) â€” 1 completed, 1 upcoming
   {
     jobIndex: 4, candidateIndex: 0,
-    title: 'Intro Call — Internship Overview',
+    title: 'Intro Call â€” Internship Overview',
     type: 'video', status: 'completed',
     daysOffset: -5, hour: 14, duration: 30,
     location: 'Google Meet',
@@ -1708,7 +1708,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
   },
   {
     jobIndex: 4, candidateIndex: 0,
-    title: 'Technical Screen — Frontend Fundamentals',
+    title: 'Technical Screen â€” Frontend Fundamentals',
     type: 'technical', status: 'scheduled',
     daysOffset: 4, hour: 10, duration: 60,
     location: 'Google Meet',
@@ -1718,10 +1718,10 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     timezone: 'Europe/Berlin',
   },
 
-  // Sofia Dubois (interview) — 1 upcoming
+  // Sofia Dubois (interview) â€” 1 upcoming
   {
     jobIndex: 4, candidateIndex: 2,
-    title: 'Internship Interview — Skills & Motivation',
+    title: 'Internship Interview â€” Skills & Motivation',
     type: 'video', status: 'scheduled',
     daysOffset: 2, hour: 16, duration: 45,
     location: 'Google Meet',
@@ -1768,9 +1768,9 @@ function generateResponses(jobIndex: number, candidateIndex: number): Record<str
     const tools = ['Figma', 'Figma', 'Sketch', 'Figma']
     const processes = [
       'I start with stakeholder interviews to understand goals, then user research (interviews + analytics). I create low-fi wireframes in FigJam, iterate with the team, then move to high-fidelity in Figma with a component library.',
-      'My process: Research → Competitive analysis → User flows → Wireframes → Prototypes → User testing → Iteration. I always validate with real users before implementation.',
+      'My process: Research â†’ Competitive analysis â†’ User flows â†’ Wireframes â†’ Prototypes â†’ User testing â†’ Iteration. I always validate with real users before implementation.',
       'I follow a double diamond approach: Discover (research), Define (insights), Develop (ideation), Deliver (testing). I document everything in a design spec for handoff.',
-      'I believe in rapid prototyping. Quick sketches → Figma prototypes → guerrilla testing → iteration. Speed of learning beats perfection.',
+      'I believe in rapid prototyping. Quick sketches â†’ Figma prototypes â†’ guerrilla testing â†’ iteration. Speed of learning beats perfection.',
     ]
     const i = candidateIndex % tools.length
     const tool = getArrayItemOrThrow(tools, i, 'design tool response')
@@ -1799,9 +1799,9 @@ function generateResponses(jobIndex: number, candidateIndex: number): Record<str
   return {}
 }
 
-// ─────────────────────────────────────────────
-// Source Tracking — Tracking links & attribution
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Source Tracking â€” Tracking links & attribution
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SourceChannel =
   | 'linkedin' | 'indeed' | 'glassdoor' | 'ziprecruiter' | 'monster'
@@ -1829,11 +1829,11 @@ interface TrackingLinkSeed {
 }
 
 const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
-  // ── Job 0: Senior Full-Stack Engineer ──
+  // â”€â”€ Job 0: Senior Full-Stack Engineer â”€â”€
   {
     jobIndex: 0,
     channel: 'linkedin',
-    name: 'LinkedIn – Senior Engineer Spring 2026',
+    name: 'LinkedIn â€“ Senior Engineer Spring 2026',
     code: 'lnk-se01',
     utmSource: 'linkedin',
     utmMedium: 'social',
@@ -1847,7 +1847,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 0,
     channel: 'indeed',
-    name: 'Indeed – Full-Stack Engineer Listing',
+    name: 'Indeed â€“ Full-Stack Engineer Listing',
     code: 'ind-se02',
     utmSource: 'indeed',
     utmMedium: 'job_board',
@@ -1860,7 +1860,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 0,
     channel: 'stackoverflow',
-    name: 'Stack Overflow Jobs – TypeScript Senior',
+    name: 'Stack Overflow Jobs â€“ TypeScript Senior',
     code: 'so-se003',
     utmSource: 'stackoverflow',
     utmMedium: 'job_board',
@@ -1873,7 +1873,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 0,
     channel: 'referral',
-    name: 'Employee Referral – Engineering Team',
+    name: 'Employee Referral â€“ Engineering Team',
     code: 'ref-se04',
     utmSource: 'referral',
     utmMedium: 'internal',
@@ -1884,11 +1884,11 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
     daysAgoCreated: 24,
   },
 
-  // ── Job 1: Product Designer ──
+  // â”€â”€ Job 1: Product Designer â”€â”€
   {
     jobIndex: 1,
     channel: 'linkedin',
-    name: 'LinkedIn – Product Designer EU',
+    name: 'LinkedIn â€“ Product Designer EU',
     code: 'lnk-pd05',
     utmSource: 'linkedin',
     utmMedium: 'social',
@@ -1902,7 +1902,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 1,
     channel: 'other',
-    name: 'Dribbble – Designer Position Board',
+    name: 'Dribbble â€“ Designer Position Board',
     code: 'drb-pd06',
     utmSource: 'dribbble',
     utmMedium: 'job_board',
@@ -1915,7 +1915,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 1,
     channel: 'twitter',
-    name: 'Twitter/X – Design Hiring Thread',
+    name: 'Twitter/X â€“ Design Hiring Thread',
     code: 'tw-pd007',
     utmSource: 'twitter',
     utmMedium: 'social',
@@ -1927,11 +1927,11 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
     daysAgoCreated: 18,
   },
 
-  // ── Job 2: DevOps Engineer ──
+  // â”€â”€ Job 2: DevOps Engineer â”€â”€
   {
     jobIndex: 2,
     channel: 'linkedin',
-    name: 'LinkedIn – DevOps Contract Remote',
+    name: 'LinkedIn â€“ DevOps Contract Remote',
     code: 'lnk-do08',
     utmSource: 'linkedin',
     utmMedium: 'social',
@@ -1944,7 +1944,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 2,
     channel: 'weworkremotely',
-    name: 'WeWorkRemotely – DevOps Listing',
+    name: 'WeWorkRemotely â€“ DevOps Listing',
     code: 'wwr-do09',
     utmSource: 'weworkremotely',
     utmMedium: 'job_board',
@@ -1957,7 +1957,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 2,
     channel: 'reddit',
-    name: 'Reddit r/devops – Hiring Post',
+    name: 'Reddit r/devops â€“ Hiring Post',
     code: 'rdt-do10',
     utmSource: 'reddit',
     utmMedium: 'social',
@@ -1969,11 +1969,11 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
     daysAgoCreated: 28,
   },
 
-  // ── Job 3: Technical Writer ──
+  // â”€â”€ Job 3: Technical Writer â”€â”€
   {
     jobIndex: 3,
     channel: 'email',
-    name: 'Newsletter – Tech Writer Part-Time',
+    name: 'Newsletter â€“ Tech Writer Part-Time',
     code: 'eml-tw11',
     utmSource: 'newsletter',
     utmMedium: 'email',
@@ -1986,7 +1986,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 3,
     channel: 'career_site',
-    name: 'Careers Page – Technical Writer',
+    name: 'Careers Page â€“ Technical Writer',
     code: 'web-tw12',
     utmSource: 'career_site',
     utmMedium: 'organic',
@@ -1997,11 +1997,11 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
     daysAgoCreated: 16,
   },
 
-  // ── Job 4: Frontend Intern ──
+  // â”€â”€ Job 4: Frontend Intern â”€â”€
   {
     jobIndex: 4,
     channel: 'handshake',
-    name: 'Handshake – Frontend Intern Berlin',
+    name: 'Handshake â€“ Frontend Intern Berlin',
     code: 'hs-fi013',
     utmSource: 'handshake',
     utmMedium: 'job_board',
@@ -2014,7 +2014,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: 4,
     channel: 'event',
-    name: 'TU Berlin Career Fair – Booth QR',
+    name: 'TU Berlin Career Fair â€“ Booth QR',
     code: 'evt-fi14',
     utmSource: 'tu_berlin_fair',
     utmMedium: 'event',
@@ -2025,11 +2025,11 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
     daysAgoCreated: 12,
   },
 
-  // ── Org-wide links (no specific job) ──
+  // â”€â”€ Org-wide links (no specific job) â”€â”€
   {
     jobIndex: null,
     channel: 'linkedin',
-    name: 'LinkedIn Company Page – All Roles',
+    name: 'LinkedIn Company Page â€“ All Roles',
     code: 'lnk-org1',
     utmSource: 'linkedin',
     utmMedium: 'social',
@@ -2042,7 +2042,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: null,
     channel: 'google_jobs',
-    name: 'Google Jobs – Aggregated Listings',
+    name: 'Google Jobs â€“ Aggregated Listings',
     code: 'ggl-org2',
     utmSource: 'google_jobs',
     utmMedium: 'aggregator',
@@ -2055,7 +2055,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: null,
     channel: 'agency',
-    name: 'TechTalent Agency – Q1 Pipeline',
+    name: 'TechTalent Agency â€“ Q1 Pipeline',
     code: 'agt-org3',
     utmSource: 'techtalent_agency',
     utmMedium: 'agency',
@@ -2068,7 +2068,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: null,
     channel: 'facebook',
-    name: 'Facebook – Berlin Tech Jobs Group',
+    name: 'Facebook â€“ Berlin Tech Jobs Group',
     code: 'fb-org04',
     utmSource: 'facebook',
     utmMedium: 'social',
@@ -2081,7 +2081,7 @@ const TRACKING_LINKS_DATA: TrackingLinkSeed[] = [
   {
     jobIndex: null,
     channel: 'glassdoor',
-    name: 'Glassdoor – Company Profile',
+    name: 'Glassdoor â€“ Company Profile',
     code: 'gd-org05',
     utmSource: 'glassdoor',
     utmMedium: 'job_board',
@@ -2113,7 +2113,7 @@ interface ApplicationSourceSeed {
 }
 
 const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
-  // ── Job 0: Senior Full-Stack Engineer (14 applications) ──
+  // â”€â”€ Job 0: Senior Full-Stack Engineer (14 applications) â”€â”€
   // Via LinkedIn tracking link
   { jobIndex: 0, candidateIndex: 0, channel: 'linkedin', trackingLinkIndex: 0, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'senior-engineer-spring-2026', utmContent: 'sponsored-post', referrerDomain: 'linkedin.com' },
   { jobIndex: 0, candidateIndex: 1, channel: 'linkedin', trackingLinkIndex: 0, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'senior-engineer-spring-2026', utmContent: 'sponsored-post', referrerDomain: 'linkedin.com' },
@@ -2129,12 +2129,12 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 0, candidateIndex: 7, channel: 'referral', trackingLinkIndex: 3, utmSource: 'referral', utmMedium: 'internal', utmCampaign: 'eng-referral-bonus' },
   // Organic / UTM-only (no tracking link)
   { jobIndex: 0, candidateIndex: 9, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
-  { jobIndex: 0, candidateIndex: 10, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 0, candidateIndex: 10, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'WWMate.com' },
   { jobIndex: 0, candidateIndex: 11, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 0, candidateIndex: 12, channel: 'linkedin', trackingLinkIndex: 0, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'senior-engineer-spring-2026', referrerDomain: 'linkedin.com' },
   { jobIndex: 0, candidateIndex: 13, channel: 'indeed', trackingLinkIndex: 1, utmSource: 'indeed', utmMedium: 'job_board', referrerDomain: 'indeed.com' },
 
-  // ── Job 1: Product Designer (12 applications) ──
+  // â”€â”€ Job 1: Product Designer (12 applications) â”€â”€
   // Via LinkedIn tracking link
   { jobIndex: 1, candidateIndex: 14, channel: 'linkedin', trackingLinkIndex: 4, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'product-designer-eu-2026', utmContent: 'carousel-post', referrerDomain: 'linkedin.com' },
   { jobIndex: 1, candidateIndex: 15, channel: 'linkedin', trackingLinkIndex: 4, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'product-designer-eu-2026', referrerDomain: 'linkedin.com' },
@@ -2146,13 +2146,13 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 1, candidateIndex: 19, channel: 'twitter', trackingLinkIndex: 6, utmSource: 'twitter', utmMedium: 'social', utmCampaign: 'design-hiring-thread', referrerDomain: 'x.com' },
   { jobIndex: 1, candidateIndex: 20, channel: 'twitter', trackingLinkIndex: 6, utmSource: 'twitter', utmMedium: 'social', utmCampaign: 'design-hiring-thread', referrerDomain: 'x.com' },
   // Organic / no tracking link
-  { jobIndex: 1, candidateIndex: 21, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 1, candidateIndex: 21, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'WWMate.com' },
   { jobIndex: 1, candidateIndex: 22, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
   { jobIndex: 1, candidateIndex: 23, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 1, candidateIndex: 24, channel: 'linkedin', trackingLinkIndex: 4, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'product-designer-eu-2026', referrerDomain: 'linkedin.com' },
   { jobIndex: 1, candidateIndex: 25, channel: 'agency', trackingLinkIndex: 16, utmSource: 'techtalent_agency', utmMedium: 'agency', utmCampaign: 'techtalent-q1-2026' },
 
-  // ── Job 2: DevOps Engineer (11 applications) ──
+  // â”€â”€ Job 2: DevOps Engineer (11 applications) â”€â”€
   // Via LinkedIn tracking link
   { jobIndex: 2, candidateIndex: 5, channel: 'linkedin', trackingLinkIndex: 7, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'devops-contract-worldwide', referrerDomain: 'linkedin.com' },
   { jobIndex: 2, candidateIndex: 6, channel: 'linkedin', trackingLinkIndex: 7, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'devops-contract-worldwide', referrerDomain: 'linkedin.com' },
@@ -2160,31 +2160,31 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 2, candidateIndex: 7, channel: 'weworkremotely', trackingLinkIndex: 8, utmSource: 'weworkremotely', utmMedium: 'job_board', utmCampaign: 'devops-remote-2026', referrerDomain: 'weworkremotely.com' },
   { jobIndex: 2, candidateIndex: 8, channel: 'weworkremotely', trackingLinkIndex: 8, utmSource: 'weworkremotely', utmMedium: 'job_board', referrerDomain: 'weworkremotely.com' },
   { jobIndex: 2, candidateIndex: 9, channel: 'weworkremotely', trackingLinkIndex: 8, utmSource: 'weworkremotely', utmMedium: 'job_board', referrerDomain: 'weworkremotely.com' },
-  // Via Reddit tracking link (inactive link — still attributed)
+  // Via Reddit tracking link (inactive link â€” still attributed)
   { jobIndex: 2, candidateIndex: 10, channel: 'reddit', trackingLinkIndex: 9, utmSource: 'reddit', utmMedium: 'social', utmCampaign: 'r-devops-hiring', utmContent: 'march-post', referrerDomain: 'reddit.com' },
   // Organic / no tracking link
-  { jobIndex: 2, candidateIndex: 26, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 2, candidateIndex: 26, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'WWMate.com' },
   { jobIndex: 2, candidateIndex: 27, channel: 'glassdoor', trackingLinkIndex: 18, utmSource: 'glassdoor', utmMedium: 'job_board', utmCampaign: 'glassdoor-profile-2026', referrerDomain: 'glassdoor.com' },
   { jobIndex: 2, candidateIndex: 28, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 2, candidateIndex: 29, channel: 'linkedin', trackingLinkIndex: 7, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'devops-contract-worldwide', referrerDomain: 'linkedin.com' },
   { jobIndex: 2, candidateIndex: 13, channel: 'indeed', trackingLinkIndex: null, utmSource: 'indeed', utmMedium: 'job_board', referrerDomain: 'indeed.com' },
 
-  // ── Job 3: Technical Writer (10 applications) ──
+  // â”€â”€ Job 3: Technical Writer (10 applications) â”€â”€
   // Via email newsletter tracking link
   { jobIndex: 3, candidateIndex: 12, channel: 'email', trackingLinkIndex: 10, utmSource: 'newsletter', utmMedium: 'email', utmCampaign: 'writer-newsletter-mar-2026' },
   { jobIndex: 3, candidateIndex: 14, channel: 'email', trackingLinkIndex: 10, utmSource: 'newsletter', utmMedium: 'email', utmCampaign: 'writer-newsletter-mar-2026' },
   { jobIndex: 3, candidateIndex: 16, channel: 'email', trackingLinkIndex: 10, utmSource: 'newsletter', utmMedium: 'email', utmCampaign: 'writer-newsletter-mar-2026' },
   // Via careers page tracking link
-  { jobIndex: 3, candidateIndex: 18, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', utmCampaign: 'careers-page', referrerDomain: 'reqcore.com' },
-  { jobIndex: 3, candidateIndex: 20, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'reqcore.com' },
+  { jobIndex: 3, candidateIndex: 18, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', utmCampaign: 'careers-page', referrerDomain: 'WWMate.com' },
+  { jobIndex: 3, candidateIndex: 20, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'WWMate.com' },
   // Organic / no tracking link
   { jobIndex: 3, candidateIndex: 22, channel: 'linkedin', trackingLinkIndex: 14, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'company-page-hiring', referrerDomain: 'linkedin.com' },
   { jobIndex: 3, candidateIndex: 24, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
   { jobIndex: 3, candidateIndex: 26, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 3, candidateIndex: 28, channel: 'referral', trackingLinkIndex: null, utmSource: 'referral', utmMedium: 'internal' },
-  { jobIndex: 3, candidateIndex: 29, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'reqcore.com' },
+  { jobIndex: 3, candidateIndex: 29, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'WWMate.com' },
 
-  // ── Job 4: Frontend Engineering Intern (10 applications) ──
+  // â”€â”€ Job 4: Frontend Engineering Intern (10 applications) â”€â”€
   // Via Handshake tracking link
   { jobIndex: 4, candidateIndex: 0, channel: 'handshake', trackingLinkIndex: 12, utmSource: 'handshake', utmMedium: 'job_board', utmCampaign: 'intern-summer-2026', referrerDomain: 'handshake.com' },
   { jobIndex: 4, candidateIndex: 2, channel: 'handshake', trackingLinkIndex: 12, utmSource: 'handshake', utmMedium: 'job_board', utmCampaign: 'intern-summer-2026', referrerDomain: 'handshake.com' },
@@ -2194,22 +2194,22 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 4, candidateIndex: 11, channel: 'event', trackingLinkIndex: 13, utmSource: 'tu_berlin_fair', utmMedium: 'event', utmCampaign: 'career-fair-spring-2026' },
   { jobIndex: 4, candidateIndex: 15, channel: 'event', trackingLinkIndex: 13, utmSource: 'tu_berlin_fair', utmMedium: 'event', utmCampaign: 'career-fair-spring-2026' },
   // Organic / no tracking link
-  { jobIndex: 4, candidateIndex: 17, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 4, candidateIndex: 17, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'WWMate.com' },
   { jobIndex: 4, candidateIndex: 19, channel: 'linkedin', trackingLinkIndex: 14, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'company-page-hiring', referrerDomain: 'linkedin.com' },
   { jobIndex: 4, candidateIndex: 21, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 4, candidateIndex: 23, channel: 'handshake', trackingLinkIndex: 12, utmSource: 'handshake', utmMedium: 'job_board', referrerDomain: 'handshake.com' },
 ]
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Main Seed Function
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function seed() {
-  console.log('🌱 Seeding Reqcore demo data...\n')
+  console.log('ðŸŒ± Seeding WWMate demo data...\n')
 
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Clean up legacy applirank.com seed data
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [legacyOrgResult, legacyUserResult] = await Promise.all([
     db
       .select({ id: schema.organization.id })
@@ -2225,25 +2225,25 @@ async function seed() {
   const [legacyOrg] = legacyOrgResult
   const [legacyUser] = legacyUserResult
   if (legacyOrg || legacyUser) {
-    console.log('🧹 Removing legacy applirank.com demo data...')
+    console.log('ðŸ§¹ Removing legacy applirank.com demo data...')
 
     if (legacyOrg) {
       // All child tables (jobs, candidates, applications, members, etc.) have
       // onDelete: 'cascade' so deleting the org removes everything beneath it.
       await db.delete(schema.organization).where(eq(schema.organization.id, legacyOrg.id))
-      console.log(`   ✅ Deleted legacy org: ${LEGACY_ORG_SLUG}`)
+      console.log(`   âœ… Deleted legacy org: ${LEGACY_ORG_SLUG}`)
     }
 
     if (legacyUser) {
       // sessions and accounts also cascade from the user row
       await db.delete(schema.user).where(eq(schema.user.id, legacyUser.id))
-      console.log(`   ✅ Deleted legacy user: ${LEGACY_DEMO_EMAIL}`)
+      console.log(`   âœ… Deleted legacy user: ${LEGACY_DEMO_EMAIL}`)
     }
   }
 
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Upsert demo user (handles email rename scenarios)
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [existingDemoUser] = await db
     .select({ id: schema.user.id })
     .from(schema.user)
@@ -2260,7 +2260,7 @@ async function seed() {
       .update(schema.account)
       .set({ password: hashedPassword, updatedAt: new Date() })
       .where(eq(schema.account.userId, userId))
-    console.log(`✅ Demo user already exists: ${DEMO_EMAIL}`)
+    console.log(`âœ… Demo user already exists: ${DEMO_EMAIL}`)
   }
   else {
     userId = id()
@@ -2281,12 +2281,12 @@ async function seed() {
       createdAt: daysAgo(30),
       updatedAt: daysAgo(30),
     })
-    console.log(`✅ Created demo user: ${DEMO_EMAIL}`)
+    console.log(`âœ… Created demo user: ${DEMO_EMAIL}`)
   }
 
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Upsert demo org (handles partial migration)
-  // ─────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [existingOrg] = await db
     .select({ id: schema.organization.id })
     .from(schema.organization)
@@ -2294,7 +2294,7 @@ async function seed() {
     .limit(1)
 
   if (existingOrg) {
-    // Org exists — ensure the demo user is a member, then stop
+    // Org exists â€” ensure the demo user is a member, then stop
     const [existingMember] = await db
       .select({ id: schema.member.id })
       .from(schema.member)
@@ -2309,10 +2309,10 @@ async function seed() {
         role: 'owner',
         createdAt: daysAgo(30),
       })
-      console.log('✅ Linked demo user to existing org as owner')
+      console.log('âœ… Linked demo user to existing org as owner')
     }
 
-    console.log('⚠️  Demo organization already exists. Skipping full seed.')
+    console.log('âš ï¸  Demo organization already exists. Skipping full seed.')
     console.log('   To re-seed all data, delete the organization first or reset the database.')
     await client.end()
     return
@@ -2337,7 +2337,7 @@ async function seed() {
     createdAt: daysAgo(30),
   })
 
-  console.log(`✅ Created organization: ${DEMO_ORG_NAME}`)
+  console.log(`âœ… Created organization: ${DEMO_ORG_NAME}`)
 
   // 3. Create jobs
   const jobIds: string[] = []
@@ -2362,7 +2362,7 @@ async function seed() {
     })
   }
 
-  console.log(`✅ Created ${JOBS_DATA.length} jobs`)
+  console.log(`âœ… Created ${JOBS_DATA.length} jobs`)
 
   // 4. Create candidates
   const candidateIds: string[] = []
@@ -2384,7 +2384,7 @@ async function seed() {
     })
   }
 
-  console.log(`✅ Created ${CANDIDATES_DATA.length} candidates`)
+  console.log(`âœ… Created ${CANDIDATES_DATA.length} candidates`)
 
   // 5. Create custom questions for first 3 jobs
   const questionSets = [FULLSTACK_QUESTIONS, DESIGNER_QUESTIONS, DEVOPS_QUESTIONS]
@@ -2425,11 +2425,11 @@ async function seed() {
     questionIdsByJob.set(jobIndex, questionIds)
   }
 
-  console.log(`✅ Created custom questions for ${questionSets.length} jobs`)
+  console.log(`âœ… Created custom questions for ${questionSets.length} jobs`)
 
   // 6. Create applications with status distribution
   let totalApps = 0
-  const applicationMap = new Map<string, string>() // key: "jobIndex-candidateIndex" → applicationId
+  const applicationMap = new Map<string, string>() // key: "jobIndex-candidateIndex" â†’ applicationId
 
   for (let jobIndex = 0; jobIndex < JOB_APPLICATIONS.length; jobIndex++) {
     const apps = JOB_APPLICATIONS[jobIndex]
@@ -2484,7 +2484,7 @@ async function seed() {
     }
   }
 
-  console.log(`✅ Created ${totalApps} applications with pipeline distribution`)
+  console.log(`âœ… Created ${totalApps} applications with pipeline distribution`)
 
   // 6b. Create tracking links and application source attribution
   const trackingLinkIds: string[] = []
@@ -2514,7 +2514,7 @@ async function seed() {
     })
   }
 
-  console.log(`✅ Created ${trackingLinkIds.length} tracking links across ${new Set(TRACKING_LINKS_DATA.map(l => l.channel)).size} channels`)
+  console.log(`âœ… Created ${trackingLinkIds.length} tracking links across ${new Set(TRACKING_LINKS_DATA.map(l => l.channel)).size} channels`)
 
   // Create application source records for attributed applications
   let totalSources = 0
@@ -2522,7 +2522,7 @@ async function seed() {
   for (const src of APPLICATION_SOURCES_DATA) {
     const applicationId = applicationMap.get(`${src.jobIndex}-${src.candidateIndex}`)
     if (!applicationId) {
-      console.warn(`⚠️  Skipping source attribution — no application found for job ${src.jobIndex}, candidate ${src.candidateIndex}`)
+      console.warn(`âš ï¸  Skipping source attribution â€” no application found for job ${src.jobIndex}, candidate ${src.candidateIndex}`)
       continue
     }
 
@@ -2554,8 +2554,8 @@ async function seed() {
   }
   const trackedCount = APPLICATION_SOURCES_DATA.filter(s => s.trackingLinkIndex !== null).length
 
-  console.log(`✅ Created ${totalSources} application source records (${trackedCount} via tracking links)`)
-  console.log(`   📊 Source channels: ${Object.entries(channelCounts).map(([ch, n]) => `${ch}: ${n}`).join(', ')}`)
+  console.log(`âœ… Created ${totalSources} application source records (${trackedCount} via tracking links)`)
+  console.log(`   ðŸ“Š Source channels: ${Object.entries(channelCounts).map(([ch, n]) => `${ch}: ${n}`).join(', ')}`)
 
   // 7. Create AI scoring criteria and scores for first 3 jobs
   let totalCriteria = 0
@@ -2587,13 +2587,13 @@ async function seed() {
     }
   }
 
-  console.log(`✅ Created ${totalCriteria} scoring criteria across ${JOB_CRITERIA.length} jobs`)
+  console.log(`âœ… Created ${totalCriteria} scoring criteria across ${JOB_CRITERIA.length} jobs`)
 
   // Insert criterion scores and analysis runs for scored applications
   for (const appScoring of AI_SCORING_DATA) {
     const applicationId = applicationMap.get(`${appScoring.jobIndex}-${appScoring.candidateIndex}`)
     if (!applicationId) {
-      console.warn(`⚠️  Skipping AI scores — no application for job ${appScoring.jobIndex}, candidate ${appScoring.candidateIndex}`)
+      console.warn(`âš ï¸  Skipping AI scores â€” no application for job ${appScoring.jobIndex}, candidate ${appScoring.candidateIndex}`)
       continue
     }
 
@@ -2658,7 +2658,7 @@ async function seed() {
     totalRuns++
   }
 
-  console.log(`✅ Created ${totalScores} criterion scores and ${totalRuns} analysis runs`)
+  console.log(`âœ… Created ${totalScores} criterion scores and ${totalRuns} analysis runs`)
 
   // Insert AI config with pricing so the dashboard shows costs
   const INPUT_PRICE_PER_1M = '0.1500' // GPT-4o-mini input
@@ -2698,14 +2698,14 @@ async function seed() {
   const totalCost = (totalPrompt / 1_000_000) * Number(INPUT_PRICE_PER_1M)
     + (totalCompletion / 1_000_000) * Number(OUTPUT_PRICE_PER_1M)
 
-  console.log(`✅ Created AI config with pricing (input: $${INPUT_PRICE_PER_1M}/1M, output: $${OUTPUT_PRICE_PER_1M}/1M)`)
-  console.log(`   📊 Total demo cost: $${totalCost.toFixed(4)} (${totalPrompt} prompt + ${totalCompletion} completion tokens)`)
+  console.log(`âœ… Created AI config with pricing (input: $${INPUT_PRICE_PER_1M}/1M, output: $${OUTPUT_PRICE_PER_1M}/1M)`)
+  console.log(`   ðŸ“Š Total demo cost: $${totalCost.toFixed(4)} (${totalPrompt} prompt + ${totalCompletion} completion tokens)`)
 
   // Enable autoScoreOnApply on the Senior Full-Stack Engineer job to showcase the feature
   const firstJobId = jobIds[0]
   if (firstJobId) {
     await db.update(schema.job).set({ autoScoreOnApply: true }).where(eq(schema.job.id, firstJobId))
-    console.log(`✅ Enabled auto-score on apply for: ${JOBS_DATA[0]?.title}`)
+    console.log(`âœ… Enabled auto-score on apply for: ${JOBS_DATA[0]?.title}`)
   }
 
   // 8. Create interviews
@@ -2715,7 +2715,7 @@ async function seed() {
   for (const iv of INTERVIEWS_DATA) {
     const applicationId = applicationMap.get(`${iv.jobIndex}-${iv.candidateIndex}`)
     if (!applicationId) {
-      console.warn(`⚠️  Skipping interview "${iv.title}" — no application found for job ${iv.jobIndex}, candidate ${iv.candidateIndex}`)
+      console.warn(`âš ï¸  Skipping interview "${iv.title}" â€” no application found for job ${iv.jobIndex}, candidate ${iv.candidateIndex}`)
       interviewIds.push('') // placeholder to keep index alignment
       continue
     }
@@ -2750,7 +2750,7 @@ async function seed() {
     totalInterviews++
   }
 
-  console.log(`✅ Created ${totalInterviews} interviews across the pipeline`)
+  console.log(`âœ… Created ${totalInterviews} interviews across the pipeline`)
 
   // 9. Create activity log entries so the Timeline page is populated
   let totalActivities = 0
@@ -2894,7 +2894,7 @@ async function seed() {
     totalActivities++
   }
 
-  console.log(`✅ Created ${totalActivities} activity log entries for timeline`)
+  console.log(`âœ… Created ${totalActivities} activity log entries for timeline`)
 
   // Summary
   const statusCounts: Record<string, number> = {}
@@ -2904,12 +2904,12 @@ async function seed() {
     }
   }
 
-  console.log(`\n📊 Pipeline distribution:`)
+  console.log(`\nðŸ“Š Pipeline distribution:`)
   for (const [status, count] of Object.entries(statusCounts)) {
     console.log(`   ${status}: ${count}`)
   }
 
-  console.log(`\n🎉 Seed complete!`)
+  console.log(`\nðŸŽ‰ Seed complete!`)
   console.log(`\n   Sign in with:`)
   console.log(`   Email:    ${DEMO_EMAIL}`)
   console.log(`   Password: ${DEMO_PASSWORD}`)
@@ -2918,11 +2918,12 @@ async function seed() {
   await client.end()
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Run
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 seed().catch((err) => {
-  console.error('❌ Seed failed:', err)
+  console.error('âŒ Seed failed:', err)
   client.end().then(() => process.exit(1))
 })
+

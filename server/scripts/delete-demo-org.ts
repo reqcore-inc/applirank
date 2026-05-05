@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Deletes the demo organization and all cascaded data so seed.ts can re-run.
  * Usage: npx tsx server/scripts/delete-demo-org.ts
  */
@@ -25,7 +25,7 @@ async function main() {
   const [org] = await db
     .select({ id: schema.organization.id })
     .from(schema.organization)
-    .where(eq(schema.organization.slug, 'reqcore-demo'))
+    .where(eq(schema.organization.slug, 'WWMate-demo'))
     .limit(1)
 
   if (org) {
@@ -36,7 +36,7 @@ async function main() {
       .where(eq(schema.session.activeOrganizationId, orgId))
       .returning({ id: schema.session.id })
     if (deleted.length)
-      console.log(`🔒 Invalidated ${deleted.length} session(s) tied to demo org`)
+      console.log(`ðŸ”’ Invalidated ${deleted.length} session(s) tied to demo org`)
 
     // Delete in dependency order to avoid FK violations
     // (some migrations may not have applied CASCADE correctly)
@@ -59,16 +59,17 @@ async function main() {
     await db.delete(schema.member).where(eq(schema.member.organizationId, orgId))
     await db.delete(schema.invitation).where(eq(schema.invitation.organizationId, orgId))
     await db.delete(schema.organization).where(eq(schema.organization.id, orgId))
-    console.log(`✅ Deleted demo organization and all related data: ${orgId}`)
+    console.log(`âœ… Deleted demo organization and all related data: ${orgId}`)
   }
   else {
-    console.log('ℹ️  No demo organization found — nothing to delete.')
+    console.log('â„¹ï¸  No demo organization found â€” nothing to delete.')
   }
 
   await client.end()
 }
 
 main().catch((err) => {
-  console.error('❌ Failed:', err)
+  console.error('âŒ Failed:', err)
   client.end().then(() => process.exit(1))
 })
+

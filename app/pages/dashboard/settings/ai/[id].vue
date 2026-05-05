@@ -1,6 +1,6 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
- * Settings → AI → Edit
+ * Settings â†’ AI â†’ Edit
  *
  * Full-page form for editing an existing AI configuration.
  */
@@ -9,7 +9,7 @@ import { Loader2, AlertTriangle } from 'lucide-vue-next'
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Edit AI model — Reqcore',
+  title: 'Edit AI model â€” WWMate',
   description: 'Update an existing AI provider configuration.',
 })
 
@@ -119,3 +119,4 @@ function onCancel() {
     />
   </div>
 </template>
+

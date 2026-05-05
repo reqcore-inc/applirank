@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ArrowLeft, Pencil, Trash2, Mail, Phone, Calendar, Clock, Briefcase, FileText, Plus, Upload, Download, Eye, X, AlertTriangle, Venus, Mars } from 'lucide-vue-next'
 import { z } from 'zod'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
@@ -19,20 +19,20 @@ const { formatCandidateName, formatDate } = useOrgSettings()
 useSeoMeta({
   title: computed(() =>
     candidate.value
-      ? `${candidate.value.firstName} ${candidate.value.lastName} — Reqcore`
-      : 'Candidate — Reqcore',
+      ? `${candidate.value.firstName} ${candidate.value.lastName} â€” WWMate`
+      : 'Candidate â€” WWMate',
   ),
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Tabs
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const activeTab = ref<'applications' | 'documents'>('applications')
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Edit mode
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isEditing = ref(false)
 const editForm = ref({
@@ -126,9 +126,9 @@ async function handleSave() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Delete
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isDeleting = ref(false)
 const showDeleteConfirm = ref(false)
@@ -145,9 +145,9 @@ async function handleDelete() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const applicationStatusClasses: Record<string, string> = {
   new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
@@ -171,9 +171,9 @@ const documentTypeLabels: Record<string, string> = {
   other: 'Other',
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Apply to job modal
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showApplyModal = ref(false)
 
@@ -182,9 +182,9 @@ function handleApplied() {
   refresh()
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Interview scheduling
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showInterviewSidebar = ref(false)
 const interviewTargetApp = ref<{ id: string; jobTitle: string } | null>(null)
@@ -194,9 +194,9 @@ function openScheduleInterview(app: { id: string; job: { title: string } }) {
   showInterviewSidebar.value = true
 }
 
-// ─────────────────────────────────────────────
-// Documents — upload, download, delete
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Documents â€” upload, download, delete
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { uploadDocument, downloadDocument, getPreviewUrl, deleteDocument } = useDocuments()
 
@@ -220,7 +220,7 @@ const previewError = ref<string | null>(null)
 const isPdfPreview = computed(() => previewMimeType.value === 'application/pdf')
 
 async function handlePreview(docId: string, mimeType?: string) {
-  // Only PDFs can be previewed inline — for DOC/DOCX, download directly
+  // Only PDFs can be previewed inline â€” for DOC/DOCX, download directly
   if (mimeType && mimeType !== 'application/pdf') {
     await handleDownload(docId)
     return
@@ -235,7 +235,7 @@ async function handlePreview(docId: string, mimeType?: string) {
   previewFilename.value = doc?.originalFilename ?? 'Document'
   previewMimeType.value = doc?.mimeType ?? 'application/pdf'
 
-  // Use the API endpoint URL directly — server streams the PDF (same-origin)
+  // Use the API endpoint URL directly â€” server streams the PDF (same-origin)
   previewUrl.value = getPreviewUrl(docId)
 }
 
@@ -295,7 +295,7 @@ async function handleDeleteDoc(docId: string) {
 
 /** Format bytes into a human-readable string */
 function formatFileSize(bytes: number | null | undefined): string {
-  if (!bytes) return '—'
+  if (!bytes) return 'â€”'
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
@@ -315,7 +315,7 @@ function formatFileSize(bytes: number | null | undefined): string {
 
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading candidate…
+      Loading candidateâ€¦
     </div>
 
     <!-- Error / not found -->
@@ -388,7 +388,7 @@ function formatFileSize(bytes: number | null | undefined): string {
             <div>
               <dt class="text-surface-400">Phone</dt>
               <dd class="text-surface-700 dark:text-surface-200 font-medium">
-                {{ candidate.phone || '—' }}
+                {{ candidate.phone || 'â€”' }}
               </dd>
             </div>
             <div v-if="candidate.gender">
@@ -552,7 +552,7 @@ function formatFileSize(bytes: number | null | undefined): string {
             @change="handleFileSelected"
           />
 
-          <!-- ── Inline PDF preview (replaces document list when active) ── -->
+          <!-- â”€â”€ Inline PDF preview (replaces document list when active) â”€â”€ -->
           <template v-if="showPreview">
             <!-- Preview toolbar -->
             <div class="flex items-center justify-between mb-3">
@@ -598,7 +598,7 @@ function formatFileSize(bytes: number | null | undefined): string {
               </button>
             </div>
 
-            <!-- PDF iframe — same-origin, server streams the bytes -->
+            <!-- PDF iframe â€” same-origin, server streams the bytes -->
             <iframe
               v-else-if="previewUrl && isPdfPreview"
               :src="previewUrl"
@@ -608,7 +608,7 @@ function formatFileSize(bytes: number | null | undefined): string {
             />
           </template>
 
-          <!-- ── Document list (normal state) ── -->
+          <!-- â”€â”€ Document list (normal state) â”€â”€ -->
           <template v-else>
             <!-- Upload controls -->
             <div class="flex items-center justify-between mb-3">
@@ -628,7 +628,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 @click="triggerFileSelect"
               >
                 <Upload class="size-3.5" />
-                {{ isUploading ? 'Uploading…' : 'Upload Document' }}
+                {{ isUploading ? 'Uploadingâ€¦' : 'Upload Document' }}
               </button>
             </div>
 
@@ -649,7 +649,7 @@ function formatFileSize(bytes: number | null | undefined): string {
               <FileText class="size-8 text-surface-300 dark:text-surface-600 mx-auto mb-2" />
               <p class="text-sm text-surface-500 dark:text-surface-400">No documents yet.</p>
               <p class="text-xs text-surface-400 mt-1">
-                Upload a resume, cover letter, or other document (PDF, DOC, DOCX — max 10 MB).
+                Upload a resume, cover letter, or other document (PDF, DOC, DOCX â€” max 10 MB).
               </p>
             </div>
 
@@ -670,8 +670,8 @@ function formatFileSize(bytes: number | null | undefined): string {
                     </p>
                     <span class="text-xs text-surface-400">
                       {{ documentTypeLabels[doc.type] ?? doc.type }}
-                      · <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
-                      <template v-if="doc.mimeType === 'application/pdf'"> · <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
+                      Â· <TimelineDateLink :date="doc.createdAt">{{ new Date(doc.createdAt).toLocaleDateString() }}</TimelineDateLink>
+                      <template v-if="doc.mimeType === 'application/pdf'"> Â· <span class="text-brand-500 dark:text-brand-400">Click to preview</span></template>
                     </span>
                   </div>
                 </div>
@@ -725,7 +725,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                     class="rounded-lg bg-danger-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 transition-colors"
                     @click="handleDeleteDoc(showDocDeleteConfirm!)"
                   >
-                    {{ isDeletingDoc ? 'Deleting…' : 'Delete' }}
+                    {{ isDeletingDoc ? 'Deletingâ€¦' : 'Delete' }}
                   </button>
                 </div>
               </div>
@@ -801,13 +801,13 @@ function formatFileSize(bytes: number | null | undefined): string {
           <div>
             <label for="edit-displayName" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
               Display Name
-              <span class="ml-1 text-xs font-normal text-surface-400">(optional — overrides default name format)</span>
+              <span class="ml-1 text-xs font-normal text-surface-400">(optional â€” overrides default name format)</span>
             </label>
             <input
               id="edit-displayName"
               v-model="editForm.displayName"
               type="text"
-              placeholder="e.g. Nguyễn Văn A"
+              placeholder="e.g. Nguyá»…n VÄƒn A"
               class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
             />
           </div>
@@ -853,7 +853,7 @@ function formatFileSize(bytes: number | null | undefined): string {
               :disabled="isSaving"
               class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {{ isSaving ? 'Saving…' : 'Save Changes' }}
+              {{ isSaving ? 'Savingâ€¦' : 'Save Changes' }}
             </button>
             <button
               type="button"
@@ -889,7 +889,7 @@ function formatFileSize(bytes: number | null | undefined): string {
                 class="rounded-lg bg-danger-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 transition-colors"
                 @click="handleDelete"
               >
-                {{ isDeleting ? 'Deleting…' : 'Delete' }}
+                {{ isDeleting ? 'Deletingâ€¦' : 'Delete' }}
               </button>
             </div>
           </div>
@@ -898,3 +898,4 @@ function formatFileSize(bytes: number | null | undefined): string {
     </template>
   </div>
 </template>
+

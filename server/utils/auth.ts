@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+﻿import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, genericOAuth } from "better-auth/plugins";
 import { sso } from "@better-auth/sso";
@@ -10,7 +10,7 @@ import * as schema from "../database/schema";
 type Auth = ReturnType<typeof betterAuth>;
 let _auth: Auth | undefined;
 
-// ── SSRF blocklist ────────────────────────────────────────────────────────────
+// â”€â”€ SSRF blocklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Prevent org admins from using SSO provider registration to probe the
 // internal network or cloud metadata services (OWASP A10 - SSRF).
 const BLOCKED_HOSTNAMES = new Set([
@@ -30,7 +30,7 @@ function isBlockedHost(urlString: string): boolean {
   try {
     hostname = new URL(urlString).hostname.toLowerCase()
   } catch {
-    return true // malformed URL → block
+    return true // malformed URL â†’ block
   }
   if (BLOCKED_HOSTNAMES.has(hostname)) return true
 
@@ -69,7 +69,7 @@ function isBlockedHost(urlString: string): boolean {
  * Must be called **before** `auth.api.registerSSOProvider()`.
  */
 export async function prefetchOidcEndpointOrigins(issuerUrl: string): Promise<void> {
-  // SSRF guard — reject internal/private addresses before any network call
+  // SSRF guard â€” reject internal/private addresses before any network call
   if (isBlockedHost(issuerUrl)) {
     throw createError({
       statusCode: 422,
@@ -182,14 +182,14 @@ function resolveBetterAuthUrl(): string {
     const domain = railwayDomain.replace(/^https?:\/\//, "");
     const url = `https://${domain}`;
     console.info(
-      `[Reqcore] Using Railway public-domain BETTER_AUTH_URL: ${url}`,
+      `[WWMate] Using Railway public-domain BETTER_AUTH_URL: ${url}`,
     );
     return url;
   }
 
   throw new Error(
     "BETTER_AUTH_URL is required. Either set it explicitly or generate a public domain in Railway.\n" +
-      "Railway users: go to Settings → Networking → Generate Domain, then redeploy.",
+      "Railway users: go to Settings â†’ Networking â†’ Generate Domain, then redeploy.",
   );
 }
 
@@ -211,7 +211,7 @@ function getAuth(): Auth {
       }),
       secret: env.BETTER_AUTH_SECRET,
 
-      // ── Session Hardening ────────────────────────────────────
+      // â”€â”€ Session Hardening â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // Explicit session duration for an ATS handling sensitive hiring data.
       // Default Better Auth values (7 days / 1 day) are too permissive.
       session: {
@@ -221,7 +221,7 @@ function getAuth(): Auth {
 
       emailAndPassword: {
         enabled: true,
-        // Server-side password policy — prevents bypass via direct API calls.
+        // Server-side password policy â€” prevents bypass via direct API calls.
         // Client-side validation (sign-up.vue) is UX only; this is the enforcement.
         minPasswordLength: 8,
         maxPasswordLength: 128,
@@ -231,7 +231,7 @@ function getAuth(): Auth {
         },
       },
 
-      // ── OAuth Token Encryption at Rest ──────────────────────
+      // â”€â”€ OAuth Token Encryption at Rest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // Better Auth's built-in AES encryption for OAuth tokens (access, refresh, id).
       // Handles both encryption on write and automatic decryption on read,
       // using BETTER_AUTH_SECRET as the encryption key.
@@ -239,7 +239,7 @@ function getAuth(): Auth {
         encryptOAuthTokens: true,
       },
 
-      // ── Rate Limiting (built-in, database-backed) ──────────
+      // â”€â”€ Rate Limiting (built-in, database-backed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // Uses DB storage so limits persist across restarts and share
       // state across instances (horizontal scaling).
       // Complements the external IP-based rate limiter in api-rate-limit.ts
@@ -249,12 +249,12 @@ function getAuth(): Auth {
       rateLimit: {
         enabled: !process.env.CI && !process.env.GITHUB_ACTIONS,
         window: 60,
-        max: 100,        // 100 requests per minute per IP — stops bots, not humans
+        max: 100,        // 100 requests per minute per IP â€” stops bots, not humans
         storage: "database",
       },
 
       socialProviders: {
-        // ── Social Sign-In (Google, GitHub, Microsoft) ────────────
+        // â”€â”€ Social Sign-In (Google, GitHub, Microsoft) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Each provider is enabled only when its client ID + secret are set.
         ...(env.AUTH_GOOGLE_CLIENT_ID && env.AUTH_GOOGLE_CLIENT_SECRET
           ? {
@@ -286,8 +286,8 @@ function getAuth(): Auth {
       },
       plugins: [
         organization({
-          // ── Access Control ──────────────────────────────────────
-          // Declarative RBAC — permissions defined once in shared/permissions.ts,
+          // â”€â”€ Access Control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // Declarative RBAC â€” permissions defined once in shared/permissions.ts,
           // enforced on every API route via requirePermission().
           ac,
           roles: {
@@ -296,7 +296,7 @@ function getAuth(): Auth {
             member,
           },
 
-          // ── Invitation Email ────────────────────────────────────
+          // â”€â”€ Invitation Email â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           // Required for Better Auth's built-in invitation flow.
           // Constructs a link the invitee clicks to accept.
           // Uses Resend when RESEND_API_KEY is configured, otherwise logs to console.
@@ -305,14 +305,14 @@ function getAuth(): Auth {
             await sendOrgInvitationEmail(data, inviteLink);
           },
 
-          // ── Security Hardening ──────────────────────────────────
+          // â”€â”€ Security Hardening â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           // Cancel stale invitations when a new one is sent to the same email.
           cancelPendingInvitationsOnReInvite: true,
-          // 48 hours (default) — explicitly stated for auditability.
+          // 48 hours (default) â€” explicitly stated for auditability.
           invitationExpiresIn: 48 * 60 * 60,
         }),
 
-        // ── OIDC SSO (Keycloak, Authentik, Authelia, Okta, Azure AD, etc.) ──
+        // â”€â”€ OIDC SSO (Keycloak, Authentik, Authelia, Okta, Azure AD, etc.) â”€â”€
         // Activated only when all three OIDC env vars are set.
         // Uses better-auth's genericOAuth plugin with OIDC discovery.
         ...(env.OIDC_CLIENT_ID &&
@@ -353,7 +353,7 @@ function getAuth(): Auth {
             ]
           : []),
 
-        // ── Enterprise SSO (per-organization OIDC, cloud-hosted) ─────────
+        // â”€â”€ Enterprise SSO (per-organization OIDC, cloud-hosted) â”€â”€â”€â”€â”€â”€â”€â”€â”€
         // Each organization can register their own Identity Provider (Okta,
         // Azure AD, Google Workspace, etc.). Users are auto-provisioned into
         // the linked organization on first SSO login.
@@ -387,7 +387,7 @@ function getAuth(): Auth {
 
 /**
  * Lazily-initialized Better Auth instance.
- * The auth configuration is created on first property access — not at import time.
+ * The auth configuration is created on first property access â€” not at import time.
  * This prevents build-time prerendering from failing when BETTER_AUTH_SECRET
  * and BETTER_AUTH_URL aren't available.
  */
@@ -400,3 +400,4 @@ export const auth: Auth = new Proxy({} as Auth, {
       : value;
   },
 });
+

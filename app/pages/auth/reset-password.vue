@@ -1,12 +1,12 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
 });
 
 useSeoMeta({
-    title: "Reset Password — Reqcore",
-    description: "Set a new password for your Reqcore account",
+    title: "Reset Password â€” WWMate",
+    description: "Set a new password for your WWMate account",
     robots: "noindex, nofollow",
 });
 
@@ -156,7 +156,7 @@ async function handleResetPassword() {
                     :disabled="isLoading"
                     class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
-                    {{ isLoading ? "Resetting…" : "Reset password" }}
+                    {{ isLoading ? "Resettingâ€¦" : "Reset password" }}
                 </button>
             </form>
 
@@ -171,3 +171,4 @@ async function handleResetPassword() {
         </template>
     </div>
 </template>
+

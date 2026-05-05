@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Building2, UserPlus, Search, Loader2, Check, Link2, MessageSquare } from 'lucide-vue-next'
 
 definePageMeta({
@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Create Organization — Reqcore',
+  title: 'Create Organization â€” WWMate',
   description: 'Create your organization to start recruiting',
   robots: 'noindex, nofollow',
 })
@@ -26,14 +26,14 @@ const error = ref('')
 const isLoading = ref(false)
 const showCreateForm = ref(false)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // View mode: 'picker' | 'create' | 'join'
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const viewMode = ref<'picker' | 'create' | 'join'>('picker')
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Auto-switch: if user already belongs to exactly one org, activate it
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const autoSwitched = ref(false)
 
 watch([orgs, isOrgsLoading], async ([orgList, loading]) => {
@@ -107,7 +107,7 @@ async function handleCreateOrg() {
 
   try {
     // Track before createOrg() because it triggers window.location.href navigation
-    // which unloads the page — any code after await would never execute.
+    // which unloads the page â€” any code after await would never execute.
     track('org_created')
     await createOrg({ name: orgName.value.trim(), slug: slug.value.trim() })
   }
@@ -117,9 +117,9 @@ async function handleCreateOrg() {
   }
 }
 
-// ─────────────────────────────────────────────
-// Join existing org — invite code
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Join existing org â€” invite code
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const inviteCode = ref('')
 const inviteCodeError = ref('')
 const isAcceptingCode = ref(false)
@@ -180,9 +180,9 @@ async function handleAcceptInviteCode() {
   }
 }
 
-// ─────────────────────────────────────────────
-// Join existing org — search & request
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Join existing org â€” search & request
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const orgSearch = ref('')
 const orgSearchResults = ref<Array<{ id: string; name: string; slug: string }>>([])
 const isSearching = ref(false)
@@ -258,7 +258,7 @@ async function handleSubmitJoinRequest() {
   <!-- Loading / auto-switching state -->
   <div v-if="isLoading || isOrgsLoading" class="flex flex-col items-center gap-3 py-8">
     <div class="size-6 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
-    <p class="text-sm text-surface-500 dark:text-surface-400">Setting up your workspace…</p>
+    <p class="text-sm text-surface-500 dark:text-surface-400">Setting up your workspaceâ€¦</p>
   </div>
 
   <!-- Invite code accepted success -->
@@ -268,7 +268,7 @@ async function handleSubmitJoinRequest() {
     </div>
     <div class="text-center">
       <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">You're in!</h2>
-      <p class="text-sm text-surface-500 dark:text-surface-400">Redirecting to dashboard…</p>
+      <p class="text-sm text-surface-500 dark:text-surface-400">Redirecting to dashboardâ€¦</p>
     </div>
   </div>
 
@@ -364,7 +364,7 @@ async function handleSubmitJoinRequest() {
         <input
           v-model="orgSearch"
           type="text"
-          placeholder="Search organizations…"
+          placeholder="Search organizationsâ€¦"
           class="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 pl-9"
         />
         <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-surface-400" />
@@ -393,7 +393,7 @@ async function handleSubmitJoinRequest() {
         No organizations found
       </div>
 
-      <!-- Selected org — request form -->
+      <!-- Selected org â€” request form -->
       <div v-if="selectedOrg" class="mt-3 rounded-md border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-950/30 p-3">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
@@ -412,7 +412,7 @@ async function handleSubmitJoinRequest() {
           <span>Message (optional)</span>
           <textarea
             v-model="joinRequestMessage"
-            placeholder="Tell the admin why you'd like to join…"
+            placeholder="Tell the admin why you'd like to joinâ€¦"
             rows="2"
             maxlength="500"
             class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 resize-none"
@@ -426,7 +426,7 @@ async function handleSubmitJoinRequest() {
         >
           <Loader2 v-if="isSubmittingRequest" class="size-4 animate-spin" />
           <UserPlus v-else class="size-4" />
-          {{ isSubmittingRequest ? 'Sending…' : 'Send join request' }}
+          {{ isSubmittingRequest ? 'Sendingâ€¦' : 'Send join request' }}
         </button>
       </div>
 
@@ -488,7 +488,7 @@ async function handleSubmitJoinRequest() {
       :disabled="isLoading"
       class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
     >
-      {{ isLoading ? 'Creating…' : 'Create organization' }}
+      {{ isLoading ? 'Creatingâ€¦' : 'Create organization' }}
     </button>
 
     <div class="flex flex-col items-center gap-2 mt-1">

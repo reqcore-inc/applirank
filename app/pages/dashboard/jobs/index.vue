@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Briefcase, Bell, Plus, Kanban,
   MapPin, Search, SlidersHorizontal, X,
@@ -11,16 +11,16 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'My Jobs — Reqcore',
+  title: 'My Jobs â€” WWMate',
   description: 'Your active job postings',
 })
 
 const { activeOrg } = useCurrentOrg()
 const localePath = useLocalePath()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Stage config for clickable pipeline counts
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const stageConfig = [
   { key: 'new', label: 'New', textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-950/40' },
@@ -35,15 +35,15 @@ function getStageCount(pipeline: any, key: string): number {
   return pipeline?.[key] ?? 0
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch jobs with pipeline data
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { jobs, total, fetchStatus, error, refresh } = useJobs()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Job status config
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const statusBadgeClasses: Record<string, string> = {
   draft: 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400',
@@ -59,15 +59,15 @@ const typeLabels: Record<string, string> = {
   internship: 'Internship',
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // View mode (gallery | table)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type ViewMode = 'gallery' | 'list' | 'table'
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Search + filters
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const search = ref('')
 const drawerOpen = ref(false)
@@ -148,9 +148,9 @@ const filteredJobs = computed(() => {
   })
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Table sort
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortKey = 'title' | 'status' | 'type' | 'location' | 'new' | 'active' | 'created'
 type SortDir = 'asc' | 'desc'
@@ -168,9 +168,9 @@ function toggleSort(key: SortKey) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Sort jobs by urgency (gallery) or column (table)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const statusPriority: Record<string, number> = {
   open: 0,
@@ -219,9 +219,9 @@ const sortedJobs = computed(() => {
   return list
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Group jobs: needs attention + others (gallery only)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const jobsNeedingAttention = computed(() =>
   sortedJobs.value.filter(j => j.status === 'open' && (j.pipeline?.new ?? 0) > 0),
@@ -231,9 +231,9 @@ const otherJobs = computed(() =>
   sortedJobs.value.filter(j => !(j.status === 'open' && (j.pipeline?.new ?? 0) > 0)),
 )
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Saved views
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type JobsViewSettings = {
   statusFilter: StatusFilter[]
@@ -331,9 +331,9 @@ function onUpdateView(id: string) {
   updateView(id, { settings: currentSettings.value })
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isEmpty = computed(() => jobs.value.length === 0)
 const noResults = computed(() => !isEmpty.value && filteredJobs.value.length === 0)
@@ -341,7 +341,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
 
 <template>
   <div class="mx-auto max-w-6xl">
-    <!-- ─── Header ─── -->
+    <!-- â”€â”€â”€ Header â”€â”€â”€ -->
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">My Jobs</h1>
@@ -358,7 +358,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       </NuxtLink>
     </div>
 
-    <!-- ─── Loading ─── -->
+    <!-- â”€â”€â”€ Loading â”€â”€â”€ -->
     <div v-if="fetchStatus === 'pending'">
       <div class="space-y-4">
         <div
@@ -379,7 +379,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       </div>
     </div>
 
-    <!-- ─── Error ─── -->
+    <!-- â”€â”€â”€ Error â”€â”€â”€ -->
     <div
       v-else-if="error"
       class="rounded-lg border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950 p-4 text-sm text-danger-700 dark:text-danger-400"
@@ -388,12 +388,12 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       <button class="underline ml-1 cursor-pointer" @click="refresh()">Retry</button>
     </div>
 
-    <!-- ─── Empty state ─── -->
+    <!-- â”€â”€â”€ Empty state â”€â”€â”€ -->
     <div v-else-if="isEmpty" class="flex flex-col items-center justify-center py-20">
       <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-10 text-center max-w-md">
         <Briefcase class="size-12 text-brand-400 mx-auto mb-4" />
         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-          Welcome to Reqcore
+          Welcome to WWMate
         </h2>
         <p class="text-sm text-surface-500 dark:text-surface-400 mb-6 leading-relaxed">
           Create your first job posting to start receiving and managing candidates.
@@ -408,9 +408,9 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       </div>
     </div>
 
-    <!-- ─── Jobs content ─── -->
+    <!-- â”€â”€â”€ Jobs content â”€â”€â”€ -->
     <template v-else>
-      <!-- ─── Toolbar: Search + Views + Filters + View Toggle ─── -->
+      <!-- â”€â”€â”€ Toolbar: Search + Views + Filters + View Toggle â”€â”€â”€ -->
       <div class="flex items-center gap-2 mb-4">
         <div class="relative flex-1">
           <Search class="size-4 text-surface-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -499,7 +499,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         </button>
       </div>
 
-      <!-- ─── Filter Drawer ─── -->
+      <!-- â”€â”€â”€ Filter Drawer â”€â”€â”€ -->
       <FilterDrawer
         v-model="drawerOpen"
         title="Filter jobs"
@@ -615,7 +615,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         </div>
       </FilterDrawer>
 
-      <!-- ─── No-results state ─── -->
+      <!-- â”€â”€â”€ No-results state â”€â”€â”€ -->
       <div
         v-if="noResults"
         class="rounded-xl border border-dashed border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-10 text-center"
@@ -625,9 +625,9 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         <p class="text-xs text-surface-400 dark:text-surface-500">Try a different keyword or clear your filters.</p>
       </div>
 
-      <!-- ═══════════════════════════════════
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
            TABLE VIEW
-      ════════════════════════════════════ -->
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <template v-else-if="viewMode === 'table'">
         <div class="overflow-x-auto rounded-lg border border-surface-200 dark:border-surface-800">
           <table class="w-full text-sm">
@@ -731,7 +731,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                     <MapPin class="size-3 shrink-0" />
                     {{ j.location }}
                   </span>
-                  <span v-else class="text-surface-300 dark:text-surface-600">—</span>
+                  <span v-else class="text-surface-300 dark:text-surface-600">â€”</span>
                 </td>
                 <td class="px-4 py-3 text-center">
                   <span
@@ -760,9 +760,9 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         </div>
       </template>
 
-      <!-- ═══════════════════════════════════
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
            GALLERY VIEW (grid)
-      ════════════════════════════════════ -->
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <template v-else-if="viewMode === 'gallery'">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <NuxtLink
@@ -832,11 +832,11 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         </div>
       </template>
 
-      <!-- ═══════════════════════════════════
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
            LIST VIEW
-      ════════════════════════════════════ -->
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <template v-else-if="viewMode === 'list'">
-        <!-- ─── Needs attention section ─── -->
+        <!-- â”€â”€â”€ Needs attention section â”€â”€â”€ -->
         <div v-if="jobsNeedingAttention.length > 0" class="mb-8">
           <div class="flex items-center gap-2 mb-3 px-1">
             <Bell class="size-4 text-warning-500" />
@@ -854,7 +854,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
               :key="j.id"
               class="rounded-xl border border-warning-200 dark:border-warning-900/50 bg-white dark:bg-surface-900 overflow-hidden"
             >
-              <!-- Card header — job info -->
+              <!-- Card header â€” job info -->
               <div class="px-5 pt-4 pb-3">
                 <div class="flex items-start justify-between mb-2">
                   <div class="min-w-0 flex-1">
@@ -918,7 +918,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           </div>
         </div>
 
-        <!-- ─── All other jobs ─── -->
+        <!-- â”€â”€â”€ All other jobs â”€â”€â”€ -->
         <div>
           <div v-if="jobsNeedingAttention.length > 0" class="flex items-center gap-2 mb-3 px-1">
             <Briefcase class="size-4 text-surface-400" />
@@ -996,3 +996,4 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
     </template>
   </div>
 </template>
+

@@ -1,24 +1,24 @@
-/**
- * Feature flag registry — single source of truth for all flags in Reqcore.
+﻿/**
+ * Feature flag registry â€” single source of truth for all flags in WWMate.
  *
- * ────────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Why a registry?
- * ────────────────────────────────────────────────────────────────────────────
- * Reqcore is open source and many users self-host. They typically do NOT run
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * WWMate is open source and many users self-host. They typically do NOT run
  * PostHog. We still want feature flags to "just work" for them (using the
  * registered default value) without any external dependency.
  *
- * Resolution order (highest → lowest priority):
+ * Resolution order (highest â†’ lowest priority):
  *   1. URL query string  e.g.  ?ff_chatbot-experience=true     (dev / QA)
  *   2. Env var override  e.g.  FEATURE_FLAG_CHATBOT_EXPERIENCE=true
  *      (self-hosters can force a flag on/off without PostHog)
- *   3. PostHog rollout   (only when POSTHOG_PUBLIC_KEY is configured —
+ *   3. PostHog rollout   (only when POSTHOG_PUBLIC_KEY is configured â€”
  *      used on cloud for gradual rollouts and per-user targeting)
  *   4. Registry default  (defined here)
  *
- * ────────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Adding a new flag
- * ────────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  *   1. Add an entry below.
  *   2. Pick a `defaultValue` that is safe for self-hosters (usually `false`
  *      for in-development features, `true` for stable features being
@@ -67,7 +67,7 @@ export const FEATURE_FLAG_KEYS = Object.keys(FEATURE_FLAGS) as FeatureFlagKey[]
 
 /**
  * Map a flag key to the env var name that overrides it.
- *   'chatbot-experience' → 'FEATURE_FLAG_CHATBOT_EXPERIENCE'
+ *   'chatbot-experience' â†’ 'FEATURE_FLAG_CHATBOT_EXPERIENCE'
  */
 export function flagEnvVarName(key: string): string {
   return `FEATURE_FLAG_${key.toUpperCase().replace(/-/g, '_')}`
@@ -117,3 +117,4 @@ export function readEnvFlagOverrides(
   }
   return overrides
 }
+

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { FileText, Search, X, Briefcase, Mail, Clock, ArrowUp, ArrowDown, ArrowUpDown, SlidersHorizontal, Maximize2, Minimize2, Check } from 'lucide-vue-next'
 
 definePageMeta({
@@ -7,13 +7,13 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Applications — Reqcore',
+  title: 'Applications â€” WWMate',
   description: 'Manage applications across all jobs',
 })
 
-// ── Column visibility ─────────────────────────────────────────────────────────
+// â”€â”€ Column visibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const COLUMNS_STORAGE_KEY = 'reqcore:columns:applications'
+const COLUMNS_STORAGE_KEY = 'WWMate:columns:applications'
 
 const defaultColumnVisibility = {
   email: true,
@@ -52,7 +52,7 @@ watch(visibleColumns, (val) => {
 const route = useRoute()
 const router = useRouter()
 
-// ── Search ────────────────────────────────────────────────────────────────────
+// â”€â”€ Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const searchInput = ref('')
 const debouncedSearch = ref('')
@@ -65,7 +65,7 @@ watch(searchInput, (val) => {
   }, 250)
 })
 
-// ── Status filter ─────────────────────────────────────────────────────────────
+// â”€â”€ Status filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const STATUS_OPTIONS = ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'] as const
 type Status = typeof STATUS_OPTIONS[number]
@@ -101,7 +101,7 @@ const { applications, total, fetchStatus, error, refresh } = useApplications({
 
 const { formatPersonName } = useOrgSettings()
 
-// ── Job filter (client-side) ──────────────────────────────────────────────────
+// â”€â”€ Job filter (client-side) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const activeJobId = ref<string | undefined>(undefined)
 
@@ -113,7 +113,7 @@ const uniqueJobs = computed(() => {
   return Array.from(map, ([id, title]) => ({ id, title })).sort((a, b) => a.title.localeCompare(b.title))
 })
 
-// ── Sorting ───────────────────────────────────────────────────────────────────
+// â”€â”€ Sorting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortKey = 'name' | 'email' | 'job' | 'status' | 'score' | 'created'
 type SortDir = 'asc' | 'desc'
@@ -130,7 +130,7 @@ function toggleSort(key: SortKey) {
   }
 }
 
-// ── Filtered + sorted list ────────────────────────────────────────────────────
+// â”€â”€ Filtered + sorted list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const filteredApplications = computed(() => {
   let list = [...applications.value]
@@ -187,7 +187,7 @@ function clearAllFilters() {
   propertyFilters.value = []
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function timeAgo(date: string | Date) {
   const diff = Date.now() - new Date(date).getTime()
@@ -233,7 +233,7 @@ const statusLabels: Record<Status, string> = {
   rejected: 'Rejected',
 }
 
-// ── Drawer + Saved Views ──────────────────────────────────────────────────────
+// â”€â”€ Drawer + Saved Views â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type ApplicationsViewSettings = {
   status?: Status
@@ -339,12 +339,12 @@ const drawerActiveCount = computed(() =>
   [activeStatus.value, activeJobId.value].filter(Boolean).length + propertyFilters.value.length,
 )
 
-// ── Property value lookup helper ──────────────────────────────────────────────
+// â”€â”€ Property value lookup helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getPropertyValue(entity: { properties?: import('~~/shared/properties').PropertyEntry[] | null }, definitionId: string): unknown {
   return entity.properties?.find((p) => p.definition.id === definitionId)?.value ?? null
 }
 
-// ── Application detail drawer ─────────────────────────────────────────────────
+// â”€â”€ Application detail drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const selectedApplicationId = ref<string | null>(null)
 </script>
 
@@ -367,7 +367,7 @@ const selectedApplicationId = ref<string | null>(null)
         <input
           v-model="searchInput"
           type="text"
-          placeholder="Search by candidate name, email, or job title…"
+          placeholder="Search by candidate name, email, or job titleâ€¦"
           class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-10 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
         />
       </div>
@@ -524,7 +524,7 @@ const selectedApplicationId = ref<string | null>(null)
 
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-16 text-surface-400">
-      Loading applications…
+      Loading applicationsâ€¦
     </div>
 
     <!-- Error -->
@@ -573,7 +573,7 @@ const selectedApplicationId = ref<string | null>(null)
           <!-- Fullscreen header -->
           <div v-if="isFullscreen" class="flex items-center justify-between px-4 py-3 border-b border-surface-200 dark:border-surface-800 shrink-0 bg-white dark:bg-surface-950">
             <span class="text-sm font-semibold text-surface-900 dark:text-surface-100">
-              Applications — {{ filteredApplications.length }} result{{ filteredApplications.length === 1 ? '' : 's' }}
+              Applications â€” {{ filteredApplications.length }} result{{ filteredApplications.length === 1 ? '' : 's' }}
             </span>
             <button
               type="button"
@@ -689,7 +689,7 @@ const selectedApplicationId = ref<string | null>(null)
                 >
                   {{ app.score }}%
                 </span>
-                <span v-else class="text-surface-300 dark:text-surface-600">—</span>
+                <span v-else class="text-surface-300 dark:text-surface-600">â€”</span>
               </td>
               <td v-if="visibleColumns.applied" class="px-4 py-3 text-surface-400 whitespace-nowrap">
                 <TimelineDateLink :date="app.createdAt" class="inline-flex items-center gap-1.5">
@@ -730,3 +730,4 @@ const selectedApplicationId = ref<string | null>(null)
     @close="selectedApplicationId = null"
   />
 </template>
+

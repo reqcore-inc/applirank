@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Save, Trash2, ArrowLeft, ExternalLink, Link2, ClipboardCopy,
 } from 'lucide-vue-next'
@@ -20,13 +20,13 @@ const { job, status: fetchStatus, error: fetchError, updateJob, deleteJob } = us
 
 useSeoMeta({
   title: computed(() =>
-    job.value ? `Settings — ${job.value.title} — Reqcore` : 'Job Settings — Reqcore',
+    job.value ? `Settings â€” ${job.value.title} â€” WWMate` : 'Job Settings â€” WWMate',
   ),
 })
 
-// ─────────────────────────────────────────────
-// Form state — synced from fetched job
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Form state â€” synced from fetched job
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const form = ref({
   title: '',
@@ -80,9 +80,9 @@ watch(() => form.value.salaryNegotiable, (negotiable) => {
   }
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Validation
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const editSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -154,9 +154,9 @@ async function handleSave() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Application link
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const requestUrl = useRequestURL()
 const applicationUrl = computed(() => {
@@ -176,9 +176,9 @@ async function copyApplicationLink() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Delete
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showDeleteConfirm = ref(false)
 const isDeleting = ref(false)
@@ -196,9 +196,9 @@ async function handleDelete() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Options
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const typeOptions = [
   { value: 'full_time', label: 'Full-time' },
@@ -246,7 +246,7 @@ function onSalaryMaxChange(e: Event) {
 
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading…
+      Loadingâ€¦
     </div>
 
     <!-- Error -->
@@ -268,9 +268,9 @@ function onSalaryMaxChange(e: Event) {
       </div>
 
       <form @submit.prevent="handleSave" class="space-y-8">
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- SECTION: Basic Details                   -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-6">
           <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-5">Basic Details</h2>
           <div class="space-y-4">
@@ -298,7 +298,7 @@ function onSalaryMaxChange(e: Event) {
                 id="settings-description"
                 v-model="form.description"
                 rows="6"
-                placeholder="Describe the role, responsibilities, and requirements…"
+                placeholder="Describe the role, responsibilities, and requirementsâ€¦"
                 class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
               />
             </div>
@@ -384,9 +384,9 @@ function onSalaryMaxChange(e: Event) {
           </div>
         </section>
 
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- SECTION: Salary & Compensation           -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-6">
           <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-1">Salary & Compensation</h2>
           <p class="text-xs text-surface-400 dark:text-surface-500 mb-5">
@@ -408,7 +408,7 @@ function onSalaryMaxChange(e: Event) {
               </div>
             </label>
 
-            <!-- Salary range fields — hidden when negotiable -->
+            <!-- Salary range fields â€” hidden when negotiable -->
             <template v-if="!form.salaryNegotiable">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -473,9 +473,9 @@ function onSalaryMaxChange(e: Event) {
           </div>
         </section>
 
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- SECTION: Application Options             -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-6">
           <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-1">Application Options</h2>
           <p class="text-xs text-surface-400 dark:text-surface-500 mb-5">
@@ -518,9 +518,9 @@ function onSalaryMaxChange(e: Event) {
           </div>
         </section>
 
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- SECTION: Listing Expiry                  -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-6">
           <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100 mb-1">Listing Expiry</h2>
           <p class="text-xs text-surface-400 dark:text-surface-500 mb-5">
@@ -550,9 +550,9 @@ function onSalaryMaxChange(e: Event) {
           </div>
         </section>
 
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- SECTION: Application Link                -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section v-if="job.status === 'open'" class="rounded-xl border border-brand-200 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-950/30 p-6">
           <div class="flex items-center gap-2 mb-2">
             <Link2 class="size-4 text-brand-600 dark:text-brand-400" />
@@ -579,9 +579,9 @@ function onSalaryMaxChange(e: Event) {
           </div>
         </section>
 
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <!-- Save button                              -->
-        <!-- ═══════════════════════════════════════ -->
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <div class="flex items-center justify-between pt-2 pb-8">
           <button
             type="submit"
@@ -589,14 +589,14 @@ function onSalaryMaxChange(e: Event) {
             class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Save class="size-4" />
-            {{ saved ? 'Saved!' : isSaving ? 'Saving…' : 'Save Changes' }}
+            {{ saved ? 'Saved!' : isSaving ? 'Savingâ€¦' : 'Save Changes' }}
           </button>
         </div>
       </form>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- DANGER ZONE                              -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <section class="rounded-xl border border-danger-200 dark:border-danger-800/60 bg-danger-50/50 dark:bg-danger-950/20 p-6 mb-12">
         <h2 class="text-base font-semibold text-danger-700 dark:text-danger-400 mb-1">Danger Zone</h2>
         <p class="text-xs text-surface-500 dark:text-surface-400 mb-4">
@@ -625,7 +625,7 @@ function onSalaryMaxChange(e: Event) {
               class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-danger-600 px-4 py-2 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="handleDelete"
             >
-              {{ isDeleting ? 'Deleting…' : 'Yes, Delete' }}
+              {{ isDeleting ? 'Deletingâ€¦' : 'Yes, Delete' }}
             </button>
             <button
               type="button"
@@ -641,3 +641,4 @@ function onSalaryMaxChange(e: Event) {
     </template>
   </div>
 </template>
+

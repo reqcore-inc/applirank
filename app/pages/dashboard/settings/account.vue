@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   User, Lock, Save, Loader2, Eye, EyeOff, Check,
   KeyRound, Mail, Calendar,
@@ -7,15 +7,15 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Account Settings — Reqcore',
+  title: 'Account Settings â€” WWMate',
   description: 'Manage your personal account settings',
 })
 
 const { data: session } = await authClient.useSession(useFetch)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Profile editing
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const profileName = ref('')
 const isSavingProfile = ref(false)
 const profileSuccess = ref(false)
@@ -48,9 +48,9 @@ async function handleSaveProfile() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Password change
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -108,9 +108,9 @@ async function handleChangePassword() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getInitials(name: string | undefined): string {
   if (!name) return '?'
   return name
@@ -209,7 +209,7 @@ function getInitials(name: string | undefined): string {
           >
             <Loader2 v-if="isSavingProfile" class="size-4 animate-spin" />
             <Save v-else class="size-4" />
-            {{ isSavingProfile ? 'Saving…' : 'Save profile' }}
+            {{ isSavingProfile ? 'Savingâ€¦' : 'Save profile' }}
           </button>
 
           <Transition
@@ -350,7 +350,7 @@ function getInitials(name: string | undefined): string {
           >
             <Loader2 v-if="isChangingPassword" class="size-4 animate-spin" />
             <Lock v-else class="size-4" />
-            {{ isChangingPassword ? 'Changing…' : 'Change password' }}
+            {{ isChangingPassword ? 'Changingâ€¦' : 'Change password' }}
           </button>
 
           <Transition
@@ -391,19 +391,19 @@ function getInitials(name: string | undefined): string {
           <div class="flex items-center justify-between">
             <dt class="text-sm text-surface-500 dark:text-surface-400">Session ID</dt>
             <dd class="text-sm font-mono text-surface-700 dark:text-surface-300">
-              {{ session?.session?.id ? `${session.session.id.slice(0, 8)}…` : '—' }}
+              {{ session?.session?.id ? `${session.session.id.slice(0, 8)}â€¦` : 'â€”' }}
             </dd>
           </div>
           <div class="flex items-center justify-between">
             <dt class="text-sm text-surface-500 dark:text-surface-400">Created</dt>
             <dd class="text-sm text-surface-700 dark:text-surface-300">
-              {{ session?.session?.createdAt ? new Date(session.session.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—' }}
+              {{ session?.session?.createdAt ? new Date(session.session.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : 'â€”' }}
             </dd>
           </div>
           <div class="flex items-center justify-between">
             <dt class="text-sm text-surface-500 dark:text-surface-400">Expires</dt>
             <dd class="text-sm text-surface-700 dark:text-surface-300">
-              {{ session?.session?.expiresAt ? new Date(session.session.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—' }}
+              {{ session?.session?.expiresAt ? new Date(session.session.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : 'â€”' }}
             </dd>
           </div>
         </dl>
@@ -411,3 +411,4 @@ function getInitials(name: string | undefined): string {
     </section>
   </div>
 </template>
+

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Building2, UserPlus, Shield, ShieldCheck, Loader2, AlertTriangle, Check } from 'lucide-vue-next'
 
 definePageMeta({
@@ -6,8 +6,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Join Organization — Reqcore',
-  description: 'Accept an invitation to join an organization on Reqcore',
+  title: 'Join Organization â€” WWMate',
+  description: 'Accept an invitation to join an organization on WWMate',
   robots: 'noindex, nofollow',
 })
 
@@ -16,9 +16,9 @@ const localePath = useLocalePath()
 const { acceptInviteLink, fetchInviteLinkInfo } = useInviteLinks()
 const token = computed(() => route.params.token as string)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // State
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isLoading = ref(true)
 const isAccepting = ref(false)
 const error = ref('')
@@ -35,9 +35,9 @@ const linkInfo = ref<{
 const { data: session } = await authClient.useSession(useFetch)
 const isAuthenticated = computed(() => !!session.value?.user)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch link info
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function fetchLinkInfo() {
   isLoading.value = true
   error.value = ''
@@ -57,9 +57,9 @@ async function fetchLinkInfo() {
 
 onMounted(fetchLinkInfo)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Accept invite link
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function handleAccept() {
   if (!isAuthenticated.value || !token.value) return
 
@@ -103,7 +103,7 @@ function getRoleIcon(role: string) {
   <!-- Loading state -->
   <div v-if="isLoading" class="flex flex-col items-center gap-3 py-8">
     <div class="size-6 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
-    <p class="text-sm text-surface-500 dark:text-surface-400">Loading invite details…</p>
+    <p class="text-sm text-surface-500 dark:text-surface-400">Loading invite detailsâ€¦</p>
   </div>
 
   <!-- Error state (invalid/expired link) -->
@@ -131,7 +131,7 @@ function getRoleIcon(role: string) {
     <div class="text-center">
       <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">You're in!</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">
-        You've joined <strong>{{ linkInfo?.organizationName }}</strong>. Redirecting to dashboard…
+        You've joined <strong>{{ linkInfo?.organizationName }}</strong>. Redirecting to dashboardâ€¦
       </p>
     </div>
   </div>
@@ -140,7 +140,7 @@ function getRoleIcon(role: string) {
   <div v-else-if="linkInfo" class="flex flex-col gap-5">
     <div class="text-center">
       <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-1">Join organization</h2>
-      <p class="text-sm text-surface-500 dark:text-surface-400">You've been invited to join a team on Reqcore.</p>
+      <p class="text-sm text-surface-500 dark:text-surface-400">You've been invited to join a team on WWMate.</p>
     </div>
 
     <!-- Org info card -->
@@ -172,7 +172,7 @@ function getRoleIcon(role: string) {
       {{ error }}
     </div>
 
-    <!-- Not authenticated — prompt sign in/up -->
+    <!-- Not authenticated â€” prompt sign in/up -->
     <div v-if="!isAuthenticated" class="flex flex-col gap-3">
       <p class="text-sm text-surface-600 dark:text-surface-400 text-center">
         Sign in or create an account to accept this invitation.
@@ -193,7 +193,7 @@ function getRoleIcon(role: string) {
       </div>
     </div>
 
-    <!-- Authenticated — accept button -->
+    <!-- Authenticated â€” accept button -->
     <button
       v-else
       :disabled="isAccepting"
@@ -202,7 +202,8 @@ function getRoleIcon(role: string) {
     >
       <Loader2 v-if="isAccepting" class="size-4 animate-spin" />
       <UserPlus v-else class="size-4" />
-      {{ isAccepting ? 'Joining…' : `Join ${linkInfo.organizationName}` }}
+      {{ isAccepting ? 'Joiningâ€¦' : `Join ${linkInfo.organizationName}` }}
     </button>
   </div>
 </template>
+

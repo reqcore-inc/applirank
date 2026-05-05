@@ -1,13 +1,13 @@
-{
+﻿{
   "common": {
     "language": "Langue",
-    "selectLanguage": "Sélectionner la langue",
+    "selectLanguage": "SÃ©lectionner la langue",
     "save": "Enregistrer",
     "cancel": "Annuler"
   },
   "home": {
     "nav": {
-      "features": "Fonctionnalités",
+      "features": "FonctionnalitÃ©s",
       "openPositions": "Postes ouverts",
       "roadmap": "Feuille de route",
       "blog": "Blog",
@@ -16,35 +16,36 @@
       "logIn": "Se connecter",
       "signUp": "S'inscrire"
     },
-    "badge": "ATS Open Source pour les équipes de développeurs",
+    "badge": "ATS Open Source pour les Ã©quipes de dÃ©veloppeurs",
     "hero": {
       "titleLine1": "Votre recrutement.",
       "titleHighlight": "Votre infrastructure.",
-      "subtitle": "Suivi de candidatures open source conçu pour les équipes qui auto-hébergent.",
+      "subtitle": "Suivi de candidatures open source conÃ§u pour les Ã©quipes qui auto-hÃ©bergent.",
       "goToDashboard": "Aller au tableau de bord",
       "signIn": "Se connecter",
-      "createAccount": "Créer un compte",
-      "ctaDemo": "Essayer la démo",
+      "createAccount": "CrÃ©er un compte",
+      "ctaDemo": "Essayer la dÃ©mo",
       "ctaStart": "Voir sur GitHub",
-      "hint": "Version open source précoce — essayez la démo avec des données d'exemple, sans inscription"
+      "hint": "Version open source prÃ©coce â€” essayez la dÃ©mo avec des donnÃ©es d'exemple, sans inscription"
     },
     "pillars": {
       "yourData": {
-        "label": "Vos données",
-        "desc": "Postgres + MinIO sur votre infrastructure. Rien ne quitte votre réseau."
+        "label": "Vos donnÃ©es",
+        "desc": "Postgres + MinIO sur votre infrastructure. Rien ne quitte votre rÃ©seau."
       },
       "auditable": {
-        "label": "Entièrement auditable",
-        "desc": "Open source — chaque ligne de logique de matching est visible et modifiable."
+        "label": "EntiÃ¨rement auditable",
+        "desc": "Open source â€” chaque ligne de logique de matching est visible et modifiable."
       },
       "unlimitedSeats": {
-        "label": "Utilisateurs illimités",
-        "desc": "Ajoutez toute votre équipe de recrutement. Pas de tarification par siège, jamais."
+        "label": "Utilisateurs illimitÃ©s",
+        "desc": "Ajoutez toute votre Ã©quipe de recrutement. Pas de tarification par siÃ¨ge, jamais."
       }
     },
     "footer": {
       "source": "Code source",
-      "tagline": "Reqcore — suivi de candidatures open source"
+      "tagline": "WWMate â€” suivi de candidatures open source"
     }
   }
 }
+

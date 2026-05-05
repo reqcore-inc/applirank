@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { FileText, Link2, ClipboardCopy, Check, Plus, Copy, CheckCircle2, XCircle, ToggleLeft, ToggleRight, Trash2, Radio, ChevronDown, X, ExternalLink } from 'lucide-vue-next'
 
 definePageMeta({
@@ -15,13 +15,13 @@ const { job, status: fetchStatus, error, updateJob } = useJob(jobId)
 
 useSeoMeta({
   title: computed(() =>
-    job.value ? `Application Form — ${job.value.title} — Reqcore` : 'Application Form — Reqcore',
+    job.value ? `Application Form â€” ${job.value.title} â€” WWMate` : 'Application Form â€” WWMate',
   ),
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Application link
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const requestUrl = useRequestURL()
 const applicationUrl = computed(() => {
@@ -42,9 +42,9 @@ async function copyApplicationLink() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Application requirements (resume / cover letter)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const requireResume = ref(false)
 const requireCoverLetter = ref(false)
@@ -74,9 +74,9 @@ async function saveRequirements() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Tracking links for this job
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const {
   links: trackingLinks,
@@ -178,7 +178,7 @@ async function copyTrackingUrl(code: string) {
 
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading…
+      Loadingâ€¦
     </div>
 
     <!-- Error -->
@@ -285,7 +285,7 @@ async function copyTrackingUrl(code: string) {
           class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 transition-colors"
           @click="saveRequirements"
         >
-          {{ requirementsSaved ? 'Saved!' : isSavingRequirements ? 'Saving…' : 'Save requirements' }}
+          {{ requirementsSaved ? 'Saved!' : isSavingRequirements ? 'Savingâ€¦' : 'Save requirements' }}
         </button>
         <p v-if="requirementsError" class="mt-2 text-xs text-danger-600 dark:text-danger-400">
           {{ requirementsError }}
@@ -318,7 +318,7 @@ async function copyTrackingUrl(code: string) {
         </p>
 
         <div v-if="linksStatus === 'pending'" class="py-6 text-center text-sm text-surface-400">
-          Loading…
+          Loadingâ€¦
         </div>
 
         <div v-else-if="trackingLinks.length === 0" class="py-6 text-center">
@@ -359,7 +359,7 @@ async function copyTrackingUrl(code: string) {
                 </span>
               </div>
               <div class="text-[11px] text-surface-400 dark:text-surface-500 tabular-nums">
-                {{ link.clickCount }} clicks · {{ link.applicationCount }} applications
+                {{ link.clickCount }} clicks Â· {{ link.applicationCount }} applications
               </div>
             </div>
             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -406,9 +406,9 @@ async function copyTrackingUrl(code: string) {
       </div>
     </template>
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Modal: Create tracking link             -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <Teleport to="body">
       <div v-if="showCreateLinkModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showCreateLinkModal = false" />
@@ -484,7 +484,7 @@ async function copyTrackingUrl(code: string) {
                 :disabled="!newLink.name.trim() || isCreatingLink"
                 class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm shadow-brand-600/15 transition-all"
               >
-                {{ isCreatingLink ? 'Creating…' : 'Create Link' }}
+                {{ isCreatingLink ? 'Creatingâ€¦' : 'Create Link' }}
               </button>
             </div>
           </form>
@@ -492,9 +492,9 @@ async function copyTrackingUrl(code: string) {
       </div>
     </Teleport>
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Modal: Delete tracking link confirmation -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <Teleport to="body">
       <div v-if="showDeleteLinkConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showDeleteLinkConfirm = false" />
@@ -525,3 +525,4 @@ async function copyTrackingUrl(code: string) {
     </Teleport>
   </div>
 </template>
+

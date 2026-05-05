@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown, SlidersHorizontal, X, StickyNote, Maximize2, Minimize2, Check } from 'lucide-vue-next'
 
 definePageMeta({
@@ -7,13 +7,13 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Candidates — Reqcore',
+  title: 'Candidates â€” WWMate',
   description: 'Manage your candidate pool',
 })
 
-// ── Column visibility ─────────────────────────────────────────────────────────
+// â”€â”€ Column visibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const COLUMNS_STORAGE_KEY = 'reqcore:columns:candidates'
+const COLUMNS_STORAGE_KEY = 'WWMate:columns:candidates'
 
 const defaultColumnVisibility = {
   email: true,
@@ -60,7 +60,7 @@ watch(searchInput, (val) => {
   }, 300)
 })
 
-// ── Filters ───────────────────────────────────────────────────────────────────
+// â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const drawerOpen = ref(false)
 const isFullscreen = ref(false)
@@ -92,7 +92,7 @@ const { candidates, total, fetchStatus, error, refresh } = useCandidates({
 // Org localization (name + date format)
 const { formatCandidateName, formatDateTime } = useOrgSettings()
 
-// ── Sorting ───────────────────────────────────────────────────────────────────
+// â”€â”€ Sorting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortKey = 'name' | 'email' | 'phone' | 'applications' | 'created'
 type SortDir = 'asc' | 'desc'
@@ -133,7 +133,7 @@ const sortedCandidates = computed(() => {
   return list
 })
 
-// ── Quick notes inline editing ────────────────────────────────────────────────
+// â”€â”€ Quick notes inline editing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const editingNotesId = ref<string | null>(null)
 const editingNotesValue = ref('')
@@ -162,13 +162,13 @@ function cancelEditNotes() {
   editingNotesId.value = null
 }
 
-// ── Property value lookup helper ──────────────────────────────────────────────
+// â”€â”€ Property value lookup helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Avoids `as any` in the template and is null-safe.
 function getPropertyValue(entity: { properties?: import('~~/shared/properties').PropertyEntry[] | null }, definitionId: string): unknown {
   return entity.properties?.find((p) => p.definition.id === definitionId)?.value ?? null
 }
 
-// ── Saved Views ──────────────────────────────────────────────────────────────────
+// â”€â”€ Saved Views â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type CandidatesViewSettings = {
   gender?: string
@@ -264,7 +264,7 @@ function onUpdateView(id: string) {
   updateView(id, { settings: currentSettings.value })
 }
 
-// ── Candidate detail drawer ───────────────────────────────────────────────────
+// â”€â”€ Candidate detail drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const selectedCandidateId = ref<string | null>(null)
 </script>
 
@@ -294,7 +294,7 @@ const selectedCandidateId = ref<string | null>(null)
         <input
           v-model="searchInput"
           type="text"
-          placeholder="Search by name or email…"
+          placeholder="Search by name or emailâ€¦"
           class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-10 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
         />
       </div>
@@ -451,7 +451,7 @@ const selectedCandidateId = ref<string | null>(null)
 
     <!-- Loading state -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading candidates…
+      Loading candidatesâ€¦
     </div>
 
     <!-- Error state -->
@@ -495,7 +495,7 @@ const selectedCandidateId = ref<string | null>(null)
           <!-- Fullscreen header -->
           <div v-if="isFullscreen" class="flex items-center justify-between px-4 py-3 border-b border-surface-200 dark:border-surface-800 shrink-0 bg-white dark:bg-surface-950">
             <span class="text-sm font-semibold text-surface-900 dark:text-surface-100">
-              Candidates — {{ sortedCandidates.length }} result{{ sortedCandidates.length === 1 ? '' : 's' }}
+              Candidates â€” {{ sortedCandidates.length }} result{{ sortedCandidates.length === 1 ? '' : 's' }}
             </span>
             <button
               type="button"
@@ -592,7 +592,7 @@ const selectedCandidateId = ref<string | null>(null)
                   <Phone class="size-3.5 shrink-0" />
                   {{ c.phone }}
                 </span>
-                <span v-else class="text-surface-300 dark:text-surface-600">—</span>
+                <span v-else class="text-surface-300 dark:text-surface-600">â€”</span>
               </td>
               <td v-if="visibleColumns.applications" class="px-4 py-3 text-center hidden sm:table-cell">
                 <span
@@ -606,7 +606,7 @@ const selectedCandidateId = ref<string | null>(null)
               <td v-if="visibleColumns.added" class="px-4 py-3 text-surface-500 dark:text-surface-400 whitespace-nowrap">
                 <TimelineDateLink :date="c.createdAt">{{ formatDateTime(c.createdAt) }}</TimelineDateLink>
               </td>
-              <!-- Quick notes — inline editable (must match header order) -->
+              <!-- Quick notes â€” inline editable (must match header order) -->
               <td v-if="visibleColumns.quickNotes" class="px-4 py-3 hidden lg:table-cell w-52 align-top" @click.stop>
                 <div v-if="editingNotesId === c.id" class="flex items-start gap-1.5">
                   <textarea
@@ -643,7 +643,7 @@ const selectedCandidateId = ref<string | null>(null)
                     v-if="c.quickNotes"
                     class="text-xs text-surface-600 dark:text-surface-400 line-clamp-2 group-hover/notes:text-surface-900 dark:group-hover/notes:text-surface-100 transition-colors"
                   >{{ c.quickNotes }}</span>
-                  <span v-else class="text-xs text-surface-300 dark:text-surface-600 group-hover/notes:text-surface-400 transition-colors italic">Add note…</span>
+                  <span v-else class="text-xs text-surface-300 dark:text-surface-600 group-hover/notes:text-surface-400 transition-colors italic">Add noteâ€¦</span>
                 </button>
               </td>
               <!-- Property columns (must come AFTER quick notes to match header order) -->
@@ -679,3 +679,4 @@ const selectedCandidateId = ref<string | null>(null)
     @close="selectedCandidateId = null"
   />
 </template>
+

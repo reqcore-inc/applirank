@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Shared helpers for detecting the demo organization across the server.
  *
  * Used by:
@@ -16,7 +16,7 @@ import { isRailwayPreviewEnvironment } from './env'
 
 const demoOrgIdBySlug = new Map<string, string>()
 const demoOrgIdSet = new Set<string>()
-const DEFAULT_PREVIEW_DEMO_ORG_SLUG = 'reqcore-demo'
+const DEFAULT_PREVIEW_DEMO_ORG_SLUG = 'WWMate-demo'
 
 export interface DemoSlugsResult {
   slugs: string[]
@@ -78,7 +78,7 @@ export async function getDemoOrgIds(slugs?: string[]): Promise<Set<string>> {
  * True when the given organisation id matches a configured demo org.
  *
  * Returns false (not null) when no demo org is configured or the org
- * cannot be resolved — callers can safely treat the result as a boolean
+ * cannot be resolved â€” callers can safely treat the result as a boolean
  * funnel filter.
  */
 export async function isDemoOrgId(orgId: string | null | undefined): Promise<boolean> {
@@ -86,3 +86,4 @@ export async function isDemoOrgId(orgId: string | null | undefined): Promise<boo
   const ids = await getDemoOrgIds()
   return ids.has(orgId)
 }
+

@@ -1,10 +1,10 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Building2, Save, AlertTriangle, Trash2, Loader2 } from 'lucide-vue-next'
 
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Organization Settings — Reqcore',
+  title: 'Organization Settings â€” WWMate',
   description: 'Manage your organization settings',
 })
 
@@ -13,9 +13,9 @@ const { allowed: canUpdateOrg } = usePermission({ organization: ['update'] })
 const { allowed: canDeleteOrg } = usePermission({ organization: ['delete'] })
 const { track } = useTrack()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Org name/slug editing
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const orgName = ref('')
 const orgSlug = ref('')
 const isSaving = ref(false)
@@ -78,9 +78,9 @@ async function handleSaveOrg() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Delete org
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showDeleteConfirm = ref(false)
 const deleteConfirmText = ref('')
 const isDeleting = ref(false)
@@ -162,7 +162,7 @@ async function handleDeleteOrg() {
           </label>
           <div class="flex items-center rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 overflow-hidden focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 transition-colors">
             <span class="px-3 text-sm text-surface-400 dark:text-surface-500 select-none bg-surface-50 dark:bg-surface-800/50 border-r border-surface-200 dark:border-surface-700 py-2">
-              reqcore.com/
+              WWMate.com/
             </span>
             <input
               id="org-slug"
@@ -190,7 +190,7 @@ async function handleDeleteOrg() {
           >
             <Loader2 v-if="isSaving" class="size-4 animate-spin" />
             <Save v-else class="size-4" />
-            {{ isSaving ? 'Saving…' : 'Save changes' }}
+            {{ isSaving ? 'Savingâ€¦' : 'Save changes' }}
           </button>
 
           <Transition
@@ -267,7 +267,7 @@ async function handleDeleteOrg() {
               >
                 <Loader2 v-if="isDeleting" class="size-4 animate-spin" />
                 <Trash2 v-else class="size-4" />
-                {{ isDeleting ? 'Deleting…' : 'Permanently delete' }}
+                {{ isDeleting ? 'Deletingâ€¦' : 'Permanently delete' }}
               </button>
               <button
                 class="rounded-lg px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-100 transition-colors"
@@ -290,3 +290,4 @@ async function handleDeleteOrg() {
     </div>
   </div>
 </template>
+

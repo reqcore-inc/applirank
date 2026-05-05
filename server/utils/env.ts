@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 /**
  * Preprocessor that normalizes empty strings to undefined.
@@ -99,11 +99,11 @@ export const envSchema = z
       .optional(),
     /** Resend API key for transactional emails (invitations, etc.). When not set, emails are logged to console. */
     RESEND_API_KEY: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Sender email address for Resend emails. Must be a verified domain in Resend. Defaults to "Reqcore <noreply@reqcore.com>". */
+    /** Sender email address for Resend emails. Must be a verified domain in Resend. Defaults to "WWMate <noreply@WWMate.com>". */
     RESEND_FROM_EMAIL: emptyToUndefined
       .pipe(z.string().min(1))
       .optional()
-      .default("Reqcore <noreply@reqcore.com>"),
+      .default("WWMate <noreply@WWMate.com>"),
     /** SMTP hostname for outbound email (e.g. smtp.gmail.com). When set, SMTP is used instead of Resend. */
     SMTP_HOST: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** SMTP port. Defaults to 587 (STARTTLS). Use 465 for implicit TLS, 25 for unencrypted. */
@@ -120,11 +120,11 @@ export const envSchema = z
     SMTP_USER: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** SMTP password for authentication. Omit for anonymous relay. */
     SMTP_PASS: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Sender address for SMTP emails. Defaults to "Reqcore <noreply@reqcore.com>". */
+    /** Sender address for SMTP emails. Defaults to "WWMate <noreply@WWMate.com>". */
     SMTP_FROM: emptyToUndefined
       .pipe(z.string().min(1))
       .optional()
-      .default('Reqcore <noreply@reqcore.com>'),
+      .default('WWMate <noreply@WWMate.com>'),
     /** Use implicit TLS on port 465. When false, uses STARTTLS (port 587). Defaults to false. */
     SMTP_SECURE: z.preprocess(
       (val) => typeof val === 'string' && val.trim() === '' ? false : val === 'true',
@@ -134,7 +134,7 @@ export const envSchema = z
     GOOGLE_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** Google OAuth2 Client Secret for Calendar integration. */
     GOOGLE_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Google OAuth2 Client ID for social sign-in. Obtain from Google Cloud Console → Credentials. */
+    /** Google OAuth2 Client ID for social sign-in. Obtain from Google Cloud Console â†’ Credentials. */
     AUTH_GOOGLE_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** Google OAuth2 Client Secret for social sign-in. */
     AUTH_GOOGLE_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
@@ -142,7 +142,7 @@ export const envSchema = z
     AUTH_GITHUB_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** GitHub OAuth App Client Secret for social sign-in. */
     AUTH_GITHUB_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Microsoft Entra ID Client ID for social sign-in. Obtain from Azure Portal → App Registrations. */
+    /** Microsoft Entra ID Client ID for social sign-in. Obtain from Azure Portal â†’ App Registrations. */
     AUTH_MICROSOFT_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** Microsoft Entra ID Client Secret for social sign-in. */
     AUTH_MICROSOFT_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
@@ -188,7 +188,7 @@ export const envSchema = z
       })
     }
 
-    // OIDC SSO requires all three vars or none — partial config is a misconfiguration.
+    // OIDC SSO requires all three vars or none â€” partial config is a misconfiguration.
     const oidcVars = [
       ["OIDC_CLIENT_ID", data.OIDC_CLIENT_ID],
       ["OIDC_CLIENT_SECRET", data.OIDC_CLIENT_SECRET],
@@ -210,7 +210,7 @@ export const envSchema = z
 
 /**
  * Validated environment variables. Uses lazy initialization so the schema
- * is only parsed on first access at runtime — not at import time. This
+ * is only parsed on first access at runtime â€” not at import time. This
  * prevents build-time prerendering from failing when env vars aren't
  * available (e.g., Railway injects variables only at deploy time, not
  * during the build phase).
@@ -233,8 +233,8 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
           .map((i) => `  - ${i.path.join(".")}: ${i.message}`)
           .join("\n");
         console.error(
-          `\n[Reqcore] ❌ Missing or invalid environment variables:\n${missing}\n\n` +
-            `Ensure these variables are set in your Railway service (Settings → Variables).\n` +
+          `\n[WWMate] âŒ Missing or invalid environment variables:\n${missing}\n\n` +
+            `Ensure these variables are set in your Railway service (Settings â†’ Variables).\n` +
             `Required: DATABASE_URL, BETTER_AUTH_SECRET, S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET\n` +
             `Required when not on Railway: BETTER_AUTH_URL (or generate a Railway domain)\n` +
             `Optional: BETTER_AUTH_TRUSTED_ORIGINS, S3_REGION (default: us-east-1), S3_FORCE_PATH_STYLE (default: true), TRUSTED_PROXY_IP, DEMO_ORG_SLUG, RESEND_API_KEY, RESEND_FROM_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_SECURE, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, OIDC_DISCOVERY_URL, OIDC_PROVIDER_NAME, AUTH_GOOGLE_CLIENT_ID, AUTH_GOOGLE_CLIENT_SECRET, AUTH_GITHUB_CLIENT_ID, AUTH_GITHUB_CLIENT_SECRET, AUTH_MICROSOFT_CLIENT_ID, AUTH_MICROSOFT_CLIENT_SECRET, AUTH_MICROSOFT_TENANT_ID\n`,
@@ -249,3 +249,4 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
     )[prop];
   },
 });
+

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ArrowLeft } from 'lucide-vue-next'
 import { z } from 'zod'
 
@@ -8,7 +8,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Add Candidate — Reqcore',
+  title: 'Add Candidate â€” WWMate',
   description: 'Add a new candidate to your talent pool',
 })
 
@@ -156,13 +156,13 @@ async function handleSubmit() {
       <div>
         <label for="displayName" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
           Display Name
-          <span class="ml-1 text-xs font-normal text-surface-400">(optional — overrides default name format)</span>
+          <span class="ml-1 text-xs font-normal text-surface-400">(optional â€” overrides default name format)</span>
         </label>
         <input
           id="displayName"
           v-model="form.displayName"
           type="text"
-          placeholder="e.g. Nguyễn Văn A"
+          placeholder="e.g. Nguyá»…n VÄƒn A"
           class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
         />
         <p v-if="errors.displayName" class="mt-1 text-xs text-danger-600 dark:text-danger-400">{{ errors.displayName }}</p>
@@ -242,7 +242,7 @@ async function handleSubmit() {
           :disabled="isSubmitting"
           class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {{ isSubmitting ? 'Adding…' : 'Add Candidate' }}
+          {{ isSubmitting ? 'Addingâ€¦' : 'Add Candidate' }}
         </button>
         <NuxtLink
           :to="$localePath('/dashboard/candidates')"
@@ -254,3 +254,4 @@ async function handleSubmit() {
     </form>
   </div>
 </template>
+

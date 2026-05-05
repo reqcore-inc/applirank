@@ -1,4 +1,4 @@
-# ─── Stage 1: Build ─────────────────────────────────────────────────────────
+﻿# â”€â”€â”€ Stage 1: Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY . .
 ARG NUXT_PUBLIC_SITE_URL=http://localhost:3000
 ENV NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL}
 
-# PostHog — the @posthog/nuxt module is conditionally loaded at build time.
+# PostHog â€” the @posthog/nuxt module is conditionally loaded at build time.
 # Pass your project API key so the module is included in the production bundle.
 # Railway auto-passes service variables as Docker build args.
 ARG POSTHOG_PUBLIC_KEY
@@ -23,7 +23,7 @@ ENV POSTHOG_HOST=${POSTHOG_HOST}
 
 RUN npm run build
 
-# ─── Stage 2: Run ────────────────────────────────────────────────────────────
+# â”€â”€â”€ Stage 2: Run â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -32,27 +32,28 @@ ENV NODE_ENV=production
 # PostgreSQL client tools for database backup via /api/updates/backup
 RUN apk add --no-cache postgresql16-client
 
-RUN addgroup -S reqcore && adduser -S reqcore -G reqcore
+RUN addgroup -S WWMate && adduser -S WWMate -G WWMate
 
 # .output is fully self-contained (server, public assets)
-COPY --chown=reqcore:reqcore --from=builder /app/.output ./.output
+COPY --chown=WWMate:WWMate --from=builder /app/.output ./.output
 
 # Drizzle migrations are loaded at runtime via a relative path ("./server/database/migrations")
 # They must live alongside .output so the path resolves correctly inside the container
-COPY --chown=reqcore:reqcore --from=builder /app/server/database/migrations ./server/database/migrations
+COPY --chown=WWMate:WWMate --from=builder /app/server/database/migrations ./server/database/migrations
 
 # CHANGELOG.md is read at runtime by /api/updates/changelog
-COPY --chown=reqcore:reqcore --from=builder /app/CHANGELOG.md ./CHANGELOG.md
+COPY --chown=WWMate:WWMate --from=builder /app/CHANGELOG.md ./CHANGELOG.md
 
-# Seed script support — copies node_modules, package.json, and server source
+# Seed script support â€” copies node_modules, package.json, and server source
 # so `docker compose exec app npm run db:seed` works inside the container
-COPY --chown=reqcore:reqcore --from=builder /app/package.json ./package.json
-COPY --chown=reqcore:reqcore --from=builder /app/drizzle.config.ts ./drizzle.config.ts
-COPY --chown=reqcore:reqcore --from=builder /app/node_modules ./node_modules
-COPY --chown=reqcore:reqcore --from=builder /app/server ./server
+COPY --chown=WWMate:WWMate --from=builder /app/package.json ./package.json
+COPY --chown=WWMate:WWMate --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --chown=WWMate:WWMate --from=builder /app/node_modules ./node_modules
+COPY --chown=WWMate:WWMate --from=builder /app/server ./server
 
-USER reqcore
+USER WWMate
 
 EXPOSE 3000
 
 CMD ["node", ".output/server/index.mjs"]
+

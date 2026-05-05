@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Briefcase, Users, FileText, Calendar, Plus,
   ArrowRight, TrendingUp, Clock, AlertCircle,
@@ -12,7 +12,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Dashboard — Reqcore',
+  title: 'Dashboard â€” WWMate',
   description: 'Your recruiting command center',
 })
 
@@ -23,9 +23,9 @@ const { formatPersonName } = useOrgSettings()
 
 onMounted(() => track('dashboard_viewed'))
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch dashboard stats
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const {
   counts,
@@ -37,9 +37,9 @@ const {
   refresh,
 } = useDashboard()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Upcoming interviews (next 7 days)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const now = new Date()
 // Truncate to start-of-day so the useFetch key is identical on server & client
@@ -54,9 +54,9 @@ const { interviews: upcomingInterviews } = useInterviews({
   limit: 5,
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Derived data
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const stageConfig = [
   { key: 'new', label: 'New', color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-950/40' },
@@ -149,7 +149,7 @@ const isEmpty = computed(() =>
 
 <template>
   <div class="mx-auto max-w-6xl">
-    <!-- ─── Loading skeleton ─── -->
+    <!-- â”€â”€â”€ Loading skeleton â”€â”€â”€ -->
     <div v-if="fetchStatus === 'pending'">
       <!-- Header skeleton -->
       <div class="mb-10">
@@ -180,7 +180,7 @@ const isEmpty = computed(() =>
       </div>
     </div>
 
-    <!-- ─── Error ─── -->
+    <!-- â”€â”€â”€ Error â”€â”€â”€ -->
     <div
       v-else-if="error"
       class="rounded-2xl border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950/60 p-5 text-sm text-danger-700 dark:text-danger-400 flex items-center gap-3"
@@ -190,14 +190,14 @@ const isEmpty = computed(() =>
       <button class="underline ml-auto font-medium cursor-pointer" @click="refresh()">Retry</button>
     </div>
 
-    <!-- ─── Empty state (brand new org) ─── -->
+    <!-- â”€â”€â”€ Empty state (brand new org) â”€â”€â”€ -->
     <div v-else-if="isEmpty" class="flex flex-col items-center justify-center py-24">
       <div class="rounded-3xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-14 text-center max-w-md shadow-sm">
         <div class="mx-auto mb-8 flex items-center justify-center size-18 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 shadow-lg shadow-brand-500/20">
           <LayoutDashboard class="size-9 text-white" />
         </div>
         <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-3 tracking-tight">
-          Welcome to Reqcore
+          Welcome to WWMate
         </h2>
         <p class="text-sm text-surface-500 dark:text-surface-400 mb-10 leading-relaxed max-w-sm mx-auto">
           Your recruiting command center. Create your first job posting to start building your hiring pipeline.
@@ -212,9 +212,9 @@ const isEmpty = computed(() =>
       </div>
     </div>
 
-    <!-- ─── Dashboard content ─── -->
+    <!-- â”€â”€â”€ Dashboard content â”€â”€â”€ -->
     <template v-else>
-      <!-- ─── Header ─── -->
+      <!-- â”€â”€â”€ Header â”€â”€â”€ -->
       <div class="flex items-center justify-between mb-6 sm:mb-10">
         <div>
           <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-50 tracking-tight">Dashboard</h1>
@@ -231,7 +231,7 @@ const isEmpty = computed(() =>
         </NuxtLink>
       </div>
 
-      <!-- ─── Stat cards ─── -->
+      <!-- â”€â”€â”€ Stat cards â”€â”€â”€ -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-10">
         <!-- Open Jobs -->
         <NuxtLink
@@ -330,11 +330,11 @@ const isEmpty = computed(() =>
         </NuxtLink>
       </div>
 
-      <!-- ─── Main content grid ─── -->
+      <!-- â”€â”€â”€ Main content grid â”€â”€â”€ -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- ─── Left column (2/3) ─── -->
+        <!-- â”€â”€â”€ Left column (2/3) â”€â”€â”€ -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- ─── Pipeline overview (per job) ─── -->
+          <!-- â”€â”€â”€ Pipeline overview (per job) â”€â”€â”€ -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
             <div class="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
               <div class="flex items-center gap-2.5">
@@ -416,7 +416,7 @@ const isEmpty = computed(() =>
             </div>
           </div>
 
-          <!-- ─── Recent applications ─── -->
+          <!-- â”€â”€â”€ Recent applications â”€â”€â”€ -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
             <div class="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
               <div class="flex items-center gap-2.5">
@@ -482,9 +482,9 @@ const isEmpty = computed(() =>
           </div>
         </div>
 
-        <!-- ─── Right column (1/3) ─── -->
+        <!-- â”€â”€â”€ Right column (1/3) â”€â”€â”€ -->
         <div class="space-y-6">
-          <!-- ─── Upcoming interviews ─── -->
+          <!-- â”€â”€â”€ Upcoming interviews â”€â”€â”€ -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
             <div class="flex items-center justify-between px-5 py-4 border-b border-surface-100 dark:border-surface-800">
               <div class="flex items-center gap-2.5">
@@ -527,9 +527,9 @@ const isEmpty = computed(() =>
                 </div>
                 <div class="flex items-center gap-2 text-xs text-surface-400 dark:text-surface-500">
                   <span class="font-medium">{{ formatTime(interview.scheduledAt) }}</span>
-                  <span class="text-surface-200 dark:text-surface-700">·</span>
+                  <span class="text-surface-200 dark:text-surface-700">Â·</span>
                   <span>{{ interviewTypeLabels[interview.type] ?? interview.type }}</span>
-                  <span class="text-surface-200 dark:text-surface-700">·</span>
+                  <span class="text-surface-200 dark:text-surface-700">Â·</span>
                   <span class="truncate">{{ interview.jobTitle }}</span>
                   <a
                     v-if="interview.googleCalendarEventLink"
@@ -548,7 +548,7 @@ const isEmpty = computed(() =>
             </div>
           </div>
 
-          <!-- ─── Quick actions ─── -->
+          <!-- â”€â”€â”€ Quick actions â”€â”€â”€ -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
             <div class="flex items-center gap-2.5 px-5 py-4 border-b border-surface-100 dark:border-surface-800">
               <div class="flex items-center justify-center size-7 rounded-lg bg-surface-100 dark:bg-surface-800">
@@ -601,3 +601,4 @@ const isEmpty = computed(() =>
     </template>
   </div>
 </template>
+

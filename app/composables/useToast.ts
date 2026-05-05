@@ -1,4 +1,4 @@
-import type { PostHog } from 'posthog-js'
+﻿import type { PostHog } from 'posthog-js'
 
 export type ToastType = 'error' | 'success' | 'warning' | 'info'
 
@@ -12,7 +12,7 @@ export interface Toast {
   duration?: number
 }
 
-const GITHUB_ISSUES_URL = 'https://github.com/reqcore-inc/reqcore/issues/new'
+const GITHUB_ISSUES_URL = 'https://github.com/WWMate-inc/WWMate/issues/new'
 
 function getPostHog(): PostHog | undefined {
   try {
@@ -92,3 +92,4 @@ export function useToast() {
 
   return { toasts: readonly(toasts), add, remove, clear, error, success, warning, info }
 }
+

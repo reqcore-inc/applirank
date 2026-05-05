@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client-only plugin that wires PostHog into the rest of the app.
  *
  * - Strips query strings and hashes from captured URLs (privacy hardening).
@@ -15,11 +15,11 @@
  * so visitors who never see / never click the consent banner have *nothing*
  * stored on their device.  Accepting the banner upgrades persistence so the
  * distinct id survives reloads, and `identify(userId, { email, name })`
- * automatically aliases the anonymous id → user id, stitching the funnel.
+ * automatically aliases the anonymous id â†’ user id, stitching the funnel.
  */
 import { CONSENT_COOKIE_NAME } from '~/composables/useAnalyticsConsent'
 
-// URL properties that may carry tokens or invitation IDs — always sanitised.
+// URL properties that may carry tokens or invitation IDs â€” always sanitised.
 // Includes referrer properties: if a user navigated from /jobs?invite_token=xxx,
 // the next page's $referrer would otherwise expose that token.
 const SENSITIVE_URL_PROPS = ['$current_url', '$initial_current_url', '$referrer', '$initial_referrer'] as const
@@ -43,8 +43,8 @@ export default defineNuxtPlugin({
       sameSite: 'lax',
     })
 
-    // ── Cross-domain consent linking ──
-    // The marketing site (reqcore.com) appends ?ph_consent=granted when the
+    // â”€â”€ Cross-domain consent linking â”€â”€
+    // The marketing site (WWMate.com) appends ?ph_consent=granted when the
     // user already accepted analytics there.  Apply it to the shared cookie so
     // the consent banner doesn't appear a second time on the app.
     const url = new URL(window.location.href)
@@ -59,9 +59,9 @@ export default defineNuxtPlugin({
       if (document.referrer) {
         try {
           const ref = new URL(document.referrer)
-          fromTrustedOrigin = ref.hostname === 'reqcore.com' || ref.hostname.endsWith('.reqcore.com')
+          fromTrustedOrigin = ref.hostname === 'WWMate.com' || ref.hostname.endsWith('.WWMate.com')
         }
-        catch { /* invalid referrer — ignore */ }
+        catch { /* invalid referrer â€” ignore */ }
       }
       if (fromTrustedOrigin) {
         consentCookie.value = 'granted'
@@ -70,7 +70,7 @@ export default defineNuxtPlugin({
       urlModified = true
     }
 
-    // ── Apply stored consent: upgrade persistence for returning opted-in users ──
+    // â”€â”€ Apply stored consent: upgrade persistence for returning opted-in users â”€â”€
     // PostHog starts with cookieless tracking (persistence: 'memory').  If
     // the user already consented, upgrade to full cookie-based persistence
     // before identity watchers fire so that identify() creates a stable
@@ -82,13 +82,13 @@ export default defineNuxtPlugin({
       })
     }
 
-    // ── Cross-domain identity linking ──
-    // The marketing site (reqcore.com) appends ?ph_did=<distinct_id> to links
+    // â”€â”€ Cross-domain identity linking â”€â”€
+    // The marketing site (WWMate.com) appends ?ph_did=<distinct_id> to links
     // pointing here.  If present, alias the marketing visitor's distinct id
     // to this session so the full journey is stitched together in PostHog.
     //
     // We alias regardless of consent: this only links two anonymous distinct
-    // ids that PostHog already has — it doesn't add any PII or persistent
+    // ids that PostHog already has â€” it doesn't add any PII or persistent
     // storage. Without this stitching, every cross-domain user appears as
     // two separate people and funnels report ~0% conversion.
     const marketingDistinctId = url.searchParams.get('ph_did')
@@ -106,7 +106,7 @@ export default defineNuxtPlugin({
       window.history.replaceState({}, '', url.pathname + url.search + url.hash)
     }
 
-    // ── Privacy: strip query params and hashes from captured URLs ──
+    // â”€â”€ Privacy: strip query params and hashes from captured URLs â”€â”€
     const originalCapture = posthog.capture.bind(posthog)
     posthog.capture = (eventName: string, properties?: Record<string, unknown>, options?: unknown) => {
       const props = { ...properties }
@@ -128,7 +128,7 @@ export default defineNuxtPlugin({
       provide: {
         /**
          * Identify the logged-in user.  Person properties (email, name) are
-         * forwarded ONLY when the visitor has consented to analytics —
+         * forwarded ONLY when the visitor has consented to analytics â€”
          * otherwise we pass just the user id to keep PostHog data anonymous.
          *
          * Calling identify automatically aliases the current anonymous
@@ -167,7 +167,7 @@ export default defineNuxtPlugin({
          * Tag the current PostHog session as a demo session.
          *
          * Registers `is_demo` as a super property so EVERY subsequent
-         * event carries it — funnels and dashboards can then filter
+         * event carries it â€” funnels and dashboards can then filter
          * `is_demo != true` to exclude the public demo from real-user
          * metrics. Also forwards the flag as a person property (when
          * consented) so the demo person profile is permanently tagged.
@@ -178,7 +178,7 @@ export default defineNuxtPlugin({
         posthogSetDemoFlag: (isDemo: boolean) => {
           if (isDemo) {
             posthog.register({ is_demo: true })
-            // Person-level tag — survives across sessions for this user.
+            // Person-level tag â€” survives across sessions for this user.
             posthog.setPersonProperties({ is_demo: true })
           }
           else {
@@ -190,3 +190,4 @@ export default defineNuxtPlugin({
     }
   },
 })
+

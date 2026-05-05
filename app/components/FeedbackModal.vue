@@ -1,11 +1,11 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Bug, Lightbulb, X, ExternalLink, Send, MessageSquarePlus, ImagePlus, ChevronDown, ChevronRight } from 'lucide-vue-next'
 
 const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-// ── Form state ────────────────────────────────
+// â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const feedbackType = ref<'bug' | 'feature'>('bug')
 const title = ref('')
 const description = ref('')
@@ -25,7 +25,7 @@ const bugActualResult = ref('')
 const showOptionalContext = ref(false)
 const MAX_SCREENSHOT_DATA_URL_CHARS = 45000
 
-// ── Submission state ──────────────────────────
+// â”€â”€ Submission state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isSubmitting = ref(false)
 const submitError = ref('')
 const successUrl = ref('')
@@ -55,12 +55,12 @@ const placeholders = computed(() => {
   if (feedbackType.value === 'bug') {
     return {
       title: 'e.g. Pipeline cards not updating after drag',
-      description: 'What happened? What did you expect? Steps to reproduce…',
+      description: 'What happened? What did you expect? Steps to reproduceâ€¦',
     }
   }
   return {
     title: 'e.g. Add bulk actions on candidate list',
-    description: 'Describe the feature and why it would be useful…',
+    description: 'Describe the feature and why it would be usefulâ€¦',
   }
 })
 
@@ -250,7 +250,7 @@ function resetAndClose() {
             Feedback submitted!
           </h4>
           <p class="text-sm text-surface-500 dark:text-surface-400 mb-5">
-            Thank you for helping improve Reqcore. Your feedback has been recorded.
+            Thank you for helping improve WWMate. Your feedback has been recorded.
           </p>
           <div class="flex items-center justify-center gap-3">
             <a
@@ -275,7 +275,7 @@ function resetAndClose() {
         <form v-else class="flex min-h-0 flex-col" @submit.prevent="handleSubmit">
           <div class="min-h-0 overflow-y-auto px-5 py-4 space-y-4">
             <div class="rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 px-3 py-2 text-xs text-surface-600 dark:text-surface-300">
-              Submitting this form creates a GitHub issue for the Reqcore maintainers.
+              Submitting this form creates a GitHub issue for the WWMate maintainers.
             </div>
 
             <!-- Type toggle -->
@@ -431,7 +431,7 @@ function resetAndClose() {
                       v-model="featureDesiredWorkflow"
                       rows="2"
                       maxlength="1000"
-                      placeholder="How should this work in Reqcore?"
+                      placeholder="How should this work in WWMate?"
                       class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors resize-y"
                     />
                   </div>
@@ -533,7 +533,7 @@ function resetAndClose() {
               class="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send class="size-4" />
-              {{ isSubmitting ? 'Creating issue…' : 'Create GitHub Issue' }}
+              {{ isSubmitting ? 'Creating issueâ€¦' : 'Create GitHub Issue' }}
             </button>
           </div>
         </form>
@@ -541,3 +541,4 @@ function resetAndClose() {
     </div>
   </Teleport>
 </template>
+

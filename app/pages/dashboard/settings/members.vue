@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { Component } from 'vue'
 import {
   Users, UserPlus, Shield, ShieldCheck, Crown,
@@ -10,7 +10,7 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Team Members — Reqcore',
+  title: 'Team Members â€” WWMate',
   description: 'Manage your team members and invitations',
 })
 
@@ -26,9 +26,9 @@ const {
   revokeInviteLink: revokeInviteLinkApi,
 } = useInviteLinks()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Members list
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const members = ref<Array<{
   id: string
   userId: string
@@ -57,9 +57,9 @@ async function fetchMembers() {
 
 onMounted(fetchMembers)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Members search & pagination
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const memberSearch = ref('')
 const membersPerPage = 20
 const visibleCount = ref(membersPerPage)
@@ -86,9 +86,9 @@ watch(memberSearch, () => {
   visibleCount.value = membersPerPage
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Invite member
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showInviteForm = ref(false)
 const inviteEmail = ref('')
 const inviteRole = ref<'admin' | 'member'>('member')
@@ -130,9 +130,9 @@ async function handleInvite() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Pending invitations
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const pendingInvitations = ref<Array<{
   id: string
   email: string
@@ -228,9 +228,9 @@ function formatExpiresAt(expiresAt: Date | string): string {
   return `Expires in ${diffDays}d`
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Invite links (shareable)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const inviteLinks = ref<InviteLink[]>([])
 const isLoadingLinks = ref(true)
 const linksError = ref('')
@@ -353,9 +353,9 @@ const expiryOptions = [
   { label: '30 days', value: 720 },
 ]
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Join requests
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const joinRequests = ref<Array<{
   id: string
   message: string | null
@@ -420,9 +420,9 @@ async function handleRejectRequest(requestId: string) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Role management
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const activeDropdown = ref<string | null>(null)
 const isUpdatingRole = ref<string | null>(null)
 const roleUpdateError = ref('')
@@ -456,9 +456,9 @@ async function handleUpdateRole(memberId: string, newRole: 'admin' | 'member') {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Remove member
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const memberToRemove = ref<{ id: string; name: string } | null>(null)
 const isRemoving = ref(false)
 const removeError = ref('')
@@ -493,9 +493,9 @@ async function handleRemoveMember() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const roleConfig: Record<string, { label: string; color: string; bg: string; icon: Component }> = {
   owner: { label: 'Owner', color: 'text-warning-700 dark:text-warning-400', bg: 'bg-warning-50 dark:bg-warning-950', icon: Crown },
   admin: { label: 'Admin', color: 'text-brand-700 dark:text-brand-400', bg: 'bg-brand-50 dark:bg-brand-950', icon: ShieldCheck },
@@ -520,7 +520,7 @@ function getInitials(name: string | undefined): string {
     .toUpperCase()
 }
 
-// Close dropdown on click outside — store reference for cleanup
+// Close dropdown on click outside â€” store reference for cleanup
 function handleClickOutside(e: MouseEvent) {
   const target = e.target as HTMLElement
   if (!target.closest('[data-member-actions]')) {
@@ -611,7 +611,7 @@ onUnmounted(() => {
             >
               <Loader2 v-if="isInviting" class="size-4 animate-spin" />
               <Mail v-else class="size-4" />
-              {{ isInviting ? 'Sending…' : 'Send invite' }}
+              {{ isInviting ? 'Sendingâ€¦' : 'Send invite' }}
             </button>
           </div>
 
@@ -665,7 +665,7 @@ onUnmounted(() => {
           <div>
             <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Pending invitations</h2>
             <p class="text-xs text-surface-500 dark:text-surface-400">
-              {{ isLoadingInvitations ? 'Loading…' : `${pendingInvitations.length} pending` }}
+              {{ isLoadingInvitations ? 'Loadingâ€¦' : `${pendingInvitations.length} pending` }}
             </p>
           </div>
         </div>
@@ -674,7 +674,7 @@ onUnmounted(() => {
       <!-- Loading state -->
       <div v-if="isLoadingInvitations" class="px-4 sm:px-6 py-6 text-center text-surface-400 text-sm">
         <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
-        Loading invitations…
+        Loading invitationsâ€¦
       </div>
 
       <!-- Error state -->
@@ -867,7 +867,7 @@ onUnmounted(() => {
       <!-- Loading state -->
       <div v-if="isLoadingLinks" class="px-4 sm:px-6 py-6 text-center text-surface-400 text-sm">
         <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
-        Loading invite links…
+        Loading invite linksâ€¦
       </div>
 
       <!-- Error state -->
@@ -958,7 +958,7 @@ onUnmounted(() => {
           <div>
             <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">Join requests</h2>
             <p class="text-xs text-surface-500 dark:text-surface-400">
-              {{ isLoadingJoinRequests ? 'Loading…' : `${joinRequests.length} pending request${joinRequests.length !== 1 ? 's' : ''}` }}
+              {{ isLoadingJoinRequests ? 'Loadingâ€¦' : `${joinRequests.length} pending request${joinRequests.length !== 1 ? 's' : ''}` }}
             </p>
           </div>
         </div>
@@ -975,7 +975,7 @@ onUnmounted(() => {
       <!-- Loading state -->
       <div v-if="isLoadingJoinRequests" class="px-4 sm:px-6 py-6 text-center text-surface-400 text-sm">
         <Loader2 class="size-4 animate-spin mx-auto mb-1.5" />
-        Loading join requests…
+        Loading join requestsâ€¦
       </div>
 
       <!-- Error state -->
@@ -1027,7 +1027,7 @@ onUnmounted(() => {
             <button
               :disabled="approvingRequestId === req.id"
               class="inline-flex items-center gap-1.5 rounded-lg bg-success-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-success-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Approve — adds as Member"
+              title="Approve â€” adds as Member"
               @click="handleApproveRequest(req.id)"
             >
               <Loader2 v-if="approvingRequestId === req.id" class="size-3 animate-spin" />
@@ -1060,7 +1060,7 @@ onUnmounted(() => {
             <div>
               <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Team members</h2>
               <p class="text-sm text-surface-500 dark:text-surface-400">
-                {{ isLoadingMembers ? 'Loading…' : `${members.length} member${members.length !== 1 ? 's' : ''}` }}
+                {{ isLoadingMembers ? 'Loadingâ€¦' : `${members.length} member${members.length !== 1 ? 's' : ''}` }}
               </p>
             </div>
           </div>
@@ -1070,7 +1070,7 @@ onUnmounted(() => {
               <input
                 v-model="memberSearch"
                 type="text"
-                placeholder="Search members…"
+                placeholder="Search membersâ€¦"
                 class="w-full sm:w-48 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 pl-8.5 pr-3 py-1.5 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
               />
             </div>
@@ -1081,7 +1081,7 @@ onUnmounted(() => {
       <!-- Loading state -->
       <div v-if="isLoadingMembers" class="px-4 sm:px-6 py-8 text-center text-surface-400 text-sm">
         <Loader2 class="size-5 animate-spin mx-auto mb-2" />
-        Loading members…
+        Loading membersâ€¦
       </div>
 
       <!-- Error state -->
@@ -1269,7 +1269,7 @@ onUnmounted(() => {
                 >
                   <Loader2 v-if="isRemoving" class="size-4 animate-spin" />
                   <Trash2 v-else class="size-4" />
-                  {{ isRemoving ? 'Removing…' : 'Remove' }}
+                  {{ isRemoving ? 'Removingâ€¦' : 'Remove' }}
                 </button>
               </div>
             </div>
@@ -1284,3 +1284,4 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+

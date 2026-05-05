@@ -1,5 +1,5 @@
-name: Bug report
-description: Report a reproducible defect in Reqcore
+﻿name: Bug report
+description: Report a reproducible defect in WWMate
 labels:
   - bug
 body:
@@ -65,3 +65,4 @@ body:
       label: Logs / screenshots
       description: Paste relevant logs, stack traces, or screenshots.
       render: shell
+

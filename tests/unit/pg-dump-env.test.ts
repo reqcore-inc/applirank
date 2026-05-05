@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { buildPgDumpEnv } from '../../server/utils/pgDumpEnv'
 
 /**
  * Regression test for the pg_dump-spawning code in
  * server/api/updates/backup.post.ts. Before the fix the route spread the
- * full parent env into the child, which would have leaked every Reqcore
+ * full parent env into the child, which would have leaked every WWMate
  * secret (BETTER_AUTH_SECRET, S3_SECRET_KEY, OAuth keys, Sentry DSN, etc.)
  * through any pg_dump or libpq diagnostic written to stderr.
  */
@@ -28,7 +28,7 @@ describe('buildPgDumpEnv', () => {
   function makeParentEnv(): NodeJS.ProcessEnv {
     const env: NodeJS.ProcessEnv = {
       PATH: '/usr/local/bin:/usr/bin',
-      HOME: '/home/reqcore',
+      HOME: '/home/WWMate',
       LANG: 'en_US.UTF-8',
       TZ: 'UTC',
     }
@@ -58,7 +58,7 @@ describe('buildPgDumpEnv', () => {
     const childEnv = buildPgDumpEnv(makeParentEnv(), 'pw')
 
     expect(childEnv.PATH).toBe('/usr/local/bin:/usr/bin')
-    expect(childEnv.HOME).toBe('/home/reqcore')
+    expect(childEnv.HOME).toBe('/home/WWMate')
     expect(childEnv.LANG).toBe('en_US.UTF-8')
     expect(childEnv.TZ).toBe('UTC')
   })
@@ -75,7 +75,7 @@ describe('buildPgDumpEnv', () => {
     expect(childEnv).not.toHaveProperty('HOME')
   })
 
-  it('keeps the child env compact — only the allowlist plus PGPASSWORD', () => {
+  it('keeps the child env compact â€” only the allowlist plus PGPASSWORD', () => {
     const childEnv = buildPgDumpEnv(makeParentEnv(), 'pw')
     const allowed = new Set([
       'PGPASSWORD',
@@ -86,10 +86,11 @@ describe('buildPgDumpEnv', () => {
     }
   })
 
-  it('does not mutate the parent env (defensive — avoids surprises in callers)', () => {
+  it('does not mutate the parent env (defensive â€” avoids surprises in callers)', () => {
     const parent = makeParentEnv()
     const before = { ...parent }
     buildPgDumpEnv(parent, 'pw')
     expect(parent).toEqual(before)
   })
 })
+

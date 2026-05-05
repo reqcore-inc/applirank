@@ -1,14 +1,14 @@
-/**
- * Reverse-proxy: /ingest/** → eu.i.posthog.com/** (and /ingest/static/** →
+﻿/**
+ * Reverse-proxy: /ingest/** â†’ eu.i.posthog.com/** (and /ingest/static/** â†’
  * eu-assets.i.posthog.com/**).
  *
  * Proxies PostHog API calls (event capture, decide, feature flags) and the
  * autocapture/web-vitals static assets through our domain to bypass
  * ad-blockers.
  *
- * IMPORTANT — why we do NOT use h3's `proxyRequest` here:
+ * IMPORTANT â€” why we do NOT use h3's `proxyRequest` here:
  *
- * app.reqcore.com is behind Cloudflare (in front of Railway). Inbound
+ * app.WWMate.com is behind Cloudflare (in front of Railway). Inbound
  * requests therefore arrive carrying CF-* headers (cf-connecting-ip,
  * cf-ray, cf-ipcountry, cf-visitor) plus an X-Forwarded-For chain that
  * starts with a Cloudflare edge IP. `proxyRequest` forwards ALL inbound
@@ -16,7 +16,7 @@
  * like it came from another Cloudflare-protected site and rejects it
  * with HTTP 403 + Error 1000 ("DNS points to prohibited IP") and an
  * HTML body. The browser then refuses to execute that HTML as JS due
- * to our X-Content-Type-Options: nosniff header — surfacing as
+ * to our X-Content-Type-Options: nosniff header â€” surfacing as
  * NS_ERROR_CORRUPTED_CONTENT / "MIME type mismatch" in the console.
  *
  * Doing a manual `fetch` with an explicit, minimal allow-list of
@@ -44,7 +44,7 @@ const FORWARDABLE_REQUEST_HEADERS = new Set([
 ])
 
 // Response headers we strip before relaying back to the browser.  Hop-by-hop
-// headers per RFC 7230 §6.1, plus a couple that would conflict with our own
+// headers per RFC 7230 Â§6.1, plus a couple that would conflict with our own
 // security headers if they leaked through.
 const STRIPPED_RESPONSE_HEADERS = new Set([
   'connection',
@@ -112,8 +112,9 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  // Stream the body back.  Buffer is fine here — PostHog static assets are
+  // Stream the body back.  Buffer is fine here â€” PostHog static assets are
   // small (<200 KB) and capture endpoints return tiny JSON payloads.
   const buf = Buffer.from(await upstream.arrayBuffer())
   return buf
 })
+

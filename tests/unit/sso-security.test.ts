@@ -1,19 +1,19 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { z } from 'zod'
 
 /**
  * SSO Security-focused tests.
  *
  * Validates security-critical aspects of the SSO implementation:
- * — Domain uniqueness (anti-hijacking)
- * — Provider ID uniqueness (callback URL collision prevention)
- * — GET response shape (no secret leakage)
- * — Organization isolation in delete operations
- * — Auto-provisioning role enforcement
- * — Input sanitization edge cases
+ * â€” Domain uniqueness (anti-hijacking)
+ * â€” Provider ID uniqueness (callback URL collision prevention)
+ * â€” GET response shape (no secret leakage)
+ * â€” Organization isolation in delete operations
+ * â€” Auto-provisioning role enforcement
+ * â€” Input sanitization edge cases
  */
 
-// ─── Mirror schemas from routes ────────────────────────────────────
+// â”€â”€â”€ Mirror schemas from routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const registerSsoSchema = z.object({
   providerId: z.string().min(1).max(64).regex(/^[a-z0-9-]+$/, 'Only lowercase alphanumeric and hyphens'),
@@ -29,12 +29,12 @@ const registerSsoSchema = z.object({
   clientSecret: z.string().min(1),
 })
 
-// ─── Simulate the GET response shape ───────────────────────────────
+// â”€â”€â”€ Simulate the GET response shape â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const providerResponseFields = ['id', 'providerId', 'issuer', 'domain', 'organizationId'] as const
 const sensitiveFields = ['oidcConfig', 'samlConfig', 'clientId', 'clientSecret', 'userId'] as const
 
-describe('SSO GET response — no secret leakage', () => {
+describe('SSO GET response â€” no secret leakage', () => {
   it('response shape includes only safe fields', () => {
     // The GET /api/sso/providers route selects exactly these fields
     const safeFields = new Set(providerResponseFields)
@@ -55,7 +55,7 @@ describe('SSO GET response — no secret leakage', () => {
   })
 })
 
-describe('SSO domain uniqueness — anti-hijacking', () => {
+describe('SSO domain uniqueness â€” anti-hijacking', () => {
   /**
    * Simulates the domain collision check added to providers.post.ts.
    * In production, this queries sso_provider WHERE domain = X AND org_id != current_org.
@@ -91,15 +91,15 @@ describe('SSO domain uniqueness — anti-hijacking', () => {
     expect(isDomainTakenByAnotherOrg(existing, 'acme.com', 'org-2')).toBe(false)
   })
 
-  it('is case-sensitive — domains should be lowercased before comparison', () => {
+  it('is case-sensitive â€” domains should be lowercased before comparison', () => {
     // The form trims and lowercases domains, but test raw comparison
     const existing = [{ domain: 'acme.com', organizationId: 'org-1' }]
-    // "ACME.COM" !== "acme.com" — this is why the form lowercases input
+    // "ACME.COM" !== "acme.com" â€” this is why the form lowercases input
     expect(isDomainTakenByAnotherOrg(existing, 'ACME.COM', 'org-2')).toBe(false)
   })
 })
 
-describe('SSO provider ID uniqueness — callback URL collision prevention', () => {
+describe('SSO provider ID uniqueness â€” callback URL collision prevention', () => {
   /**
    * Simulates providerId collision check added to providers.post.ts.
    */
@@ -127,7 +127,7 @@ describe('SSO provider ID uniqueness — callback URL collision prevention', () 
   })
 })
 
-describe('SSO organization isolation — cross-org access prevention', () => {
+describe('SSO organization isolation â€” cross-org access prevention', () => {
   /**
    * Simulates the delete handler's org verification:
    * SELECT WHERE id = X AND organization_id = current_org
@@ -163,7 +163,7 @@ describe('SSO organization isolation — cross-org access prevention', () => {
     expect(result.found).toBe(false)
   })
 
-  it('blocks cross-org listing — GET filters by org', () => {
+  it('blocks cross-org listing â€” GET filters by org', () => {
     // Simulates: SELECT * FROM sso_provider WHERE organization_id = current_org
     const allProviders = [
       { id: '1', domain: 'acme.com', organizationId: 'org-1' },
@@ -252,7 +252,7 @@ describe('SSO input sanitization edge cases', () => {
       ...validPayload,
       issuer: 'https://user:password@auth.example.com',
     })
-    // z.string().url() accepts this — but it's a valid URL format
+    // z.string().url() accepts this â€” but it's a valid URL format
     // The IdP discovery will fail, which is the correct fallback behavior
     expect(result.success).toBe(true)
   })
@@ -278,7 +278,7 @@ describe('SSO input sanitization edge cases', () => {
   it('rejects domain with unicode characters', () => {
     const result = registerSsoSchema.safeParse({
       ...validPayload,
-      domain: 'compañy.com',
+      domain: 'compaÃ±y.com',
     })
     expect(result.success).toBe(false)
   })
@@ -309,8 +309,8 @@ describe('SSO callback URL construction', () => {
   }
 
   it('constructs correct callback URL for standard provider', () => {
-    const url = getCallbackUrl('https://app.reqcore.com', 'acme-sso')
-    expect(url).toBe('https://app.reqcore.com/api/auth/sso/callback/acme-sso')
+    const url = getCallbackUrl('https://app.WWMate.com', 'acme-sso')
+    expect(url).toBe('https://app.WWMate.com/api/auth/sso/callback/acme-sso')
   })
 
   it('preserves port in callback URL', () => {
@@ -320,12 +320,12 @@ describe('SSO callback URL construction', () => {
 
   it('does not double-encode providerId', () => {
     // Provider IDs are already restricted to [a-z0-9-] so no encoding needed
-    const url = getCallbackUrl('https://app.reqcore.com', 'my-company-123')
+    const url = getCallbackUrl('https://app.WWMate.com', 'my-company-123')
     expect(url).not.toContain('%')
   })
 })
 
-describe('SSO enterprise sign-in — email domain extraction', () => {
+describe('SSO enterprise sign-in â€” email domain extraction', () => {
   /**
    * Better Auth's SSO plugin extracts the domain from the email
    * to find the matching provider. Verify our understanding of this behavior.
@@ -397,7 +397,7 @@ describe('SSO error mapping', () => {
   })
 })
 
-describe('SSO trusted origins — CSRF protection', () => {
+describe('SSO trusted origins â€” CSRF protection', () => {
   /**
    * Verify that the SSO flow detection accurately identifies
    * SSO-related URLs vs normal auth URLs.
@@ -424,7 +424,7 @@ describe('SSO trusted origins — CSRF protection', () => {
 
   it('does not flag SSO management endpoints', () => {
     // /api/sso/providers is a management endpoint, not a flow endpoint
-    // But it contains /sso/ — check if this is intentional
+    // But it contains /sso/ â€” check if this is intentional
     expect(isSsoFlow('/api/sso/providers')).toBe(true)
     // This is actually acceptable: SSO management endpoints should also receive
     // IdP origins in trusted origins for CSRF. It's a broader-than-necessary match
@@ -456,3 +456,4 @@ describe('SSO rate limiting coverage', () => {
     expect(isAuthPath('/api/sso/providers')).toBe(false)
   })
 })
+

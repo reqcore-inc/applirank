@@ -1,8 +1,8 @@
-import { Resend } from 'resend'
+﻿import { Resend } from 'resend'
 import nodemailer from 'nodemailer'
 import type { Transporter } from 'nodemailer'
 
-// ─── Resend client ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Resend client â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 let _resend: Resend | undefined
 
@@ -13,7 +13,7 @@ function getResendClient(): Resend | null {
   return _resend
 }
 
-// ─── SMTP transporter ─────────────────────────────────────────────────────────
+// â”€â”€â”€ SMTP transporter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 let _smtp: Transporter | undefined
 
@@ -41,7 +41,7 @@ export function getFromEmail(): string {
   return env.SMTP_HOST ? env.SMTP_FROM : env.RESEND_FROM_EMAIL
 }
 
-// ─── Internal unified send helper ────────────────────────────────────────────
+// â”€â”€â”€ Internal unified send helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface EmailMessage {
   to: string
@@ -50,7 +50,7 @@ interface EmailMessage {
   text: string
   /** Optional .ics binary attachment (calendar invite). */
   icsAttachment?: Buffer
-  /** Resend-only metadata tags — silently ignored by SMTP. */
+  /** Resend-only metadata tags â€” silently ignored by SMTP. */
   resendTags?: Array<{ name: string; value: string }>
   /** Message logged to console when no provider is configured (dev fallback). */
   logFallback: string
@@ -59,15 +59,15 @@ interface EmailMessage {
 }
 
 /**
- * Route an outbound email through SMTP (preferred) → Resend → console fallback.
- * Priority: SMTP_HOST set → use SMTP. Else RESEND_API_KEY set → use Resend.
+ * Route an outbound email through SMTP (preferred) â†’ Resend â†’ console fallback.
+ * Priority: SMTP_HOST set â†’ use SMTP. Else RESEND_API_KEY set â†’ use Resend.
  * Otherwise logs the fallback message and returns (no error thrown).
  * Throws on transport errors so callers can decide whether to swallow them.
  */
 async function sendEmail(msg: EmailMessage): Promise<void> {
   const from = getFromEmail()
 
-  // 1. SMTP — takes priority when SMTP_HOST is configured
+  // 1. SMTP â€” takes priority when SMTP_HOST is configured
   const smtp = getSmtpTransporter()
   if (smtp) {
     try {
@@ -119,11 +119,11 @@ async function sendEmail(msg: EmailMessage): Promise<void> {
     return
   }
 
-  // 3. No provider configured — dev/test fallback
-  console.info(`[Reqcore] ${msg.logFallback}`)
+  // 3. No provider configured â€” dev/test fallback
+  console.info(`[WWMate] ${msg.logFallback}`)
 }
 
-// ─── Public send functions ────────────────────────────────────────────────────
+// â”€â”€â”€ Public send functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Send an email verification link.
@@ -138,16 +138,16 @@ export async function sendVerificationEmail(data: {
   try {
     await sendEmail({
       to: data.user.email,
-      subject: 'Verify your email address — Reqcore',
+      subject: 'Verify your email address â€” WWMate',
       html: buildVerificationHtml({ url: data.url }),
       text: buildVerificationText({ url: data.url }),
       resendTags: [{ name: 'category', value: 'verification' }],
-      logFallback: 'Verification email suppressed — no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
+      logFallback: 'Verification email suppressed â€” no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
       errorCategory: 'email.verification_send_failed',
     })
   }
   catch {
-    // fire-and-forget — error already logged inside sendEmail
+    // fire-and-forget â€” error already logged inside sendEmail
   }
 }
 
@@ -164,16 +164,16 @@ export async function sendPasswordResetEmail(data: {
   try {
     await sendEmail({
       to: data.user.email,
-      subject: 'Reset your password — Reqcore',
+      subject: 'Reset your password â€” WWMate',
       html: buildPasswordResetHtml({ url: data.url }),
       text: buildPasswordResetText({ url: data.url }),
       resendTags: [{ name: 'category', value: 'password-reset' }],
-      logFallback: 'Password reset email suppressed — no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
+      logFallback: 'Password reset email suppressed â€” no email provider configured (set SMTP_HOST or RESEND_API_KEY)',
       errorCategory: 'email.password_reset_send_failed',
     })
   }
   catch {
-    // fire-and-forget — error already logged inside sendEmail
+    // fire-and-forget â€” error already logged inside sendEmail
   }
 }
 
@@ -190,7 +190,7 @@ export async function sendOrgInvitationEmail(data: {
 }, inviteLink: string): Promise<void> {
   await sendEmail({
     to: data.email,
-    subject: `You're invited to join ${data.organization.name} on Reqcore`,
+    subject: `You're invited to join ${data.organization.name} on WWMate`,
     html: buildInvitationHtml({
       inviteeName: data.email,
       inviterName: data.inviter.user.name,
@@ -210,7 +210,7 @@ export async function sendOrgInvitationEmail(data: {
       { name: 'organization', value: data.organization.name.slice(0, 256).replace(/[^a-zA-Z0-9_-]/g, '_') },
     ],
     logFallback:
-      `Invitation email → ${data.email} | ` +
+      `Invitation email â†’ ${data.email} | ` +
       `Invited by ${data.inviter.user.name} (${data.inviter.user.email}) | ` +
       `Org: ${data.organization.name} | ` +
       `Role: ${data.role} | ` +
@@ -219,9 +219,9 @@ export async function sendOrgInvitationEmail(data: {
   })
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Email templates
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function buildInvitationHtml(params: {
   inviteeName: string
@@ -248,7 +248,7 @@ function buildInvitationHtml(params: {
           <!-- Header -->
           <tr>
             <td style="padding:32px 32px 24px;text-align:center;border-bottom:1px solid #f4f4f5;">
-              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">Reqcore</h1>
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">WWMate</h1>
             </td>
           </tr>
           <!-- Body -->
@@ -282,7 +282,7 @@ function buildInvitationHtml(params: {
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
               <p style="margin:0;font-size:12px;color:#a1a1aa;">
-                Sent by Reqcore &mdash; Open-source applicant tracking
+                Sent by WWMate &mdash; Open-source applicant tracking
               </p>
             </td>
           </tr>
@@ -311,7 +311,7 @@ function buildInvitationText(params: {
     'This invitation expires in 48 hours.',
     'If you didn\'t expect this email, you can safely ignore it.',
     '',
-    '— Reqcore',
+    'â€” WWMate',
   ].join('\n')
 }
 
@@ -327,9 +327,9 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#39;')
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Email verification & password reset templates
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function buildVerificationHtml(params: { url: string }): string {
   return `<!DOCTYPE html>
@@ -346,7 +346,7 @@ function buildVerificationHtml(params: { url: string }): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
           <tr>
             <td style="padding:32px 32px 24px;text-align:center;border-bottom:1px solid #f4f4f5;">
-              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">Reqcore</h1>
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">WWMate</h1>
             </td>
           </tr>
           <tr>
@@ -372,7 +372,7 @@ function buildVerificationHtml(params: { url: string }): string {
           </tr>
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
-              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by Reqcore &mdash; Open-source applicant tracking</p>
+              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by WWMate &mdash; Open-source applicant tracking</p>
             </td>
           </tr>
         </table>
@@ -387,12 +387,12 @@ function buildVerificationText(params: { url: string }): string {
   return [
     'Verify your email address',
     '',
-    'Click the link below to verify your email and activate your Reqcore account:',
+    'Click the link below to verify your email and activate your WWMate account:',
     params.url,
     '',
     'If you didn\'t create an account, you can safely ignore this email.',
     '',
-    '— Reqcore',
+    'â€” WWMate',
   ].join('\n')
 }
 
@@ -411,7 +411,7 @@ function buildPasswordResetHtml(params: { url: string }): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
           <tr>
             <td style="padding:32px 32px 24px;text-align:center;border-bottom:1px solid #f4f4f5;">
-              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">Reqcore</h1>
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#09090b;">WWMate</h1>
             </td>
           </tr>
           <tr>
@@ -437,7 +437,7 @@ function buildPasswordResetHtml(params: { url: string }): string {
           </tr>
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
-              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by Reqcore &mdash; Open-source applicant tracking</p>
+              <p style="margin:0;font-size:12px;color:#a1a1aa;">Sent by WWMate &mdash; Open-source applicant tracking</p>
             </td>
           </tr>
         </table>
@@ -452,18 +452,18 @@ function buildPasswordResetText(params: { url: string }): string {
   return [
     'Reset your password',
     '',
-    'Click the link below to reset your Reqcore password:',
+    'Click the link below to reset your WWMate password:',
     params.url,
     '',
     'If you didn\'t request this, you can safely ignore this email.',
     '',
-    '— Reqcore',
+    'â€” WWMate',
   ].join('\n')
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Interview invitation emails
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface InterviewEmailData {
   candidateName: string
@@ -541,7 +541,7 @@ export async function sendInterviewInvitationEmail(params: {
       { name: 'interview', value: params.data.interviewTitle.slice(0, 256).replace(/[^a-zA-Z0-9_-]/g, '_') },
     ],
     logFallback:
-      `Interview invitation email → ${params.data.candidateEmail} | ` +
+      `Interview invitation email â†’ ${params.data.candidateEmail} | ` +
       `Subject: ${renderedSubject} | ` +
       `Interview: ${params.data.interviewTitle} | ` +
       `Date: ${params.data.interviewDate} at ${params.data.interviewTime}` +
@@ -627,7 +627,7 @@ function buildInterviewInvitationHtml(subject: string, bodyText: string, data: I
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #f4f4f5;background-color:#fafafa;">
               <p style="margin:0;font-size:12px;color:#a1a1aa;">
-                Sent by ${escapeHtml(data.organizationName)} via Reqcore
+                Sent by ${escapeHtml(data.organizationName)} via WWMate
               </p>
             </td>
           </tr>
@@ -651,13 +651,14 @@ function buildInterviewInvitationText(
   return [
     renderedBody,
     '',
-    '─────────────────────────────',
+    'â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
     'Respond to this invitation:',
     '',
-    `✓ Accept: ${responseUrls.accepted}`,
+    `âœ“ Accept: ${responseUrls.accepted}`,
     `? Maybe:  ${responseUrls.tentative}`,
-    `✗ Decline: ${responseUrls.declined}`,
+    `âœ— Decline: ${responseUrls.declined}`,
     '',
-    '─────────────────────────────',
+    'â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€',
   ].join('\n')
 }
+

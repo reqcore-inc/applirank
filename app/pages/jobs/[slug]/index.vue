@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { MapPin, Briefcase, Building2, ArrowLeft, ExternalLink, Calendar } from 'lucide-vue-next'
 
 definePageMeta({
@@ -47,26 +47,26 @@ function markdownToPlainText(markdown?: string | null): string {
 
 const jobDescriptionPlain = computed(() => markdownToPlainText(job.value?.description))
 
-// ─────────────────────────────────────────────
-// SEO — Meta tags (title, description, OG, Twitter)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SEO â€” Meta tags (title, description, OG, Twitter)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 useSeoMeta({
-  title: computed(() => job.value ? `${job.value.title} — Hiring Now` : 'Job Details — Reqcore'),
+  title: computed(() => job.value ? `${job.value.title} â€” Hiring Now` : 'Job Details â€” WWMate'),
   description: computed(() => {
     if (!job.value) return 'View job details and apply'
     const loc = job.value.location ? ` in ${job.value.location}` : ''
     const org = job.value.organizationName ? ` at ${job.value.organizationName}` : ''
     return `Apply for ${job.value.title}${org}${loc}. ${jobDescriptionPlain.value.slice(0, 120)}`.trim()
   }),
-  ogTitle: computed(() => job.value ? `${job.value.title} — Hiring Now` : 'Job Details'),
+  ogTitle: computed(() => job.value ? `${job.value.title} â€” Hiring Now` : 'Job Details'),
   ogDescription: computed(() => {
     if (!job.value) return 'View job details and apply'
     const org = job.value.organizationName ? ` at ${job.value.organizationName}` : ''
     return `Apply for ${job.value.title}${org}. ${job.value.location ?? 'Remote'}.`
   }),
   ogType: 'website',
-  ogImage: '/reqcore-banner-github.jpeg',
+  ogImage: '/WWMate-banner-github.jpeg',
   twitterCard: 'summary_large_image',
   twitterTitle: computed(() => job.value?.title ?? 'Job Details'),
   twitterDescription: computed(() => {
@@ -75,9 +75,9 @@ useSeoMeta({
   }),
 })
 
-// ─────────────────────────────────────────────
-// SEO — JSON-LD JobPosting structured data (Google Jobs)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SEO â€” JSON-LD JobPosting structured data (Google Jobs)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /** Map internal job type to schema.org employmentType */
 function mapEmploymentType(type: string): string {
@@ -196,7 +196,7 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
   const cur = currency || 'USD'
   const fmt = (v: number) => new Intl.NumberFormat(locale.value, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(v)
   const unitLabel = unit ? `/${unit.toLowerCase().replace('year', 'yr').replace('month', 'mo').replace('hour', 'hr')}` : ''
-  if (min && max) return `${fmt(min)} – ${fmt(max)}${unitLabel}`
+  if (min && max) return `${fmt(min)} â€“ ${fmt(max)}${unitLabel}`
   return `${fmt(min || max!)}${unitLabel}`
 }
 </script>
@@ -305,7 +305,7 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
               Apply Now
               <ExternalLink class="size-3.5" />
             </NuxtLink>
-            <p class="text-xs text-surface-400">Takes a few minutes · No account required</p>
+            <p class="text-xs text-surface-400">Takes a few minutes Â· No account required</p>
           </div>
         </div>
       </div>
@@ -368,3 +368,4 @@ function formatSalary(min?: number | null, max?: number | null, currency?: strin
     </template>
   </div>
 </template>
+

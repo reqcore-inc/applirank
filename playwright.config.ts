@@ -1,7 +1,7 @@
-import { defineConfig, devices } from '@playwright/test'
+﻿import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Playwright E2E configuration for Reqcore.
+ * Playwright E2E configuration for WWMate.
  *
  * Tests the most critical user outcomes:
  * - Creating a job (authenticated recruiter flow)
@@ -11,10 +11,10 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false, // sequential — tests share state (auth → create job → apply)
+  fullyParallel: false, // sequential â€” tests share state (auth â†’ create job â†’ apply)
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1, // single worker — tests depend on each other
+  workers: 1, // single worker â€” tests depend on each other
   reporter: process.env.CI
     ? [
         ['github'],
@@ -42,7 +42,7 @@ export default defineConfig({
     },
   ],
 
-  /* Start the Nuxt dev server before running tests (skipped in CI — we build there) */
+  /* Start the Nuxt dev server before running tests (skipped in CI â€” we build there) */
   ...(process.env.CI
     ? {}
     : {
@@ -54,3 +54,4 @@ export default defineConfig({
         },
       }),
 })
+

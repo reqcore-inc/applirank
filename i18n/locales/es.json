@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "language": "Idioma",
     "selectLanguage": "Seleccionar idioma",
@@ -7,26 +7,26 @@
   },
   "home": {
     "nav": {
-      "features": "Características",
+      "features": "CaracterÃ­sticas",
       "openPositions": "Posiciones abiertas",
       "roadmap": "Hoja de ruta",
       "blog": "Blog",
       "github": "GitHub",
       "dashboard": "Panel de control",
-      "logIn": "Iniciar sesión",
+      "logIn": "Iniciar sesiÃ³n",
       "signUp": "Registrarse"
     },
-    "badge": "ATS de código abierto para equipos de desarrollo",
+    "badge": "ATS de cÃ³digo abierto para equipos de desarrollo",
     "hero": {
-      "titleLine1": "Tu contratación.",
+      "titleLine1": "Tu contrataciÃ³n.",
       "titleHighlight": "Tu infraestructura.",
-      "subtitle": "Seguimiento de candidatos de código abierto para equipos que alojan en sus propios servidores.",
+      "subtitle": "Seguimiento de candidatos de cÃ³digo abierto para equipos que alojan en sus propios servidores.",
       "goToDashboard": "Ir al panel",
-      "signIn": "Iniciar sesión",
+      "signIn": "Iniciar sesiÃ³n",
       "createAccount": "Crear cuenta",
       "ctaDemo": "Probar demo en vivo",
       "ctaStart": "Ver en GitHub",
-      "hint": "Versión temprana de código abierto — prueba la demo con datos de ejemplo, sin registro"
+      "hint": "VersiÃ³n temprana de cÃ³digo abierto â€” prueba la demo con datos de ejemplo, sin registro"
     },
     "pillars": {
       "yourData": {
@@ -35,16 +35,17 @@
       },
       "auditable": {
         "label": "Totalmente auditable",
-        "desc": "Código abierto — cada línea de lógica de matching es visible y personalizable."
+        "desc": "CÃ³digo abierto â€” cada lÃ­nea de lÃ³gica de matching es visible y personalizable."
       },
       "unlimitedSeats": {
         "label": "Puestos ilimitados",
-        "desc": "Agrega a todo tu equipo de contratación. Sin precio por puesto, nunca."
+        "desc": "Agrega a todo tu equipo de contrataciÃ³n. Sin precio por puesto, nunca."
       }
     },
     "footer": {
-      "source": "Código fuente",
-      "tagline": "Reqcore — seguimiento de candidatos de código abierto"
+      "source": "CÃ³digo fuente",
+      "tagline": "WWMate â€” seguimiento de candidatos de cÃ³digo abierto"
     }
   }
 }
+

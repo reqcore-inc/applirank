@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "language": "Language",
     "selectLanguage": "Select language",
@@ -26,7 +26,7 @@
       "createAccount": "Create account",
       "ctaDemo": "Try live demo",
       "ctaStart": "View on GitHub",
-      "hint": "Early open-source release — try the demo with sample data, no sign-up needed"
+      "hint": "Early open-source release â€” try the demo with sample data, no sign-up needed"
     },
     "pillars": {
       "yourData": {
@@ -35,7 +35,7 @@
       },
       "auditable": {
         "label": "Fully auditable",
-        "desc": "Open source — every line of matching logic is visible and overridable."
+        "desc": "Open source â€” every line of matching logic is visible and overridable."
       },
       "unlimitedSeats": {
         "label": "Unlimited seats",
@@ -44,7 +44,8 @@
     },
     "footer": {
       "source": "Source",
-      "tagline": "Reqcore — open-source applicant tracking"
+      "tagline": "WWMate â€” open-source applicant tracking"
     }
   }
 }
+

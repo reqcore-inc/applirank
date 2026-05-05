@@ -1,5 +1,6 @@
-blank_issues_enabled: true
+﻿blank_issues_enabled: true
 contact_links:
   - name: Security vulnerability report
-    url: mailto:security@reqcore.com
+    url: mailto:security@WWMate.com
     about: Please report vulnerabilities privately by email.
+

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, Link2, Globe, BarChart3, Users,
   MousePointerClick, Target, Activity, TrendingUp,
@@ -21,15 +21,15 @@ const { formatPersonName } = useOrgSettings()
 const linkId = computed(() => route.params.id as string)
 
 useSeoMeta({
-  title: 'Link Details — Source Tracking — Reqcore',
+  title: 'Link Details â€” Source Tracking â€” WWMate',
   description: 'Detailed analytics for a tracking link',
 })
 
 onMounted(() => track('source_tracking_link_detail_viewed', { linkId: linkId.value }))
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Date range
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const dateRange = ref<'7d' | '30d' | '90d' | 'all'>('30d')
 
@@ -41,9 +41,9 @@ const dateFrom = computed(() => {
   return d.toISOString()
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch data
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const {
   data: detail,
@@ -67,9 +67,9 @@ const applications = computed(() => detail.value?.attributedApplications ?? [])
 const referrerDomains = computed(() => detail.value?.referrerDomains ?? [])
 const totalAttributed = computed(() => detail.value?.totalAttributed ?? 0)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Build tracking URL
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const requestUrl = useRequestURL()
 function buildTrackingUrl(code: string): string {
@@ -89,9 +89,9 @@ async function copyTrackingUrl() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const channelLabels: Record<string, string> = {
   linkedin: 'LinkedIn', indeed: 'Indeed', glassdoor: 'Glassdoor',
@@ -168,9 +168,9 @@ function formatFullDate(dateStr: string) {
   })
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Funnel computed
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const funnelTotal = computed(() =>
   Object.values(funnel.value).reduce((s, v) => s + v, 0),
@@ -190,17 +190,17 @@ const hireRate = computed(() => {
   return Math.round(((funnel.value.hired ?? 0) / funnelTotal.value) * 100)
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Trend chart helpers (simple bar chart)
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const maxTrendCount = computed(() =>
   Math.max(...dailyTrend.value.map((d) => d.count), 1),
 )
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // UTM summary
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const utmParams = computed(() => {
   if (!link.value) return []
@@ -213,9 +213,9 @@ const utmParams = computed(() => {
   return params
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Edit link
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showEditModal = ref(false)
 const isSaving = ref(false)
@@ -269,9 +269,9 @@ async function handleSaveEdit() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Candidate detail sidebar
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const selectedAppId = ref<string | null>(null)
 const sidebarOpen = computed(() => Boolean(selectedAppId.value))
@@ -292,7 +292,7 @@ async function handleSidebarUpdated() {
 
 <template>
   <div class="mx-auto max-w-6xl">
-    <!-- ─── Loading skeleton ─── -->
+    <!-- â”€â”€â”€ Loading skeleton â”€â”€â”€ -->
     <div v-if="fetchStatus === 'pending'">
       <div class="mb-8">
         <div class="h-4 w-32 bg-surface-200 dark:bg-surface-700 rounded animate-pulse mb-4" />
@@ -321,7 +321,7 @@ async function handleSidebarUpdated() {
       </div>
     </div>
 
-    <!-- ─── Error ─── -->
+    <!-- â”€â”€â”€ Error â”€â”€â”€ -->
     <div
       v-else-if="fetchError"
       class="rounded-2xl border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950/60 p-5 text-sm text-danger-700 dark:text-danger-400 flex items-center gap-3"
@@ -336,9 +336,9 @@ async function handleSidebarUpdated() {
       </NuxtLink>
     </div>
 
-    <!-- ─── Main content ─── -->
+    <!-- â”€â”€â”€ Main content â”€â”€â”€ -->
     <template v-else-if="link">
-      <!-- ─── Back + Header ─── -->
+      <!-- â”€â”€â”€ Back + Header â”€â”€â”€ -->
       <div class="mb-6 sm:mb-8">
         <NuxtLink
           :to="localePath('/dashboard/source-tracking')"
@@ -425,7 +425,7 @@ async function handleSidebarUpdated() {
         </div>
       </div>
 
-      <!-- ─── Tracking URL display ─── -->
+      <!-- â”€â”€â”€ Tracking URL display â”€â”€â”€ -->
       <div class="mb-6 sm:mb-8 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 px-4 py-3 flex items-center gap-3">
         <Link2 class="size-4 text-surface-400 shrink-0" />
         <code class="text-xs text-surface-600 dark:text-surface-300 font-mono truncate flex-1">
@@ -439,7 +439,7 @@ async function handleSidebarUpdated() {
         </button>
       </div>
 
-      <!-- ─── Stat cards ─── -->
+      <!-- â”€â”€â”€ Stat cards â”€â”€â”€ -->
       <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <!-- Clicks -->
         <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-blue-500/25 dark:hover:ring-blue-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/[0.08]">
@@ -485,7 +485,7 @@ async function handleSidebarUpdated() {
               <span class="size-1.5 rounded-full bg-teal-500 shrink-0 mb-1" />
             </div>
             <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">CVR</span>
-            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Click → Application</p>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Click â†’ Application</p>
           </div>
         </div>
 
@@ -501,7 +501,7 @@ async function handleSidebarUpdated() {
               <span class="size-1.5 rounded-full bg-green-500 shrink-0 mb-1" />
             </div>
             <span class="block mt-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-surface-400 dark:text-surface-500">Hire Rate</span>
-            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Application → Hired</p>
+            <p class="text-[11px] text-surface-300 dark:text-surface-600 mt-1">Application â†’ Hired</p>
           </div>
         </div>
 
@@ -522,9 +522,9 @@ async function handleSidebarUpdated() {
         </div>
       </div>
 
-      <!-- ─── Main layout ─── -->
+      <!-- â”€â”€â”€ Main layout â”€â”€â”€ -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <!-- ─── Left: Pipeline funnel ─── -->
+        <!-- â”€â”€â”€ Left: Pipeline funnel â”€â”€â”€ -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Pipeline funnel -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
@@ -574,7 +574,7 @@ async function handleSidebarUpdated() {
           </div>
         </div>
 
-        <!-- ─── Right: UTM params + Referrers ─── -->
+        <!-- â”€â”€â”€ Right: UTM params + Referrers â”€â”€â”€ -->
         <div class="space-y-6">
           <!-- UTM Parameters -->
           <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
@@ -655,7 +655,7 @@ async function handleSidebarUpdated() {
         </div>
       </div>
 
-      <!-- ─── Applications Over Time (full width) ─── -->
+      <!-- â”€â”€â”€ Applications Over Time (full width) â”€â”€â”€ -->
       <div class="mb-6 rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
         <div class="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
           <div class="flex items-center gap-2.5">
@@ -697,7 +697,7 @@ async function handleSidebarUpdated() {
         </div>
       </div>
 
-      <!-- ─── Attributed Applications Table ─── -->
+      <!-- â”€â”€â”€ Attributed Applications Table â”€â”€â”€ -->
       <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
         <div class="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
           <div class="flex items-center gap-2.5">
@@ -767,11 +767,11 @@ async function handleSidebarUpdated() {
                 </td>
                 <!-- Referrer -->
                 <td class="px-4 py-3.5 text-xs text-surface-500 dark:text-surface-400 truncate max-w-[120px]">
-                  {{ app.referrerDomain ?? '—' }}
+                  {{ app.referrerDomain ?? 'â€”' }}
                 </td>
                 <!-- Campaign -->
                 <td class="px-4 py-3.5 text-xs text-surface-500 dark:text-surface-400 truncate max-w-[120px]">
-                  {{ app.utmCampaign ?? '—' }}
+                  {{ app.utmCampaign ?? 'â€”' }}
                 </td>
                 <!-- Status -->
                 <td class="px-4 py-3.5 text-center">
@@ -802,9 +802,9 @@ async function handleSidebarUpdated() {
       @updated="handleSidebarUpdated"
     />
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Modal: Edit tracking link                -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <Teleport to="body">
       <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showEditModal = false" />
@@ -897,7 +897,7 @@ async function handleSidebarUpdated() {
                 :disabled="!editForm.name.trim() || isSaving"
                 class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm shadow-brand-600/15 transition-all"
               >
-                {{ isSaving ? 'Saving…' : 'Save Changes' }}
+                {{ isSaving ? 'Savingâ€¦' : 'Save Changes' }}
               </button>
             </div>
           </form>
@@ -906,3 +906,4 @@ async function handleSidebarUpdated() {
     </Teleport>
   </div>
 </template>
+

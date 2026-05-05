@@ -1,16 +1,16 @@
-# Self-Hosting Reqcore — The Complete Guide
+﻿# Self-Hosting WWMate â€” The Complete Guide
 
-Everything you need to deploy, manage, and update your own Reqcore applicant tracking system. No technical background required.
+Everything you need to deploy, manage, and update your own WWMate applicant tracking system. No technical background required.
 
 ---
 
 ## Table of Contents
 
 1. [What is Self-Hosting?](#what-is-self-hosting)
-2. [Why Self-Host Reqcore?](#why-self-host-reqcore)
+2. [Why Self-Host WWMate?](#why-self-host-WWMate)
 3. [Requirements](#requirements)
-4. [Quick Start — Pre-built Image (Fastest)](#quick-start--pre-built-image-fastest)
-5. [Quick Start — Build from Source (5 Minutes)](#quick-start--build-from-source-5-minutes)
+4. [Quick Start â€” Pre-built Image (Fastest)](#quick-start--pre-built-image-fastest)
+5. [Quick Start â€” Build from Source (5 Minutes)](#quick-start--build-from-source-5-minutes)
 6. [Step-by-Step Installation](#step-by-step-installation)
 7. [Updating Your Instance](#updating-your-instance)
 8. [Backups & Data Safety](#backups--data-safety)
@@ -26,25 +26,25 @@ Everything you need to deploy, manage, and update your own Reqcore applicant tra
 
 ## What is Self-Hosting?
 
-Self-hosting means running Reqcore on a server you control — your own computer, a rented server, or a cloud virtual machine — instead of using a service managed by someone else. Your recruitment data, candidate documents, and hiring pipeline stay entirely under your control.
+Self-hosting means running WWMate on a server you control â€” your own computer, a rented server, or a cloud virtual machine â€” instead of using a service managed by someone else. Your recruitment data, candidate documents, and hiring pipeline stay entirely under your control.
 
 Think of it like the difference between renting an apartment and owning a house. With self-hosting, you hold the keys. Nobody else can access your data, change the terms of service, or shut down the platform on you.
 
 **What you get:**
 - Complete ownership of all candidate data, documents, and hiring records
-- No per-seat pricing — unlimited team members at zero marginal cost
+- No per-seat pricing â€” unlimited team members at zero marginal cost
 - No data leaves your network unless you choose to integrate external services
-- Full source code access — you can audit, modify, and extend everything
+- Full source code access â€” you can audit, modify, and extend everything
 
 ---
 
-## Why Self-Host Reqcore?
+## Why Self-Host WWMate?
 
 ### Data Sovereignty
 Your candidate resumes, interview feedback, and hiring pipeline live on your infrastructure. This matters for organizations with data residency requirements (GDPR, industry regulations) or those who simply want the peace of mind that comes with data ownership.
 
 ### Cost Predictability
-A single $5–10/month VPS handles Reqcore for most teams. Compare that to cloud ATS platforms that charge $50–200 per seat per month. For a team of 10, that could mean saving $6,000+ annually.
+A single $5â€“10/month VPS handles WWMate for most teams. Compare that to cloud ATS platforms that charge $50â€“200 per seat per month. For a team of 10, that could mean saving $6,000+ annually.
 
 ### Zero Vendor Lock-in
 The database is standard PostgreSQL. Documents are stored in S3-compatible storage (MinIO). If you ever want to switch tools or export your data, standard database and S3 tools work out of the box.
@@ -61,18 +61,18 @@ No analytics, no tracking, no data sharing with third parties. The only telemetr
 | Requirement | Details |
 |-------------|---------|
 | **A computer or server** | Any modern Linux machine, Mac, or Windows PC with WSL2 |
-| **Docker Desktop** | Free software that packages Reqcore and its dependencies together |
+| **Docker Desktop** | Free software that packages WWMate and its dependencies together |
 | **2 GB RAM** | The minimum. 4 GB is comfortable for teams with heavy usage |
 | **10 GB disk space** | For the application, database, and uploaded documents |
 | **Internet connection** | Only needed for initial setup and pulling updates |
 
 ### Recommended Server Providers (If You Don't Have a Server)
 
-If you need to rent a server, these providers offer affordable options suitable for Reqcore:
+If you need to rent a server, these providers offer affordable options suitable for WWMate:
 
 | Provider | Minimum Plan | Monthly Cost | Notes |
 |----------|-------------|--------------|-------|
-| **Hetzner** | CX22 (2 vCPU, 4 GB RAM) | ~€4/month | Best value. European data centers. |
+| **Hetzner** | CX22 (2 vCPU, 4 GB RAM) | ~â‚¬4/month | Best value. European data centers. |
 | **DigitalOcean** | Basic Droplet (1 vCPU, 2 GB RAM) | $12/month | Beginner-friendly interface. |
 | **Vultr** | Cloud Compute (1 vCPU, 2 GB RAM) | $12/month | Global data centers. |
 | **Railway** | Hobby Plan | $5/month | One-click deploy. See README for details. |
@@ -81,18 +81,18 @@ All of these providers offer one-click Docker installation when creating a serve
 
 ---
 
-## Quick Start — Pre-built Image (Fastest)
+## Quick Start â€” Pre-built Image (Fastest)
 
-Use the official pre-built Docker image from GitHub Container Registry. No cloning, no building — just pull and run.
+Use the official pre-built Docker image from GitHub Container Registry. No cloning, no building â€” just pull and run.
 
-### Option A — Versioned release bundle (recommended)
+### Option A â€” Versioned release bundle (recommended)
 
-Every [GitHub Release](https://github.com/reqcore-inc/reqcore/releases/latest) ships with a `reqcore-<version>.tar.gz` bundle that contains `setup.sh` and a `docker-compose.production.yml` with the image tag already pinned to that exact version. This is the most reliable way to install or upgrade.
+Every [GitHub Release](https://github.com/WWMate-inc/WWMate/releases/latest) ships with a `WWMate-<version>.tar.gz` bundle that contains `setup.sh` and a `docker-compose.production.yml` with the image tag already pinned to that exact version. This is the most reliable way to install or upgrade.
 
 ```bash
 # 1. Download and extract the latest release bundle
-curl -fsSL -o reqcore.tar.gz https://github.com/reqcore-inc/reqcore/releases/latest/download/reqcore-$(curl -fsSL https://api.github.com/repos/reqcore-inc/reqcore/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/^v//').tar.gz
-tar -xzf reqcore.tar.gz && cd reqcore-*
+curl -fsSL -o WWMate.tar.gz https://github.com/WWMate-inc/WWMate/releases/latest/download/WWMate-$(curl -fsSL https://api.github.com/repos/WWMate-inc/WWMate/releases/latest | grep tag_name | cut -d '"' -f 4 | sed 's/^v//').tar.gz
+tar -xzf WWMate.tar.gz && cd WWMate-*
 
 # 2. Generate secure passwords (one-time)
 ./setup.sh
@@ -101,18 +101,18 @@ tar -xzf reqcore.tar.gz && cd reqcore-*
 docker compose -f docker-compose.production.yml up -d
 
 # 4. Open your browser
-# → http://localhost:3000
+# â†’ http://localhost:3000
 ```
 
 To upgrade later, download the newer release bundle into a new directory, copy your existing `.env` over, and run `docker compose up -d`.
 
-### Option B — Pull straight from `main`
+### Option B â€” Pull straight from `main`
 
 ```bash
 # 1. Download just the files you need
-mkdir reqcore && cd reqcore
-curl -fsSLO https://raw.githubusercontent.com/reqcore-inc/reqcore/main/docker-compose.production.yml
-curl -fsSLO https://raw.githubusercontent.com/reqcore-inc/reqcore/main/setup.sh
+mkdir WWMate && cd WWMate
+curl -fsSLO https://raw.githubusercontent.com/WWMate-inc/WWMate/main/docker-compose.production.yml
+curl -fsSLO https://raw.githubusercontent.com/WWMate-inc/WWMate/main/setup.sh
 chmod +x setup.sh
 
 # 2. Generate secure passwords (one-time)
@@ -122,7 +122,7 @@ chmod +x setup.sh
 docker compose -f docker-compose.production.yml up -d
 
 # 4. Open your browser
-# → http://localhost:3000
+# â†’ http://localhost:3000
 ```
 
 That's it. Sign up, create your organization, and start hiring.
@@ -131,7 +131,7 @@ That's it. Sign up, create your organization, and start hiring.
 
 ```yaml
 app:
-  image: ghcr.io/reqcore-inc/reqcore:1.3.0
+  image: ghcr.io/WWMate-inc/WWMate:1.3.0
 ```
 
 ### Verifying image authenticity (optional)
@@ -139,8 +139,8 @@ app:
 Every published image is signed with [cosign](https://github.com/sigstore/cosign) using GitHub's keyless OIDC. To verify the image you pulled was actually built by the official release workflow:
 
 ```bash
-cosign verify ghcr.io/reqcore-inc/reqcore:<version> \
-  --certificate-identity-regexp 'https://github.com/reqcore-inc/reqcore/.github/workflows/docker-publish.yml@.*' \
+cosign verify ghcr.io/WWMate-inc/WWMate:<version> \
+  --certificate-identity-regexp 'https://github.com/WWMate-inc/WWMate/.github/workflows/docker-publish.yml@.*' \
   --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
 ```
 
@@ -148,14 +148,14 @@ A successful verification confirms the image is unmodified and was produced by t
 
 ---
 
-## Quick Start — Build from Source (5 Minutes)
+## Quick Start â€” Build from Source (5 Minutes)
 
 If you prefer to build from source (useful for development or customization):
 
 ```bash
-# 1. Download Reqcore
-git clone https://github.com/reqcore-inc/reqcore.git
-cd reqcore
+# 1. Download WWMate
+git clone https://github.com/WWMate-inc/WWMate.git
+cd WWMate
 
 # 2. Generate secure passwords (one-time)
 ./setup.sh
@@ -164,7 +164,7 @@ cd reqcore
 docker compose up -d
 
 # 4. Open your browser
-# → http://localhost:3000
+# â†’ http://localhost:3000
 ```
 
 Sign up, create your organization, and start hiring.
@@ -175,7 +175,7 @@ Sign up, create your organization, and start hiring.
 docker compose exec app npm run db:seed
 ```
 
-Then sign in with `demo@reqcore.com` / `demo1234`.
+Then sign in with `demo@WWMate.com` / `demo1234`.
 
 ---
 
@@ -183,7 +183,7 @@ Then sign in with `demo@reqcore.com` / `demo1234`.
 
 ### Step 1: Install Docker
 
-Docker packages Reqcore and all its dependencies (database, file storage) into isolated containers. You install Docker once, and everything else is handled automatically.
+Docker packages WWMate and all its dependencies (database, file storage) into isolated containers. You install Docker once, and everything else is handled automatically.
 
 **On Ubuntu/Debian (most common server OS):**
 
@@ -212,11 +212,11 @@ docker --version
 # Should print something like: Docker version 24.x.x
 ```
 
-### Step 2: Download Reqcore
+### Step 2: Download WWMate
 
 ```bash
-git clone https://github.com/reqcore-inc/reqcore.git
-cd reqcore
+git clone https://github.com/WWMate-inc/WWMate.git
+cd WWMate
 ```
 
 If you don't have `git` installed:
@@ -231,26 +231,26 @@ xcode-select --install
 
 ### Step 3: Generate Secure Credentials
 
-Reqcore needs database passwords and authentication secrets. The setup script generates cryptographically random values for you:
+WWMate needs database passwords and authentication secrets. The setup script generates cryptographically random values for you:
 
 ```bash
 ./setup.sh
 ```
 
-This creates a `.env` file with all necessary configuration. **Never share or commit this file** — it contains your database passwords and authentication secrets.
+This creates a `.env` file with all necessary configuration. **Never share or commit this file** â€” it contains your database passwords and authentication secrets.
 
-### Step 4: Start Reqcore
+### Step 4: Start WWMate
 
 ```bash
 docker compose up -d
 ```
 
-The `-d` flag runs everything in the background. The first startup takes 2–5 minutes as Docker downloads the required images and builds the application.
+The `-d` flag runs everything in the background. The first startup takes 2â€“5 minutes as Docker downloads the required images and builds the application.
 
 **What's happening behind the scenes:**
 1. Docker starts a **PostgreSQL 16** database for your data
 2. Docker starts **MinIO** (S3-compatible storage) for document uploads
-3. Docker builds and starts the **Reqcore application**
+3. Docker builds and starts the **WWMate application**
 4. Database migrations run automatically to create all required tables
 
 ### Step 5: Create Your Account
@@ -274,25 +274,25 @@ If you're running on a remote server, replace `localhost` with your server's IP 
 
 ### Method 1: Update from the UI (Recommended)
 
-Reqcore includes a built-in update system accessible from the Settings panel. No command line needed.
+WWMate includes a built-in update system accessible from the Settings panel. No command line needed.
 
-1. Sign in to your Reqcore instance
-2. Go to **Settings → Updates**
+1. Sign in to your WWMate instance
+2. Go to **Settings â†’ Updates**
 3. The page automatically checks for new versions
 4. If an update is available, click **"Create backup first"** (recommended)
 5. Click **"Update to vX.Y.Z"** and confirm
 6. Wait for the update to complete (usually under 2 minutes)
 7. Refresh the page
 
-The UI shows the progress of each update step and clearly indicates success or failure. Your data is always preserved — database migrations run automatically.
+The UI shows the progress of each update step and clearly indicates success or failure. Your data is always preserved â€” database migrations run automatically.
 
 ### Method 2: Update from the Command Line (Pre-built Image)
 
 If you're using the pre-built image (`docker-compose.production.yml`):
 
 ```bash
-# Navigate to your Reqcore directory
-cd /path/to/reqcore
+# Navigate to your WWMate directory
+cd /path/to/WWMate
 
 # Pull the latest image and restart
 docker compose -f docker-compose.production.yml pull app
@@ -303,7 +303,7 @@ To update to a specific version, edit `docker-compose.production.yml` and change
 
 ```yaml
 app:
-  image: ghcr.io/reqcore-inc/reqcore:1.4.0
+  image: ghcr.io/WWMate-inc/WWMate:1.4.0
 ```
 
 Then run `docker compose -f docker-compose.production.yml up -d`.
@@ -313,8 +313,8 @@ Then run `docker compose -f docker-compose.production.yml up -d`.
 If you cloned the repository and build locally:
 
 ```bash
-# Navigate to your Reqcore directory
-cd /path/to/reqcore
+# Navigate to your WWMate directory
+cd /path/to/WWMate
 
 # Pull the latest version
 git pull origin main
@@ -323,7 +323,7 @@ git pull origin main
 docker compose up --build -d
 ```
 
-The entire process takes 2–5 minutes depending on your server's speed. There's about 30 seconds of downtime while the new container starts.
+The entire process takes 2â€“5 minutes depending on your server's speed. There's about 30 seconds of downtime while the new container starts.
 
 ### What Happens During an Update
 
@@ -337,7 +337,7 @@ The entire process takes 2–5 minutes depending on your server's speed. There's
 
 ### Update Notifications
 
-The Settings → Updates page automatically checks whether a new version is available by comparing your installed version against the latest GitHub release. No data is sent to any external service — only a single API call to GitHub's public releases endpoint.
+The Settings â†’ Updates page automatically checks whether a new version is available by comparing your installed version against the latest GitHub release. No data is sent to any external service â€” only a single API call to GitHub's public releases endpoint.
 
 ---
 
@@ -351,10 +351,10 @@ Before applying any update through the UI, you can click the **"Create backup fi
 
 ```bash
 # Create a backup
-docker compose exec db pg_dump -U reqcore reqcore > backup-$(date +%Y%m%d).sql
+docker compose exec db pg_dump -U WWMate WWMate > backup-$(date +%Y%m%d).sql
 
-# Restore from a backup (⚠️ this replaces all current data)
-cat backup-20260315.sql | docker compose exec -T db psql -U reqcore reqcore
+# Restore from a backup (âš ï¸ this replaces all current data)
+cat backup-20260315.sql | docker compose exec -T db psql -U WWMate WWMate
 ```
 
 ### Automated Daily Backups (Optional)
@@ -363,7 +363,7 @@ Add this to your server's crontab (`crontab -e`) to create daily backups:
 
 ```bash
 # Daily backup at 2 AM, keep last 30 days
-0 2 * * * cd /path/to/reqcore && docker compose exec -T db pg_dump -U reqcore reqcore > /path/to/backups/reqcore-$(date +\%Y\%m\%d).sql && find /path/to/backups -name "reqcore-*.sql" -mtime +30 -delete
+0 2 * * * cd /path/to/WWMate && docker compose exec -T db pg_dump -U WWMate WWMate > /path/to/backups/WWMate-$(date +\%Y\%m\%d).sql && find /path/to/backups -name "WWMate-*.sql" -mtime +30 -delete
 ```
 
 ### Document Backups
@@ -372,7 +372,7 @@ Uploaded documents (resumes, cover letters) are stored in MinIO. To back them up
 
 ```bash
 # Copy MinIO data to a local directory
-docker cp reqcore_minio:/data ./minio-backup-$(date +%Y%m%d)
+docker cp WWMate_minio:/data ./minio-backup-$(date +%Y%m%d)
 ```
 
 ### Full Instance Backup
@@ -384,8 +384,8 @@ For a complete backup of everything (database + documents + configuration):
 docker compose stop
 
 # Backup Docker volumes
-docker run --rm -v reqcore_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres-backup.tar.gz -C /data .
-docker run --rm -v reqcore_minio_data:/data -v $(pwd):/backup alpine tar czf /backup/minio-backup.tar.gz -C /data .
+docker run --rm -v WWMate_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres-backup.tar.gz -C /data .
+docker run --rm -v WWMate_minio_data:/data -v $(pwd):/backup alpine tar czf /backup/minio-backup.tar.gz -C /data .
 
 # Copy your .env file (contains passwords)
 cp .env .env.backup
@@ -400,9 +400,9 @@ docker compose up -d
 
 ### Using a Reverse Proxy (Recommended)
 
-For production deployments, place a reverse proxy (Caddy, Nginx, or Traefik) in front of Reqcore to handle HTTPS certificates automatically.
+For production deployments, place a reverse proxy (Caddy, Nginx, or Traefik) in front of WWMate to handle HTTPS certificates automatically.
 
-**Option A: Caddy (Simplest — Automatic HTTPS)**
+**Option A: Caddy (Simplest â€” Automatic HTTPS)**
 
 Caddy automatically obtains and renews Let's Encrypt certificates. Install Caddy on your server, then create a `Caddyfile`:
 
@@ -427,7 +427,7 @@ That's it. Caddy handles HTTPS certificates automatically.
 sudo apt install nginx certbot python3-certbot-nginx
 
 # Configure Nginx
-sudo tee /etc/nginx/sites-available/reqcore <<EOF
+sudo tee /etc/nginx/sites-available/WWMate <<EOF
 server {
     listen 80;
     server_name ats.yourcompany.com;
@@ -443,7 +443,7 @@ server {
 }
 EOF
 
-sudo ln -s /etc/nginx/sites-available/reqcore /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/WWMate /etc/nginx/sites-enabled/
 sudo certbot --nginx -d ats.yourcompany.com
 ```
 
@@ -474,22 +474,22 @@ docker compose up --build -d
 
 ## Email Configuration
 
-By default, Reqcore logs email content to the console (useful for development). For production, configure a transactional email service.
+By default, WWMate logs email content to the console (useful for development). For production, configure a transactional email service.
 
 **Priority:** When `SMTP_HOST` is set, SMTP is used. Otherwise, if `RESEND_API_KEY` is set, Resend is used. If neither is configured, emails are logged to the console.
 
 ### Option A: SMTP (recommended for self-hosted setups)
 
-SMTP works with any mail server — Postfix, Gmail, Exchange, Mailcow, Mailu, etc. No external service dependency.
+SMTP works with any mail server â€” Postfix, Gmail, Exchange, Mailcow, Mailu, etc. No external service dependency.
 
 1. Add to your `.env` file:
 
 ```bash
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
-SMTP_USER=reqcore@example.com
+SMTP_USER=WWMate@example.com
 SMTP_PASS=your-smtp-password
-SMTP_FROM="Reqcore <noreply@example.com>"
+SMTP_FROM="WWMate <noreply@example.com>"
 SMTP_SECURE=false    # true for implicit TLS (port 465), false for STARTTLS (port 587)
 ```
 
@@ -504,7 +504,7 @@ SMTP_SECURE=false    # true for implicit TLS (port 465), false for STARTTLS (por
 | Mailcow / Mailu | your server hostname | `587` | `false` |
 | Custom Postfix | your server hostname | `587` or `465` | `false` / `true` |
 
-> For Gmail, generate an [App Password](https://support.google.com/accounts/answer/185833) — your regular Gmail password will not work.
+> For Gmail, generate an [App Password](https://support.google.com/accounts/answer/185833) â€” your regular Gmail password will not work.
 
 ### Option B: Resend
 
@@ -515,7 +515,7 @@ SMTP_SECURE=false    # true for implicit TLS (port 465), false for STARTTLS (por
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxx
-RESEND_FROM_EMAIL="Reqcore <noreply@yourcompany.com>"
+RESEND_FROM_EMAIL="WWMate <noreply@yourcompany.com>"
 ```
 
 5. Restart: `docker compose up --build -d`
@@ -526,24 +526,24 @@ RESEND_FROM_EMAIL="Reqcore <noreply@yourcompany.com>"
 
 ### What's Already Secured For You
 
-Reqcore ships with security defaults that require no configuration:
+WWMate ships with security defaults that require no configuration:
 
-- **All services are localhost-bound** — PostgreSQL, MinIO, and Adminer are never exposed to the internet. Only the application port (3000) is accessible externally.
+- **All services are localhost-bound** â€” PostgreSQL, MinIO, and Adminer are never exposed to the internet. Only the application port (3000) is accessible externally.
 - **Automatic CSRF protection** via Better Auth
 - **Encrypted OAuth tokens** with AES-256-GCM
-- **Rate limiting** on sensitive endpoints (in-memory, single-instance — see "Scaling horizontally" below if you run multiple replicas)
-- **Security headers** — `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restricting camera/microphone/geolocation
-- **File upload validation** — MIME type verification, file size limits, filename sanitization
-- **Server-proxied downloads** — uploaded files are never served directly from storage; they pass through the application server, which enforces authentication and authorization
-- **Deny-by-default access control** — every API endpoint checks org membership and role permissions
-- **Backups never leak app secrets** — the in-app `pg_dump` runner spawns the child process with a minimal env (PGPASSWORD + a small whitelist of system vars) so application secrets like `BETTER_AUTH_SECRET`, `S3_SECRET_KEY`, and OAuth credentials are never inherited by the subprocess
+- **Rate limiting** on sensitive endpoints (in-memory, single-instance â€” see "Scaling horizontally" below if you run multiple replicas)
+- **Security headers** â€” `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restricting camera/microphone/geolocation
+- **File upload validation** â€” MIME type verification, file size limits, filename sanitization
+- **Server-proxied downloads** â€” uploaded files are never served directly from storage; they pass through the application server, which enforces authentication and authorization
+- **Deny-by-default access control** â€” every API endpoint checks org membership and role permissions
+- **Backups never leak app secrets** â€” the in-app `pg_dump` runner spawns the child process with a minimal env (PGPASSWORD + a small whitelist of system vars) so application secrets like `BETTER_AUTH_SECRET`, `S3_SECRET_KEY`, and OAuth credentials are never inherited by the subprocess
 
 ### Additional Recommendations
 
 **Use a firewall:**
 
 ```bash
-# Ubuntu/Debian — only allow SSH, HTTP, HTTPS
+# Ubuntu/Debian â€” only allow SSH, HTTP, HTTPS
 sudo ufw allow 22/tcp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
@@ -567,36 +567,36 @@ sudo dpkg-reconfigure -plow unattended-upgrades
 
 ### Scaling horizontally
 
-Reqcore is designed to run as a **single instance** on one VPS. The built-in
+WWMate is designed to run as a **single instance** on one VPS. The built-in
 rate limiter keeps state in memory, which is perfect for a single container
 but means two replicas would each enforce their own per-IP counters
-independently — a determined attacker could double their effective budget by
+independently â€” a determined attacker could double their effective budget by
 spreading requests across replicas.
 
-If you do need to run multiple Reqcore instances behind a load balancer,
+If you do need to run multiple WWMate instances behind a load balancer,
 **move rate limiting to the edge** rather than into the app:
 
 | Edge layer | What to configure |
 |------------|-------------------|
-| Cloudflare (free) | Security → WAF → Rate limiting rules per path |
+| Cloudflare (free) | Security â†’ WAF â†’ Rate limiting rules per path |
 | Caddy | `rate_limit` directive in your Caddyfile |
 | Nginx | `limit_req_zone` + `limit_req` directives |
 
-This is also more efficient — abusive traffic is dropped before it ever
-reaches a Nuxt process — and it removes the need for any extra infrastructure
-inside Reqcore itself.
+This is also more efficient â€” abusive traffic is dropped before it ever
+reaches a Nuxt process â€” and it removes the need for any extra infrastructure
+inside WWMate itself.
 
 ---
 
 ## OIDC Single Sign-On (SSO)
 
-Reqcore supports Single Sign-On via any OIDC-compliant identity provider — Keycloak, Authentik, Authelia, Okta, Azure AD, and more. When configured, a "Sign in with SSO" button appears on the login and registration pages.
+WWMate supports Single Sign-On via any OIDC-compliant identity provider â€” Keycloak, Authentik, Authelia, Okta, Azure AD, and more. When configured, a "Sign in with SSO" button appears on the login and registration pages.
 
 ### Why SSO?
 
-- **Centralized identity** — users sign in once across all internal tools
-- **Zero-friction onboarding** — new hires get instant access, leavers are cut off centrally
-- **Enterprise security** — MFA, session policies, and brute-force protection managed in one place
+- **Centralized identity** â€” users sign in once across all internal tools
+- **Zero-friction onboarding** â€” new hires get instant access, leavers are cut off centrally
+- **Enterprise security** â€” MFA, session policies, and brute-force protection managed in one place
 
 ### Setup
 
@@ -605,17 +605,17 @@ Reqcore supports Single Sign-On via any OIDC-compliant identity provider — Key
 | Setting | Value |
 |---|---|
 | Client type | OpenID Connect (confidential) |
-| Client ID | Any name (e.g., `reqcore`) |
+| Client ID | Any name (e.g., `WWMate`) |
 | Client authentication | ON (confidential/secret) |
-| Valid redirect URI | `https://your-reqcore-domain.com/api/auth/oauth2/callback/oidc` |
-| Valid post-logout redirect URI | `https://your-reqcore-domain.com/*` |
+| Valid redirect URI | `https://your-WWMate-domain.com/api/auth/oauth2/callback/oidc` |
+| Valid post-logout redirect URI | `https://your-WWMate-domain.com/*` |
 | Scopes | `openid`, `email`, `profile` |
 
 **2. Set environment variables:**
 
 ```bash
 # All three are required to activate SSO
-OIDC_CLIENT_ID=reqcore
+OIDC_CLIENT_ID=WWMate
 OIDC_CLIENT_SECRET=your-client-secret-from-provider
 OIDC_DISCOVERY_URL=https://keycloak.example.com/realms/master/.well-known/openid-configuration
 
@@ -623,7 +623,7 @@ OIDC_DISCOVERY_URL=https://keycloak.example.com/realms/master/.well-known/openid
 OIDC_PROVIDER_NAME=Company SSO
 ```
 
-**3. Restart Reqcore:**
+**3. Restart WWMate:**
 
 ```bash
 docker compose down && docker compose up -d
@@ -646,17 +646,17 @@ The SSO button appears automatically on the sign-in and sign-up pages.
 - **PKCE** (Proof Key for Code Exchange) is enabled by default for protection against authorization code interception
 - **Issuer validation** (RFC 9207) is enforced to prevent OAuth mix-up attacks
 - **OIDC discovery** automatically fetches and validates all provider endpoints
-- SSO is **completely opt-in** — it has zero impact when the environment variables are not set
+- SSO is **completely opt-in** â€” it has zero impact when the environment variables are not set
 
 ---
 
 ## Feature Flags
 
-Reqcore ships some features behind **feature flags** so they can be tested in production before being released to everyone. The full list of flags lives in [`shared/feature-flags.ts`](shared/feature-flags.ts).
+WWMate ships some features behind **feature flags** so they can be tested in production before being released to everyone. The full list of flags lives in [`shared/feature-flags.ts`](shared/feature-flags.ts).
 
 ### How it works for self-hosters
 
-Every flag has a safe **default value** baked into the code. You get that default automatically — **no PostHog account or external service required**.
+Every flag has a safe **default value** baked into the code. You get that default automatically â€” **no PostHog account or external service required**.
 
 If you want to opt into an experimental feature (or disable a stable one), set an environment variable matching the pattern:
 
@@ -678,9 +678,9 @@ Restart the container after editing `.env`. Env-var overrides win over any PostH
 
 ### Resolution order
 
-1. URL query string (e.g. `?ff_chatbot-experience=true`) — handy for QA
-2. Env var override (`FEATURE_FLAG_*`) — what you'll use 99% of the time
-3. PostHog rollout — only applies when `POSTHOG_PUBLIC_KEY` is set
+1. URL query string (e.g. `?ff_chatbot-experience=true`) â€” handy for QA
+2. Env var override (`FEATURE_FLAG_*`) â€” what you'll use 99% of the time
+3. PostHog rollout â€” only applies when `POSTHOG_PUBLIC_KEY` is set
 4. Registry default from `shared/feature-flags.ts`
 
 ### I want to use PostHog for gradual rollout
@@ -693,12 +693,12 @@ Optional. Set `POSTHOG_PUBLIC_KEY` and `POSTHOG_HOST` in `.env`, then create a f
 
 ### Built-in System Health Dashboard
 
-Navigate to **Settings → Updates** in your Reqcore instance to view:
+Navigate to **Settings â†’ Updates** in your WWMate instance to view:
 
-- **Service status** — Real-time health of the application, database, and file storage
-- **System resources** — Memory usage, uptime, deployment method
-- **Version info** — Current version and available updates
-- **Changelog** — What changed in each version
+- **Service status** â€” Real-time health of the application, database, and file storage
+- **System resources** â€” Memory usage, uptime, deployment method
+- **Version info** â€” Current version and available updates
+- **Changelog** â€” What changed in each version
 
 ### Docker Health Checks
 
@@ -718,10 +718,10 @@ docker compose logs minio     # Storage logs
 
 For production instances, consider using a free uptime monitoring service:
 
-- [UptimeRobot](https://uptimerobot.com) — Free tier: 50 monitors, 5-minute checks
-- [Healthchecks.io](https://healthchecks.io) — Free tier: cron job monitoring
+- [UptimeRobot](https://uptimerobot.com) â€” Free tier: 50 monitors, 5-minute checks
+- [Healthchecks.io](https://healthchecks.io) â€” Free tier: cron job monitoring
 
-Point the monitor at your Reqcore URL (e.g., `https://ats.yourcompany.com`) and get notified if your instance goes down.
+Point the monitor at your WWMate URL (e.g., `https://ats.yourcompany.com`) and get notified if your instance goes down.
 
 ---
 
@@ -741,12 +741,12 @@ sudo systemctl start docker
 
 ### "Port 3000 is already in use"
 
-Another application is using port 3000. Either stop that application or change Reqcore's port:
+Another application is using port 3000. Either stop that application or change WWMate's port:
 
 ```bash
 # In docker-compose.yml, change the ports line for the app service:
 ports:
-  - "8080:3000"  # Access Reqcore on port 8080 instead
+  - "8080:3000"  # Access WWMate on port 8080 instead
 ```
 
 ### "Database connection refused"
@@ -777,8 +777,8 @@ docker compose logs app --tail 50
 ```
 
 Common causes:
-- Missing environment variables — re-run `./setup.sh`
-- Database not ready yet — wait 30 seconds and check again
+- Missing environment variables â€” re-run `./setup.sh`
+- Database not ready yet â€” wait 30 seconds and check again
 
 ### Update failed
 
@@ -795,7 +795,7 @@ docker compose up --build -d
 ### Need to start fresh
 
 ```bash
-# ⚠️ This deletes ALL data (database, uploaded files, configuration)
+# âš ï¸ This deletes ALL data (database, uploaded files, configuration)
 docker compose down -v
 rm .env
 ./setup.sh
@@ -808,15 +808,15 @@ docker compose up -d
 
 ### How much does self-hosting cost?
 
-The software is completely free. Your only costs are server hosting ($5–15/month for most teams) and a domain name (~$12/year, optional).
+The software is completely free. Your only costs are server hosting ($5â€“15/month for most teams) and a domain name (~$12/year, optional).
 
-### Can I run Reqcore on my laptop?
+### Can I run WWMate on my laptop?
 
-Yes. Docker Desktop runs on Mac, Windows, and Linux. Reqcore works fine on a laptop for small teams or evaluation purposes. For production use with a team, a dedicated server is recommended so the system stays online when your laptop is off.
+Yes. Docker Desktop runs on Mac, Windows, and Linux. WWMate works fine on a laptop for small teams or evaluation purposes. For production use with a team, a dedicated server is recommended so the system stays online when your laptop is off.
 
 ### How many team members can I have?
 
-Unlimited. There are no per-seat limits in self-hosted Reqcore.
+Unlimited. There are no per-seat limits in self-hosted WWMate.
 
 ### Is my data backed up automatically?
 
@@ -824,26 +824,26 @@ Not by default. See the [Backups & Data Safety](#backups--data-safety) section f
 
 ### Can I migrate from another ATS?
 
-Reqcore uses standard PostgreSQL. If you can export your data as CSV or JSON from your current ATS, you can import it using standard database tools. We're working on import wizards for popular ATS platforms.
+WWMate uses standard PostgreSQL. If you can export your data as CSV or JSON from your current ATS, you can import it using standard database tools. We're working on import wizards for popular ATS platforms.
 
 ### How do I know when an update is available?
 
-Go to **Settings → Updates** in your Reqcore dashboard. The page automatically checks for new versions and shows you exactly what changed, with a one-click update button.
+Go to **Settings â†’ Updates** in your WWMate dashboard. The page automatically checks for new versions and shows you exactly what changed, with a one-click update button.
 
 ### What happens if an update breaks something?
 
-Updates are designed to be safe — database migrations are tested before release, and the update process is designed to fail gracefully. If something does go wrong:
+Updates are designed to be safe â€” database migrations are tested before release, and the update process is designed to fail gracefully. If something does go wrong:
 1. Your previous data is always preserved in Docker volumes
 2. You can restore from a backup (create one before updating)
 3. You can roll back: `git checkout v1.0.0 && docker compose up --build -d`
 
 ### Can I move my instance to a different server?
 
-Yes. Back up your data (database dump + MinIO files + `.env`), install Docker on the new server, clone Reqcore, restore your backups, and start the containers. All your data moves with you.
+Yes. Back up your data (database dump + MinIO files + `.env`), install Docker on the new server, clone WWMate, restore your backups, and start the containers. All your data moves with you.
 
 ### Do I need to know Linux/command line?
 
-For initial setup: basic familiarity with opening a terminal and copying commands is helpful. After that, day-to-day management (including updates) can be done entirely from the web UI through **Settings → Updates**.
+For initial setup: basic familiarity with opening a terminal and copying commands is helpful. After that, day-to-day management (including updates) can be done entirely from the web UI through **Settings â†’ Updates**.
 
 ### Can I run multiple instances?
 
@@ -851,8 +851,8 @@ Yes. Each instance needs its own directory, `.env` file, and ports. Change the p
 
 ### How do I get help?
 
-- **GitHub Issues**: [github.com/reqcore-inc/reqcore/issues](https://github.com/reqcore-inc/reqcore/issues)
-- **Discussions**: [github.com/reqcore-inc/reqcore/discussions](https://github.com/reqcore-inc/reqcore/discussions)
+- **GitHub Issues**: [github.com/WWMate-inc/WWMate/issues](https://github.com/WWMate-inc/WWMate/issues)
+- **Discussions**: [github.com/WWMate-inc/WWMate/discussions](https://github.com/WWMate-inc/WWMate/discussions)
 - **Documentation**: This guide and the project README
 
 ---
@@ -862,25 +862,25 @@ Yes. Each instance needs its own directory, `.env` file, and ports. Change the p
 For those interested in what's running under the hood:
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Your Server                                    │
-│                                                 │
-│  ┌────────────┐  ┌──────────┐  ┌─────────────┐ │
-│  │  Reqcore    │  │PostgreSQL│  │    MinIO     │ │
-│  │  App        │  │    16    │  │  (S3 Storage)│ │
-│  │  :3000      │  │  :5432   │  │  :9000/:9001│ │
-│  └─────┬──────┘  └────┬─────┘  └──────┬──────┘ │
-│        │              │               │         │
-│        └──────────────┴───────────────┘         │
-│              Docker Network (internal)          │
-│                                                 │
-│  Only port 3000 is exposed externally           │
-└─────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  Your Server                                    â”‚
+â”‚                                                 â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚  WWMate    â”‚  â”‚PostgreSQLâ”‚  â”‚    MinIO     â”‚ â”‚
+â”‚  â”‚  App        â”‚  â”‚    16    â”‚  â”‚  (S3 Storage)â”‚ â”‚
+â”‚  â”‚  :3000      â”‚  â”‚  :5432   â”‚  â”‚  :9000/:9001â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â”‚        â”‚              â”‚               â”‚         â”‚
+â”‚        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜         â”‚
+â”‚              Docker Network (internal)          â”‚
+â”‚                                                 â”‚
+â”‚  Only port 3000 is exposed externally           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 | Component | Purpose | Storage |
 |-----------|---------|---------|
-| **Reqcore App** | Web application (Nuxt 4, Node.js) | Stateless (rebuilt on update) |
+| **WWMate App** | Web application (Nuxt 4, Node.js) | Stateless (rebuilt on update) |
 | **PostgreSQL 16** | All application data (jobs, candidates, pipeline) | `postgres_data` Docker volume |
 | **MinIO** | Uploaded documents (resumes, cover letters) | `minio_data` Docker volume |
 
@@ -893,11 +893,12 @@ Data lives in Docker volumes, which persist across container restarts and rebuil
 | Task | How | Difficulty |
 |------|-----|------------|
 | Install | Clone + `./setup.sh` + `docker compose up` | Easy (5 min) |
-| Update (UI) | Settings → Updates → Click "Update" | Easy (2 min) |
+| Update (UI) | Settings â†’ Updates â†’ Click "Update" | Easy (2 min) |
 | Update (CLI) | `git pull` + `docker compose up --build -d` | Easy (2 min) |
-| Backup | Settings → Updates → "Create backup" | Easy (1 click) |
+| Backup | Settings â†’ Updates â†’ "Create backup" | Easy (1 click) |
 | Custom domain | Add reverse proxy (Caddy recommended) | Medium (15 min) |
 | Email | Add Resend API key to `.env` | Easy (5 min) |
-| Monitor | Settings → Updates → System Health | Built-in |
+| Monitor | Settings â†’ Updates â†’ System Health | Built-in |
 
-Self-hosting Reqcore is designed to be straightforward for anyone comfortable with downloading software and opening a web browser. The built-in update system, backup tools, and health dashboard mean you rarely need to touch the command line after initial setup.
+Self-hosting WWMate is designed to be straightforward for anyone comfortable with downloading software and opening a web browser. The built-in update system, backup tools, and health dashboard mean you rarely need to touch the command line after initial setup.
+

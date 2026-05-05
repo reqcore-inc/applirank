@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, Calendar, Clock, Video, Phone, Building2, Code2,
   FileText, UsersRound, CheckCircle2, XCircle, AlertTriangle,
@@ -25,13 +25,13 @@ const { interview, status: fetchStatus, error, updateInterview, deleteInterview,
 useSeoMeta({
   title: computed(() =>
     interview.value
-      ? `${interview.value.title} — Reqcore`
-      : 'Interview — Reqcore',
+      ? `${interview.value.title} â€” WWMate`
+      : 'Interview â€” WWMate',
   ),
   robots: 'noindex, nofollow',
 })
 
-// ─── Status config ──────────────────────────────────────────────
+// â”€â”€â”€ Status config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type InterviewStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show'
 
 const statusConfig: Record<InterviewStatus, { label: string; icon: any; class: string; dot: string }> = {
@@ -79,7 +79,7 @@ const typeLabels: Record<string, string> = {
   take_home: 'Take Home',
 }
 
-// ─── Status transitions (from shared single source of truth) ────
+// â”€â”€â”€ Status transitions (from shared single source of truth) â”€â”€â”€â”€
 import { INTERVIEW_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 const transitionClasses: Record<InterviewStatus, string> = {
@@ -113,7 +113,7 @@ async function handleTransition(newStatus: InterviewStatus) {
   }
 }
 
-// ─── Display helpers ─────────────────────────────────────────────
+// â”€â”€â”€ Display helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatDateTime(dateStr: string) {
   return new Date(dateStr).toLocaleString('en-US', {
     weekday: 'long',
@@ -144,7 +144,7 @@ function getCandidateInitials(firstName?: string, lastName?: string) {
   return `${first}${last}`.toUpperCase() || 'C'
 }
 
-// ─── Notes editing ───────────────────────────────────────────────
+// â”€â”€â”€ Notes editing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isEditingNotes = ref(false)
 const notesInput = ref('')
 const isSavingNotes = ref(false)
@@ -167,7 +167,7 @@ async function saveNotes() {
   }
 }
 
-// ─── Reschedule ──────────────────────────────────────────────────
+// â”€â”€â”€ Reschedule â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showReschedule = ref(false)
 const rescheduleForm = reactive({
   date: '',
@@ -211,7 +211,7 @@ async function handleReschedule() {
   }
 }
 
-// ─── Edit details ────────────────────────────────────────────────
+// â”€â”€â”€ Edit details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showEditDetails = ref(false)
 const editForm = reactive({
   title: '',
@@ -257,7 +257,7 @@ async function handleSaveDetails() {
   }
 }
 
-// ─── Delete ──────────────────────────────────────────────────────
+// â”€â”€â”€ Delete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const router = useRouter()
 const showDeleteConfirm = ref(false)
 const isDeleting = ref(false)
@@ -275,7 +275,7 @@ async function handleDelete() {
   }
 }
 
-// ─── Email invitation (inline) ───────────────────────────────────
+// â”€â”€â”€ Email invitation (inline) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showSendInvitation = ref(false)
 const selectedTemplateId = ref<string>('system-standard')
 const isSendingEmail = ref(false)
@@ -364,7 +364,7 @@ const localePath = useLocalePath()
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="flex flex-col items-center justify-center py-20">
       <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
-      <p class="mt-3 text-sm text-surface-400">Loading interview…</p>
+      <p class="mt-3 text-sm text-surface-400">Loading interviewâ€¦</p>
     </div>
 
     <!-- Error -->
@@ -625,7 +625,7 @@ const localePath = useLocalePath()
                   @click="handleSendInvitation"
                 >
                   <Send class="size-4" />
-                  {{ isSendingEmail ? 'Sending…' : 'Send Invitation' }}
+                  {{ isSendingEmail ? 'Sendingâ€¦' : 'Send Invitation' }}
                 </button>
               </div>
             </div>
@@ -784,7 +784,7 @@ const localePath = useLocalePath()
           <textarea
             v-model="notesInput"
             rows="5"
-            placeholder="Add notes about this interview — topics to cover, feedback, impressions…"
+            placeholder="Add notes about this interview â€” topics to cover, feedback, impressionsâ€¦"
             class="w-full rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors resize-none"
           />
           <div class="flex items-center gap-2 mt-2">
@@ -793,7 +793,7 @@ const localePath = useLocalePath()
               class="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="saveNotes"
             >
-              {{ isSavingNotes ? 'Saving…' : 'Save' }}
+              {{ isSavingNotes ? 'Savingâ€¦' : 'Save' }}
             </button>
             <button
               class="cursor-pointer rounded-lg border border-surface-300 dark:border-surface-600 px-3 py-1.5 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
@@ -885,7 +885,7 @@ const localePath = useLocalePath()
                 :disabled="isRescheduling"
                 class="cursor-pointer rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {{ isRescheduling ? 'Saving…' : 'Reschedule' }}
+                {{ isRescheduling ? 'Savingâ€¦' : 'Reschedule' }}
               </button>
             </div>
           </form>
@@ -941,7 +941,7 @@ const localePath = useLocalePath()
                 id="edit-location"
                 v-model="editForm.location"
                 type="text"
-                placeholder="Zoom link, office address…"
+                placeholder="Zoom link, office addressâ€¦"
                 class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
               />
             </div>
@@ -989,7 +989,7 @@ const localePath = useLocalePath()
                 :disabled="isSavingEdit"
                 class="cursor-pointer rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {{ isSavingEdit ? 'Saving…' : 'Save Changes' }}
+                {{ isSavingEdit ? 'Savingâ€¦' : 'Save Changes' }}
               </button>
             </div>
           </form>
@@ -1019,7 +1019,7 @@ const localePath = useLocalePath()
               class="cursor-pointer rounded-lg bg-danger-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="handleDelete"
             >
-              {{ isDeleting ? 'Deleting…' : 'Delete' }}
+              {{ isDeleting ? 'Deletingâ€¦' : 'Delete' }}
             </button>
           </div>
         </div>
@@ -1028,3 +1028,4 @@ const localePath = useLocalePath()
 
   </div>
 </template>
+

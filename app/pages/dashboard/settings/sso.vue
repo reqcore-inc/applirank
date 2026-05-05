@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ShieldCheck, Plus, Trash2, Loader2, Check, X, AlertTriangle,
   ExternalLink, Copy, Globe, KeyRound,
@@ -7,16 +7,16 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Single Sign-On — Reqcore',
+  title: 'Single Sign-On â€” WWMate',
   description: 'Configure enterprise SSO for your organization',
 })
 
 const { allowed: canManageSso } = usePermission({ organization: ['update'] })
 const { track } = useTrack()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch existing SSO providers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const {
   data: providers,
   status: fetchStatus,
@@ -33,9 +33,9 @@ const {
 
 const hasProvider = computed(() => (providers.value?.length ?? 0) > 0)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Registration form
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showForm = ref(false)
 const isRegistering = ref(false)
 const formError = ref('')
@@ -53,7 +53,7 @@ const siteOrigin = computed(() => {
   if (import.meta.client) {
     return window.location.origin
   }
-  return 'https://app.reqcore.com'
+  return 'https://app.WWMate.com'
 })
 
 function resetForm() {
@@ -67,7 +67,7 @@ function resetForm() {
 
 /**
  * Auto-suggest providerId from the domain entered.
- * e.g. "acme.com" → "acme-sso"
+ * e.g. "acme.com" â†’ "acme-sso"
  */
 watch(() => form.domain, (domain) => {
   if (!form.providerId && domain) {
@@ -108,9 +108,9 @@ async function handleRegister() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Delete provider
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const deletingId = ref<string | null>(null)
 const confirmDeleteId = ref<string | null>(null)
 
@@ -132,9 +132,9 @@ async function handleDelete(id: string) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Copy callback URL
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const copiedProviderId = ref<string | null>(null)
 
 function getCallbackUrl(providerId: string) {
@@ -203,7 +203,7 @@ async function copyCallbackUrl(providerId: string) {
     <!-- Loading state -->
     <div v-if="fetchStatus === 'pending'" class="flex items-center gap-3 py-12 justify-center">
       <Loader2 class="size-5 animate-spin text-surface-400" />
-      <span class="text-sm text-surface-400">Loading SSO configuration…</span>
+      <span class="text-sm text-surface-400">Loading SSO configurationâ€¦</span>
     </div>
 
     <template v-else>
@@ -300,7 +300,7 @@ async function copyCallbackUrl(providerId: string) {
           No SSO provider configured
         </h3>
         <p class="text-xs text-surface-500 dark:text-surface-400 mb-4 max-w-sm mx-auto">
-          Connect your corporate identity provider so your team can sign in with their work accounts — no separate passwords needed.
+          Connect your corporate identity provider so your team can sign in with their work accounts â€” no separate passwords needed.
         </p>
         <button
           v-if="canManageSso"
@@ -355,7 +355,7 @@ async function copyCallbackUrl(providerId: string) {
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 font-mono text-xs"
               />
               <span class="text-xs text-surface-400">
-                The OIDC issuer URL. Reqcore will auto-discover endpoints from
+                The OIDC issuer URL. WWMate will auto-discover endpoints from
                 <code class="text-xs">/.well-known/openid-configuration</code>.
               </span>
             </label>
@@ -410,7 +410,7 @@ async function copyCallbackUrl(providerId: string) {
               >
                 <Loader2 v-if="isRegistering" class="size-4 animate-spin" />
                 <ShieldCheck v-else class="size-4" />
-                {{ isRegistering ? 'Verifying & registering…' : 'Register SSO Provider' }}
+                {{ isRegistering ? 'Verifying & registeringâ€¦' : 'Register SSO Provider' }}
               </button>
               <button
                 type="button"
@@ -431,7 +431,7 @@ async function copyCallbackUrl(providerId: string) {
               <li>Create an OIDC application in your identity provider (Okta, Azure AD, Google Workspace, etc.).</li>
               <li>Set the <strong>Redirect URI</strong> to: <code class="bg-surface-100 dark:bg-surface-800 px-1 py-0.5 rounded text-xs">{{ `${siteOrigin}/api/auth/sso/callback/{provider-id}` }}</code></li>
               <li>Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> from your IdP and paste them above.</li>
-              <li>Enter the <strong>Issuer URL</strong> — Reqcore will auto-discover all OIDC endpoints.</li>
+              <li>Enter the <strong>Issuer URL</strong> â€” WWMate will auto-discover all OIDC endpoints.</li>
             </ol>
 
             <div class="mt-3 flex flex-wrap gap-2">
@@ -472,15 +472,15 @@ async function copyCallbackUrl(providerId: string) {
         <div class="space-y-3 text-xs text-surface-500 dark:text-surface-400">
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">1</div>
-            <p>You register your company's identity provider (IdP) — Okta, Azure AD, Google Workspace, or any OIDC-compliant provider.</p>
+            <p>You register your company's identity provider (IdP) â€” Okta, Azure AD, Google Workspace, or any OIDC-compliant provider.</p>
           </div>
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">2</div>
-            <p>Team members visit the sign-in page and enter their work email. Reqcore detects the email domain and redirects to your IdP.</p>
+            <p>Team members visit the sign-in page and enter their work email. WWMate detects the email domain and redirects to your IdP.</p>
           </div>
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">3</div>
-            <p>After authenticating with the IdP, users are automatically provisioned into your organization as members — no invitation needed.</p>
+            <p>After authenticating with the IdP, users are automatically provisioned into your organization as members â€” no invitation needed.</p>
           </div>
         </div>
       </div>
@@ -498,3 +498,4 @@ async function copyCallbackUrl(providerId: string) {
   opacity: 0;
 }
 </style>
+

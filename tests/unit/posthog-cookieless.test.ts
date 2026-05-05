@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Verifies the two-tier PostHog consent + identity model.
  *
  * Default state (no consent / declined):
@@ -10,7 +10,7 @@
  *
  * Accepted state:
  *   - persistence upgraded to 'localStorage+cookie'
- *   - identify() re-fired with email + name → aliases anon distinct id
+ *   - identify() re-fired with email + name â†’ aliases anon distinct id
  *   - org group enriched with org name
  *   - UTM + first-touch attribution captured
  */
@@ -27,7 +27,7 @@ describe('PostHog default cookieless config', () => {
   it('uses sessionStorage persistence by default (cookieless, stable per tab)', () => {
     // sessionStorage gives a stable distinct_id within the visit so
     // multi-page funnels work for unconsented users, but is wiped when
-    // the tab closes — no cross-session tracking, no cookies set.
+    // the tab closes â€” no cross-session tracking, no cookies set.
     expect(nuxtConfig).toMatch(/persistence:\s*["']sessionStorage["']/)
   })
 
@@ -49,7 +49,7 @@ describe('PostHog default cookieless config', () => {
 describe('Consent surface (banner + composable)', () => {
   it('exposes the consent cookie name shared across subdomains', () => {
     const consent = read('app/composables/useAnalyticsConsent.ts')
-    expect(consent).toMatch(/CONSENT_COOKIE_NAME = ['"]reqcore-consent['"]/)
+    expect(consent).toMatch(/CONSENT_COOKIE_NAME = ['"]WWMate-consent['"]/)
   })
 
   it('writes the consent cookie with a cross-subdomain domain option', () => {
@@ -112,7 +112,7 @@ describe('PostHog identity (PII gated on consent)', () => {
     expect(identityPlugin).toMatch(/posthogIdentifyUser:\s*\(\s*userId:\s*string\s*,\s*properties\?:/)
     // When properties are absent, identify is called with id only (no PII).
     expect(identityPlugin).toMatch(/posthog\.identify\(userId\)/)
-    // When properties are present, identify forwards them — this is the call
+    // When properties are present, identify forwards them â€” this is the call
     // that aliases the anon distinct id to the user id with PII attached.
     expect(identityPlugin).toMatch(/posthog\.identify\(userId,\s*properties\)/)
   })
@@ -166,18 +166,18 @@ describe('Server-side trackEvent (stable distinct id)', () => {
   })
 })
 
-describe('Cross-domain consent forwarding (marketing → app)', () => {
+describe('Cross-domain consent forwarding (marketing â†’ app)', () => {
   const identityPlugin = read('app/plugins/posthog-identity.client.ts')
 
-  it('only honours ?ph_consent=granted from a trusted reqcore.com referrer', () => {
-    expect(identityPlugin).toMatch(/ref\.hostname === ['"]reqcore\.com['"]/)
-    expect(identityPlugin).toMatch(/ref\.hostname\.endsWith\(['"]\.reqcore\.com['"]/)
+  it('only honours ?ph_consent=granted from a trusted WWMate.com referrer', () => {
+    expect(identityPlugin).toMatch(/ref\.hostname === ['"]WWMate\.com['"]/)
+    expect(identityPlugin).toMatch(/ref\.hostname\.endsWith\(['"]\.WWMate\.com['"]/)
   })
 
   it('aliases the marketing distinct id whenever it is valid (cross-domain stitching is not consent-gated)', () => {
     // Aliasing only links two anonymous distinct ids PostHog already has
-    // — it adds no PII or persistent storage. Gating on consent would
-    // make cross-domain funnels (cta_clicked → signup_page_viewed) report
+    // â€” it adds no PII or persistent storage. Gating on consent would
+    // make cross-domain funnels (cta_clicked â†’ signup_page_viewed) report
     // ~0% conversion for the vast majority of (unconsented) users.
     expect(identityPlugin).toMatch(/if\s*\(\s*isValidDistinctId\s*\)\s*\{[\s\S]*?posthog\.alias\(marketingDistinctId\)/)
     // And explicitly NOT gated on consent.
@@ -192,7 +192,7 @@ describe('Cross-domain consent forwarding (marketing → app)', () => {
 describe('Demo account isolation (is_demo super property)', () => {
   // Marketing & internal demo behaviour must never skew real-user funnels.
   // We tag the demo session with `is_demo: true` so dashboards can filter
-  // it out — server-side via event property, client-side via super property
+  // it out â€” server-side via event property, client-side via super property
   // + person property.
 
   it('client identity composable references both demo signals (email + slug)', () => {
@@ -212,7 +212,7 @@ describe('Demo account isolation (is_demo super property)', () => {
   it('plugin exposes posthogSetDemoFlag as a super-property toggle', () => {
     const plugin = read('app/plugins/posthog-identity.client.ts')
     expect(plugin).toMatch(/posthogSetDemoFlag:/)
-    // Super property → automatically attached to every event.
+    // Super property â†’ automatically attached to every event.
     expect(plugin).toMatch(/posthog\.register\(\s*\{\s*is_demo:\s*true\s*\}/)
     // Cleared on demand so a real user signing in after demo isn't tagged.
     expect(plugin).toMatch(/posthog\.unregister\(['"]is_demo['"]\)/)
@@ -234,3 +234,4 @@ describe('Demo account isolation (is_demo super property)', () => {
     expect(demoOrg).toMatch(/export function getConfiguredDemoSlugs/)
   })
 })
+

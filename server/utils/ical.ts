@@ -1,13 +1,13 @@
-/**
+﻿/**
  * iCalendar (.ics) generation for interview invitations.
  * Implements RFC 5545 (iCalendar) and RFC 5546 (iTIP METHOD:REQUEST).
  *
  * Generates .ics files that natively integrate with Gmail, Outlook,
- * and Apple Mail — adding the event to the candidate's calendar on accept.
+ * and Apple Mail â€” adding the event to the candidate's calendar on accept.
  */
 
 export interface ICalEvent {
-  /** Interview UUID — used to build the UID for update/cancel sync */
+  /** Interview UUID â€” used to build the UID for update/cancel sync */
   interviewId: string
   /** Interview title */
   summary: string
@@ -32,7 +32,7 @@ export interface ICalEvent {
 }
 
 /**
- * Fold long lines per RFC 5545 §3.1: lines MUST NOT exceed 75 octets.
+ * Fold long lines per RFC 5545 Â§3.1: lines MUST NOT exceed 75 octets.
  * Continuation lines begin with a single space (LWSP).
  */
 function foldLine(line: string): string {
@@ -54,7 +54,7 @@ function foldLine(line: string): string {
 }
 
 /**
- * Escape text values per RFC 5545 §3.3.11.
+ * Escape text values per RFC 5545 Â§3.3.11.
  */
 function escapeICalText(text: string): string {
   return text
@@ -92,13 +92,13 @@ function nowStamp(): string {
  */
 export function generateInterviewICS(event: ICalEvent): string {
   const endTime = new Date(event.startTime.getTime() + event.durationMinutes * 60_000)
-  const uid = `interview-${event.interviewId}@reqcore.com`
+  const uid = `interview-${event.interviewId}@WWMate.com`
   const sequence = event.sequence ?? 0
 
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Reqcore//Interview Scheduling//EN',
+    'PRODID:-//WWMate//Interview Scheduling//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:REQUEST',
     'BEGIN:VEVENT',
@@ -132,13 +132,13 @@ export function generateInterviewICS(event: ICalEvent): string {
  */
 export function generateCancellationICS(event: Pick<ICalEvent, 'interviewId' | 'summary' | 'startTime' | 'durationMinutes' | 'organizerName' | 'organizerEmail' | 'attendeeEmail' | 'attendeeName'> & { sequence?: number }): string {
   const endTime = new Date(event.startTime.getTime() + event.durationMinutes * 60_000)
-  const uid = `interview-${event.interviewId}@reqcore.com`
+  const uid = `interview-${event.interviewId}@WWMate.com`
   const sequence = (event.sequence ?? 0) + 1
 
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Reqcore//Interview Scheduling//EN',
+    'PRODID:-//WWMate//Interview Scheduling//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:CANCEL',
     'BEGIN:VEVENT',
@@ -157,3 +157,4 @@ export function generateCancellationICS(event: Pick<ICalEvent, 'interviewId' | '
 
   return lines.map(foldLine).join('\r\n') + '\r\n'
 }
+

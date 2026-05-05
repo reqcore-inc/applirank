@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { envSchema } from '../../server/utils/env'
 
 /**
@@ -20,14 +20,14 @@ describe('OIDC SSO environment configuration', () => {
     it('accepts valid OIDC configuration', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'super-secret',
         OIDC_DISCOVERY_URL: 'https://keycloak.example.com/realms/master/.well-known/openid-configuration',
       })
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.OIDC_CLIENT_ID).toBe('reqcore')
+        expect(result.data.OIDC_CLIENT_ID).toBe('WWMate')
         expect(result.data.OIDC_CLIENT_SECRET).toBe('super-secret')
         expect(result.data.OIDC_DISCOVERY_URL).toBe('https://keycloak.example.com/realms/master/.well-known/openid-configuration')
         expect(result.data.OIDC_PROVIDER_NAME).toBe('SSO') // default
@@ -37,7 +37,7 @@ describe('OIDC SSO environment configuration', () => {
     it('accepts custom OIDC_PROVIDER_NAME', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'super-secret',
         OIDC_DISCOVERY_URL: 'https://keycloak.example.com/realms/master/.well-known/openid-configuration',
         OIDC_PROVIDER_NAME: 'Company SSO',
@@ -63,7 +63,7 @@ describe('OIDC SSO environment configuration', () => {
     })
 
     it('rejects empty strings rather than treating as unset', () => {
-      // Empty strings go through emptyToUndefined → undefined → fails z.string()
+      // Empty strings go through emptyToUndefined â†’ undefined â†’ fails z.string()
       // This is correct defensive behavior: partial/empty config is rejected.
       const result = envSchema.safeParse({
         ...baseEnv,
@@ -80,7 +80,7 @@ describe('OIDC SSO environment configuration', () => {
     it('rejects when only OIDC_CLIENT_ID is set', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
       })
 
       expect(result.success).toBe(false)
@@ -122,7 +122,7 @@ describe('OIDC SSO environment configuration', () => {
     it('rejects when OIDC_DISCOVERY_URL is missing but others are set', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'secret',
       })
 
@@ -141,7 +141,7 @@ describe('OIDC SSO environment configuration', () => {
     it('rejects non-URL discovery URL', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'secret',
         OIDC_DISCOVERY_URL: 'not-a-url',
       })
@@ -152,7 +152,7 @@ describe('OIDC SSO environment configuration', () => {
     it('accepts various OIDC provider discovery URLs', () => {
       const urls = [
         'https://keycloak.example.com/realms/master/.well-known/openid-configuration',
-        'https://authentik.example.com/application/o/reqcore/.well-known/openid-configuration',
+        'https://authentik.example.com/application/o/WWMate/.well-known/openid-configuration',
         'https://login.microsoftonline.com/tenant-id/v2.0/.well-known/openid-configuration',
         'https://accounts.google.com/.well-known/openid-configuration',
       ]
@@ -160,7 +160,7 @@ describe('OIDC SSO environment configuration', () => {
       for (const url of urls) {
         const result = envSchema.safeParse({
           ...baseEnv,
-          OIDC_CLIENT_ID: 'reqcore',
+          OIDC_CLIENT_ID: 'WWMate',
           OIDC_CLIENT_SECRET: 'secret',
           OIDC_DISCOVERY_URL: url,
         })
@@ -174,7 +174,7 @@ describe('OIDC SSO environment configuration', () => {
     it('defaults to "SSO" when OIDC vars are set but name is omitted', () => {
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'secret',
         OIDC_DISCOVERY_URL: 'https://keycloak.example.com/realms/master/.well-known/openid-configuration',
       })
@@ -186,11 +186,11 @@ describe('OIDC SSO environment configuration', () => {
     })
 
     it('rejects empty string for provider name', () => {
-      // Empty string → emptyToUndefined → undefined → falls through to default.
+      // Empty string â†’ emptyToUndefined â†’ undefined â†’ falls through to default.
       // But the preprocess inner z.string() rejects undefined, so this fails.
       const result = envSchema.safeParse({
         ...baseEnv,
-        OIDC_CLIENT_ID: 'reqcore',
+        OIDC_CLIENT_ID: 'WWMate',
         OIDC_CLIENT_SECRET: 'secret',
         OIDC_DISCOVERY_URL: 'https://keycloak.example.com/realms/master/.well-known/openid-configuration',
         OIDC_PROVIDER_NAME: '',
@@ -200,3 +200,4 @@ describe('OIDC SSO environment configuration', () => {
     })
   })
 })
+

@@ -1,11 +1,11 @@
-{
+﻿{
   // VS Code tasks for the release / dependency workflow.
   //
-  // Run any of these via:  Ctrl+Shift+P → "Tasks: Run Task"
+  // Run any of these via:  Ctrl+Shift+P â†’ "Tasks: Run Task"
   //
   // The whole release flow is automated by GitHub Actions (release-please +
   // docker-publish + release-smoke-test). These tasks are only for visibility
-  // and one-off local actions — you should never *need* them in steady state.
+  // and one-off local actions â€” you should never *need* them in steady state.
   "version": "2.0.0",
   "tasks": [
     {
@@ -29,7 +29,7 @@
     {
       "label": "Release: dry-run notes (local)",
       "type": "shell",
-      "command": "npx release-please release-pr --dry-run --token=$env:GITHUB_TOKEN --repo-url=https://github.com/reqcore-inc/reqcore --config-file=.github/release-please-config.json --manifest-file=.release-please-manifest.json",
+      "command": "npx release-please release-pr --dry-run --token=$env:GITHUB_TOKEN --repo-url=https://github.com/WWMate-inc/WWMate --config-file=.github/release-please-config.json --manifest-file=.release-please-manifest.json",
       "problemMatcher": [],
       "detail": "Preview what the next release would contain, without creating anything."
     },
@@ -57,3 +57,4 @@
     }
   ]
 }
+

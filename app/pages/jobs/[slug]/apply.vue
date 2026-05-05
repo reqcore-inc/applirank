@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { MapPin, Briefcase, Building2 } from 'lucide-vue-next'
 
 definePageMeta({
@@ -26,14 +26,14 @@ const { data: job, status: fetchStatus, error: fetchError } = useFetch(
 )
 
 useSeoMeta({
-  title: computed(() => job.value ? `Apply — ${job.value.title}` : 'Apply — Reqcore'),
+  title: computed(() => job.value ? `Apply â€” ${job.value.title}` : 'Apply â€” WWMate'),
   description: computed(() => job.value?.description?.slice(0, 160) ?? 'Submit your application'),
   robots: 'noindex, nofollow',
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Form state
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const form = ref({
   firstName: '',
@@ -43,10 +43,10 @@ const form = ref({
   website: '', // honeypot
 })
 
-// Dynamic question responses: questionId → value
+// Dynamic question responses: questionId â†’ value
 const responses = ref<Record<string, string | string[] | number | boolean>>({})
 
-// File uploads: questionId → File object
+// File uploads: questionId â†’ File object
 const fileUploads = ref<Record<string, File>>({})
 
 // Built-in document uploads (resume) and cover letter text
@@ -143,7 +143,7 @@ async function handleSubmit() {
 
   isSubmitting.value = true
   try {
-    // Build responses array from the map (exclude file_upload questions — those go as files)
+    // Build responses array from the map (exclude file_upload questions â€” those go as files)
     const fileQuestionIds = new Set(
       job.value?.questions
         ?.filter((q: { type: string }) => q.type === 'file_upload')
@@ -159,7 +159,7 @@ async function handleSubmit() {
       })
       .map(([questionId, value]) => ({ questionId, value }))
 
-    // Determine if we need FormData (any files present — custom or built-in)
+    // Determine if we need FormData (any files present â€” custom or built-in)
     const hasAnyFiles = Object.keys(fileUploads.value).length > 0
       || !!resumeFile.value
 
@@ -206,7 +206,7 @@ async function handleSubmit() {
         body: formData,
       })
     } else {
-      // No files — use JSON as before
+      // No files â€” use JSON as before
       await $fetch(`/api/public/jobs/${jobSlug}/apply`, {
         method: 'POST',
         body: {
@@ -245,9 +245,9 @@ async function handleSubmit() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const typeLabels: Record<string, string> = {
   full_time: 'Full-time',
@@ -463,7 +463,7 @@ const typeLabels: Record<string, string> = {
                     </svg>
                     <div class="flex-1 min-w-0">
                       <p v-if="resumeFile" class="text-sm text-surface-900 dark:text-surface-100 truncate">{{ resumeFile.name }}</p>
-                      <p v-else class="text-sm text-surface-500">PDF, DOC, or DOCX — max 10 MB</p>
+                      <p v-else class="text-sm text-surface-500">PDF, DOC, or DOCX â€” max 10 MB</p>
                     </div>
                     <label
                       for="resume"
@@ -495,7 +495,7 @@ const typeLabels: Record<string, string> = {
                     v-model="coverLetterText"
                     rows="6"
                     maxlength="10000"
-                    placeholder="Tell us why you're interested in this role…"
+                    placeholder="Tell us why you're interested in this roleâ€¦"
                     class="w-full rounded-xl border px-4 py-3 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
                     :class="errors.coverLetter ? 'border-danger-300 dark:border-danger-700' : 'border-surface-300 dark:border-surface-700'"
                     @input="delete errors.coverLetter"
@@ -544,7 +544,7 @@ const typeLabels: Record<string, string> = {
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                {{ isSubmitting ? 'Submitting…' : 'Submit Application' }}
+                {{ isSubmitting ? 'Submittingâ€¦' : 'Submit Application' }}
               </button>
               <p class="text-xs text-surface-400">Your information is kept confidential.</p>
             </div>
@@ -554,3 +554,4 @@ const typeLabels: Record<string, string> = {
     </template>
   </div>
 </template>
+

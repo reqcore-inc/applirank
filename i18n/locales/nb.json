@@ -1,14 +1,14 @@
-{
+﻿{
   "common": {
-    "language": "Språk",
-    "selectLanguage": "Velg språk",
+    "language": "SprÃ¥k",
+    "selectLanguage": "Velg sprÃ¥k",
     "save": "Lagre",
     "cancel": "Avbryt"
   },
   "home": {
     "nav": {
       "features": "Funksjoner",
-      "openPositions": "Åpne stillinger",
+      "openPositions": "Ã…pne stillinger",
       "roadmap": "Fremdriftsplan",
       "blog": "Blogg",
       "github": "GitHub",
@@ -16,26 +16,26 @@
       "logIn": "Logg inn",
       "signUp": "Registrer deg"
     },
-    "badge": "Åpen kildekode ATS for utviklerteam",
+    "badge": "Ã…pen kildekode ATS for utviklerteam",
     "hero": {
       "titleLine1": "Din rekruttering.",
       "titleHighlight": "Din infrastruktur.",
-      "subtitle": "Åpen kildekode kandidatsporing bygget for team som drifter selv.",
-      "goToDashboard": "Gå til kontrollpanel",
+      "subtitle": "Ã…pen kildekode kandidatsporing bygget for team som drifter selv.",
+      "goToDashboard": "GÃ¥ til kontrollpanel",
       "signIn": "Logg inn",
       "createAccount": "Opprett konto",
-      "ctaDemo": "Prøv live demo",
-      "ctaStart": "Se på GitHub",
-      "hint": "Tidlig åpen kildekode-utgivelse — prøv demoen med eksempeldata, ingen registrering nødvendig"
+      "ctaDemo": "PrÃ¸v live demo",
+      "ctaStart": "Se pÃ¥ GitHub",
+      "hint": "Tidlig Ã¥pen kildekode-utgivelse â€” prÃ¸v demoen med eksempeldata, ingen registrering nÃ¸dvendig"
     },
     "pillars": {
       "yourData": {
         "label": "Dine data",
-        "desc": "Postgres + MinIO på din infrastruktur. Ingenting forlater nettverket ditt."
+        "desc": "Postgres + MinIO pÃ¥ din infrastruktur. Ingenting forlater nettverket ditt."
       },
       "auditable": {
         "label": "Fullt reviderbar",
-        "desc": "Åpen kildekode — hver linje med matchingslogikk er synlig og kan overstyres."
+        "desc": "Ã…pen kildekode â€” hver linje med matchingslogikk er synlig og kan overstyres."
       },
       "unlimitedSeats": {
         "label": "Ubegrensede plasser",
@@ -44,7 +44,8 @@
     },
     "footer": {
       "source": "Kildekode",
-      "tagline": "Reqcore — åpen kildekode kandidatsporing"
+      "tagline": "WWMate â€” Ã¥pen kildekode kandidatsporing"
     }
   }
 }
+

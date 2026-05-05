@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Composable for managing PostHog analytics consent.
  *
  * Two-tier model
  * --------------
  * - **No choice yet OR declined**: PostHog runs in cookieless mode
  *   (`persistence: 'sessionStorage'`, `person_profiles: 'identified_only'`).
- *   The distinct id lives in the tab's sessionStorage — stable across
+ *   The distinct id lives in the tab's sessionStorage â€” stable across
  *   navigations within the visit (so funnels work for anonymous users)
  *   but wiped when the tab closes (no cross-session tracking).  Logged-in
  *   users are still identified by their opaque user.id (so we can count
@@ -14,12 +14,12 @@
  * - **Accepted**: PostHog persistence is upgraded to `localStorage+cookie`
  *   so the distinct id survives reloads, then `identify(userId, { email,
  *   name })` is re-fired with full PII.  PostHog automatically aliases the
- *   current anonymous distinct id → user id, stitching the pre-signup
+ *   current anonymous distinct id â†’ user id, stitching the pre-signup
  *   funnel into the user's profile.
  */
 
-/** Cookie name — shared across reqcore-web and applirank */
-export const CONSENT_COOKIE_NAME = 'reqcore-consent'
+/** Cookie name â€” shared across WWMate-web and applirank */
+export const CONSENT_COOKIE_NAME = 'WWMate-consent'
 
 type ConsentState = 'granted' | 'denied' | null
 
@@ -32,8 +32,8 @@ export function useAnalyticsConsent() {
 
   const cookieDomain = (useRuntimeConfig().public as Record<string, string>).cookieDomain
 
-  // Cross-subdomain cookie: domain=.reqcore.com makes this visible on both
-  // reqcore.com (marketing) and app.reqcore.com (app).
+  // Cross-subdomain cookie: domain=.WWMate.com makes this visible on both
+  // WWMate.com (marketing) and app.WWMate.com (app).
   const consentCookie = useCookie<ConsentState>(CONSENT_COOKIE_NAME, {
     domain: cookieDomain || undefined,
     maxAge: 365 * 24 * 60 * 60,
@@ -52,8 +52,8 @@ export function useAnalyticsConsent() {
     // Upgrade from cookieless to cookie+localStorage persistence so the
     // distinct id survives reloads and new tabs.  After this, the watcher
     // in `usePostHogIdentity` (which depends on `hasConsented`) re-fires
-    // and re-identifies the user with full PII — that identify() call
-    // automatically aliases the current anonymous distinct id → user id.
+    // and re-identifies the user with full PII â€” that identify() call
+    // automatically aliases the current anonymous distinct id â†’ user id.
     ph.set_config({
       persistence: 'localStorage+cookie',
       cross_subdomain_cookie: true,
@@ -86,7 +86,7 @@ export function useAnalyticsConsent() {
 
   function declineAnalytics() {
     consentCookie.value = 'denied'
-    // No PostHog action needed — cookieless mode (sessionStorage +
+    // No PostHog action needed â€” cookieless mode (sessionStorage +
     // identified_only) continues, no cross-session cookies are set.
   }
 
@@ -98,3 +98,4 @@ export function useAnalyticsConsent() {
     declineAnalytics,
   }
 }
+

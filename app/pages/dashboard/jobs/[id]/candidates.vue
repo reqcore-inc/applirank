@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Users, SlidersHorizontal, X, Check, ChevronsUpDown, ChevronUp, ChevronDown, UserRound } from 'lucide-vue-next'
 
 definePageMeta({
@@ -11,9 +11,9 @@ const jobId = route.params.id as string
 
 const { formatPersonName } = useOrgSettings()
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch job info for page header
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const { data: jobData, status: jobFetchStatus, error: jobError } = useFetch(
   () => `/api/jobs/${jobId}`,
@@ -25,13 +25,13 @@ const { data: jobData, status: jobFetchStatus, error: jobError } = useFetch(
 
 useSeoMeta({
   title: computed(() =>
-    jobData.value ? `Table — ${jobData.value.title} — Reqcore` : 'Table — Reqcore',
+    jobData.value ? `Table â€” ${jobData.value.title} â€” WWMate` : 'Table â€” WWMate',
   ),
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch applications for this job
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const STATUS_OPTIONS = ['new', 'screening', 'interview', 'offer', 'hired', 'rejected'] as const
 type Status = typeof STATUS_OPTIONS[number]
@@ -65,9 +65,9 @@ const { data: appData, status: appFetchStatus, error: appError, refresh: refresh
 const applications = computed(() => appData.value?.data ?? [])
 const total = computed(() => appData.value?.total ?? 0)
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Status & badge helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const statusBadgeClasses: Record<string, string> = {
   new: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-800',
@@ -102,9 +102,9 @@ function toggleStatus(s: Status) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Column picker panel
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const panelOpen = ref(false)
 const panelRef = ref<HTMLElement | null>(null)
@@ -130,9 +130,9 @@ function clearFilters() {
   scoreMax.value = undefined
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Sorting
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type SortKey = 'name' | 'email' | 'score' | 'status' | 'createdAt'
 type SortDir = 'asc' | 'desc'
@@ -150,9 +150,9 @@ function toggleSort(key: SortKey) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Filtered + sorted list
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const sorted = computed(() => {
   return [...applications.value]
@@ -185,9 +185,9 @@ const sorted = computed(() => {
     })
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function timeAgo(date: string | Date) {
   const diff = Date.now() - new Date(date).getTime()
@@ -206,9 +206,9 @@ function scoreClass(score: number) {
   return 'bg-danger-50 text-danger-700 ring-danger-200 dark:bg-danger-950/60 dark:text-danger-400 dark:ring-danger-800'
 }
 
-// ─────────────────────────────────────────────
-// Row selection → sidebar
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Row selection â†’ sidebar
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const selectedAppId = ref<string | null>(null)
 const sidebarOpen = computed(() => Boolean(selectedAppId.value))
@@ -225,9 +225,9 @@ async function handleSidebarUpdated() {
   await refreshApps()
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Computed
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchStatus.value === 'pending')
 </script>
@@ -239,7 +239,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
     <!-- Loading -->
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-12 gap-3">
       <div class="size-8 rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-800 dark:border-t-brand-400 animate-spin" />
-      <p class="text-sm font-medium text-surface-400 dark:text-surface-500">Loading candidates…</p>
+      <p class="text-sm font-medium text-surface-400 dark:text-surface-500">Loading candidatesâ€¦</p>
     </div>
 
     <!-- Error -->
@@ -391,7 +391,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
           class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 cursor-pointer"
           @click="scoreMin = undefined; scoreMax = undefined"
         >
-          Score {{ scoreMin ?? '0' }}–{{ scoreMax ?? '100' }}
+          Score {{ scoreMin ?? '0' }}â€“{{ scoreMax ?? '100' }}
           <X class="size-2.5" />
         </span>
       </div>
@@ -516,7 +516,7 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
                   >
                     {{ app.score }} pts
                   </span>
-                  <span v-else class="text-surface-400 dark:text-surface-500 text-xs">—</span>
+                  <span v-else class="text-surface-400 dark:text-surface-500 text-xs">â€”</span>
                 </td>
                 <td v-if="visibleCols.status" class="px-4 py-3">
                   <span
@@ -553,3 +553,4 @@ const isLoading = computed(() => jobFetchStatus.value === 'pending' || appFetchS
     />
   </div>
 </template>
+

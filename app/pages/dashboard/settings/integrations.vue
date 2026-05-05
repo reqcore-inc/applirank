@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Calendar, Check, X, AlertTriangle, ExternalLink, Loader2,
   RefreshCw, Unplug, Shield, Clock,
@@ -7,7 +7,7 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Integrations — Reqcore',
+  title: 'Integrations â€” WWMate',
   description: 'Connect your calendar and other services',
 })
 
@@ -290,15 +290,15 @@ async function handleDisconnect() {
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <RefreshCw class="size-4 text-brand-500 shrink-0" />
-                Two-way sync — changes in either system stay in sync
+                Two-way sync â€” changes in either system stay in sync
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <Clock class="size-4 text-brand-500 shrink-0" />
-                Proper timezone handling — no more scheduling confusion
+                Proper timezone handling â€” no more scheduling confusion
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <Shield class="size-4 text-brand-500 shrink-0" />
-                OAuth tokens encrypted at rest — revoke anytime
+                OAuth tokens encrypted at rest â€” revoke anytime
               </div>
             </div>
           </div>
@@ -326,3 +326,4 @@ async function handleDisconnect() {
   opacity: 0;
 }
 </style>
+

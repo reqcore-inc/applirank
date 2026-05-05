@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ArrowLeft, User, Briefcase, Calendar, Clock, Hash, FileText, MessageSquare } from 'lucide-vue-next'
 import { usePreviewReadOnly } from '~/composables/usePreviewReadOnly'
 
@@ -19,14 +19,14 @@ const { formatCandidateName } = useOrgSettings()
 useSeoMeta({
   title: computed(() =>
     application.value
-      ? `${application.value.candidate.firstName} ${application.value.candidate.lastName} → ${application.value.job.title} — Reqcore`
-      : 'Application — Reqcore',
+      ? `${application.value.candidate.firstName} ${application.value.candidate.lastName} â†’ ${application.value.job.title} â€” WWMate`
+      : 'Application â€” WWMate',
   ),
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Status transitions
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { APPLICATION_STATUS_TRANSITIONS } from '~~/shared/status-transitions'
 
 const transitionLabels: Record<string, string> = {
@@ -76,9 +76,9 @@ async function handleTransition(newStatus: string) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Notes editing
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const isEditingNotes = ref(false)
 const notesInput = ref('')
@@ -102,9 +102,9 @@ async function saveNotes() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const statusBadgeClasses: Record<string, string> = {
   new: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400',
@@ -118,7 +118,7 @@ const statusBadgeClasses: Record<string, string> = {
 function formatResponseValue(value: unknown): string {
   if (Array.isArray(value)) return value.join(', ')
   if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  return String(value ?? '—')
+  return String(value ?? 'â€”')
 }
 </script>
 
@@ -135,7 +135,7 @@ function formatResponseValue(value: unknown): string {
 
     <!-- Loading -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading application…
+      Loading applicationâ€¦
     </div>
 
     <!-- Error / not found -->
@@ -158,7 +158,7 @@ function formatResponseValue(value: unknown): string {
           <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50 truncate">
             {{ formatCandidateName(application.candidate) }}
           </h1>
-          <span class="text-surface-400">→</span>
+          <span class="text-surface-400">â†’</span>
           <NuxtLink
             :to="$localePath(`/dashboard/jobs/${application.job.id}`)"
             class="text-xl text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 truncate transition-colors"
@@ -277,7 +277,7 @@ function formatResponseValue(value: unknown): string {
           <dl class="grid grid-cols-2 gap-3 text-sm">
             <div>
               <dt class="text-surface-400">Score</dt>
-              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ application.score ?? '—' }}</dd>
+              <dd class="text-surface-700 dark:text-surface-200 font-medium">{{ application.score ?? 'â€”' }}</dd>
             </div>
             <div>
               <dt class="text-surface-400">Status</dt>
@@ -325,7 +325,7 @@ function formatResponseValue(value: unknown): string {
           <textarea
             v-model="notesInput"
             rows="4"
-            placeholder="Add notes about this application…"
+            placeholder="Add notes about this applicationâ€¦"
             class="w-full rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
           />
           <div class="flex items-center gap-2 mt-2">
@@ -334,7 +334,7 @@ function formatResponseValue(value: unknown): string {
               class="cursor-pointer rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               @click="saveNotes"
             >
-              {{ isSavingNotes ? 'Saving…' : 'Save' }}
+              {{ isSavingNotes ? 'Savingâ€¦' : 'Save' }}
             </button>
             <button
               class="cursor-pointer rounded-lg border border-surface-300 dark:border-surface-600 px-3 py-1.5 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
@@ -405,3 +405,4 @@ function formatResponseValue(value: unknown): string {
     @scheduled="showInterviewSidebar = false"
   />
 </template>
+

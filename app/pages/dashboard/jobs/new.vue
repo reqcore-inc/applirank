@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft,
   Check,
@@ -44,7 +44,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Create Job — Reqcore',
+  title: 'Create Job â€” WWMate',
   description: 'Create a new job posting',
 })
 
@@ -215,8 +215,8 @@ async function generateAiCriteria() {
       })
     } else {
       toast.error('Failed to generate criteria', {
-        message: 'Could not generate criteria. Make sure your AI provider is configured in Settings → AI, then try again.',
-        details: statusMessage || `${statusCode ?? 'Unknown'} error — no additional details from server.`,
+        message: 'Could not generate criteria. Make sure your AI provider is configured in Settings â†’ AI, then try again.',
+        details: statusMessage || `${statusCode ?? 'Unknown'} error â€” no additional details from server.`,
         statusCode,
       })
     }
@@ -276,7 +276,7 @@ const isAiConfigured = computed(() => {
 })
 
 // Auto-save to localStorage
-const AUTO_SAVE_KEY = 'reqcore-job-draft'
+const AUTO_SAVE_KEY = 'WWMate-job-draft'
 
 function saveFormToStorage() {
   if (!import.meta.client) return
@@ -363,7 +363,7 @@ watch(currentStep, (step) => {
     toast.add({
       type: 'warning',
       title: 'AI integration not set up',
-      message: 'To use AI-powered candidate scoring, configure your AI provider in Settings → AI. You can still add criteria manually.',
+      message: 'To use AI-powered candidate scoring, configure your AI provider in Settings â†’ AI. You can still add criteria manually.',
       link: { label: 'Go to AI Settings', href: '/dashboard/settings/ai' },
       duration: 10000,
     })
@@ -405,7 +405,7 @@ const channelIcons: Record<string, any> = {
   reddit: MessageSquare,
 }
 
-// Track created distribution links: channel → { code, url, loading, copied }
+// Track created distribution links: channel â†’ { code, url, loading, copied }
 const createdLinks = ref<Record<string, { code: string; url: string; loading: boolean; copied: boolean }>>({})
 
 async function createChannelLink(channel: string, channelName: string) {
@@ -417,7 +417,7 @@ async function createChannelLink(channel: string, channelName: string) {
       body: {
         jobId: createdJobId.value,
         channel,
-        name: `${form.value.title} — ${channelName}`,
+        name: `${form.value.title} â€” ${channelName}`,
       },
     })
     const base = `${requestUrl.protocol}//${requestUrl.host}`
@@ -470,7 +470,7 @@ async function createCustomBoardLink() {
       body: {
         jobId: createdJobId.value,
         channel: 'custom',
-        name: `${form.value.title} — ${name}`,
+        name: `${form.value.title} â€” ${name}`,
       },
     })
     const base = `${requestUrl.protocol}//${requestUrl.host}`
@@ -731,7 +731,7 @@ async function handleSubmit(mode: 'publish' | 'draft' = publishChoice.value) {
 
       isPublished.value = true
     } else {
-      // Saved as draft — go to jobs list
+      // Saved as draft â€” go to jobs list
       await navigateTo(localePath('/dashboard/jobs'))
     }
     clearFormStorage()
@@ -959,7 +959,7 @@ const questionTypeLabels: Record<QuestionType, string> = {
                     id="description"
                     v-model="form.description"
                     rows="10"
-                    placeholder="Describe the role, responsibilities, and requirements…"
+                    placeholder="Describe the role, responsibilities, and requirementsâ€¦"
                     class="w-full rounded-lg border px-4 py-3 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors border-surface-300 dark:border-surface-700"
                   />
                   <p class="mt-2 text-xs text-surface-500">Minimum 700 characters recommended.</p>
@@ -1474,7 +1474,7 @@ const questionTypeLabels: Record<QuestionType, string> = {
                     />
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Initial Weight (0–100)</label>
+                    <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Initial Weight (0â€“100)</label>
                     <input
                       v-model.number="customCriterionForm.weight"
                       type="number"
@@ -2070,7 +2070,7 @@ const questionTypeLabels: Record<QuestionType, string> = {
               </li>
               <li v-if="currentStep === 2" class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
                 <p class="font-medium text-surface-900 dark:text-surface-100 mb-1">Keep it short</p>
-                Too many questions can deter candidates. Stick to 3–5 essential questions.
+                Too many questions can deter candidates. Stick to 3â€“5 essential questions.
               </li>
               <li v-if="currentStep === 2" class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">
                 <p class="font-medium text-surface-900 dark:text-surface-100 mb-1">Resume matters</p>
@@ -2121,3 +2121,4 @@ button:not(:disabled) {
   cursor: pointer;
 }
 </style>
+

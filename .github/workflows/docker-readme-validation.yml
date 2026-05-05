@@ -1,4 +1,4 @@
-name: Docker Setup Integration Test
+﻿name: Docker Setup Integration Test
 
 on:
   pull_request:
@@ -16,16 +16,16 @@ concurrency:
 
 jobs:
   integration:
-    name: Simulate new-user setup (setup.sh → docker compose up)
+    name: Simulate new-user setup (setup.sh â†’ docker compose up)
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
-      # ── 1. Clone ─────────────────────────────────────────────────────────────
+      # â”€â”€ 1. Clone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Checkout
         uses: actions/checkout@v6
 
-      # ── 2. setup.sh ──────────────────────────────────────────────────────────
+      # â”€â”€ 2. setup.sh â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Run setup.sh (new-user step 1)
         id: setup_sh
         run: |
@@ -57,10 +57,10 @@ jobs:
             fi
           done
           if [ ${#missing[@]} -gt 0 ]; then
-            echo "❌ Missing keys in .env: ${missing[*]}"
+            echo "âŒ Missing keys in .env: ${missing[*]}"
             exit 1
           fi
-          echo "✅ All required keys present in .env"
+          echo "âœ… All required keys present in .env"
 
       - name: Verify STORAGE_PASSWORD and S3_SECRET_KEY match (prevents credential mismatch bug)
         id: storage_creds
@@ -69,10 +69,10 @@ jobs:
           storage_pass="$(grep '^STORAGE_PASSWORD=' .env | cut -d= -f2-)"
           s3_key="$(grep '^S3_SECRET_KEY=' .env | cut -d= -f2-)"
           if [ "$storage_pass" != "$s3_key" ]; then
-            echo "❌ STORAGE_PASSWORD and S3_SECRET_KEY do not match — MinIO uploads will fail"
+            echo "âŒ STORAGE_PASSWORD and S3_SECRET_KEY do not match â€” MinIO uploads will fail"
             exit 1
           fi
-          echo "✅ MinIO credentials are consistent"
+          echo "âœ… MinIO credentials are consistent"
 
       - name: Verify BETTER_AUTH_SECRET is at least 32 characters
         id: auth_secret
@@ -81,22 +81,22 @@ jobs:
           secret="$(grep '^BETTER_AUTH_SECRET=' .env | cut -d= -f2-)"
           len="${#secret}"
           if [ "$len" -lt 32 ]; then
-            echo "❌ BETTER_AUTH_SECRET is only ${len} chars (minimum 32)"
+            echo "âŒ BETTER_AUTH_SECRET is only ${len} chars (minimum 32)"
             exit 1
           fi
-          echo "✅ BETTER_AUTH_SECRET is ${len} chars"
+          echo "âœ… BETTER_AUTH_SECRET is ${len} chars"
 
       - name: Verify setup.sh refuses to overwrite existing .env
         id: env_overwrite
         run: |
           set -euo pipefail
           if ./setup.sh 2>&1; then
-            echo "❌ setup.sh should have refused to overwrite .env but exited 0"
+            echo "âŒ setup.sh should have refused to overwrite .env but exited 0"
             exit 1
           fi
-          echo "✅ setup.sh correctly refused to overwrite existing .env"
+          echo "âœ… setup.sh correctly refused to overwrite existing .env"
 
-      # ── 3. docker compose up --build ─────────────────────────────────────────
+      # â”€â”€ 3. docker compose up --build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Build image and start all services (new-user step 2)
         id: docker_build
         run: docker compose up --build -d
@@ -107,17 +107,17 @@ jobs:
           set -euo pipefail
           echo "Waiting for db..."
           for i in $(seq 60); do
-            state="$(docker inspect --format='{{.State.Health.Status}}' reqcore_db 2>/dev/null || echo 'not-started')"
+            state="$(docker inspect --format='{{.State.Health.Status}}' WWMate_db 2>/dev/null || echo 'not-started')"
             echo "  db: $state"
             [ "$state" = "healthy" ] && break
             if [ "$i" -eq 60 ]; then
-              echo "❌ db did not become healthy in time"
+              echo "âŒ db did not become healthy in time"
               docker compose logs db --tail=50
               exit 1
             fi
             sleep 3
           done
-          echo "✅ db is healthy"
+          echo "âœ… db is healthy"
 
       - name: Wait for minio to be healthy
         id: minio_health
@@ -125,17 +125,17 @@ jobs:
           set -euo pipefail
           echo "Waiting for minio..."
           for i in $(seq 60); do
-            state="$(docker inspect --format='{{.State.Health.Status}}' reqcore_minio 2>/dev/null || echo 'not-started')"
+            state="$(docker inspect --format='{{.State.Health.Status}}' WWMate_minio 2>/dev/null || echo 'not-started')"
             echo "  minio: $state"
             [ "$state" = "healthy" ] && break
             if [ "$i" -eq 60 ]; then
-              echo "❌ minio did not become healthy in time"
+              echo "âŒ minio did not become healthy in time"
               docker compose logs minio --tail=50
               exit 1
             fi
             sleep 3
           done
-          echo "✅ minio is healthy"
+          echo "âœ… minio is healthy"
 
       - name: Wait for app to be reachable on :3000
         id: app_health
@@ -144,46 +144,46 @@ jobs:
           echo "Waiting for app..."
           for i in $(seq 60); do
             if curl -fs http://localhost:3000 > /dev/null 2>&1; then
-              echo "✅ App is reachable on http://localhost:3000"
+              echo "âœ… App is reachable on http://localhost:3000"
               exit 0
             fi
-            state="$(docker inspect --format='{{.State.Status}}' reqcore_app 2>/dev/null || echo 'missing')"
+            state="$(docker inspect --format='{{.State.Status}}' WWMate_app 2>/dev/null || echo 'missing')"
             if [ "$state" = "exited" ] || [ "$state" = "dead" ]; then
-              echo "❌ App container exited unexpectedly"
+              echo "âŒ App container exited unexpectedly"
               docker compose logs app --tail=100
               exit 1
             fi
-            echo "  attempt $i/60 — waiting..."
+            echo "  attempt $i/60 â€” waiting..."
             sleep 3
           done
-          echo "❌ App did not become reachable in time"
+          echo "âŒ App did not become reachable in time"
           docker compose logs app --tail=100
           exit 1
 
-      # ── 4. Startup log assertions ─────────────────────────────────────────────
+      # â”€â”€ 4. Startup log assertions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Assert DB migrations ran successfully
         id: db_migrations
         run: |
           set -euo pipefail
           if ! docker compose logs app | grep -q "Database migrations applied successfully"; then
-            echo "❌ Migration success message not found in app logs"
+            echo "âŒ Migration success message not found in app logs"
             docker compose logs app
             exit 1
           fi
-          echo "✅ Migrations applied successfully"
+          echo "âœ… Migrations applied successfully"
 
       - name: Assert S3 bucket is ready
         id: s3_bucket
         run: |
           set -euo pipefail
-          if ! docker compose logs app | grep -q 'S3 bucket "reqcore" is ready'; then
-            echo "❌ S3 bucket ready message not found in app logs"
+          if ! docker compose logs app | grep -q 'S3 bucket "WWMate" is ready'; then
+            echo "âŒ S3 bucket ready message not found in app logs"
             docker compose logs app
             exit 1
           fi
-          echo "✅ S3 bucket is ready"
+          echo "âœ… S3 bucket is ready"
 
-      # ── 5. HTTP smoke tests ───────────────────────────────────────────────────
+      # â”€â”€ 5. HTTP smoke tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: HTTP smoke tests
         id: http_smoke
         run: |
@@ -195,9 +195,9 @@ jobs:
             local actual
             actual="$(curl -s -o /dev/null -w "%{http_code}" "$url")"
             if [ "$actual" = "$expected" ]; then
-              echo "✅ $label → $actual"
+              echo "âœ… $label â†’ $actual"
             else
-              echo "❌ $label → expected $expected, got $actual"
+              echo "âŒ $label â†’ expected $expected, got $actual"
               fail=1
             fi
           }
@@ -206,12 +206,12 @@ jobs:
           check "Sign-in page"            "http://localhost:3000/auth/sign-in"   "200"
           check "Sign-up page"            "http://localhost:3000/auth/sign-up"   "200"
           check "Public job board"        "http://localhost:3000/jobs"           "200"
-          check "API/jobs (no auth→401)"  "http://localhost:3000/api/jobs"       "401"
+          check "API/jobs (no authâ†’401)"  "http://localhost:3000/api/jobs"       "401"
           check "API/candidates (no auth)" "http://localhost:3000/api/candidates" "401"
 
           exit $fail
 
-      # ── 6. Seed command (optional step from README) ───────────────────────────
+      # â”€â”€ 6. Seed command (optional step from README) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Seed demo data (docker compose exec app npm run db:seed)
         id: seed_data
         run: |
@@ -219,10 +219,10 @@ jobs:
           output="$(docker compose exec app npm run db:seed 2>&1)"
           echo "$output"
           if ! echo "$output" | grep -q "Seed complete"; then
-            echo "❌ Seed did not complete successfully"
+            echo "âŒ Seed did not complete successfully"
             exit 1
           fi
-          echo "✅ Seed completed"
+          echo "âœ… Seed completed"
 
       - name: Sign in with seeded demo account (auth smoke test)
         id: seed_signin
@@ -230,35 +230,35 @@ jobs:
           set -euo pipefail
           response="$(curl -s -X POST http://localhost:3000/api/auth/sign-in/email \
             -H "Content-Type: application/json" \
-            -d '{"email":"demo@reqcore.com","password":"demo1234"}' \
+            -d '{"email":"demo@WWMate.com","password":"demo1234"}' \
             -w "\n%{http_code}")"
           body="$(echo "$response" | head -n -1)"
           status="$(echo "$response" | tail -n 1)"
           echo "Status: $status"
           echo "Body: $body"
           if [ "$status" != "200" ]; then
-            echo "❌ Sign-in failed — expected 200, got $status"
+            echo "âŒ Sign-in failed â€” expected 200, got $status"
             exit 1
           fi
-          if ! echo "$body" | grep -q "demo@reqcore.com"; then
-            echo "❌ Response body does not contain expected email"
+          if ! echo "$body" | grep -q "demo@WWMate.com"; then
+            echo "âŒ Response body does not contain expected email"
             exit 1
           fi
-          echo "✅ Demo account sign-in succeeded"
+          echo "âœ… Demo account sign-in succeeded"
 
-      - name: Seed idempotency — re-running seed must not crash
+      - name: Seed idempotency â€” re-running seed must not crash
         id: seed_idempotent
         run: |
           set -euo pipefail
           output="$(docker compose exec app npm run db:seed 2>&1)"
           echo "$output"
           if echo "$output" | grep -qi "^npm error\|unhandledRejection\|UnhandledPromiseRejection"; then
-            echo "❌ Seed second run produced an error"
+            echo "âŒ Seed second run produced an error"
             exit 1
           fi
-          echo "✅ Seed is idempotent"
+          echo "âœ… Seed is idempotent"
 
-      # ── 7. Adminer --profile tools ────────────────────────────────────────────
+      # â”€â”€ 7. Adminer --profile tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Start Adminer via --profile tools
         id: adminer_start
         run: docker compose --profile tools up -d adminer
@@ -269,16 +269,16 @@ jobs:
           set -euo pipefail
           for i in $(seq 20); do
             if curl -fs http://localhost:8080 > /dev/null 2>&1; then
-              echo "✅ Adminer is reachable on http://localhost:8080"
+              echo "âœ… Adminer is reachable on http://localhost:8080"
               exit 0
             fi
             sleep 2
           done
-          echo "❌ Adminer did not become reachable"
+          echo "âŒ Adminer did not become reachable"
           docker compose logs adminer --tail=30
           exit 1
 
-      # ── 8. Restart resilience (migrations must be idempotent) ────────────────
+      # â”€â”€ 8. Restart resilience (migrations must be idempotent) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Restart app and verify it comes back clean
         id: restart_resilience
         run: |
@@ -286,46 +286,46 @@ jobs:
           docker compose restart app
           for i in $(seq 30); do
             if curl -fs http://localhost:3000 > /dev/null 2>&1; then
-              echo "✅ App reachable again after restart"
+              echo "âœ… App reachable again after restart"
               break
             fi
             if [ "$i" -eq 30 ]; then
-              echo "❌ App did not come back after restart"
+              echo "âŒ App did not come back after restart"
               docker compose logs app --tail=50
               exit 1
             fi
             sleep 3
           done
           if docker compose logs app | grep -q "Migration failed"; then
-            echo "❌ Migration error found in logs after restart"
+            echo "âŒ Migration error found in logs after restart"
             docker compose logs app
             exit 1
           fi
-          echo "✅ Restart handled cleanly — no migration errors"
+          echo "âœ… Restart handled cleanly â€” no migration errors"
 
-      # ── Always: dump logs on failure ──────────────────────────────────────────
+      # â”€â”€ Always: dump logs on failure â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Docker Integration Summary
         if: ${{ !cancelled() }}
         run: |
           echo "## Docker Setup Integration Results" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Simulates the full new-user onboarding: \`setup.sh → docker compose up → seed → smoke tests\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Simulates the full new-user onboarding: \`setup.sh â†’ docker compose up â†’ seed â†’ smoke tests\`" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| # | Check | Status |" >> "$GITHUB_STEP_SUMMARY"
           echo "|---|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
 
           row() {
             local n="$1" name="$2" outcome="$3"
-            local icon="❌"
-            [ "$outcome" = "success" ] && icon="✅"
-            [ "$outcome" = "skipped" ] && icon="⏭️"
+            local icon="âŒ"
+            [ "$outcome" = "success" ] && icon="âœ…"
+            [ "$outcome" = "skipped" ] && icon="â­ï¸"
             echo "| $n | $name | $icon |" >> "$GITHUB_STEP_SUMMARY"
           }
 
           row  1 "Run setup.sh"                      "${{ steps.setup_sh.outcome }}"
           row  2 ".env has all required keys"         "${{ steps.env_keys.outcome }}"
           row  3 "Storage credentials match"          "${{ steps.storage_creds.outcome }}"
-          row  4 "Auth secret ≥ 32 chars"             "${{ steps.auth_secret.outcome }}"
+          row  4 "Auth secret â‰¥ 32 chars"             "${{ steps.auth_secret.outcome }}"
           row  5 "setup.sh refuses overwrite"         "${{ steps.env_overwrite.outcome }}"
           row  6 "Docker build & start"               "${{ steps.docker_build.outcome }}"
           row  7 "Database healthy"                   "${{ steps.db_health.outcome }}"
@@ -342,7 +342,7 @@ jobs:
           row 18 "Restart resilience"                 "${{ steps.restart_resilience.outcome }}"
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "_Run: \`${{ github.run_id }}\` · Commit: \`${{ github.sha }}\`_" >> "$GITHUB_STEP_SUMMARY"
+          echo "_Run: \`${{ github.run_id }}\` Â· Commit: \`${{ github.sha }}\`_" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Generate JUnit XML report
         if: ${{ !cancelled() }}
@@ -429,3 +429,4 @@ jobs:
       - name: Tear down all services and volumes
         if: always()
         run: docker compose --profile tools down -v || true
+

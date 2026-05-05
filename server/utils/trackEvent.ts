@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+﻿import type { H3Event } from 'h3'
 import { isDemoOrgId } from './demoOrg'
 
 interface TrackSession {
@@ -14,7 +14,7 @@ interface TrackSession {
  * - `organization` group for org-scoped analytics
  * - Request context: HTTP method, path, user agent
  * - `is_demo: true` when the active organisation matches the configured
- *   demo org — lets PostHog funnels filter the demo session out so it
+ *   demo org â€” lets PostHog funnels filter the demo session out so it
  *   does not skew metrics.
  *
  * Usage in API handlers:
@@ -48,11 +48,11 @@ export function trackEvent(
           event: eventName,
           groups: orgId ? { organization: orgId } : undefined,
           properties: {
-            // Request context — invaluable for debugging per-user issues
+            // Request context â€” invaluable for debugging per-user issues
             $request_method: method,
             $request_path: path,
             $user_agent: headers['user-agent'],
-            // Demo tag — funnels & dashboards filter `is_demo != true`
+            // Demo tag â€” funnels & dashboards filter `is_demo != true`
             // to exclude the public demo session from real-user metrics.
             is_demo: isDemo,
             ...properties,
@@ -67,7 +67,7 @@ export function trackEvent(
 
 /**
  * Track an API error event to PostHog (for the API tracking middleware).
- * Unlike trackEvent, this doesn't require a session — uses anonymous tracking.
+ * Unlike trackEvent, this doesn't require a session â€” uses anonymous tracking.
  */
 export function trackApiError(
   event: H3Event,
@@ -84,7 +84,7 @@ export function trackApiError(
 
     // Use the PostHog anonymous distinct ID from the cookie if available,
     // otherwise use a request-scoped identifier.
-    const distinctId = getCookie(event, 'ph_reqcore_posthog') || 'server-anonymous'
+    const distinctId = getCookie(event, 'ph_WWMate_posthog') || 'server-anonymous'
 
     ph.capture({
       distinctId,
@@ -140,3 +140,4 @@ export function trackServerError(
     // Tracking must never break the primary operation
   }
 }
+

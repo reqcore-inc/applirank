@@ -1,7 +1,7 @@
-/**
+﻿/**
  * SSR-safe composable for managing dark/light mode.
  *
- * - Persists preference to `localStorage` under the key `reqcore-color-mode`.
+ * - Persists preference to `localStorage` under the key `WWMate-color-mode`.
  * - Defaults to OS preference (`prefers-color-scheme: dark`) on first visit.
  * - Manages the `.dark` class on `<html>` via both Nuxt's useHead (so it
  *   survives Unhead's reactive attribute patching) and direct DOM manipulation
@@ -34,8 +34,8 @@ export function useColorMode() {
   // Immediately sync Vue state from the real DOM on the client.
   // The inline script in app.vue applies .dark before Vue loads, so the HTML
   // class is always the source of truth. If useState is still at the server
-  // default ('light') but the page is actually dark, we fix that here —
-  // before any user interaction is possible — so the icon and toggle are correct.
+  // default ('light') but the page is actually dark, we fix that here â€”
+  // before any user interaction is possible â€” so the icon and toggle are correct.
   if (import.meta.client) {
     const htmlIsDark = document.documentElement.classList.contains('dark')
     if (htmlIsDark && colorMode.value !== 'dark') colorMode.value = 'dark'
@@ -47,7 +47,7 @@ export function useColorMode() {
     colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
     applyClass()
     if (import.meta.client) {
-      localStorage.setItem('reqcore-color-mode', colorMode.value)
+      localStorage.setItem('WWMate-color-mode', colorMode.value)
     }
   }
 
@@ -56,7 +56,7 @@ export function useColorMode() {
     colorMode.value = mode
     applyClass()
     if (import.meta.client) {
-      localStorage.setItem('reqcore-color-mode', mode)
+      localStorage.setItem('WWMate-color-mode', mode)
     }
   }
 
@@ -64,7 +64,7 @@ export function useColorMode() {
   // storage events from other tabs, etc.)
   if (import.meta.client) {
     onMounted(() => {
-      const stored = localStorage.getItem('reqcore-color-mode') as 'light' | 'dark' | null
+      const stored = localStorage.getItem('WWMate-color-mode') as 'light' | 'dark' | null
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       const resolved: 'light' | 'dark' = stored ? stored : (prefersDark ? 'dark' : 'light')
       if (colorMode.value !== resolved) {
@@ -76,3 +76,4 @@ export function useColorMode() {
 
   return { colorMode, isDark, toggle, set }
 }
+

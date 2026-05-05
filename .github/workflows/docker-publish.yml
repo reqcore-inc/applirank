@@ -1,4 +1,4 @@
-name: Publish Docker Image
+﻿name: Publish Docker Image
 
 on:
   push:
@@ -24,18 +24,18 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # ── 1. Checkout (needed for path context so .dockerignore is respected) ──
+      # â”€â”€ 1. Checkout (needed for path context so .dockerignore is respected) â”€â”€
       - name: Checkout
         uses: actions/checkout@v6
 
-      # ── 2. Multi-platform support ───────────────────────────────────────────
+      # â”€â”€ 2. Multi-platform support â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      # ── 3. Registry authentication ─────────────────────────────────────────
+      # â”€â”€ 3. Registry authentication â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
         with:
@@ -50,14 +50,14 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ── 4. Tag & label generation ──────────────────────────────────────────
+      # â”€â”€ 4. Tag & label generation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ github.repository }}
-            name=reqcore/reqcore,enable=${{ vars.DOCKERHUB_USERNAME != '' }}
+            name=WWMate/WWMate,enable=${{ vars.DOCKERHUB_USERNAME != '' }}
           tags: |
             type=edge,branch=main
             type=raw,value=latest,enable={{is_default_branch}}
@@ -65,7 +65,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-
 
-      # ── 5. Build & push ────────────────────────────────────────────────────
+      # â”€â”€ 5. Build & push â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       - name: Build and push
         id: build
         uses: docker/build-push-action@v7
@@ -83,11 +83,11 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
-      # ── 6. Keyless cosign signature (Sigstore OIDC) ────────────────────────
+      # â”€â”€ 6. Keyless cosign signature (Sigstore OIDC) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       # Self-hosters can verify the image they pulled was actually built by
       # this workflow with:
-      #   cosign verify ghcr.io/reqcore-inc/reqcore@<digest> \
-      #     --certificate-identity-regexp 'https://github.com/reqcore-inc/reqcore/.github/workflows/docker-publish.yml@.*' \
+      #   cosign verify ghcr.io/WWMate-inc/WWMate@<digest> \
+      #     --certificate-identity-regexp 'https://github.com/WWMate-inc/WWMate/.github/workflows/docker-publish.yml@.*' \
       #     --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
@@ -100,7 +100,7 @@ jobs:
           set -euo pipefail
           # cosign signs by immutable digest; the tags only resolve the digest.
           # We sign each unique image reference so verification works against
-          # any tag the user pulled (latest, semver, edge, sha-…).
+          # any tag the user pulled (latest, semver, edge, sha-â€¦).
           # `${tag%:*}` (single %) strips only the trailing :tag so registries
           # with ports (e.g. registry.local:5000/repo:tag) survive intact.
           # Pipe through `sort -u` so the same image+digest is signed once
@@ -113,3 +113,4 @@ jobs:
                 echo "Signing ${image}@${DIGEST}"
                 cosign sign --yes "${image}@${DIGEST}"
               done
+

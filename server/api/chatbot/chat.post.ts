@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+﻿import { and, eq } from 'drizzle-orm'
 import { stepCountIs, streamText, type ModelMessage } from 'ai'
 import { z } from 'zod'
 import {
@@ -72,7 +72,7 @@ const bodySchema = z.object({
 })
 
 const BASE_SYSTEM_PROMPT = [
-  'You are Reqcore Assistant, an AI copilot embedded in an applicant tracking system.',
+  'You are WWMate Assistant, an AI copilot embedded in an applicant tracking system.',
   'You help recruiters and hiring managers analyse candidates, jobs, and applications.',
   '',
   'Tooling:',
@@ -83,7 +83,7 @@ const BASE_SYSTEM_PROMPT = [
   '',
   'Style:',
   '- Be concise, structured, and professional. Prefer markdown lists and tables for comparisons.',
-  '- When the user asks for an opinion or recommendation, give one — and back it with evidence from the tools.',
+  '- When the user asks for an opinion or recommendation, give one â€” and back it with evidence from the tools.',
   '- If a question is ambiguous (e.g. "show me top candidates"), make a reasonable assumption and explain it.',
   '- Never expose internal database errors to the user. If a tool fails, retry or explain plainly.',
   '',
@@ -101,12 +101,12 @@ function buildSystemPrompt(scopeLabel: string, agentPrompt: string | null): stri
 function autoTitleFromMessage(content: string): string {
   const trimmed = content.trim().replace(/\s+/g, ' ')
   if (!trimmed) return 'New chat'
-  return trimmed.length <= 60 ? trimmed : `${trimmed.slice(0, 57)}…`
+  return trimmed.length <= 60 ? trimmed : `${trimmed.slice(0, 57)}â€¦`
 }
 
 function previewFromContent(content: string): string {
   const t = content.trim().replace(/\s+/g, ' ')
-  return t.length <= 200 ? t : `${t.slice(0, 197)}…`
+  return t.length <= 200 ? t : `${t.slice(0, 197)}â€¦`
 }
 
 export default defineEventHandler(async (event) => {
@@ -116,7 +116,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readValidatedBody(event, bodySchema.parse)
 
-  // ── Load conversation (and verify ownership) ──
+  // â”€â”€ Load conversation (and verify ownership) â”€â”€
   const conversation = await db.query.chatbotConversation.findFirst({
     where: and(
       eq(chatbotConversation.id, body.conversationId),
@@ -128,7 +128,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Conversation not found.' })
   }
 
-  // ── Load AI config (override → conversation pin → org chatbot default) ──
+  // â”€â”€ Load AI config (override â†’ conversation pin â†’ org chatbot default) â”€â”€
   const preferredAiConfigId =
     body.aiConfigId !== undefined ? body.aiConfigId : conversation.aiConfigId
   const config = await loadAiConfig(orgId, {
@@ -136,7 +136,7 @@ export default defineEventHandler(async (event) => {
     preferId: preferredAiConfigId,
   })
 
-  // ── Resolve scope label ──
+  // â”€â”€ Resolve scope label â”€â”€
   let scopeLabel = 'entire organization'
   if (body.scope.kind === 'job') {
     if (!body.scope.jobId) {
@@ -155,7 +155,7 @@ export default defineEventHandler(async (event) => {
     scopeLabel = `job "${jobRow.title}" (only)`
   }
 
-  // ── Resolve agent (effective agentId = body override → conversation default → none) ──
+  // â”€â”€ Resolve agent (effective agentId = body override â†’ conversation default â†’ none) â”€â”€
   const effectiveAgentId =
     body.agentId !== undefined ? body.agentId : conversation.agentId
   let agentPrompt: string | null = null
@@ -175,7 +175,7 @@ export default defineEventHandler(async (event) => {
     agentTemperature = agentRow.temperature ? Number(agentRow.temperature) : null
   }
 
-  // ── Resolve attachments referenced by the latest user message ──
+  // â”€â”€ Resolve attachments referenced by the latest user message â”€â”€
   const lastUser = [...body.messages].reverse().find((m) => m.role === 'user')
   if (!lastUser) {
     throw createError({ statusCode: 400, statusMessage: 'No user message in request.' })
@@ -200,7 +200,7 @@ export default defineEventHandler(async (event) => {
     textLength: a.textLength,
   }))
 
-  // ── Persist the user message ──
+  // â”€â”€ Persist the user message â”€â”€
   const [persistedUser] = await db.insert(chatbotMessage).values({
     conversationId: conversation.id,
     organizationId: orgId,
@@ -210,7 +210,7 @@ export default defineEventHandler(async (event) => {
     attachments: userAttachmentSnapshot.length ? userAttachmentSnapshot : null,
   }).returning({ id: chatbotMessage.id, createdAt: chatbotMessage.createdAt })
 
-  // ── Patch conversation metadata. Auto-title on the first user message. ──
+  // â”€â”€ Patch conversation metadata. Auto-title on the first user message. â”€â”€
   const isFirstMessage = !conversation.lastMessageAt
   let updatedTitle: string | undefined
   const conversationUpdates: Partial<typeof chatbotConversation.$inferInsert> = {
@@ -230,7 +230,7 @@ export default defineEventHandler(async (event) => {
     .set(conversationUpdates)
     .where(eq(chatbotConversation.id, conversation.id))
 
-  // ── Build model + tools ──
+  // â”€â”€ Build model + tools â”€â”€
   const model = createLanguageModel({
     provider: config.provider as SupportedProvider,
     model: config.model,
@@ -249,7 +249,7 @@ export default defineEventHandler(async (event) => {
     content: m.content,
   }))
 
-  // ── Set SSE headers ──
+  // â”€â”€ Set SSE headers â”€â”€
   setResponseHeaders(event, {
     'Content-Type': 'text/event-stream; charset=utf-8',
     'Cache-Control': 'no-cache, no-transform',
@@ -274,7 +274,7 @@ export default defineEventHandler(async (event) => {
     controller.enqueue(encoder.encode(`data: ${JSON.stringify(e)}\n\n`))
   }
 
-  // ── Accumulators for persistence ──
+  // â”€â”€ Accumulators for persistence â”€â”€
   let assistantContent = ''
   let assistantReasoning = ''
   const toolCallById = new Map<string, ChatbotToolCall>()
@@ -375,7 +375,7 @@ export default defineEventHandler(async (event) => {
               break
             }
             default:
-              // Ignore start/start-step/finish-step/text-start/etc. — they don't
+              // Ignore start/start-step/finish-step/text-start/etc. â€” they don't
               // contribute to the visible message and would just bloat the wire.
               break
           }
@@ -389,7 +389,7 @@ export default defineEventHandler(async (event) => {
           error: errMsg,
         })
       } finally {
-        // Persist whatever we got, even on partial failure — so the user can
+        // Persist whatever we got, even on partial failure â€” so the user can
         // reload the page and still see the partial answer.
         try {
           const orderedToolCalls = toolCallOrder
@@ -397,7 +397,7 @@ export default defineEventHandler(async (event) => {
             .filter((tc): tc is ChatbotToolCall => tc !== undefined)
 
           const finalContent = assistantContent
-            || (finishedCleanly ? '' : '⚠️ The assistant did not return a response.')
+            || (finishedCleanly ? '' : 'âš ï¸ The assistant did not return a response.')
 
           const [persistedAssistant] = await db.insert(chatbotMessage).values({
             conversationId: conversation.id,
@@ -420,7 +420,7 @@ export default defineEventHandler(async (event) => {
               .where(eq(chatbotConversation.id, conversation.id))
           }
         } catch (persistErr) {
-          // Persistence failures must not crash the stream — log loudly.
+          // Persistence failures must not crash the stream â€” log loudly.
           console.error('[chatbot] failed to persist assistant message', persistErr)
         }
         controller.close()
@@ -428,7 +428,7 @@ export default defineEventHandler(async (event) => {
     },
   })
 
-  // Fire-and-forget analytics — never block the stream.
+  // Fire-and-forget analytics â€” never block the stream.
   trackEvent(event, session, 'chatbot_message_sent', {
     scope: body.scope.kind,
     has_attachments: attachmentRecords.length > 0,
@@ -440,3 +440,4 @@ export default defineEventHandler(async (event) => {
 
   return sendStream(event, stream)
 })
+

@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+﻿import { and, eq } from 'drizzle-orm'
 import { interview, application, candidate, job, emailTemplate, organization } from '../../../database/schema'
 import { interviewIdParamSchema } from '../../../utils/schemas/interview'
 import { sendInterviewInvitationSchema, SYSTEM_TEMPLATES } from '../../../utils/schemas/emailTemplate'
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Fetch application → candidate + job data
+  // Fetch application â†’ candidate + job data
   const app = await db.query.application.findFirst({
     where: eq(application.id, interviewRecord.applicationId),
     with: {
@@ -111,7 +111,7 @@ export default defineEventHandler(async (event) => {
   // Derive the base URL for response links
   const baseUrl = env.BETTER_AUTH_URL
     || (env.RAILWAY_PUBLIC_DOMAIN ? `https://${env.RAILWAY_PUBLIC_DOMAIN}` : '')
-    || 'https://reqcore.com'
+    || 'https://WWMate.com'
 
   // Generate signed response URLs (accept / decline / tentative)
   const responseUrls = buildResponseUrls(baseUrl, interviewRecord.id, env.BETTER_AUTH_SECRET)
@@ -219,3 +219,4 @@ export default defineEventHandler(async (event) => {
     candidateEmail: app.candidate.email,
   }
 })
+

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { CheckCircle } from 'lucide-vue-next'
 
 definePageMeta({
@@ -17,7 +17,7 @@ const { data: job } = useFetch(`/api/public/jobs/${jobSlug}`, {
 })
 
 useSeoMeta({
-  title: 'Application Submitted — Reqcore',
+  title: 'Application Submitted â€” WWMate',
   robots: 'noindex, nofollow',
 })
 </script>
@@ -59,3 +59,4 @@ useSeoMeta({
     </div>
   </div>
 </template>
+

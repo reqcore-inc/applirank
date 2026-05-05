@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Tests validating all security fixes applied in the May 2026 security review.
  *
  * Fix 1: Nonce-based CSP (no more 'unsafe-inline' for script-src)
- * Fix 2: HKDF key separation (AES key ≠ raw BETTER_AUTH_SECRET)
+ * Fix 2: HKDF key separation (AES key â‰  raw BETTER_AUTH_SECRET)
  * Fix 3: CI env var no longer bypasses apply-endpoint rate limiting
  * Fix 4: getValidatedRouterParams used for all ID/token route params
  * Fix 5: Horizontal-scaling warning emitted when RAILWAY_REPLICA_COUNT > 1
@@ -14,9 +14,9 @@ import { randomBytes as cryptoRandomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { encrypt, decrypt } from '../../server/utils/encryption'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fix 1 — Nonce-based CSP
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fix 1 â€” Nonce-based CSP
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('Fix 1: Nonce-based CSP', () => {
   // Reproduce the core logic from server/middleware/csp.ts as a pure function
@@ -94,7 +94,7 @@ describe('Fix 1: Nonce-based CSP', () => {
     expect(shouldSkip('/ingest/decide')).toBe(true)
     expect(shouldSkip('/favicon.ico')).toBe(true)
     expect(shouldSkip('/logo.png')).toBe(true)
-    // HTML pages — must NOT be skipped
+    // HTML pages â€” must NOT be skipped
     expect(shouldSkip('/')).toBe(false)
     expect(shouldSkip('/jobs')).toBe(false)
     expect(shouldSkip('/auth/sign-in')).toBe(false)
@@ -102,15 +102,15 @@ describe('Fix 1: Nonce-based CSP', () => {
   })
 })
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fix 2 — HKDF key separation (no key reuse)
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fix 2 â€” HKDF key separation (no key reuse)
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('Fix 2: HKDF key separation', () => {
   const secret = 'a'.repeat(32) // minimum valid BETTER_AUTH_SECRET
 
   function deriveHkdf(s: string): Buffer {
-    return Buffer.from(hkdfSync('sha256', s, '', 'reqcore-aes-256-gcm-v1', 32))
+    return Buffer.from(hkdfSync('sha256', s, '', 'WWMate-aes-256-gcm-v1', 32))
   }
   function deriveSha256(s: string): Buffer {
     return createHash('sha256').update(s).digest()
@@ -138,7 +138,7 @@ describe('Fix 2: HKDF key separation', () => {
     expect(deriveHkdf(secret).length).toBe(32)
   })
 
-  it('encrypt() uses HKDF key — ciphertext differs from SHA-256-keyed output', () => {
+  it('encrypt() uses HKDF key â€” ciphertext differs from SHA-256-keyed output', () => {
     // Manually encrypt with the legacy SHA-256 key
     const legacyKey = deriveSha256(secret)
     const iv = randomBytes(12)
@@ -191,9 +191,9 @@ describe('Fix 2: HKDF key separation', () => {
   })
 })
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fix 3 — CI env var does NOT bypass apply-endpoint rate limit
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fix 3 â€” CI env var does NOT bypass apply-endpoint rate limit
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('Fix 3: CI env var does not bypass rate limiting in production', () => {
   /**
@@ -230,18 +230,18 @@ describe('Fix 3: CI env var does not bypass rate limiting in production', () => 
     expect(shouldEnforceRateLimit({ CI: 'true' })).toBe(false)
   })
 
-  it('SECURITY: old CI-bypass pattern would have allowed bypass — new pattern fixes it', () => {
+  it('SECURITY: old CI-bypass pattern would have allowed bypass â€” new pattern fixes it', () => {
     const productionWithCi = { NODE_ENV: 'production', CI: 'true' }
-    // Old (vulnerable): returns false — rate limit skipped in "production + CI"
+    // Old (vulnerable): returns false â€” rate limit skipped in "production + CI"
     expect(oldShouldEnforceRateLimit(productionWithCi)).toBe(false)
-    // New (fixed): returns true — rate limit always enforced in production
+    // New (fixed): returns true â€” rate limit always enforced in production
     expect(shouldEnforceRateLimit(productionWithCi)).toBe(true)
   })
 })
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fix 4 — getValidatedRouterParams validates UUIDs before DB queries
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fix 4 â€” getValidatedRouterParams validates UUIDs before DB queries
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('Fix 4: Router params are validated with Zod schemas', () => {
   const uuidParamSchema = z.object({ id: z.string().uuid() })
@@ -302,9 +302,9 @@ describe('Fix 4: Router params are validated with Zod schemas', () => {
   })
 })
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Fix 5 — Scaling warning when RAILWAY_REPLICA_COUNT > 1
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Fix 5 â€” Scaling warning when RAILWAY_REPLICA_COUNT > 1
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe('Fix 5: In-memory rate limiter emits startup warning under horizontal scaling', () => {
   const originalEnv = process.env.RAILWAY_REPLICA_COUNT
@@ -326,8 +326,8 @@ describe('Fix 5: In-memory rate limiter emits startup warning under horizontal s
       if (count > 1) {
         console.warn(
           `[rateLimit] WARNING: RAILWAY_REPLICA_COUNT=${count}. `
-          + 'The in-memory rate limiter is NOT shared across replicas — effective limits are '
-          + `${count}× higher than configured. Move rate limiting to the edge.`,
+          + 'The in-memory rate limiter is NOT shared across replicas â€” effective limits are '
+          + `${count}Ã— higher than configured. Move rate limiting to the edge.`,
         )
       }
       expect(warnSpy).toHaveBeenCalledOnce()
@@ -375,8 +375,8 @@ describe('Fix 5: In-memory rate limiter emits startup warning under horizontal s
       if (count > 1) {
         console.warn(
           `[rateLimit] WARNING: RAILWAY_REPLICA_COUNT=${count}. `
-          + 'The in-memory rate limiter is NOT shared across replicas — effective limits are '
-          + `${count}× higher than configured. Move rate limiting to the edge.`,
+          + 'The in-memory rate limiter is NOT shared across replicas â€” effective limits are '
+          + `${count}Ã— higher than configured. Move rate limiting to the edge.`,
         )
       }
       expect(warnSpy.mock.calls[0]![0]).toContain('Move rate limiting to the edge')
@@ -386,3 +386,4 @@ describe('Fix 5: In-memory rate limiter emits startup warning under horizontal s
     }
   })
 })
+

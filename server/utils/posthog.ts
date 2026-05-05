@@ -1,4 +1,4 @@
-import { PostHog } from 'posthog-node'
+﻿import { PostHog } from 'posthog-node'
 import { version as APP_VERSION } from '../../package.json'
 
 let client: PostHog | null = null
@@ -21,8 +21,8 @@ export function useServerPostHog(): PostHog | null {
   }
 
   // POSTHOG_FEATURE_FLAGS_KEY is the "Feature Flags Secure API Key" from
-  // PostHog → Project Settings → Feature Flags.  When set, the server SDK
-  // fetches flag definitions on startup and evaluates them locally — no
+  // PostHog â†’ Project Settings â†’ Feature Flags.  When set, the server SDK
+  // fetches flag definitions on startup and evaluates them locally â€” no
   // per-request network round trip, and much faster flag checks.
   const featureFlagsKey = process.env.POSTHOG_FEATURE_FLAGS_KEY
 
@@ -41,7 +41,7 @@ export function useServerPostHog(): PostHog | null {
 
   // Register super properties included with every server-side event
   client.register({
-    $app_name: 'reqcore',
+    $app_name: 'WWMate',
     $app_version: APP_VERSION,
     $environment: process.env.RAILWAY_ENVIRONMENT_NAME || 'development',
     $source: 'server',
@@ -60,3 +60,4 @@ export async function shutdownServerPostHog(): Promise<void> {
   await client.shutdown()
   client = null
 }
+

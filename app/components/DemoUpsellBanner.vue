@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Cloud, Server, ArrowRight, Sparkles } from 'lucide-vue-next'
 
 const localePath = useLocalePath()
@@ -35,7 +35,7 @@ async function handleUpgrade() {
                 Ready for your own instance?
               </p>
               <p class="truncate text-[11px] text-white/40">
-                Use reqcore on cloud or self-hosted
+                Use WWMate on cloud or self-hosted
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@ async function handleUpgrade() {
               <ArrowRight class="ml-auto size-3 text-white/20 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
             </button>
             <a
-              href="https://github.com/reqcore-inc/reqcore"
+              href="https://github.com/WWMate-inc/WWMate"
               target="_blank"
               rel="noopener noreferrer"
               class="group flex items-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 py-2.5 transition-all hover:border-accent-400/30 hover:bg-accent-500/10 hover:shadow-md hover:shadow-accent-500/5 active:scale-[0.97]"
@@ -65,10 +65,11 @@ async function handleUpgrade() {
           </div>
 
           <p class="mt-2.5 truncate text-center text-[10px] text-white/25">
-            Free forever · No credit card required
+            Free forever Â· No credit card required
           </p>
         </div>
       </div>
     </div>
   </Teleport>
 </template>
+

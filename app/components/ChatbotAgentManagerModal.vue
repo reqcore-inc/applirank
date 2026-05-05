@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
  * ChatbotAgentManagerModal
  *
@@ -9,7 +9,7 @@
  *     system prompt, temperature, isDefault, save / delete).
  *
  * Validates the prompt length client-side (must match server's
- * CHATBOT_AGENT_PROMPT_MAX). Server is the source of truth — every save
+ * CHATBOT_AGENT_PROMPT_MAX). Server is the source of truth â€” every save
  * is followed by a refresh to pick up isDefault swaps.
  */
 import { Plus, Sparkles, Star, Trash2, X, Save } from 'lucide-vue-next'
@@ -163,7 +163,7 @@ const atCap = computed(() => agents.value.length >= CHATBOT_AGENT_MAX_PER_USER)
                 v-if="agents.length === 0"
                 class="px-2 py-2 text-xs italic text-surface-400"
               >
-                No agents yet — pick "New agent" to get started.
+                No agents yet â€” pick "New agent" to get started.
               </li>
             </ul>
           </div>
@@ -207,7 +207,7 @@ const atCap = computed(() => agents.value.length >= CHATBOT_AGENT_MAX_PER_USER)
                 <textarea
                   v-model="draft.systemPrompt"
                   rows="10"
-                  placeholder="Describe how this agent should behave. The default Reqcore tooling instructions are always prepended automatically."
+                  placeholder="Describe how this agent should behave. The default WWMate tooling instructions are always prepended automatically."
                   class="w-full rounded-lg border bg-white dark:bg-surface-900 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-1 font-mono"
                   :class="promptTooLong
                     ? 'border-danger-400 focus:border-danger-500 focus:ring-danger-500'
@@ -218,7 +218,7 @@ const atCap = computed(() => agents.value.length >= CHATBOT_AGENT_MAX_PER_USER)
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-semibold text-surface-700 dark:text-surface-300 mb-1">
-                    Temperature <span class="font-normal text-surface-400">(0–2, blank = default)</span>
+                    Temperature <span class="font-normal text-surface-400">(0â€“2, blank = default)</span>
                   </label>
                   <input
                     v-model.number="draft.temperature"
@@ -226,7 +226,7 @@ const atCap = computed(() => agents.value.length >= CHATBOT_AGENT_MAX_PER_USER)
                     step="0.1"
                     min="0"
                     max="2"
-                    placeholder="—"
+                    placeholder="â€”"
                     class="w-full rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   >
                 </div>
@@ -289,3 +289,4 @@ const atCap = computed(() => agents.value.length >= CHATBOT_AGENT_MAX_PER_USER)
     </div>
   </Teleport>
 </template>
+

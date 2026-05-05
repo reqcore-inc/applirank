@@ -1,4 +1,4 @@
-import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs'
+﻿import { BatchLogRecordProcessor, LoggerProvider } from '@opentelemetry/sdk-logs'
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
 import { logs, SeverityNumber } from '@opentelemetry/api-logs'
 import type { AnyValueMap } from '@opentelemetry/api-logs'
@@ -24,7 +24,7 @@ export function initLoggerProvider(): void {
 
   loggerProvider = new LoggerProvider({
     resource: resourceFromAttributes({
-      'service.name': 'reqcore',
+      'service.name': 'WWMate',
       'service.version': APP_VERSION,
       'deployment.environment': process.env.RAILWAY_ENVIRONMENT_NAME || 'development',
     }),
@@ -55,12 +55,12 @@ export async function shutdownLoggerProvider(): Promise<void> {
   loggerProvider = null
 }
 
-// ─────────────────────────────────────────────
-// Convenience logger — wraps the OTel API
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Convenience logger â€” wraps the OTel API
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getLogger() {
-  return logs.getLogger('reqcore')
+  return logs.getLogger('WWMate')
 }
 
 interface LogContext {
@@ -123,7 +123,7 @@ export function logError(body: string, attributes?: LogContext): void {
 /**
  * Emit a DEBUG-level structured log to PostHog.
  * Use for detailed diagnostics during active investigation. Off in production
- * by default — enable selectively for specific services.
+ * by default â€” enable selectively for specific services.
  */
 export function logDebug(body: string, attributes?: LogContext): void {
   try {
@@ -151,7 +151,7 @@ export function requestAttributes(event: H3Event): Record<string, string | undef
   let sessionId: string | undefined
   let cookieDistinctId: string | undefined
   try {
-    const phCookie = getCookie(event, 'ph_reqcore_posthog')
+    const phCookie = getCookie(event, 'ph_WWMate_posthog')
     if (phCookie) {
       const parsed = JSON.parse(phCookie)
       sessionId = parsed?.$sesid?.[1]
@@ -159,7 +159,7 @@ export function requestAttributes(event: H3Event): Record<string, string | undef
     }
   }
   catch {
-    // Cookie may be missing or malformed — non-critical
+    // Cookie may be missing or malformed â€” non-critical
   }
   return {
     http_method: getMethod(event),
@@ -209,3 +209,4 @@ export function logApiError(
     ...extra,
   })
 }
+

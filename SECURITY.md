@@ -1,8 +1,8 @@
-# Security Policy
+﻿# Security Policy
 
 ## Supported Versions
 
-Reqcore is under active development on the `main` branch.
+WWMate is under active development on the `main` branch.
 
 - `main`: Supported
 - Tagged releases: Security support windows are defined per release once stable releases begin.
@@ -11,7 +11,7 @@ Reqcore is under active development on the `main` branch.
 
 Please do **not** report security vulnerabilities through public GitHub issues.
 
-Report privately by email: security@reqcore.com
+Report privately by email: security@WWMate.com
 
 Include as much detail as possible:
 
@@ -29,7 +29,7 @@ Include as much detail as possible:
 
 ## Scope Priorities
 
-Given Reqcore's architecture, the highest-priority findings include:
+Given WWMate's architecture, the highest-priority findings include:
 
 - Multi-tenant data isolation bypass (`organizationId` scope issues)
 - Authentication or authorization bypass
@@ -40,3 +40,4 @@ Given Reqcore's architecture, the highest-priority findings include:
 ## Safe Harbor
 
 If you act in good faith, avoid privacy violations and service disruption, and give us reasonable time to resolve findings before disclosure, we will treat your research as authorized and welcomed.
+

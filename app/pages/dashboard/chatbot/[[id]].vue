@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Sparkles, Send, Square, Paperclip, FileText, X, Brain,
   Briefcase, Globe, ChevronDown, Loader2, User2, Wrench, AlertCircle,
@@ -13,7 +13,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Reqcore Assistant',
+  title: 'WWMate Assistant',
   robots: 'noindex, nofollow',
 })
 
@@ -41,7 +41,7 @@ const {
 const route = useRoute()
 const router = useRouter()
 
-// ── URL ↔ conversation id sync ──
+// â”€â”€ URL â†” conversation id sync â”€â”€
 // The route is /dashboard/chatbot or /dashboard/chatbot/:id. Whenever the URL
 // changes (initial load, browser back/forward, sidebar click), reflect it in
 // composable state. Whenever the active conversation changes (e.g. starting a
@@ -60,7 +60,7 @@ async function syncFromRoute() {
     }
   }
   else if (currentConversationId.value !== null) {
-    // URL has no id — clear the open conversation so the empty state shows.
+    // URL has no id â€” clear the open conversation so the empty state shows.
     currentConversationId.value = null
     messages.value = []
     sources.value = []
@@ -79,13 +79,13 @@ watch(currentConversationId, (id) => {
 
 watch(() => route.params.id, () => { void syncFromRoute() })
 
-// ── Initial load ──
+// â”€â”€ Initial load â”€â”€
 onMounted(async () => {
   await loadAll()
   await syncFromRoute()
 })
 
-// ── Jobs for the scope picker ──
+// â”€â”€ Jobs for the scope picker â”€â”€
 const { data: jobsData } = await useFetch('/api/jobs', {
   key: 'chatbot-jobs',
   query: { limit: 100 },
@@ -111,7 +111,7 @@ function selectScope(kind: 'organization' | 'job', jobId?: string) {
   showScopePicker.value = false
 }
 
-// ── Composer ──
+// â”€â”€ Composer â”€â”€
 const draft = ref('')
 const composerRef = useTemplateRef<HTMLTextAreaElement>('composer')
 const fileInputRef = useTemplateRef<HTMLInputElement>('fileInput')
@@ -154,7 +154,7 @@ async function handleFileChange(e: Event) {
   }
 }
 
-// ── Auto-scroll on incoming chunks ──
+// â”€â”€ Auto-scroll on incoming chunks â”€â”€
 const scrollerRef = useTemplateRef<HTMLElement>('scroller')
 function scrollToBottom() {
   const el = scrollerRef.value
@@ -167,7 +167,7 @@ watch(
 )
 watch(currentConversationId, () => nextTick(scrollToBottom))
 
-// ── Suggestions for empty state ──
+// â”€â”€ Suggestions for empty state â”€â”€
 const suggestions = computed(() => {
   if (selectedJob.value) {
     const t = selectedJob.value.title
@@ -201,7 +201,7 @@ function toolLabel(name: string) {
   return name.replace(/_/g, ' ')
 }
 
-// ── Right-rail sources panel + Agent manager ──
+// â”€â”€ Right-rail sources panel + Agent manager â”€â”€
 const sourcesOpen = ref(false)
 const agentsOpen = ref(false)
 
@@ -224,7 +224,7 @@ async function startNew() {
   <div v-if="!enabled" class="mx-auto max-w-2xl py-24 text-center">
     <Sparkles class="mx-auto size-10 text-surface-400" />
     <h1 class="mt-4 text-2xl font-semibold text-surface-900 dark:text-surface-100">
-      Reqcore Assistant
+      WWMate Assistant
     </h1>
     <p class="mt-2 text-sm text-surface-500">
       This feature isn't available on your account yet.
@@ -242,7 +242,7 @@ async function startNew() {
         <div class="flex items-center gap-3 min-w-0">
           <div class="min-w-0">
             <h1 class="truncate text-sm font-semibold tracking-tight text-surface-900 dark:text-surface-100">
-              Reqcore Assistant
+              WWMate Assistant
             </h1>
             <p class="truncate text-[11px] text-surface-500 dark:text-surface-400">
               Context-aware copilot for your hiring data
@@ -259,7 +259,7 @@ async function startNew() {
             >
               <component :is="scope.kind === 'job' ? Briefcase : Globe" class="size-3.5 text-brand-500" />
               <span class="max-w-[160px] truncate">
-                {{ scope.kind === 'job' ? (selectedJob?.title ?? 'Select job…') : 'Whole organization' }}
+                {{ scope.kind === 'job' ? (selectedJob?.title ?? 'Select jobâ€¦') : 'Whole organization' }}
               </span>
               <ChevronDown class="size-3 text-surface-400" :class="showScopePicker ? 'rotate-180' : ''" />
             </button>
@@ -294,7 +294,7 @@ async function startNew() {
                 </button>
                 <div class="max-h-72 overflow-y-auto border-t border-surface-100 dark:border-surface-800 py-1">
                   <p v-if="jobs.length === 0" class="px-4 py-3 text-xs text-surface-500">
-                    No jobs yet — create one to scope the assistant to it.
+                    No jobs yet â€” create one to scope the assistant to it.
                   </p>
                   <button
                     v-for="j in jobs"
@@ -350,7 +350,7 @@ async function startNew() {
         class="flex flex-1 items-center justify-center text-sm text-surface-500"
       >
         <Loader2 class="mr-2 size-4 animate-spin" />
-        Loading…
+        Loadingâ€¦
       </div>
 
       <!-- Conversation -->
@@ -366,7 +366,7 @@ async function startNew() {
           </h2>
           <p class="mt-2 max-w-md text-sm text-surface-500">
             Ask anything about your jobs, candidates, applications, or uploaded resumes.
-            Reqcore Assistant has live access to your hiring data.
+            WWMate Assistant has live access to your hiring data.
           </p>
           <div class="mt-8 grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2">
             <button
@@ -391,7 +391,7 @@ async function startNew() {
             <img
               v-if="m.role === 'assistant'"
               src="/eagle-mascot-logo-128.png"
-              alt="Reqcore Assistant"
+              alt="WWMate Assistant"
               class="size-9 shrink-0 object-contain mt-2"
             />
 
@@ -484,7 +484,7 @@ async function startNew() {
                     <span class="size-1.5 animate-bounce rounded-full bg-brand-500" style="animation-delay: 150ms" />
                     <span class="size-1.5 animate-bounce rounded-full bg-brand-500" style="animation-delay: 300ms" />
                   </span>
-                  Thinking…
+                  Thinkingâ€¦
                 </div>
 
                 <!-- Inline source citations on assistant message -->
@@ -550,7 +550,7 @@ async function startNew() {
               ref="composer"
               v-model="draft"
               rows="1"
-              placeholder="Ask Reqcore Assistant anything…"
+              placeholder="Ask WWMate Assistant anythingâ€¦"
               class="block w-full resize-none border-0 bg-transparent px-4 pt-3 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-0"
               @keydown="onKeyDown"
             />
@@ -609,7 +609,7 @@ async function startNew() {
             {{ error }}
           </p>
           <p v-else class="mt-2 text-center text-[11px] text-surface-400">
-            Reqcore Assistant can make mistakes. Verify candidate-impacting decisions.
+            WWMate Assistant can make mistakes. Verify candidate-impacting decisions.
           </p>
         </div>
       </div>
@@ -622,3 +622,4 @@ async function startNew() {
     <ChatbotAgentManagerModal :open="agentsOpen" @close="agentsOpen = false" />
   </div>
 </template>
+

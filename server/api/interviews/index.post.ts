@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+﻿import { and, eq } from 'drizzle-orm'
 import { interview, application, candidate, job, organization } from '../../database/schema'
 import { createInterviewSchema } from '../../utils/schemas/interview'
 import { createCalendarEvent } from '../../utils/google-calendar'
@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
       ...(body.location ? [`Location: ${body.location}`] : []),
       ...(body.notes ? [`\nNotes: ${body.notes}`] : []),
       '',
-      `Scheduled via ${org?.name || 'Reqcore'}`,
+      `Scheduled via ${org?.name || 'WWMate'}`,
     ].join('\n')
     const addCandidate = body.calendarAddCandidateAttendee !== false
     const sendUpdates = body.calendarSendUpdates !== false
@@ -136,3 +136,4 @@ export default defineEventHandler(async (event) => {
     ...(calendarEventLink && { googleCalendarEventLink: calendarEventLink }),
   }
 })
+

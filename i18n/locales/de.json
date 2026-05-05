@@ -1,7 +1,7 @@
-{
+﻿{
   "common": {
     "language": "Sprache",
-    "selectLanguage": "Sprache auswählen",
+    "selectLanguage": "Sprache auswÃ¤hlen",
     "save": "Speichern",
     "cancel": "Abbrechen"
   },
@@ -16,35 +16,36 @@
       "logIn": "Anmelden",
       "signUp": "Registrieren"
     },
-    "badge": "Open-Source-ATS für Entwicklerteams",
+    "badge": "Open-Source-ATS fÃ¼r Entwicklerteams",
     "hero": {
       "titleLine1": "Ihr Recruiting.",
       "titleHighlight": "Ihre Infrastruktur.",
-      "subtitle": "Open-Source-Bewerbermanagement für Teams, die selbst hosten.",
+      "subtitle": "Open-Source-Bewerbermanagement fÃ¼r Teams, die selbst hosten.",
       "goToDashboard": "Zum Dashboard",
       "signIn": "Anmelden",
       "createAccount": "Konto erstellen",
       "ctaDemo": "Live-Demo testen",
       "ctaStart": "Auf GitHub ansehen",
-      "hint": "Frühe Open-Source-Version — testen Sie die Demo mit Beispieldaten, ohne Registrierung"
+      "hint": "FrÃ¼he Open-Source-Version â€” testen Sie die Demo mit Beispieldaten, ohne Registrierung"
     },
     "pillars": {
       "yourData": {
         "label": "Ihre Daten",
-        "desc": "Postgres + MinIO auf Ihrer Infrastruktur. Nichts verlässt Ihr Netzwerk."
+        "desc": "Postgres + MinIO auf Ihrer Infrastruktur. Nichts verlÃ¤sst Ihr Netzwerk."
       },
       "auditable": {
-        "label": "Vollständig auditierbar",
-        "desc": "Open Source — jede Zeile der Matching-Logik ist sichtbar und anpassbar."
+        "label": "VollstÃ¤ndig auditierbar",
+        "desc": "Open Source â€” jede Zeile der Matching-Logik ist sichtbar und anpassbar."
       },
       "unlimitedSeats": {
-        "label": "Unbegrenzte Plätze",
-        "desc": "Fügen Sie Ihr gesamtes Recruiting-Team hinzu. Kein Preis pro Platz, nie."
+        "label": "Unbegrenzte PlÃ¤tze",
+        "desc": "FÃ¼gen Sie Ihr gesamtes Recruiting-Team hinzu. Kein Preis pro Platz, nie."
       }
     },
     "footer": {
       "source": "Quellcode",
-      "tagline": "Reqcore — Open-Source-Bewerbermanagement"
+      "tagline": "WWMate â€” Open-Source-Bewerbermanagement"
     }
   }
 }
+

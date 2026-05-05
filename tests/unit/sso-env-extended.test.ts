@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { envSchema } from '../../server/utils/env'
 
 /**
@@ -19,15 +19,15 @@ const baseEnv = {
 }
 
 const validOidc = {
-  OIDC_CLIENT_ID: 'reqcore-app',
+  OIDC_CLIENT_ID: 'WWMate-app',
   OIDC_CLIENT_SECRET: 'oidc-secret-value',
   OIDC_DISCOVERY_URL: 'https://auth.example.com/.well-known/openid-configuration',
 }
 
-describe('OIDC SSO — extended edge cases', () => {
-  // ────────────────────────────────────
+describe('OIDC SSO â€” extended edge cases', () => {
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Railway domain fallback (no explicit BETTER_AUTH_URL)
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('Railway environment compatibility', () => {
     it('accepts OIDC config when BETTER_AUTH_URL is derived from RAILWAY_PUBLIC_DOMAIN', () => {
       const result = envSchema.safeParse({
@@ -39,7 +39,7 @@ describe('OIDC SSO — extended edge cases', () => {
 
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.OIDC_CLIENT_ID).toBe('reqcore-app')
+        expect(result.data.OIDC_CLIENT_ID).toBe('WWMate-app')
       }
     })
 
@@ -54,19 +54,19 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Empty string normalization (Railway quirk)
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('empty string normalization', () => {
     it('treats whitespace-only OIDC_CLIENT_ID as unset (no partial config error when all are whitespace)', () => {
-      // Railway sometimes sets env vars to "" — emptyToUndefined normalizes them
+      // Railway sometimes sets env vars to "" â€” emptyToUndefined normalizes them
       const result = envSchema.safeParse({
         ...baseEnv,
         OIDC_CLIENT_ID: '  ',
         OIDC_CLIENT_SECRET: '  ',
         OIDC_DISCOVERY_URL: '  ',
       })
-      // All go through emptyToUndefined → undefined → fails inner z.string() validation
+      // All go through emptyToUndefined â†’ undefined â†’ fails inner z.string() validation
       // This means they become undefined-like, but the inner pipe rejects them
       expect(result.success).toBe(false)
     })
@@ -82,9 +82,9 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // OIDC_DISCOVERY_URL edge cases
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('OIDC discovery URL edge cases', () => {
     it('accepts HTTP URL for local dev environments', () => {
       const result = envSchema.safeParse({
@@ -123,9 +123,9 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // OIDC_PROVIDER_NAME edge cases
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('OIDC provider name edge cases', () => {
     it('accepts provider name with special characters (Umlauts, etc.)', () => {
       const result = envSchema.safeParse({
@@ -152,9 +152,9 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // BETTER_AUTH_SECRET enforcement
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('auth secret strength with SSO', () => {
     it('rejects short BETTER_AUTH_SECRET even with valid OIDC config', () => {
       const result = envSchema.safeParse({
@@ -170,9 +170,9 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // BETTER_AUTH_TRUSTED_ORIGINS + OIDC
-  // ────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   describe('trusted origins with OIDC', () => {
     it('parses BETTER_AUTH_TRUSTED_ORIGINS alongside OIDC config', () => {
       const result = envSchema.safeParse({
@@ -190,3 +190,4 @@ describe('OIDC SSO — extended edge cases', () => {
     })
   })
 })
+

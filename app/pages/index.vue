@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Github, Shield, Database, Users, Briefcase, ArrowRight } from 'lucide-vue-next'
 
 const { t } = useI18n()
@@ -11,7 +11,7 @@ const pillars = computed(() => [
   { icon: Users, label: t('home.pillars.unlimitedSeats.label'), desc: t('home.pillars.unlimitedSeats.desc') },
 ])
 
-useHead({ title: 'Reqcore' })
+useHead({ title: 'WWMate' })
 definePageMeta({ layout: false })
 </script>
 
@@ -26,7 +26,7 @@ definePageMeta({ layout: false })
     <PublicNavBar />
 
     <main class="relative mx-auto max-w-5xl px-6 pt-36 pb-24">
-      <!-- ── Hero ── -->
+      <!-- â”€â”€ Hero â”€â”€ -->
       <div class="flex flex-col items-center text-center">
         <h1 class="hero-animate hero-delay-1 text-5xl font-bold leading-[1.1] tracking-tight text-surface-900 dark:text-white sm:text-6xl lg:text-7xl">
           {{ $t('home.hero.titleLine1') }}
@@ -67,7 +67,7 @@ definePageMeta({ layout: false })
         </div>
       </div>
 
-      <!-- ── Pillars ── -->
+      <!-- â”€â”€ Pillars â”€â”€ -->
       <div class="hero-animate hero-delay-4 mx-auto mt-28 grid max-w-3xl gap-4 sm:grid-cols-3">
         <div
           v-for="pillar in pillars"
@@ -80,11 +80,11 @@ definePageMeta({ layout: false })
         </div>
       </div>
 
-      <!-- ── Footer ── -->
+      <!-- â”€â”€ Footer â”€â”€ -->
       <footer class="hero-animate hero-delay-5 mt-28 flex flex-col items-center gap-4 text-center">
         <div class="flex items-center gap-5">
           <a
-            href="https://github.com/reqcore-inc/reqcore"
+            href="https://github.com/WWMate-inc/WWMate"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-1.5 text-[13px] text-surface-500 transition hover:text-surface-700 dark:hover:text-surface-300"
@@ -107,3 +107,4 @@ definePageMeta({ layout: false })
     </main>
   </div>
 </template>
+

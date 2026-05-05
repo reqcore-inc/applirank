@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process'
+﻿import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 
 const execFileAsync = promisify(execFile)
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   let effectiveDir = backupDir
   try {
     await mkdir(backupDir, { recursive: true })
-    // Probe actual write access — mkdir succeeds even on read-only mounts
+    // Probe actual write access â€” mkdir succeeds even on read-only mounts
     const probe = join(backupDir, `.probe-${Date.now()}`)
     await writeFile(probe, '')
     await unlink(probe)
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const filename = `reqcore-backup-${timestamp}.sql`
+  const filename = `WWMate-backup-${timestamp}.sql`
   const backupPath = `${effectiveDir}/${filename}`
 
   try {
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     // Build a minimal env for pg_dump (see server/utils/pgDumpEnv.ts).
     // Spreading process.env would expose every secret in the parent process
     // (BETTER_AUTH_SECRET, S3_SECRET_KEY, OAuth credentials, etc.) to the
-    // child — and any of them could leak through pg_dump's stderr or a libpq
+    // child â€” and any of them could leak through pg_dump's stderr or a libpq
     // diagnostic. The allowlist forwards only what pg_dump actually needs.
     await execFileAsync(
       'pg_dump',
@@ -74,7 +74,8 @@ export default defineEventHandler(async (event) => {
     const message = err instanceof Error ? err.message : 'Unknown error'
     return {
       success: false,
-      message: `Backup failed: ${message}. You can create a manual backup using: docker compose exec db pg_dump -U reqcore reqcore > backup.sql`,
+      message: `Backup failed: ${message}. You can create a manual backup using: docker compose exec db pg_dump -U WWMate WWMate > backup.sql`,
     } satisfies BackupResult
   }
 })
+

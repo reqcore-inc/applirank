@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowLeft, Save, Eye, EyeOff, Copy, Trash2, Lock,
   FileText, Mail, AlertCircle,
@@ -16,12 +16,12 @@ const { handlePreviewReadOnlyError } = usePreviewReadOnly()
 
 const isSystemTemplate = computed(() => templateId.startsWith('system-'))
 
-// ─── System template lookup ──────────────────────────────────────
+// â”€â”€â”€ System template lookup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const systemTemplate = computed(() =>
   SYSTEM_TEMPLATES.find(t => t.id === templateId),
 )
 
-// ─── Custom template loading ─────────────────────────────────────
+// â”€â”€â”€ Custom template loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { templates, updateTemplate, deleteTemplate, createTemplate } = useEmailTemplates()
 
 const customTemplate = computed(() =>
@@ -33,7 +33,7 @@ const notFound = computed(() => {
   return templates.value !== null && !customTemplate.value
 })
 
-// ─── Form state ──────────────────────────────────────────────────
+// â”€â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const form = reactive({
   name: '',
   subject: '',
@@ -59,7 +59,7 @@ watchEffect(() => {
   }
 })
 
-// ─── Save ────────────────────────────────────────────────────────
+// â”€â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isSaving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref(false)
@@ -90,7 +90,7 @@ async function handleSave() {
   }
 }
 
-// ─── Duplicate system template ───────────────────────────────────
+// â”€â”€â”€ Duplicate system template â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isDuplicating = ref(false)
 
 async function handleDuplicate() {
@@ -110,7 +110,7 @@ async function handleDuplicate() {
   }
 }
 
-// ─── Delete ──────────────────────────────────────────────────────
+// â”€â”€â”€ Delete â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isDeleting = ref(false)
 
 async function handleDelete() {
@@ -127,7 +127,7 @@ async function handleDelete() {
   }
 }
 
-// ─── Preview ─────────────────────────────────────────────────────
+// â”€â”€â”€ Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showPreview = ref(false)
 
 const sampleVariables: Record<string, string> = {
@@ -136,7 +136,7 @@ const sampleVariables: Record<string, string> = {
   candidateLastName: 'Johnson',
   candidateEmail: 'alex@example.com',
   jobTitle: 'Senior Frontend Engineer',
-  interviewTitle: 'Technical Interview — Round 2',
+  interviewTitle: 'Technical Interview â€” Round 2',
   interviewDate: 'Monday, March 16, 2026',
   interviewTime: '2:00 PM',
   interviewDuration: '60',
@@ -150,7 +150,7 @@ const previewSubject = computed(() => renderTemplatePreview(form.subject, sample
 const previewBody = computed(() => renderTemplatePreview(form.body, sampleVariables))
 
 useSeoMeta({
-  title: computed(() => form.name ? `${form.name} — Email Templates — Reqcore` : 'Email Template — Reqcore'),
+  title: computed(() => form.name ? `${form.name} â€” Email Templates â€” WWMate` : 'Email Template â€” WWMate'),
   robots: 'noindex, nofollow',
 })
 </script>
@@ -226,7 +226,7 @@ useSeoMeta({
             @click="handleDuplicate"
           >
             <Copy class="size-4" />
-            {{ isDuplicating ? 'Duplicating…' : 'Duplicate as Custom' }}
+            {{ isDuplicating ? 'Duplicatingâ€¦' : 'Duplicate as Custom' }}
           </button>
           <template v-else>
             <button
@@ -235,7 +235,7 @@ useSeoMeta({
               @click="handleSave"
             >
               <Save class="size-4" />
-              {{ isSaving ? 'Saving…' : saveSuccess ? 'Saved!' : 'Save Changes' }}
+              {{ isSaving ? 'Savingâ€¦' : saveSuccess ? 'Saved!' : 'Save Changes' }}
             </button>
           </template>
         </div>
@@ -290,7 +290,7 @@ useSeoMeta({
               v-model="form.body"
               :disabled="isSystemTemplate"
               rows="18"
-              placeholder="Write your invitation email here. Use {{variables}} for dynamic content…"
+              placeholder="Write your invitation email here. Use {{variables}} for dynamic contentâ€¦"
               class="w-full rounded-lg border border-surface-200 dark:border-surface-700 px-3.5 py-2.5 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 placeholder:text-surface-400 dark:placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none font-mono text-[13px] leading-relaxed disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
@@ -305,7 +305,7 @@ useSeoMeta({
               @click="handleDelete"
             >
               <Trash2 class="size-3.5" />
-              {{ isDeleting ? 'Deleting…' : 'Delete Template' }}
+              {{ isDeleting ? 'Deletingâ€¦' : 'Delete Template' }}
             </button>
           </div>
         </div>
@@ -375,3 +375,4 @@ useSeoMeta({
     </div>
   </div>
 </template>
+

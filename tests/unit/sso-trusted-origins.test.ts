@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 
 /**
  * Tests for the SSO trusted origins resolver logic.
@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest'
  * OIDC discovery documents.
  */
 
-describe('SSO trusted origins — OIDC discovery endpoint extraction', () => {
+describe('SSO trusted origins â€” OIDC discovery endpoint extraction', () => {
   /**
    * Simulates the endpoint origin extraction from prefetchOidcEndpointOrigins.
    * This mirrors the logic in server/utils/auth.ts without network calls.
@@ -96,9 +96,9 @@ describe('SSO trusted origins — OIDC discovery endpoint extraction', () => {
   })
 })
 
-describe('SSO trusted origins — issuer URL parsing', () => {
+describe('SSO trusted origins â€” issuer URL parsing', () => {
   /**
-   * Simulates the issuer → origin extraction from resolveTrustedOrigins.
+   * Simulates the issuer â†’ origin extraction from resolveTrustedOrigins.
    * This mirrors the logic in server/utils/auth.ts without requiring
    * a database or running Better Auth instance.
    */
@@ -173,21 +173,22 @@ describe('SSO flow URL detection', () => {
   }
 
   it('detects SSO callback URLs', () => {
-    expect(isSsoFlow('https://app.reqcore.com/api/auth/sso/callback/acme-sso')).toBe(true)
+    expect(isSsoFlow('https://app.WWMate.com/api/auth/sso/callback/acme-sso')).toBe(true)
   })
 
   it('detects SSO sign-in URLs', () => {
-    expect(isSsoFlow('https://app.reqcore.com/api/auth/sign-in/sso')).toBe(true)
+    expect(isSsoFlow('https://app.WWMate.com/api/auth/sign-in/sso')).toBe(true)
   })
 
   it('does not flag regular auth routes', () => {
-    expect(isSsoFlow('https://app.reqcore.com/api/auth/sign-in/email')).toBe(false)
-    expect(isSsoFlow('https://app.reqcore.com/api/auth/session')).toBe(false)
-    expect(isSsoFlow('https://app.reqcore.com/dashboard')).toBe(false)
+    expect(isSsoFlow('https://app.WWMate.com/api/auth/sign-in/email')).toBe(false)
+    expect(isSsoFlow('https://app.WWMate.com/api/auth/session')).toBe(false)
+    expect(isSsoFlow('https://app.WWMate.com/dashboard')).toBe(false)
   })
 
   it('does not flag routes with "sso" in other contexts', () => {
     // "sso" appears but not in a path segment matching the check
-    expect(isSsoFlow('https://app.reqcore.com/api/auth/sso-settings')).toBe(false)
+    expect(isSsoFlow('https://app.WWMate.com/api/auth/sso-settings')).toBe(false)
   })
 })
+

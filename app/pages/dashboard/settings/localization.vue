@@ -1,10 +1,10 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Globe, Save, Check, Loader2 } from 'lucide-vue-next'
 
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Localization Settings — Reqcore',
+  title: 'Localization Settings â€” WWMate',
   description: 'Configure name display format and date format for your organization',
 })
 
@@ -216,7 +216,7 @@ const previewDateFormatted = computed(() => {
               <span class="text-surface-400">Name:</span>
               <span class="font-medium text-surface-900 dark:text-surface-100">{{ previewNameFormatted }}</span>
             </div>
-            <div class="hidden sm:block text-surface-300 dark:text-surface-600">·</div>
+            <div class="hidden sm:block text-surface-300 dark:text-surface-600">Â·</div>
             <div class="flex items-center gap-2">
               <span class="text-surface-400">Date of Birth:</span>
               <span class="font-medium text-surface-900 dark:text-surface-100">{{ previewDateFormatted }}</span>
@@ -242,7 +242,7 @@ const previewDateFormatted = computed(() => {
             <Check v-if="saveSuccess" class="size-4" />
             <Loader2 v-else-if="isSaving" class="size-4 animate-spin" />
             <Save v-else class="size-4" />
-            {{ saveSuccess ? 'Saved!' : isSaving ? 'Saving…' : 'Save changes' }}
+            {{ saveSuccess ? 'Saved!' : isSaving ? 'Savingâ€¦' : 'Save changes' }}
           </button>
           <p v-if="!canUpdateOrg" class="text-xs text-surface-400">Only admins and owners can change organization settings.</p>
         </div>
@@ -250,3 +250,4 @@ const previewDateFormatted = computed(() => {
     </section>
   </div>
 </template>
+

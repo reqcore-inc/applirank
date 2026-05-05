@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   ArrowUpCircle, Package, Tag, Clock,
   Sparkles, Bug, Zap, Trash2,
@@ -15,15 +15,15 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Updates — Reqcore',
+  title: 'Updates â€” WWMate',
   description: 'Check for updates and manage your self-hosted instance',
 })
 
 const { allowed: isOwner } = usePermission({ organization: ['delete'] })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Version check
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { data: versionInfo, pending: versionLoading, refresh: recheckVersion } = await useFetch('/api/updates/version', {
   lazy: true,
 })
@@ -39,16 +39,16 @@ async function handleCheckUpdate() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // System info
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { data: systemInfo, pending: systemLoading } = await useFetch('/api/updates/system', {
   lazy: true,
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Backup
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isBackingUp = ref(false)
 const backupResult = ref<{ success: boolean; message: string } | null>(null)
 
@@ -70,9 +70,9 @@ async function handleBackup() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Apply update
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const isUpdating = ref(false)
 const updateResult = ref<{
   success: boolean
@@ -101,9 +101,9 @@ async function handleApplyUpdate() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Changelog
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface ChangelogSection {
   heading: string
   items: string[]
@@ -125,7 +125,7 @@ const { data, status } = useFetch<{ entries: ChangelogEntry[]; currentVersion: s
 const entries = computed(() => data.value?.entries ?? [])
 const currentVersion = computed(() => data.value?.currentVersion ?? null)
 
-// Expand/collapse state — first entry expanded by default
+// Expand/collapse state â€” first entry expanded by default
 const expandedEntries = ref<Set<number>>(new Set([0]))
 
 function toggleEntry(idx: number) {
@@ -145,12 +145,12 @@ function collapseAll() {
   expandedEntries.value.clear()
 }
 
-// Section heading → icon + color mapping
+// Section heading â†’ icon + color mapping
 function sectionMeta(heading: string) {
   const lower = heading.toLowerCase()
-  if (lower.includes('feature') || lower.includes('added') || lower.includes('✨'))
+  if (lower.includes('feature') || lower.includes('added') || lower.includes('âœ¨'))
     return { icon: Sparkles, color: 'text-success-500', bg: 'bg-success-50 dark:bg-success-950/40', ring: 'ring-success-200 dark:ring-success-800' }
-  if (lower.includes('fix') || lower.includes('🐛'))
+  if (lower.includes('fix') || lower.includes('ðŸ›'))
     return { icon: Bug, color: 'text-warning-500', bg: 'bg-warning-50 dark:bg-warning-950/40', ring: 'ring-warning-200 dark:ring-warning-800' }
   if (lower.includes('changed') || lower.includes('improved'))
     return { icon: Zap, color: 'text-brand-500', bg: 'bg-brand-50 dark:bg-brand-950/40', ring: 'ring-brand-200 dark:ring-brand-800' }
@@ -172,9 +172,9 @@ function extractLink(text: string) {
   return match?.[1] ?? null
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400)
   const hours = Math.floor((seconds % 86400) / 3600)
@@ -223,9 +223,9 @@ function formatDate(dateString: string | null | undefined): string {
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Version status card                        -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <section class="mb-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-sm">
       <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
         <div class="flex items-center gap-3">
@@ -247,7 +247,7 @@ function formatDate(dateString: string | null | undefined): string {
             </h2>
             <p class="text-sm text-surface-500 dark:text-surface-400">
               <template v-if="versionLoading">
-                Checking for updates…
+                Checking for updatesâ€¦
               </template>
               <template v-else-if="!versionInfo">
                 Could not check for updates. Verify your network connection and try again.
@@ -271,7 +271,7 @@ function formatDate(dateString: string | null | undefined): string {
               Installed version
             </p>
             <p class="text-sm font-semibold text-surface-900 dark:text-surface-100 mt-1">
-              v{{ versionInfo?.currentVersion ?? '…' }}
+              v{{ versionInfo?.currentVersion ?? 'â€¦' }}
             </p>
           </div>
           <div>
@@ -283,7 +283,7 @@ function formatDate(dateString: string | null | undefined): string {
                 v{{ versionInfo.latestVersion }}
               </template>
               <template v-else>
-                <span class="text-surface-400">—</span>
+                <span class="text-surface-400">â€”</span>
               </template>
             </p>
           </div>
@@ -303,7 +303,7 @@ function formatDate(dateString: string | null | undefined): string {
             @click="handleCheckUpdate"
           >
             <RefreshCw :class="['size-4', (isChecking || versionLoading) && 'animate-spin']" />
-            {{ (isChecking || versionLoading) ? 'Checking…' : 'Check for updates' }}
+            {{ (isChecking || versionLoading) ? 'Checkingâ€¦' : 'Check for updates' }}
           </button>
 
           <a
@@ -320,9 +320,9 @@ function formatDate(dateString: string | null | undefined): string {
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- One-click update section (owner only)      -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <section v-if="isOwner && versionInfo?.updateAvailable" class="mb-6 rounded-xl border border-brand-200 dark:border-brand-900 bg-white dark:bg-surface-900 overflow-hidden shadow-sm">
       <div class="px-6 py-5 border-b border-brand-200 dark:border-brand-900 bg-brand-50/50 dark:bg-brand-950/20">
         <div class="flex items-center gap-3">
@@ -347,7 +347,7 @@ function formatDate(dateString: string | null | undefined): string {
           <div class="text-sm text-surface-600 dark:text-surface-400">
             <p class="font-medium text-surface-700 dark:text-surface-300 mb-1">Before updating</p>
             <ul class="list-disc list-inside space-y-0.5 text-xs">
-              <li>Database migrations run automatically — your data is safe</li>
+              <li>Database migrations run automatically â€” your data is safe</li>
               <li>The app will be briefly unavailable during the restart (under 1 minute)</li>
               <li>We recommend creating a backup first (button below)</li>
             </ul>
@@ -363,7 +363,7 @@ function formatDate(dateString: string | null | undefined): string {
           >
             <Loader2 v-if="isBackingUp" class="size-4 animate-spin" />
             <Database v-else class="size-4" />
-            {{ isBackingUp ? 'Creating backup…' : 'Create backup first' }}
+            {{ isBackingUp ? 'Creating backupâ€¦' : 'Create backup first' }}
           </button>
         </div>
 
@@ -399,7 +399,7 @@ function formatDate(dateString: string | null | undefined): string {
         >
           <div v-if="showUpdateConfirm" class="rounded-lg border border-warning-200 dark:border-warning-800 bg-warning-50/50 dark:bg-warning-950/30 px-4 py-4 space-y-3">
             <p class="text-sm text-surface-700 dark:text-surface-300">
-              This will update your Reqcore instance from <strong>v{{ versionInfo.currentVersion }}</strong> to <strong>v{{ versionInfo.latestVersion }}</strong>. The app will restart during the update.
+              This will update your WWMate instance from <strong>v{{ versionInfo.currentVersion }}</strong> to <strong>v{{ versionInfo.latestVersion }}</strong>. The app will restart during the update.
             </p>
             <div class="flex items-center gap-2">
               <button
@@ -409,7 +409,7 @@ function formatDate(dateString: string | null | undefined): string {
               >
                 <Loader2 v-if="isUpdating" class="size-4 animate-spin" />
                 <Download v-else class="size-4" />
-                {{ isUpdating ? 'Updating…' : 'Confirm update' }}
+                {{ isUpdating ? 'Updatingâ€¦' : 'Confirm update' }}
               </button>
               <button
                 :disabled="isUpdating"
@@ -454,9 +454,9 @@ function formatDate(dateString: string | null | undefined): string {
       Only organization owners can apply updates. Contact the owner to update your instance.
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- System health                              -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <section class="mb-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-sm">
       <div class="px-6 py-5 border-b border-surface-200 dark:border-surface-800">
         <div class="flex items-center gap-3">
@@ -472,7 +472,7 @@ function formatDate(dateString: string | null | undefined): string {
 
       <div v-if="systemLoading" class="px-6 py-8 text-center">
         <Loader2 class="size-5 animate-spin mx-auto text-surface-400" />
-        <p class="text-sm text-surface-400 mt-2">Loading system info…</p>
+        <p class="text-sm text-surface-400 mt-2">Loading system infoâ€¦</p>
       </div>
 
       <div v-else-if="systemInfo" class="px-6 py-5 space-y-5">
@@ -575,7 +575,7 @@ function formatDate(dateString: string | null | undefined): string {
         >
           Expand all
         </button>
-        <span class="text-surface-300 dark:text-surface-600">·</span>
+        <span class="text-surface-300 dark:text-surface-600">Â·</span>
         <button
           class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors cursor-pointer bg-transparent border-0"
           @click="collapseAll"
@@ -723,7 +723,7 @@ function formatDate(dateString: string | null | undefined): string {
                         :class="sectionMeta(section.heading).color"
                       />
                       <h4 class="text-xs font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400">
-                        {{ section.heading.replace(/[✨🐛]/g, '').trim() }}
+                        {{ section.heading.replace(/[âœ¨ðŸ›]/g, '').trim() }}
                       </h4>
                     </div>
 
@@ -775,9 +775,9 @@ function formatDate(dateString: string | null | undefined): string {
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Manual update instructions                 -->
-    <!-- ═══════════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <section class="mt-6 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-sm">
       <details class="group">
         <summary class="flex items-center gap-3 px-6 py-5 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
@@ -802,8 +802,8 @@ function formatDate(dateString: string | null | undefined): string {
           <div>
             <h4 class="text-sm font-semibold text-surface-800 dark:text-surface-200 mb-2">Manual / Git deployment</h4>
             <div class="rounded-lg bg-surface-900 dark:bg-surface-950 px-4 py-3 font-mono text-sm text-surface-100 space-y-1 overflow-x-auto">
-              <p class="text-surface-500"># Navigate to your Reqcore directory</p>
-              <p>cd /path/to/reqcore</p>
+              <p class="text-surface-500"># Navigate to your WWMate directory</p>
+              <p>cd /path/to/WWMate</p>
               <p class="text-surface-500 mt-3"># Pull the latest version</p>
               <p>git pull origin main</p>
               <p class="text-surface-500 mt-3"># Rebuild and restart</p>
@@ -820,7 +820,7 @@ function formatDate(dateString: string | null | undefined): string {
     <!-- Footer link -->
     <div class="mt-8 mb-4 text-center">
       <a
-        href="https://github.com/reqcore-inc/reqcore/releases"
+        href="https://github.com/WWMate-inc/WWMate/releases"
         target="_blank"
         rel="noopener noreferrer"
         class="inline-flex items-center gap-1.5 text-xs font-medium text-surface-400 dark:text-surface-500 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
@@ -831,3 +831,4 @@ function formatDate(dateString: string | null | undefined): string {
     </div>
   </div>
 </template>
+

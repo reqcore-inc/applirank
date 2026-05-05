@@ -1,4 +1,4 @@
-# Reqcore — Roadmap
+﻿# WWMate â€” Roadmap
 
 > Last updated: 2026-02-15 (public roadmap page)
 >
@@ -7,21 +7,21 @@
 >
 > **Convention**: Update this file when you start or finish work. AI agents reference it for context.
 
-## 🎯 Current Focus
+## ðŸŽ¯ Current Focus
 
-**Phase 2, Milestone 9: Resume Parsing** — Extract structured data from uploaded resumes.
+**Phase 2, Milestone 9: Resume Parsing** â€” Extract structured data from uploaded resumes.
 
-> **Recently completed**: Dashboard — At-a-glance overview for recruiters with stat cards, pipeline breakdown, recent applications, top active jobs, and quick actions.
+> **Recently completed**: Dashboard â€” At-a-glance overview for recruiters with stat cards, pipeline breakdown, recent applications, top active jobs, and quick actions.
 
 ---
 
-## Phase 1: MVP — A Working ATS
+## Phase 1: MVP â€” A Working ATS
 
 Goal: A recruiter can sign up, create jobs, add candidates, track applications, and upload resumes.
 
-### Milestone 1: Foundation ✅
+### Milestone 1: Foundation âœ…
 
-Infrastructure, auth, database schema — the base everything else builds on.
+Infrastructure, auth, database schema â€” the base everything else builds on.
 
 - [x] Nuxt 4 project scaffold with `app/` directory structure
 - [x] PostgreSQL + MinIO + Adminer via Docker Compose
@@ -35,15 +35,15 @@ Infrastructure, auth, database schema — the base everything else builds on.
 - [x] Relations between all domain tables
 - [x] Context engineering setup (copilot-instructions, agents, prompts, domain instructions)
 
-### Milestone 2: Auth UI & Navigation ✅
+### Milestone 2: Auth UI & Navigation âœ…
 
 Users can sign up, sign in, create/switch orgs, and see an app shell.
 
 - [x] Sign-up page (`app/pages/auth/sign-up.vue`)
 - [x] Sign-in page (`app/pages/auth/sign-in.vue`)
-- [x] Auth middleware — redirect unauthenticated users (`app/middleware/auth.ts`)
-- [x] Guest middleware — redirect authenticated users from auth pages (`app/middleware/guest.ts`)
-- [x] Require-org middleware — redirect to org creation (`app/middleware/require-org.ts`)
+- [x] Auth middleware â€” redirect unauthenticated users (`app/middleware/auth.ts`)
+- [x] Guest middleware â€” redirect authenticated users from auth pages (`app/middleware/guest.ts`)
+- [x] Require-org middleware â€” redirect to org creation (`app/middleware/require-org.ts`)
 - [x] Organization creation flow (post-signup) (`app/pages/onboarding/create-org.vue`)
 - [x] Organization switcher component (`app/components/OrgSwitcher.vue`)
 - [x] App layout with sidebar navigation (`app/layouts/dashboard.vue`)
@@ -51,10 +51,10 @@ Users can sign up, sign in, create/switch orgs, and see an app shell.
 - [x] Sidebar component with nav, icons, dynamic job context tabs, and sign-out (`app/components/AppSidebar.vue`)
 - [x] Current org composable (`app/composables/useCurrentOrg.ts`)
 - [x] Server-side auth guard utility (`server/utils/requireAuth.ts`)
-- [x] Root page placeholder (`app/pages/index.vue`) — later replaced by landing page (Milestone 2.5)
+- [x] Root page placeholder (`app/pages/index.vue`) â€” later replaced by landing page (Milestone 2.5)
 - [x] Dashboard placeholder page (`app/pages/dashboard/index.vue`)
 
-### Milestone 2.5: Public Landing Page ✅
+### Milestone 2.5: Public Landing Page âœ…
 
 Dark-mode marketing page communicating the product vision to visitors.
 
@@ -62,68 +62,68 @@ Dark-mode marketing page communicating the product vision to visitors.
 - [x] Dark design aesthetic: `#09090b` bg, glass-like borders, subtle glow effects, grid pattern (Linear/Resend/Raycast style)
 - [x] `lucide-vue-next` icon library for high-quality, tree-shakeable icons
 - [x] Brand SVGs for tech stack section (Nuxt, PostgreSQL)
-- [x] Auth-aware navbar — Dashboard link for authenticated users, Sign In/Get Started for guests
+- [x] Auth-aware navbar â€” Dashboard link for authenticated users, Sign In/Get Started for guests
 - [x] SEO meta tags via `useSeoMeta` (title, description, OpenGraph)
 - [x] `useHead` body background override to prevent light-mode bleed on dark page
-- [x] Roadmap showcase section on landing page — mini timeline with Shipped/Building/Vision counts and CTA to full roadmap
+- [x] Roadmap showcase section on landing page â€” mini timeline with Shipped/Building/Vision counts and CTA to full roadmap
 
-### Milestone 2.6: Public Roadmap Page ✅
+### Milestone 2.6: Public Roadmap Page âœ…
 
 Cinematic horizontal-scrolling roadmap page showing product progress.
 
-- [x] Public roadmap page (`app/pages/roadmap.vue`) — horizontal timeline with glassmorphism cards
+- [x] Public roadmap page (`app/pages/roadmap.vue`) â€” horizontal timeline with glassmorphism cards
 - [x] 15 milestone cards with title, description, icon, feature highlights list
 - [x] Color-coded statuses: green (shipped), blue (building), purple (vision)
-- [x] Intro card — same card style as milestones, centered on page load
-- [x] Smooth horizontal scroll — mousewheel-to-horizontal conversion with requestAnimationFrame easing
-- [x] Timeline axis with scroll-tracking progress glow (green → blue gradient)
-- [x] End CTA — "Shape the future" with GitHub Issues and Get Started buttons
+- [x] Intro card â€” same card style as milestones, centered on page load
+- [x] Smooth horizontal scroll â€” mousewheel-to-horizontal conversion with requestAnimationFrame easing
+- [x] Timeline axis with scroll-tracking progress glow (green â†’ blue gradient)
+- [x] End CTA â€” "Shape the future" with GitHub Issues and Get Started buttons
 - [x] Auth-aware navbar matching landing page
 - [x] Dark theme consistent with landing page (`#09090b`, glass borders, ambient glow blobs)
 - [x] Linked from landing page navbar, footer, and roadmap showcase section
 
-### Milestone 3: Job Management ✅
+### Milestone 3: Job Management âœ…
 
 Full CRUD for jobs with status workflow.
 
-- [x] API: `GET /api/jobs` — list jobs (org-scoped)
-- [x] API: `POST /api/jobs` — create job
-- [x] API: `GET /api/jobs/:id` — job detail
-- [x] API: `PATCH /api/jobs/:id` — update job
-- [x] API: `DELETE /api/jobs/:id` — delete/archive job
-- [x] Composable: `useJobs()` — list + mutations
-- [x] Composable: `useJob(id)` — single job + mutations
+- [x] API: `GET /api/jobs` â€” list jobs (org-scoped)
+- [x] API: `POST /api/jobs` â€” create job
+- [x] API: `GET /api/jobs/:id` â€” job detail
+- [x] API: `PATCH /api/jobs/:id` â€” update job
+- [x] API: `DELETE /api/jobs/:id` â€” delete/archive job
+- [x] Composable: `useJobs()` â€” list + mutations
+- [x] Composable: `useJob(id)` â€” single job + mutations
 - [x] Page: Jobs list (`app/pages/dashboard/jobs/index.vue`)
 - [x] Page: Job detail/edit (`app/pages/dashboard/jobs/[id].vue`)
 - [x] Page: Job creation form (`app/pages/dashboard/jobs/new.vue`)
-- [x] Job status transitions UI (draft → open → closed → archived)
+- [x] Job status transitions UI (draft â†’ open â†’ closed â†’ archived)
 - [x] Shared Zod validation schemas (`server/utils/schemas/job.ts`)
 - [x] Sidebar Jobs link enabled
 
-### Milestone 4: Candidate Management ✅
+### Milestone 4: Candidate Management âœ…
 
 Full CRUD for candidates with deduplication.
 
-- [x] API: `GET /api/candidates` — list candidates (org-scoped)
-- [x] API: `POST /api/candidates` — create candidate (dedupe by email)
-- [x] API: `GET /api/candidates/:id` — candidate detail
-- [x] API: `PATCH /api/candidates/:id` — update candidate
-- [x] API: `DELETE /api/candidates/:id` — delete candidate
+- [x] API: `GET /api/candidates` â€” list candidates (org-scoped)
+- [x] API: `POST /api/candidates` â€” create candidate (dedupe by email)
+- [x] API: `GET /api/candidates/:id` â€” candidate detail
+- [x] API: `PATCH /api/candidates/:id` â€” update candidate
+- [x] API: `DELETE /api/candidates/:id` â€” delete candidate
 - [x] Composable: `useCandidates()` and `useCandidate(id)`
 - [x] Page: Candidates list
 - [x] Page: Candidate detail (with applications & documents tabs)
 - [x] Page: Candidate creation form
 
-### Milestone 5: Applications & Pipeline ✅
+### Milestone 5: Applications & Pipeline âœ…
 
 Link candidates to jobs, track through hiring stages.
 
-- [x] API: `GET /api/applications` — list (filterable by job, status, candidate)
-- [x] API: `POST /api/applications` — create (link candidate → job)
-- [x] API: `GET /api/applications/:id` — application detail with candidate, job, and question responses
-- [x] API: `PATCH /api/applications/:id` — update status (with transition validation), notes, score
-- [x] Composable: `useApplications(filters)` — list + create mutation
-- [x] Composable: `useApplication(id)` — detail + update mutation
+- [x] API: `GET /api/applications` â€” list (filterable by job, status, candidate)
+- [x] API: `POST /api/applications` â€” create (link candidate â†’ job)
+- [x] API: `GET /api/applications/:id` â€” application detail with candidate, job, and question responses
+- [x] API: `PATCH /api/applications/:id` â€” update status (with transition validation), notes, score
+- [x] Composable: `useApplications(filters)` â€” list + create mutation
+- [x] Composable: `useApplication(id)` â€” detail + update mutation
 - [x] Zod validation schemas (`server/utils/schemas/application.ts`)
 - [x] Status transition validation (define allowed transitions)
 - [x] Unique constraint on `(organizationId, candidateId, jobId)` to prevent duplicate applications
@@ -136,23 +136,23 @@ Link candidates to jobs, track through hiring stages.
 - [x] Sidebar Applications link enabled
 - [x] Public apply endpoint duplicate application check
 - [x] Job detail page restructured to `[id]/index.vue` for nested pipeline route
-- [x] Candidates table view per job (`app/pages/dashboard/jobs/[id]/candidates.vue`) — Supabase-style data table with click-to-open detail sidebar
-- [x] Candidate detail sidebar component (`app/components/CandidateDetailSidebar.vue`) — slide-over panel with status transitions, notes, question responses
+- [x] Candidates table view per job (`app/pages/dashboard/jobs/[id]/candidates.vue`) â€” Supabase-style data table with click-to-open detail sidebar
+- [x] Candidate detail sidebar component (`app/components/CandidateDetailSidebar.vue`) â€” slide-over panel with status transitions, notes, question responses
 - [x] Sidebar "Candidates" tab in job context sub-nav
 
-### Milestone 6: Document Storage ✅
+### Milestone 6: Document Storage âœ…
 
 Upload and manage resumes/cover letters via MinIO.
 
 - [x] MinIO S3 client utility (`server/utils/s3.ts`)
-- [x] API: `POST /api/candidates/:id/documents` — upload (multipart/form-data → MinIO)
-- [x] API: `GET /api/documents/:id/download` — download (server-proxied streaming)
-- [x] API: `GET /api/documents/:id/preview` — inline PDF preview (server-proxied streaming, same-origin iframe)
-- [x] API: `DELETE /api/documents/:id` — delete (MinIO + DB)
+- [x] API: `POST /api/candidates/:id/documents` â€” upload (multipart/form-data â†’ MinIO)
+- [x] API: `GET /api/documents/:id/download` â€” download (server-proxied streaming)
+- [x] API: `GET /api/documents/:id/preview` â€” inline PDF preview (server-proxied streaming, same-origin iframe)
+- [x] API: `DELETE /api/documents/:id` â€” delete (MinIO + DB)
 - [x] Resume upload component on candidate detail page
 - [x] Document list on candidate detail page
 - [x] Inline PDF preview in candidate detail sidebar and candidate page
-- [x] Composable: `useDocuments()` — upload, download, preview URL, delete
+- [x] Composable: `useDocuments()` â€” upload, download, preview URL, delete
 - [x] Security: private S3 bucket policy enforced on startup
 - [x] Security: filename sanitization (`sanitizeFilename`) for all uploads
 - [x] Security: per-candidate document limit (20) enforced on public apply
@@ -164,25 +164,25 @@ Upload and manage resumes/cover letters via MinIO.
 
 Public-facing pages where applicants can discover open jobs and submit applications.
 
-#### Sub-milestone 7a: Custom Application Forms & Public Submission ✅
+#### Sub-milestone 7a: Custom Application Forms & Public Submission âœ…
 
 Recruiters can configure custom questions per job. Applicants can apply through a public form.
 
 - [x] Schema: `jobQuestion` and `questionResponse` tables with `question_type` enum
-- [x] API: `GET /api/jobs/:id/questions` — list custom questions (org-scoped)
-- [x] API: `POST /api/jobs/:id/questions` — add question to a job
-- [x] API: `PATCH /api/jobs/:id/questions/:questionId` — update question
-- [x] API: `DELETE /api/jobs/:id/questions/:questionId` — delete question
-- [x] API: `PUT /api/jobs/:id/questions/reorder` — bulk reorder questions
-- [x] API: `GET /api/public/jobs/:slug` — public job detail + custom questions (no auth)
-- [x] API: `POST /api/public/jobs/:slug/apply` — public application submission (no auth)
+- [x] API: `GET /api/jobs/:id/questions` â€” list custom questions (org-scoped)
+- [x] API: `POST /api/jobs/:id/questions` â€” add question to a job
+- [x] API: `PATCH /api/jobs/:id/questions/:questionId` â€” update question
+- [x] API: `DELETE /api/jobs/:id/questions/:questionId` â€” delete question
+- [x] API: `PUT /api/jobs/:id/questions/reorder` â€” bulk reorder questions
+- [x] API: `GET /api/public/jobs/:slug` â€” public job detail + custom questions (no auth)
+- [x] API: `POST /api/public/jobs/:slug/apply` â€” public application submission (no auth)
 - [x] Candidate auto-creation with email deduplication on submission
-- [x] Application record creation linking candidate → job
+- [x] Application record creation linking candidate â†’ job
 - [x] Question response storage per application
-- [x] Composable: `useJobQuestions()` — CRUD for questions
-- [x] Component: `QuestionForm.vue` — create/edit question form
-- [x] Component: `JobQuestions.vue` — question list manager with reorder
-- [x] Component: `DynamicField.vue` — renders questions as form fields (9 types incl. file upload)
+- [x] Composable: `useJobQuestions()` â€” CRUD for questions
+- [x] Component: `QuestionForm.vue` â€” create/edit question form
+- [x] Component: `JobQuestions.vue` â€” question list manager with reorder
+- [x] Component: `DynamicField.vue` â€” renders questions as form fields (9 types incl. file upload)
 - [x] Integration: Application Form section on job detail page
 - [x] Shareable application link (shown when job status is `open`)
 - [x] Page: Public application form (`app/pages/jobs/[slug]/apply.vue`)
@@ -190,48 +190,48 @@ Recruiters can configure custom questions per job. Applicants can apply through 
 - [x] Layout: Public layout for unauthenticated pages (`app/layouts/public.vue`)
 - [x] Anti-spam: honeypot field on submission form
 - [x] Zod validation schemas for questions and public applications
-- [x] Application Form tab page (`app/pages/dashboard/jobs/[id]/application-form.vue`) — dedicated page for questions + shareable link
+- [x] Application Form tab page (`app/pages/dashboard/jobs/[id]/application-form.vue`) â€” dedicated page for questions + shareable link
 - [x] Dynamic sidebar tabs for job sub-pages (Overview, Pipeline, Application Form)
-- [x] `file_upload` question type — recruiters can add file upload fields to application forms
+- [x] `file_upload` question type â€” recruiters can add file upload fields to application forms
 - [x] Public apply endpoint: multipart/form-data support with S3 upload and magic byte MIME validation
 
-#### Sub-milestone 7b: Public Job Board ✅
+#### Sub-milestone 7b: Public Job Board âœ…
 
-- [x] Public job listing page — browse open jobs, no auth required (`app/pages/jobs/index.vue`)
-- [x] Public job detail page — view description, requirements, location (`app/pages/jobs/[slug]/index.vue`)
-- [x] API: `GET /api/public/jobs` — list open jobs (no auth)
+- [x] Public job listing page â€” browse open jobs, no auth required (`app/pages/jobs/index.vue`)
+- [x] Public job detail page â€” view description, requirements, location (`app/pages/jobs/[slug]/index.vue`)
+- [x] API: `GET /api/public/jobs` â€” list open jobs (no auth)
 - [x] SEO-friendly slug-based URLs for public job pages (e.g. `/jobs/senior-engineer-a1b2c3d4`)
-- [x] Custom slug support — recruiters can set a custom slug, defaults to job title
+- [x] Custom slug support â€” recruiters can set a custom slug, defaults to job title
 - [x] Slug auto-generated from title + short UUID on job creation, regenerated on title/slug update
 - [x] Resume file upload to MinIO during submission (depends on Milestone 6)
 - [x] IP-based rate limiting on public submission endpoint (`server/utils/rateLimit.ts`)
 
-### Milestone 8: Dashboard ✅
+### Milestone 8: Dashboard âœ…
 
 At-a-glance overview for recruiters.
 
-- [x] Dashboard API: `GET /api/dashboard/stats` — aggregated stats (open jobs, candidates, apps, unreviewed), pipeline breakdown, jobs by status, recent applications, top active jobs — all org-scoped
-- [x] Composable: `useDashboard()` — wraps stats endpoint with computed unwrappers
-- [x] Dashboard page with stat cards (Open Jobs, Candidates, Applications, Unreviewed) — clickable, navigate to filtered list views
-- [x] Pipeline overview widget — stacked bar chart with color-coded status segments and legend
-- [x] Jobs by status widget — counts per status (draft, open, closed, archived)
-- [x] Recent applications widget — last 10 with candidate name, job title, status badge, relative time
-- [x] Top active jobs widget — top 5 open jobs by application count with new/unreviewed badges
+- [x] Dashboard API: `GET /api/dashboard/stats` â€” aggregated stats (open jobs, candidates, apps, unreviewed), pipeline breakdown, jobs by status, recent applications, top active jobs â€” all org-scoped
+- [x] Composable: `useDashboard()` â€” wraps stats endpoint with computed unwrappers
+- [x] Dashboard page with stat cards (Open Jobs, Candidates, Applications, Unreviewed) â€” clickable, navigate to filtered list views
+- [x] Pipeline overview widget â€” stacked bar chart with color-coded status segments and legend
+- [x] Jobs by status widget â€” counts per status (draft, open, closed, archived)
+- [x] Recent applications widget â€” last 10 with candidate name, job title, status badge, relative time
+- [x] Top active jobs widget â€” top 5 open jobs by application count with new/unreviewed badges
 - [x] "Create Job" and "Add Candidate" quick actions in header
 - [x] Welcome empty state for new orgs with CTA to create first job
 - [x] Loading skeleton states for all widgets
-- [x] Responsive layout (1-col mobile → 4-col desktop)
+- [x] Responsive layout (1-col mobile â†’ 4-col desktop)
 
 ---
 
 ## Phase 2: Intelligence
 
-Goal: AI helps recruiters find the best candidates — transparently.
+Goal: AI helps recruiters find the best candidates â€” transparently.
 
 ### Milestone 9: Resume Parsing
 
 - [ ] PDF text extraction service
-- [ ] Structured data extraction (contact, experience, education, skills → JSON)
+- [ ] Structured data extraction (contact, experience, education, skills â†’ JSON)
 - [ ] Store parsed output in `document.parsedContent`
 - [ ] Display parsed resume on candidate detail page
 - [ ] Auto-fill candidate fields from parsed resume
@@ -239,8 +239,8 @@ Goal: AI helps recruiters find the best candidates — transparently.
 ### Milestone 10: AI Candidate Ranking
 
 - [ ] Ranking criteria schema (configurable per job)
-- [ ] AI matching engine (job requirements ↔ candidate skills)
-- [ ] Matching Logic summary — visible explanation per candidate
+- [ ] AI matching engine (job requirements â†” candidate skills)
+- [ ] Matching Logic summary â€” visible explanation per candidate
 - [ ] Highlighted skill matches on candidate cards
 - [ ] Sort/filter by AI score
 - [ ] Local AI via Ollama as alternative to cloud
@@ -271,36 +271,36 @@ Goal: Ready for real teams to self-host in production.
 
 ### Milestone 13: Hardening
 
-- [x] Production deployment — Railway (managed Nuxt service, Railway PostgreSQL, Railway Storage Buckets)
-- [x] HTTPS/TLS — Railway auto-TLS + Cloudflare CDN (Full strict SSL)
-- [x] DNS + CDN — Cloudflare Free plan with DDoS protection and AI bot blocking
+- [x] Production deployment â€” Railway (managed Nuxt service, Railway PostgreSQL, Railway Storage Buckets)
+- [x] HTTPS/TLS â€” Railway auto-TLS + Cloudflare CDN (Full strict SSL)
+- [x] DNS + CDN â€” Cloudflare Free plan with DDoS protection and AI bot blocking
 - [ ] Backup & restore (Postgres + S3 bucket)
-- [x] Rate limiting — in-memory sliding window (`server/utils/rateLimit.ts`), applied to public apply endpoint
-- [x] Global security headers — `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-XSS-Protection`, `Permissions-Policy` via Nitro route rules
+- [x] Rate limiting â€” in-memory sliding window (`server/utils/rateLimit.ts`), applied to public apply endpoint
+- [x] Global security headers â€” `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `X-XSS-Protection`, `Permissions-Policy` via Nitro route rules
 - [x] Private S3 bucket policy enforcement on startup (deny anonymous access)
 - [x] Filename sanitization for all document uploads
 - [x] Docker Compose ports bound to `127.0.0.1` (not exposed to network)
 - [x] Server-proxied document access (no presigned URLs exposed to clients)
-- [x] In-app feedback — floating button in dashboard creates GitHub Issues for bug reports and feature requests, with per-user rate limiting and server-side GitHub PAT (`server/api/feedback.post.ts`, `FeedbackButton.vue`, `FeedbackModal.vue`)
+- [x] In-app feedback â€” floating button in dashboard creates GitHub Issues for bug reports and feature requests, with per-user rate limiting and server-side GitHub PAT (`server/api/feedback.post.ts`, `FeedbackButton.vue`, `FeedbackModal.vue`)
 - [ ] GDPR data export & deletion
 - [ ] Test suite (API + E2E)
 - [ ] CI/CD pipeline
 - [ ] README rewrite with screenshots
 
-### Milestone 14: Organic SEO ✅
+### Milestone 14: Organic SEO âœ…
 
-- [x] `@nuxtjs/seo` integration — Sitemap, Robots, Schema.org, SEO Utils, Site Config
-- [x] `@nuxt/content` v3 — Markdown blog engine with typed collections
-- [x] Dynamic sitemap — auto-includes all open job postings (`/api/__sitemap__/urls`)
-- [x] Robots — block `/dashboard/`, `/auth/`, `/api/`, `/onboarding/` from crawling
+- [x] `@nuxtjs/seo` integration â€” Sitemap, Robots, Schema.org, SEO Utils, Site Config
+- [x] `@nuxt/content` v3 â€” Markdown blog engine with typed collections
+- [x] Dynamic sitemap â€” auto-includes all open job postings (`/api/__sitemap__/urls`)
+- [x] Robots â€” block `/dashboard/`, `/auth/`, `/api/`, `/onboarding/` from crawling
 - [x] JSON-LD `JobPosting` schema on public job detail page (title, salary, location, remote, employment type)
 - [x] JSON-LD `Organization` + `WebSite` + `WebPage` on landing page
 - [x] JSON-LD `Article` schema on blog posts
-- [x] Job schema SEO fields — `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit`, `remoteStatus`, `validThrough`
+- [x] Job schema SEO fields â€” `salaryMin`, `salaryMax`, `salaryCurrency`, `salaryUnit`, `remoteStatus`, `validThrough`
 - [x] Public API exposes organization name for job listings (for `hiringOrganization` in JSON-LD)
 - [x] Full OG + Twitter Card meta on all public pages (landing, job board, job detail, roadmap, blog)
 - [x] `noindex` on private pages (auth, onboarding, apply form, confirmation)
-- [x] ISR route rules — `/jobs/**` (3600s), prerender `/`, `/roadmap`, `/blog/**`
+- [x] ISR route rules â€” `/jobs/**` (3600s), prerender `/`, `/roadmap`, `/blog/**`
 - [x] Landing page H1 + copy optimized for "open source ATS" / "applicant tracking system" keywords
 - [x] Blog seed article: "Self-Hosted vs Cloud ATS: Pros, Cons, and When to Switch"
 - [x] Blog listing + detail pages with dark theme, navigation links
@@ -335,3 +335,4 @@ Goal: Ready for real teams to self-host in production.
 **As AI**: Read this file to understand what's implemented and what isn't. Don't rebuild completed work. Follow the dependency order (milestones are ordered by dependency).
 
 **As a contributor**: Pick any unchecked task from the current focus milestone. Open an issue or PR referencing the task.
+

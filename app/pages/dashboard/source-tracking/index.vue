@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import {
   Radio, ArrowRight, TrendingUp, Link2, Globe,
   BarChart3, Users, ExternalLink, Plus, AlertCircle,
@@ -14,7 +14,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Source Tracking — Reqcore',
+  title: 'Source Tracking â€” WWMate',
   description: 'Track where your applications come from',
 })
 
@@ -25,9 +25,9 @@ const { formatPersonName } = useOrgSettings()
 
 onMounted(() => track('source_tracking_viewed'))
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // State
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const route = useRoute()
 
@@ -44,9 +44,9 @@ const dateFrom = computed(() => {
   return d.toISOString()
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Fetch data
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const {
   channelBreakdown,
@@ -85,9 +85,9 @@ const jobs = computed(() => (jobsData.value as any)?.data ?? [])
 
 const { allowed: canManageLinks } = usePermission({ sourceTracking: ['create'] })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Create link modal
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const showCreateModal = ref(false)
 const isCreating = ref(false)
@@ -122,9 +122,9 @@ async function handleCreateLink() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Delete confirmation
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const deletingId = ref<string | null>(null)
 const showDeleteConfirm = ref(false)
@@ -147,9 +147,9 @@ async function handleDelete() {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Link URL builder
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const requestUrl = useRequestURL()
 function buildTrackingUrl(code: string): string {
@@ -168,9 +168,9 @@ async function copyTrackingUrl(code: string) {
   }
 }
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const channelLabels: Record<string, string> = {
   linkedin: 'LinkedIn',
@@ -295,9 +295,9 @@ const filteredAttributed = computed(() => {
   return recentAttributed.value.filter(a => a.channel === selectedChannel.value)
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Tracking links table sorting
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type LinkSortKey = 'name' | 'channel' | 'clickCount' | 'applicationCount' | 'cvr' | 'isActive'
 const linkSortKey = ref<LinkSortKey>('clickCount')
@@ -352,7 +352,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
 
 <template>
   <div class="mx-auto max-w-6xl">
-    <!-- ─── Loading skeleton ─── -->
+    <!-- â”€â”€â”€ Loading skeleton â”€â”€â”€ -->
     <div v-if="statsStatus === 'pending'">
       <div class="mb-10">
         <div class="h-8 w-56 bg-surface-200 dark:bg-surface-700 rounded-lg animate-pulse mb-2" />
@@ -380,7 +380,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
       </div>
     </div>
 
-    <!-- ─── Error ─── -->
+    <!-- â”€â”€â”€ Error â”€â”€â”€ -->
     <div
       v-else-if="statsError"
       class="rounded-2xl border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950/60 p-5 text-sm text-danger-700 dark:text-danger-400 flex items-center gap-3"
@@ -390,9 +390,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
       <button class="underline ml-auto font-medium cursor-pointer" @click="refreshStats()">Retry</button>
     </div>
 
-    <!-- ─── Main content ─── -->
+    <!-- â”€â”€â”€ Main content â”€â”€â”€ -->
     <template v-else>
-      <!-- ─── Header ─── -->
+      <!-- â”€â”€â”€ Header â”€â”€â”€ -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-10">
         <div>
           <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-50 tracking-tight">Source Tracking</h1>
@@ -440,7 +440,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
         </div>
       </div>
 
-      <!-- ─── Tab navigation ─── -->
+      <!-- â”€â”€â”€ Tab navigation â”€â”€â”€ -->
       <div class="flex items-center gap-1 mb-6 border-b border-surface-200 dark:border-surface-800">
         <button
           v-for="tab in [
@@ -469,11 +469,11 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
         </button>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- TAB: Overview                           -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div v-if="showTab === 'overview'">
-        <!-- ─── Stat cards ─── -->
+        <!-- â”€â”€â”€ Stat cards â”€â”€â”€ -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-10">
           <!-- Tracked Applications -->
           <div class="group relative rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 overflow-hidden isolate ring-1 ring-surface-950/[0.04] dark:ring-white/[0.06] hover:ring-brand-500/25 dark:hover:ring-brand-400/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-500/[0.08]">
@@ -560,9 +560,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
           </div>
         </div>
 
-        <!-- ─── Main layout ─── -->
+        <!-- â”€â”€â”€ Main layout â”€â”€â”€ -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- ─── Left (2/3): Channel breakdown ─── -->
+          <!-- â”€â”€â”€ Left (2/3): Channel breakdown â”€â”€â”€ -->
           <div class="lg:col-span-2 space-y-6">
             <!-- Channel breakdown -->
             <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
@@ -620,7 +620,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
               </div>
             </div>
 
-            <!-- ─── Conversion funnel by source ─── -->
+            <!-- â”€â”€â”€ Conversion funnel by source â”€â”€â”€ -->
             <div
               v-if="Object.keys(funnel).length > 0"
               class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none"
@@ -684,7 +684,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
             </div>
           </div>
 
-          <!-- ─── Right (1/3): Side panels ─── -->
+          <!-- â”€â”€â”€ Right (1/3): Side panels â”€â”€â”€ -->
           <div class="space-y-6">
             <!-- Top tracking links -->
             <div class="rounded-2xl border border-surface-200/80 dark:border-surface-800 bg-white dark:bg-surface-900 overflow-hidden shadow-xs dark:shadow-none">
@@ -832,9 +832,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- TAB: Tracking Links                     -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div v-if="showTab === 'links'">
         <div v-if="links.length === 0" class="flex flex-col items-center justify-center py-20">
           <div class="rounded-3xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-14 text-center max-w-md shadow-sm">
@@ -923,7 +923,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
                   <!-- CVR -->
                   <td class="px-4 py-3.5 text-center">
                     <span class="tabular-nums font-bold" :class="link.clickCount > 0 && link.applicationCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-surface-400'">
-                      {{ link.clickCount > 0 ? `${Math.round((link.applicationCount / link.clickCount) * 100)}%` : '—' }}
+                      {{ link.clickCount > 0 ? `${Math.round((link.applicationCount / link.clickCount) * 100)}%` : 'â€”' }}
                     </span>
                   </td>
                   <!-- Status -->
@@ -976,9 +976,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <!-- TAB: Attribution Log                    -->
-      <!-- ═══════════════════════════════════════ -->
+      <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
       <div v-if="showTab === 'table'">
         <!-- Channel filter chip -->
         <div v-if="selectedChannel" class="mb-4 flex items-center gap-2">
@@ -1062,7 +1062,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
                   </td>
                   <!-- Campaign -->
                   <td class="px-4 py-3.5 text-xs text-surface-500 dark:text-surface-400 truncate max-w-[120px]">
-                    {{ app.utmCampaign ?? '—' }}
+                    {{ app.utmCampaign ?? 'â€”' }}
                   </td>
                   <!-- Status -->
                   <td class="px-4 py-3.5 text-center">
@@ -1085,9 +1085,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
       </div>
     </template>
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Modal: Create tracking link             -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <Teleport to="body">
       <div v-if="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showCreateModal = false" />
@@ -1186,7 +1186,7 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
                 :disabled="!newLink.name.trim() || isCreating"
                 class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 shadow-sm shadow-brand-600/15 transition-all"
               >
-                {{ isCreating ? 'Creating…' : 'Create Link' }}
+                {{ isCreating ? 'Creatingâ€¦' : 'Create Link' }}
               </button>
             </div>
           </form>
@@ -1194,9 +1194,9 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
       </div>
     </Teleport>
 
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <!-- Modal: Delete confirmation               -->
-    <!-- ═══════════════════════════════════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <Teleport to="body">
       <div v-if="showDeleteConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="showDeleteConfirm = false" />
@@ -1227,3 +1227,4 @@ const showTab = ref<'overview' | 'links' | 'table'>(initialTab)
     </Teleport>
   </div>
 </template>
+

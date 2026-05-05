@@ -1,12 +1,12 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
 });
 
 useSeoMeta({
-    title: "Sign Up — Reqcore",
-    description: "Create your Reqcore account",
+    title: "Sign Up â€” WWMate",
+    description: "Create your WWMate account",
     robots: "noindex, nofollow",
 });
 
@@ -119,7 +119,7 @@ async function handleSsoSignUp() {
 }
 
 /**
- * Social sign-up — Google, GitHub, Microsoft.
+ * Social sign-up â€” Google, GitHub, Microsoft.
  * Uses better-auth's built-in signIn.social() which handles the full OAuth redirect flow.
  * New users are auto-registered on first social login.
  */
@@ -172,7 +172,7 @@ async function handleSocialSignUp(providerId: string) {
                 >
                     <template v-if="socialLoading === provider.id">
                         <svg class="animate-spin size-4 text-surface-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                        Redirecting…
+                        Redirectingâ€¦
                     </template>
                     <template v-else>
                         <!-- Google icon -->
@@ -208,7 +208,7 @@ async function handleSocialSignUp(providerId: string) {
             </div>
         </template>
 
-        <!-- SSO sign-up — only shown when OIDC is configured via environment variables -->
+        <!-- SSO sign-up â€” only shown when OIDC is configured via environment variables -->
         <template v-if="oidcEnabled">
             <button
                 type="button"
@@ -216,7 +216,7 @@ async function handleSocialSignUp(providerId: string) {
                 class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium cursor-pointer hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 @click="handleSsoSignUp"
             >
-                <template v-if="isLoading">Redirecting…</template>
+                <template v-if="isLoading">Redirectingâ€¦</template>
                 <template v-else>
                     Sign up with {{ oidcProviderName }}
                     <span class="inline-flex items-center rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-200">Beta</span>
@@ -296,7 +296,7 @@ async function handleSocialSignUp(providerId: string) {
             :disabled="isLoading"
             class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-            {{ isLoading ? "Creating account…" : "Sign up" }}
+            {{ isLoading ? "Creating accountâ€¦" : "Sign up" }}
         </button>
 
         <p class="text-center text-sm text-surface-500 dark:text-surface-400">
@@ -316,3 +316,4 @@ async function handleSocialSignUp(providerId: string) {
         </p>
     </form>
 </template>
+

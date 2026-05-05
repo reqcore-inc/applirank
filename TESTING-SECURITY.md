@@ -1,6 +1,6 @@
-# Testing & Security Plan — Team Collaboration Features
+﻿# Testing & Security Plan â€” Team Collaboration Features
 
-> Threat model, vulnerability analysis, and comprehensive test plan for the RBAC, comments, activity log, and organization features in Reqcore.
+> Threat model, vulnerability analysis, and comprehensive test plan for the RBAC, comments, activity log, and organization features in WWMate.
 
 ---
 
@@ -10,9 +10,9 @@
 2. [Authentication Vulnerabilities](#2-authentication-vulnerabilities)
 3. [Authorization & RBAC Vulnerabilities](#3-authorization--rbac-vulnerabilities)
 4. [Organization Isolation Vulnerabilities](#4-organization-isolation-vulnerabilities)
-5. [Comments — Attack Surface](#5-comments--attack-surface)
-6. [Activity Log — Attack Surface](#6-activity-log--attack-surface)
-7. [Invitation System — Attack Surface](#7-invitation-system--attack-surface)
+5. [Comments â€” Attack Surface](#5-comments--attack-surface)
+6. [Activity Log â€” Attack Surface](#6-activity-log--attack-surface)
+7. [Invitation System â€” Attack Surface](#7-invitation-system--attack-surface)
 8. [Input Validation Vulnerabilities](#8-input-validation-vulnerabilities)
 9. [Rate Limiting & Denial of Service](#9-rate-limiting--denial-of-service)
 10. [Data Leakage & Information Disclosure](#10-data-leakage--information-disclosure)
@@ -32,11 +32,11 @@
 |-------|-------------|------------|
 | **Unauthenticated attacker** | No account. Probing endpoints. | Data theft, enumeration, denial of service. |
 | **Authenticated user (no org)** | Has an account but hasn't created or joined an organization. | Bypass org requirement, access other users' data. |
-| **Member** | Lowest-privilege org role. | Privilege escalation — try to create/delete jobs, delete comments or candidates they shouldn't touch. |
+| **Member** | Lowest-privilege org role. | Privilege escalation â€” try to create/delete jobs, delete comments or candidates they shouldn't touch. |
 | **Admin** | Mid-privilege. | Escalate to owner, delete org, access other orgs. |
 | **Owner** | Full privilege in their org. | Access other organizations' data (cross-tenant). |
-| **Former member** | Was removed from org but still authenticated. | Stale session — access data after removal. |
-| **Multi-org user** | Belongs to Org A and Org B. | Cross-tenant access — use Org A session to read Org B data. |
+| **Former member** | Was removed from org but still authenticated. | Stale session â€” access data after removal. |
+| **Multi-org user** | Belongs to Org A and Org B. | Cross-tenant access â€” use Org A session to read Org B data. |
 
 ### Assets to Protect
 
@@ -45,7 +45,7 @@
 | Candidate PII (name, email, phone) | Privacy violation, legal liability (GDPR). |
 | Job postings (draft/unpublished) | Competitive intelligence leak. |
 | Internal comments | Reputational damage, legal exposure. |
-| Activity log | Audit integrity — if tampered, incident response fails. |
+| Activity log | Audit integrity â€” if tampered, incident response fails. |
 | Organization membership | Unauthorized access to all org data. |
 | Invitation tokens | Account takeover of invited users. |
 
@@ -60,36 +60,36 @@
 **How to test:**
 
 ```
-TEST-AUTH-001: Hit every API route without a session cookie → expect 401 on all.
+TEST-AUTH-001: Hit every API route without a session cookie â†’ expect 401 on all.
 ```
 
 | # | Test Case | Method | URL | Expected |
 |---|-----------|--------|-----|----------|
-| A001 | No cookie — list jobs | GET | `/api/jobs` | 401 |
-| A002 | No cookie — create job | POST | `/api/jobs` | 401 |
-| A003 | No cookie — list comments | GET | `/api/comments?targetType=job&targetId=<uuid>` | 401 |
-| A004 | No cookie — create comment | POST | `/api/comments` | 401 |
-| A005 | No cookie — update comment | PATCH | `/api/comments/<uuid>` | 401 |
-| A006 | No cookie — delete comment | DELETE | `/api/comments/<uuid>` | 401 |
-| A007 | No cookie — list activity | GET | `/api/activity-log` | 401 |
-| A008 | No cookie — list candidates | GET | `/api/candidates` | 401 |
-| A009 | No cookie — create candidate | POST | `/api/candidates` | 401 |
-| A010 | No cookie — list applications | GET | `/api/applications` | 401 |
-| A011 | No cookie — create application | POST | `/api/applications` | 401 |
-| A012 | No cookie — dashboard stats | GET | `/api/dashboard/stats` | 401 |
-| A013 | No cookie — upload document | POST | `/api/candidates/<uuid>/documents` | 401 |
-| A014 | No cookie — delete document | DELETE | `/api/documents/<uuid>` | 401 |
-| A015 | No cookie — download document | GET | `/api/documents/<uuid>/download` | 401 |
-| A016 | No cookie — preview document | GET | `/api/documents/<uuid>/preview` | 401 |
+| A001 | No cookie â€” list jobs | GET | `/api/jobs` | 401 |
+| A002 | No cookie â€” create job | POST | `/api/jobs` | 401 |
+| A003 | No cookie â€” list comments | GET | `/api/comments?targetType=job&targetId=<uuid>` | 401 |
+| A004 | No cookie â€” create comment | POST | `/api/comments` | 401 |
+| A005 | No cookie â€” update comment | PATCH | `/api/comments/<uuid>` | 401 |
+| A006 | No cookie â€” delete comment | DELETE | `/api/comments/<uuid>` | 401 |
+| A007 | No cookie â€” list activity | GET | `/api/activity-log` | 401 |
+| A008 | No cookie â€” list candidates | GET | `/api/candidates` | 401 |
+| A009 | No cookie â€” create candidate | POST | `/api/candidates` | 401 |
+| A010 | No cookie â€” list applications | GET | `/api/applications` | 401 |
+| A011 | No cookie â€” create application | POST | `/api/applications` | 401 |
+| A012 | No cookie â€” dashboard stats | GET | `/api/dashboard/stats` | 401 |
+| A013 | No cookie â€” upload document | POST | `/api/candidates/<uuid>/documents` | 401 |
+| A014 | No cookie â€” delete document | DELETE | `/api/documents/<uuid>` | 401 |
+| A015 | No cookie â€” download document | GET | `/api/documents/<uuid>/download` | 401 |
+| A016 | No cookie â€” preview document | GET | `/api/documents/<uuid>/preview` | 401 |
 
 ### 2.2 Invalid/expired session
 
 **What could go wrong:** A tampered or expired session cookie is accepted.
 
 ```
-TEST-AUTH-002: Send a request with a garbage session cookie → expect 401.
-TEST-AUTH-003: Send a request with an expired session → expect 401.
-TEST-AUTH-004: Log out, then reuse the old session cookie → expect 401.
+TEST-AUTH-002: Send a request with a garbage session cookie â†’ expect 401.
+TEST-AUTH-003: Send a request with an expired session â†’ expect 401.
+TEST-AUTH-004: Log out, then reuse the old session cookie â†’ expect 401.
 ```
 
 ### 2.3 Session after org removal
@@ -98,7 +98,7 @@ TEST-AUTH-004: Log out, then reuse the old session cookie → expect 401.
 
 ```
 TEST-AUTH-005: Remove a member from Org A. Before they refresh their session,
-              send a request with their old session → expect 403.
+              send a request with their old session â†’ expect 403.
               Better Auth's hasPermission should reject because they're no longer a member.
 ```
 
@@ -106,49 +106,49 @@ TEST-AUTH-005: Remove a member from Org A. Before they refresh their session,
 
 ## 3. Authorization & RBAC Vulnerabilities
 
-### 3.1 Privilege escalation — member tries admin/owner actions
+### 3.1 Privilege escalation â€” member tries admin/owner actions
 
 This is the most critical category. Every action that members cannot do must be tested.
 
 ```
-TEST-RBAC-001: Member tries to create a job → expect 403.
-TEST-RBAC-002: Member tries to update a job → expect 403.
-TEST-RBAC-003: Member tries to delete a job → expect 403.
-TEST-RBAC-004: Member tries to delete a candidate → expect 403.
-TEST-RBAC-005: Member tries to delete an application → expect 403.
-TEST-RBAC-006: Member tries to delete a document → expect 403.
-TEST-RBAC-007: Member tries to update a comment → expect 403.
-TEST-RBAC-008: Member tries to delete a comment → expect 403.
-TEST-RBAC-009: Member tries to invite a new member → expect 403.
-TEST-RBAC-010: Member tries to remove a member → expect 403.
-TEST-RBAC-011: Member tries to change a member's role → expect 403.
-TEST-RBAC-012: Member tries to delete the organization → expect 403.
-TEST-RBAC-013: Member tries to update org settings → expect 403.
+TEST-RBAC-001: Member tries to create a job â†’ expect 403.
+TEST-RBAC-002: Member tries to update a job â†’ expect 403.
+TEST-RBAC-003: Member tries to delete a job â†’ expect 403.
+TEST-RBAC-004: Member tries to delete a candidate â†’ expect 403.
+TEST-RBAC-005: Member tries to delete an application â†’ expect 403.
+TEST-RBAC-006: Member tries to delete a document â†’ expect 403.
+TEST-RBAC-007: Member tries to update a comment â†’ expect 403.
+TEST-RBAC-008: Member tries to delete a comment â†’ expect 403.
+TEST-RBAC-009: Member tries to invite a new member â†’ expect 403.
+TEST-RBAC-010: Member tries to remove a member â†’ expect 403.
+TEST-RBAC-011: Member tries to change a member's role â†’ expect 403.
+TEST-RBAC-012: Member tries to delete the organization â†’ expect 403.
+TEST-RBAC-013: Member tries to update org settings â†’ expect 403.
 ```
 
-### 3.2 Privilege escalation — admin tries owner-only actions
+### 3.2 Privilege escalation â€” admin tries owner-only actions
 
 ```
-TEST-RBAC-014: Admin tries to delete the organization → expect 403.
-TEST-RBAC-015: Admin tries to transfer ownership → expect 403.
+TEST-RBAC-014: Admin tries to delete the organization â†’ expect 403.
+TEST-RBAC-015: Admin tries to transfer ownership â†’ expect 403.
 ```
 
 ### 3.3 Positive authorization tests (confirm allowed actions work)
 
 ```
-TEST-RBAC-016: Member can read jobs → expect 200.
-TEST-RBAC-017: Member can create a candidate → expect 201.
-TEST-RBAC-018: Member can read candidates → expect 200.
-TEST-RBAC-019: Member can update a candidate → expect 200.
-TEST-RBAC-020: Member can create an application → expect 201.
-TEST-RBAC-021: Member can update an application → expect 200.
-TEST-RBAC-022: Member can create a comment → expect 201.
-TEST-RBAC-023: Member can read comments → expect 200.
-TEST-RBAC-024: Member can read the activity log → expect 200.
-TEST-RBAC-025: Member can upload a document → expect 201.
-TEST-RBAC-026: Member can read/download a document → expect 200.
-TEST-RBAC-027: Admin can do everything a member can, plus create/update/delete jobs → expect 2xx.
-TEST-RBAC-028: Owner can do everything, including org deletion → expect 2xx.
+TEST-RBAC-016: Member can read jobs â†’ expect 200.
+TEST-RBAC-017: Member can create a candidate â†’ expect 201.
+TEST-RBAC-018: Member can read candidates â†’ expect 200.
+TEST-RBAC-019: Member can update a candidate â†’ expect 200.
+TEST-RBAC-020: Member can create an application â†’ expect 201.
+TEST-RBAC-021: Member can update an application â†’ expect 200.
+TEST-RBAC-022: Member can create a comment â†’ expect 201.
+TEST-RBAC-023: Member can read comments â†’ expect 200.
+TEST-RBAC-024: Member can read the activity log â†’ expect 200.
+TEST-RBAC-025: Member can upload a document â†’ expect 201.
+TEST-RBAC-026: Member can read/download a document â†’ expect 200.
+TEST-RBAC-027: Admin can do everything a member can, plus create/update/delete jobs â†’ expect 2xx.
+TEST-RBAC-028: Owner can do everything, including org deletion â†’ expect 2xx.
 ```
 
 ### 3.4 No active organization
@@ -156,7 +156,7 @@ TEST-RBAC-028: Owner can do everything, including org deletion → expect 2xx.
 **What could go wrong:** A user is authenticated but has no `activeOrganizationId` set. They try to access data.
 
 ```
-TEST-RBAC-029: Authenticated user with no active org → hit any API route → expect 403 "No active organization".
+TEST-RBAC-029: Authenticated user with no active org â†’ hit any API route â†’ expect 403 "No active organization".
 ```
 
 ### 3.5 Fabricated permission claims
@@ -166,7 +166,7 @@ TEST-RBAC-029: Authenticated user with no active org → hit any API route → e
 ```
 TEST-RBAC-030: Verify that requirePermission with empty permissions {} still enforces
               authentication and active org checks.
-              (Note: This is a code-level concern — ensure no route accidentally passes {}.)
+              (Note: This is a code-level concern â€” ensure no route accidentally passes {}.)
 ```
 
 ---
@@ -180,13 +180,13 @@ This is the second most critical category. All data is scoped to an organization
 **What could go wrong:** A user in Org A knows the UUID of a resource in Org B. They request it directly.
 
 ```
-TEST-IDOR-001: User in Org A fetches GET /api/jobs/<org-b-job-id> → expect 404 (not 200 with Org B data).
-TEST-IDOR-002: User in Org A fetches GET /api/candidates/<org-b-candidate-id> → expect 404.
-TEST-IDOR-003: User in Org A fetches GET /api/applications/<org-b-application-id> → expect 404.
-TEST-IDOR-004: User in Org A fetches GET /api/documents/<org-b-document-id>/download → expect 404.
-TEST-IDOR-005: User in Org A fetches GET /api/documents/<org-b-document-id>/preview → expect 404.
-TEST-IDOR-006: User in Org A tries PATCH /api/comments/<org-b-comment-id> → expect 404.
-TEST-IDOR-007: User in Org A tries DELETE /api/comments/<org-b-comment-id> → expect 404.
+TEST-IDOR-001: User in Org A fetches GET /api/jobs/<org-b-job-id> â†’ expect 404 (not 200 with Org B data).
+TEST-IDOR-002: User in Org A fetches GET /api/candidates/<org-b-candidate-id> â†’ expect 404.
+TEST-IDOR-003: User in Org A fetches GET /api/applications/<org-b-application-id> â†’ expect 404.
+TEST-IDOR-004: User in Org A fetches GET /api/documents/<org-b-document-id>/download â†’ expect 404.
+TEST-IDOR-005: User in Org A fetches GET /api/documents/<org-b-document-id>/preview â†’ expect 404.
+TEST-IDOR-006: User in Org A tries PATCH /api/comments/<org-b-comment-id> â†’ expect 404.
+TEST-IDOR-007: User in Org A tries DELETE /api/comments/<org-b-comment-id> â†’ expect 404.
 ```
 
 ### 4.2 Cross-tenant list leakage
@@ -194,10 +194,10 @@ TEST-IDOR-007: User in Org A tries DELETE /api/comments/<org-b-comment-id> → e
 **What could go wrong:** A list endpoint doesn't filter by `organizationId` and returns data from all orgs.
 
 ```
-TEST-IDOR-008: Create jobs in Org A and Org B. User in Org A lists jobs → only Org A jobs returned.
-TEST-IDOR-009: Create comments in Org A and Org B on same target type. User in Org A lists comments → only Org A comments.
-TEST-IDOR-010: Create activity in Org A and Org B. User in Org A lists activity → only Org A activity.
-TEST-IDOR-011: Create candidates in Org A and Org B. List in Org A → only Org A candidates.
+TEST-IDOR-008: Create jobs in Org A and Org B. User in Org A lists jobs â†’ only Org A jobs returned.
+TEST-IDOR-009: Create comments in Org A and Org B on same target type. User in Org A lists comments â†’ only Org A comments.
+TEST-IDOR-010: Create activity in Org A and Org B. User in Org A lists activity â†’ only Org A activity.
+TEST-IDOR-011: Create candidates in Org A and Org B. List in Org A â†’ only Org A candidates.
 ```
 
 ### 4.3 Cross-tenant write via request body manipulation
@@ -206,11 +206,11 @@ TEST-IDOR-011: Create candidates in Org A and Org B. List in Org A → only Org 
 
 ```
 TEST-IDOR-012: POST /api/jobs with body { organizationId: "<org-b-id>", title: "Hacked" }
-              → job should be created in Org A (from session), not Org B.
+              â†’ job should be created in Org A (from session), not Org B.
 TEST-IDOR-013: POST /api/comments with body { organizationId: "<org-b-id>", ... }
-              → comment should be created in Org A.
+              â†’ comment should be created in Org A.
 TEST-IDOR-014: POST /api/candidates with body { organizationId: "<org-b-id>", ... }
-              → candidate should be created in Org A.
+              â†’ candidate should be created in Org A.
 ```
 
 ### 4.4 Comment on cross-tenant target
@@ -219,9 +219,9 @@ TEST-IDOR-014: POST /api/candidates with body { organizationId: "<org-b-id>", ..
 
 ```
 TEST-IDOR-015: User in Org A posts comment with targetType=candidate, targetId=<org-b-candidate-id>
-              → expect 404 "candidate not found" (the target existence check filters by orgId).
-TEST-IDOR-016: Same test for targetType=application with Org B application ID → expect 404.
-TEST-IDOR-017: Same test for targetType=job with Org B job ID → expect 404.
+              â†’ expect 404 "candidate not found" (the target existence check filters by orgId).
+TEST-IDOR-016: Same test for targetType=application with Org B application ID â†’ expect 404.
+TEST-IDOR-017: Same test for targetType=job with Org B job ID â†’ expect 404.
 ```
 
 ### 4.5 Activity log cross-tenant resource filter
@@ -230,26 +230,26 @@ TEST-IDOR-017: Same test for targetType=job with Org B job ID → expect 404.
 
 ```
 TEST-IDOR-018: GET /api/activity-log?resourceType=job&resourceId=<org-b-job-id>
-              → expect empty results (not an error that leaks "resource exists in another org").
+              â†’ expect empty results (not an error that leaks "resource exists in another org").
 ```
 
 ---
 
-## 5. Comments — Attack Surface
+## 5. Comments â€” Attack Surface
 
 ### 5.1 Authorization edge cases
 
 ```
-TEST-CMT-001: Member creates a comment → expect 201.
-TEST-CMT-002: Member tries to PATCH their own comment → expect 403 (member role lacks comment:update).
-TEST-CMT-003: Admin edits their OWN comment → expect 200.
-TEST-CMT-004: Admin tries to edit ANOTHER user's comment → expect 403 "You can only edit your own comments".
+TEST-CMT-001: Member creates a comment â†’ expect 201.
+TEST-CMT-002: Member tries to PATCH their own comment â†’ expect 403 (member role lacks comment:update).
+TEST-CMT-003: Admin edits their OWN comment â†’ expect 200.
+TEST-CMT-004: Admin tries to edit ANOTHER user's comment â†’ expect 403 "You can only edit your own comments".
               (This is the authorship check, not the role check.)
-TEST-CMT-005: Owner tries to edit another user's comment → expect 403 "You can only edit your own comments".
-              (Even owners can't edit other people's words — but they CAN delete them.)
-TEST-CMT-006: Admin deletes another user's comment → expect 204 (admin has comment:delete).
-TEST-CMT-007: Owner deletes another user's comment → expect 204.
-TEST-CMT-008: Member tries to delete their own comment → expect 403 (member lacks comment:delete).
+TEST-CMT-005: Owner tries to edit another user's comment â†’ expect 403 "You can only edit your own comments".
+              (Even owners can't edit other people's words â€” but they CAN delete them.)
+TEST-CMT-006: Admin deletes another user's comment â†’ expect 204 (admin has comment:delete).
+TEST-CMT-007: Owner deletes another user's comment â†’ expect 204.
+TEST-CMT-008: Member tries to delete their own comment â†’ expect 403 (member lacks comment:delete).
 ```
 
 ### 5.2 Comment on deleted target
@@ -258,13 +258,13 @@ TEST-CMT-008: Member tries to delete their own comment → expect 403 (member la
 
 ```
 TEST-CMT-009: Delete a candidate. Then POST a comment with targetType=candidate, targetId=<deleted-id>
-             → expect 404 "candidate not found".
+             â†’ expect 404 "candidate not found".
 TEST-CMT-010: Delete a candidate that has comments. GET comments for that target
-             → decide on expected behavior:
+             â†’ decide on expected behavior:
              Option A: return empty (comments cascade-deleted with candidate)
              Option B: return comments (orphaned but still visible)
              NOTE: Currently, comments are NOT cascade-deleted with the target because
-             targetId is not a foreign key — it's a plain text field. This is a design
+             targetId is not a foreign key â€” it's a plain text field. This is a design
              decision to consider. Orphaned comments won't cause errors but may confuse users.
 ```
 
@@ -274,56 +274,56 @@ TEST-CMT-010: Delete a candidate that has comments. GET comments for that target
 
 ```
 TEST-CMT-011: Create comment with HTML: <script>alert('xss')</script>
-             → stored body should contain the raw string (no execution).
-             → when rendered on the client, must be escaped (Vue's {{ }} does this by default).
+             â†’ stored body should contain the raw string (no execution).
+             â†’ when rendered on the client, must be escaped (Vue's {{ }} does this by default).
 TEST-CMT-012: Create comment with SQL injection payload: '; DROP TABLE comment; --
-             → expect 201 (Drizzle uses parameterized queries — payload is stored as literal text).
-TEST-CMT-013: Create comment with 10,000 characters (max allowed) → expect 201.
-TEST-CMT-014: Create comment with 10,001 characters → expect 422 (Zod rejects).
-TEST-CMT-015: Create comment with empty body "" → expect 422 (min 1 char).
-TEST-CMT-016: Create comment with body of only whitespace "   " → expect 201 (currently allowed).
+             â†’ expect 201 (Drizzle uses parameterized queries â€” payload is stored as literal text).
+TEST-CMT-013: Create comment with 10,000 characters (max allowed) â†’ expect 201.
+TEST-CMT-014: Create comment with 10,001 characters â†’ expect 422 (Zod rejects).
+TEST-CMT-015: Create comment with empty body "" â†’ expect 422 (min 1 char).
+TEST-CMT-016: Create comment with body of only whitespace "   " â†’ expect 201 (currently allowed).
              Consider: Should we trim and reject whitespace-only bodies?
-TEST-CMT-017: Create comment with unicode/emoji: "Great candidate! 🎉👍" → expect 201.
-TEST-CMT-018: Create comment with zero-width characters → expect 201 (stored as-is).
+TEST-CMT-017: Create comment with unicode/emoji: "Great candidate! ðŸŽ‰ðŸ‘" â†’ expect 201.
+TEST-CMT-018: Create comment with zero-width characters â†’ expect 201 (stored as-is).
              Consider: Should we strip zero-width characters?
 ```
 
 ### 5.4 Comment ID manipulation
 
 ```
-TEST-CMT-019: PATCH /api/comments/<non-existent-uuid> → expect 404.
-TEST-CMT-020: PATCH /api/comments/not-a-uuid → expect 422 (Zod UUID validation).
-TEST-CMT-021: DELETE /api/comments/<non-existent-uuid> → expect 404.
-TEST-CMT-022: DELETE /api/comments/not-a-uuid → expect 422.
+TEST-CMT-019: PATCH /api/comments/<non-existent-uuid> â†’ expect 404.
+TEST-CMT-020: PATCH /api/comments/not-a-uuid â†’ expect 422 (Zod UUID validation).
+TEST-CMT-021: DELETE /api/comments/<non-existent-uuid> â†’ expect 404.
+TEST-CMT-022: DELETE /api/comments/not-a-uuid â†’ expect 422.
 ```
 
 ### 5.5 Comment pagination edge cases
 
 ```
-TEST-CMT-023: GET /api/comments with page=0 → expect 422 (positive integer required).
-TEST-CMT-024: GET /api/comments with page=-1 → expect 422.
-TEST-CMT-025: GET /api/comments with limit=0 → expect 422 (min 1).
-TEST-CMT-026: GET /api/comments with limit=101 → expect 422 (max 100).
-TEST-CMT-027: GET /api/comments with page=999999 (beyond data) → expect 200 with empty data array and correct total.
-TEST-CMT-028: GET /api/comments without targetType → expect 422.
-TEST-CMT-029: GET /api/comments without targetId → expect 422.
-TEST-CMT-030: GET /api/comments with targetType=invalid → expect 422.
-TEST-CMT-031: GET /api/comments with targetId=not-a-uuid → expect 422.
+TEST-CMT-023: GET /api/comments with page=0 â†’ expect 422 (positive integer required).
+TEST-CMT-024: GET /api/comments with page=-1 â†’ expect 422.
+TEST-CMT-025: GET /api/comments with limit=0 â†’ expect 422 (min 1).
+TEST-CMT-026: GET /api/comments with limit=101 â†’ expect 422 (max 100).
+TEST-CMT-027: GET /api/comments with page=999999 (beyond data) â†’ expect 200 with empty data array and correct total.
+TEST-CMT-028: GET /api/comments without targetType â†’ expect 422.
+TEST-CMT-029: GET /api/comments without targetId â†’ expect 422.
+TEST-CMT-030: GET /api/comments with targetType=invalid â†’ expect 422.
+TEST-CMT-031: GET /api/comments with targetId=not-a-uuid â†’ expect 422.
 ```
 
 ---
 
-## 6. Activity Log — Attack Surface
+## 6. Activity Log â€” Attack Surface
 
 ### 6.1 Immutability
 
 **What could go wrong:** Someone creates, modifies, or deletes activity log entries.
 
 ```
-TEST-ACT-001: Verify there is no POST /api/activity-log endpoint → expect 404 or 405.
-TEST-ACT-002: Verify there is no PATCH /api/activity-log/:id endpoint → expect 404 or 405.
-TEST-ACT-003: Verify there is no DELETE /api/activity-log/:id endpoint → expect 404 or 405.
-TEST-ACT-004: Attempt to POST to /api/activity-log with a valid body → expect 404/405 (no route).
+TEST-ACT-001: Verify there is no POST /api/activity-log endpoint â†’ expect 404 or 405.
+TEST-ACT-002: Verify there is no PATCH /api/activity-log/:id endpoint â†’ expect 404 or 405.
+TEST-ACT-003: Verify there is no DELETE /api/activity-log/:id endpoint â†’ expect 404 or 405.
+TEST-ACT-004: Attempt to POST to /api/activity-log with a valid body â†’ expect 404/405 (no route).
 ```
 
 ### 6.2 Completeness
@@ -331,19 +331,19 @@ TEST-ACT-004: Attempt to POST to /api/activity-log with a valid body → expect 
 **What could go wrong:** An action happens but no activity log entry is recorded.
 
 ```
-TEST-ACT-005: Create a job → verify activity_log has entry: action=created, resourceType=job.
-TEST-ACT-006: Update a job → verify activity_log has entry: action=updated, resourceType=job.
-TEST-ACT-007: Delete a job → verify activity_log has entry: action=deleted, resourceType=job.
-TEST-ACT-008: Change job status (draft → published) → verify activity_log: action=status_changed, metadata contains from/to.
-TEST-ACT-009: Create a candidate → verify activity_log: action=created, resourceType=candidate.
-TEST-ACT-010: Update a candidate → verify activity_log: action=updated, resourceType=candidate.
-TEST-ACT-011: Delete a candidate → verify activity_log: action=deleted, resourceType=candidate.
-TEST-ACT-012: Create an application → verify activity_log: action=created, resourceType=application.
-TEST-ACT-013: Change application status → verify activity_log: action=status_changed, metadata has from/to.
-TEST-ACT-014: Upload a document → verify activity_log: action=created, resourceType=document.
-TEST-ACT-015: Delete a document → verify activity_log: action=deleted, resourceType=document.
-TEST-ACT-016: Create a comment → verify activity_log: action=comment_added, resourceType matches targetType.
-TEST-ACT-017: Delete a comment → verify activity_log: action=deleted, resourceType=comment.
+TEST-ACT-005: Create a job â†’ verify activity_log has entry: action=created, resourceType=job.
+TEST-ACT-006: Update a job â†’ verify activity_log has entry: action=updated, resourceType=job.
+TEST-ACT-007: Delete a job â†’ verify activity_log has entry: action=deleted, resourceType=job.
+TEST-ACT-008: Change job status (draft â†’ published) â†’ verify activity_log: action=status_changed, metadata contains from/to.
+TEST-ACT-009: Create a candidate â†’ verify activity_log: action=created, resourceType=candidate.
+TEST-ACT-010: Update a candidate â†’ verify activity_log: action=updated, resourceType=candidate.
+TEST-ACT-011: Delete a candidate â†’ verify activity_log: action=deleted, resourceType=candidate.
+TEST-ACT-012: Create an application â†’ verify activity_log: action=created, resourceType=application.
+TEST-ACT-013: Change application status â†’ verify activity_log: action=status_changed, metadata has from/to.
+TEST-ACT-014: Upload a document â†’ verify activity_log: action=created, resourceType=document.
+TEST-ACT-015: Delete a document â†’ verify activity_log: action=deleted, resourceType=document.
+TEST-ACT-016: Create a comment â†’ verify activity_log: action=comment_added, resourceType matches targetType.
+TEST-ACT-017: Delete a comment â†’ verify activity_log: action=deleted, resourceType=comment.
 ```
 
 ### 6.3 Actor accuracy
@@ -368,11 +368,11 @@ TEST-ACT-020: Simulate a database error during activity logging (e.g., constrain
 ### 6.5 Activity log pagination and filtering
 
 ```
-TEST-ACT-021: GET /api/activity-log with page=0 → expect 422.
-TEST-ACT-022: GET /api/activity-log with limit=101 → expect 422.
-TEST-ACT-023: GET /api/activity-log with resourceId=not-a-uuid → expect 422.
-TEST-ACT-024: GET /api/activity-log with resourceType=job&resourceId=<valid-uuid> → returns only matching entries.
-TEST-ACT-025: GET /api/activity-log with resourceType only (no resourceId) → returns all entries for that type.
+TEST-ACT-021: GET /api/activity-log with page=0 â†’ expect 422.
+TEST-ACT-022: GET /api/activity-log with limit=101 â†’ expect 422.
+TEST-ACT-023: GET /api/activity-log with resourceId=not-a-uuid â†’ expect 422.
+TEST-ACT-024: GET /api/activity-log with resourceType=job&resourceId=<valid-uuid> â†’ returns only matching entries.
+TEST-ACT-025: GET /api/activity-log with resourceType only (no resourceId) â†’ returns all entries for that type.
 ```
 
 ### 6.6 Metadata injection
@@ -387,15 +387,15 @@ TEST-ACT-026: Verify metadata values are derived from server-side data (not user
 
 ---
 
-## 7. Invitation System — Attack Surface
+## 7. Invitation System â€” Attack Surface
 
 ### 7.1 Invitation enumeration
 
 **What could go wrong:** An attacker can enumerate valid invitation IDs to discover which emails have been invited.
 
 ```
-TEST-INV-001: Call GET /organization/get-invitation with a random UUID → expect 404 (not a different error that leaks info).
-TEST-INV-002: Call GET /organization/get-invitation with a valid but expired invitation → expect appropriate error.
+TEST-INV-001: Call GET /organization/get-invitation with a random UUID â†’ expect 404 (not a different error that leaks info).
+TEST-INV-002: Call GET /organization/get-invitation with a valid but expired invitation â†’ expect appropriate error.
 ```
 
 ### 7.2 Invitation acceptance by wrong user
@@ -404,7 +404,7 @@ TEST-INV-002: Call GET /organization/get-invitation with a valid but expired inv
 
 ```
 TEST-INV-003: Send invitation to alice@example.com. Log in as bob@example.com.
-             Try to accept the invitation → expect rejection (Better Auth should enforce email match).
+             Try to accept the invitation â†’ expect rejection (Better Auth should enforce email match).
 ```
 
 ### 7.3 Invitation replay
@@ -412,15 +412,15 @@ TEST-INV-003: Send invitation to alice@example.com. Log in as bob@example.com.
 **What could go wrong:** An invitation is accepted, but the attacker replays the accept request to get re-added after removal.
 
 ```
-TEST-INV-004: Accept invitation → becomes member. Get removed from org.
-             Try to accept the same invitation again → expect failure (invitation status is no longer pending).
+TEST-INV-004: Accept invitation â†’ becomes member. Get removed from org.
+             Try to accept the same invitation again â†’ expect failure (invitation status is no longer pending).
 ```
 
 ### 7.4 Invitation expiration
 
 ```
 TEST-INV-005: Create invitation. Wait for expiration (or manipulate timestamp in test DB).
-             Try to accept → expect failure.
+             Try to accept â†’ expect failure.
 ```
 
 ### 7.5 Role escalation via invitation
@@ -428,7 +428,7 @@ TEST-INV-005: Create invitation. Wait for expiration (or manipulate timestamp in
 **What could go wrong:** An admin invites someone as "owner" to escalate their own privileges.
 
 ```
-TEST-INV-006: Admin invites a new user with role=owner → expect 403 (admins can't create owners).
+TEST-INV-006: Admin invites a new user with role=owner â†’ expect 403 (admins can't create owners).
              Verify Better Auth enforces this at the plugin level.
 ```
 
@@ -449,11 +449,11 @@ TEST-INV-007: Invite alice@example.com. Invite alice@example.com again.
 **What could go wrong:** Route parameters or query strings accept non-UUID values, potentially causing SQL errors or unexpected behavior.
 
 ```
-TEST-VAL-001: GET /api/jobs/not-a-uuid → expect 422 (or 404 if no param validation — check both).
-TEST-VAL-002: PATCH /api/comments/../../etc/passwd → expect 422.
-TEST-VAL-003: DELETE /api/comments/' OR '1'='1 → expect 422.
-TEST-VAL-004: GET /api/comments?targetId=null → expect 422.
-TEST-VAL-005: GET /api/comments?targetId=undefined → expect 422.
+TEST-VAL-001: GET /api/jobs/not-a-uuid â†’ expect 422 (or 404 if no param validation â€” check both).
+TEST-VAL-002: PATCH /api/comments/../../etc/passwd â†’ expect 422.
+TEST-VAL-003: DELETE /api/comments/' OR '1'='1 â†’ expect 422.
+TEST-VAL-004: GET /api/comments?targetId=null â†’ expect 422.
+TEST-VAL-005: GET /api/comments?targetId=undefined â†’ expect 422.
 ```
 
 ### 8.2 Request body type coercion
@@ -461,27 +461,27 @@ TEST-VAL-005: GET /api/comments?targetId=undefined → expect 422.
 **What could go wrong:** Sending unexpected types (number instead of string, array instead of object).
 
 ```
-TEST-VAL-006: POST /api/comments with body: 123 (number, not object) → expect 422.
-TEST-VAL-007: POST /api/comments with body: [1, 2, 3] (array) → expect 422.
-TEST-VAL-008: POST /api/comments with body: { body: 123 } (number instead of string) → expect 422.
-TEST-VAL-009: POST /api/comments with body: { targetType: "user" } (invalid enum value) → expect 422.
-TEST-VAL-010: POST /api/comments with extra fields: { body: "hi", evil: true } → extra fields should be stripped by Zod.
+TEST-VAL-006: POST /api/comments with body: 123 (number, not object) â†’ expect 422.
+TEST-VAL-007: POST /api/comments with body: [1, 2, 3] (array) â†’ expect 422.
+TEST-VAL-008: POST /api/comments with body: { body: 123 } (number instead of string) â†’ expect 422.
+TEST-VAL-009: POST /api/comments with body: { targetType: "user" } (invalid enum value) â†’ expect 422.
+TEST-VAL-010: POST /api/comments with extra fields: { body: "hi", evil: true } â†’ extra fields should be stripped by Zod.
 ```
 
 ### 8.3 Content-Type manipulation
 
 ```
-TEST-VAL-011: POST /api/comments with Content-Type: text/plain → expect 400 or 422.
-TEST-VAL-012: POST /api/comments with Content-Type: application/xml → expect 400 or 422.
+TEST-VAL-011: POST /api/comments with Content-Type: text/plain â†’ expect 400 or 422.
+TEST-VAL-012: POST /api/comments with Content-Type: application/xml â†’ expect 400 or 422.
 ```
 
 ### 8.4 Prototype pollution
 
 ```
 TEST-VAL-013: POST /api/comments with body: { "__proto__": { "isAdmin": true }, "body": "test", ... }
-             → __proto__ should be ignored. Zod's strict parsing should strip unknown keys.
+             â†’ __proto__ should be ignored. Zod's strict parsing should strip unknown keys.
 TEST-VAL-014: POST /api/comments with body: { "constructor": { "prototype": { ... } } }
-             → should be stripped or rejected.
+             â†’ should be stripped or rejected.
 ```
 
 ---
@@ -493,7 +493,7 @@ TEST-VAL-014: POST /api/comments with body: { "constructor": { "prototype": { ..
 **What could go wrong:** An authenticated user creates thousands of comments in a loop.
 
 ```
-TEST-DOS-001: Create 100 comments in rapid succession → expect rate limiter to kick in (429) in production.
+TEST-DOS-001: Create 100 comments in rapid succession â†’ expect rate limiter to kick in (429) in production.
              Note: Rate limiting is disabled in development (NODE_ENV !== 'production').
 TEST-DOS-002: Verify the write rate limiter (80/min) applies to POST /api/comments.
 ```
@@ -503,9 +503,9 @@ TEST-DOS-002: Verify the write rate limiter (80/min) applies to POST /api/commen
 **What could go wrong:** Requesting limit=100 with deeply nested joins on large datasets causes slow queries.
 
 ```
-TEST-DOS-003: GET /api/activity-log?limit=100 on an org with 100,000 activity entries → measure response time.
+TEST-DOS-003: GET /api/activity-log?limit=100 on an org with 100,000 activity entries â†’ measure response time.
              Should return in < 500ms with proper indexing.
-TEST-DOS-004: GET /api/comments?limit=100&page=1 with many comments → measure response time.
+TEST-DOS-004: GET /api/comments?limit=100&page=1 with many comments â†’ measure response time.
 ```
 
 ### 9.3 Activity log flooding
@@ -514,7 +514,7 @@ TEST-DOS-004: GET /api/comments?limit=100&page=1 with many comments → measure 
 
 ```
 TEST-DOS-005: Consider whether activity_log needs a retention policy (e.g., delete entries older than 1 year).
-             This is a design concern, not a code bug — but monitor table size.
+             This is a design concern, not a code bug â€” but monitor table size.
 ```
 
 ---
@@ -526,11 +526,11 @@ TEST-DOS-005: Consider whether activity_log needs a retention policy (e.g., dele
 **What could go wrong:** Error responses include stack traces, SQL queries, or internal details.
 
 ```
-TEST-LEAK-001: Trigger a 404 on /api/comments/<org-b-comment-id> → response body must NOT leak
+TEST-LEAK-001: Trigger a 404 on /api/comments/<org-b-comment-id> â†’ response body must NOT leak
               the comment exists in another org. Should just say "Comment not found".
-TEST-LEAK-002: Trigger a 422 with invalid input → error should describe the validation issue
+TEST-LEAK-002: Trigger a 422 with invalid input â†’ error should describe the validation issue
               but not include internal paths, table names, or schema details.
-TEST-LEAK-003: Trigger a 500 (e.g., database connection failure) → response must NOT include
+TEST-LEAK-003: Trigger a 500 (e.g., database connection failure) â†’ response must NOT include
               the database connection string or stack trace in production.
 ```
 
@@ -539,12 +539,12 @@ TEST-LEAK-003: Trigger a 500 (e.g., database connection failure) → response mu
 **What could go wrong:** API responses include fields the user shouldn't see.
 
 ```
-TEST-LEAK-004: GET /api/comments → verify response does NOT include organizationId
-              (it's implicit from the session — exposing it aids cross-tenant attacks).
+TEST-LEAK-004: GET /api/comments â†’ verify response does NOT include organizationId
+              (it's implicit from the session â€” exposing it aids cross-tenant attacks).
               Currently: organizationId IS included in the response. Consider removing it.
-TEST-LEAK-005: GET /api/activity-log → verify metadata doesn't contain sensitive data
+TEST-LEAK-005: GET /api/activity-log â†’ verify metadata doesn't contain sensitive data
               (passwords, tokens, PII beyond what's needed for the audit trail).
-TEST-LEAK-006: GET /api/comments → verify authorEmail is appropriate to expose.
+TEST-LEAK-006: GET /api/comments â†’ verify authorEmail is appropriate to expose.
               In a team tool, showing email is fine. But if comments are ever
               visible to external parties, this leaks internal email addresses.
 ```
@@ -555,8 +555,8 @@ TEST-LEAK-006: GET /api/comments → verify authorEmail is appropriate to expose
 
 ```
 TEST-LEAK-007: Measure response time for:
-              (a) PATCH /api/comments/<org-b-comment-id> → 404 (exists in other org)
-              (b) PATCH /api/comments/<completely-fake-uuid> → 404 (doesn't exist at all)
+              (a) PATCH /api/comments/<org-b-comment-id> â†’ 404 (exists in other org)
+              (b) PATCH /api/comments/<completely-fake-uuid> â†’ 404 (doesn't exist at all)
               Both should take approximately equal time (within noise).
               Currently: Both go through the same db.query.comment.findFirst() path, so timing should be similar.
 ```
@@ -584,7 +584,7 @@ TEST-RACE-001: Send two POST /api/comments requests simultaneously with identica
 
 ```
 TEST-RACE-002: Delete a comment. Then immediately PATCH the same comment ID.
-             → expect 404 (the findFirst check will not find the deleted comment).
+             â†’ expect 404 (the findFirst check will not find the deleted comment).
              Currently correct: the PATCH route fetches the comment first.
 ```
 
@@ -594,7 +594,7 @@ TEST-RACE-002: Delete a comment. Then immediately PATCH the same comment ID.
 
 ```
 TEST-RACE-003: This is a theoretical concern. Comment authorId is immutable (never updated).
-             No action needed — but document the invariant: authorId must never be updateable.
+             No action needed â€” but document the invariant: authorId must never be updateable.
              Verify: The updateCommentSchema only allows { body: string }. authorId cannot be sent.
 ```
 
@@ -604,16 +604,16 @@ TEST-RACE-003: This is a theoretical concern. Comment authorId is immutable (nev
 
 ```
 TEST-RACE-004: Delete Org A. Simultaneously create a comment from Org A.
-             → expect either 201 (created before cascade) or a DB error caught by the route.
+             â†’ expect either 201 (created before cascade) or a DB error caught by the route.
              The FK cascade will eventually clean up, but the in-flight request might fail.
-             This is acceptable — the user will see an error, and the data will be consistent.
+             This is acceptable â€” the user will see an error, and the data will be consistent.
 ```
 
 ---
 
 ## 12. Integration Test Plan
 
-These tests run against a real database (test PostgreSQL instance) with the Nitro server, testing the full request → middleware → handler → DB → response pipeline.
+These tests run against a real database (test PostgreSQL instance) with the Nitro server, testing the full request â†’ middleware â†’ handler â†’ DB â†’ response pipeline.
 
 ### Test file structure
 
@@ -632,7 +632,7 @@ test/
       activity-log-completeness.test.ts # Verify all mutations log activity
       activity-log-immutability.test.ts # Verify no write endpoints exist
     rbac/
-      role-permissions.test.ts        # Each role × each action matrix
+      role-permissions.test.ts        # Each role Ã— each action matrix
       cross-tenant.test.ts            # Org isolation for all resources
 ```
 
@@ -664,13 +664,13 @@ End-to-end tests using Playwright that verify the full user flow through the bro
 ### E2E-COLLAB-001: Comment lifecycle
 
 ```
-1. Sign up → create org → create job → create candidate.
+1. Sign up â†’ create org â†’ create job â†’ create candidate.
 2. Navigate to candidate detail page.
-3. Type a comment in the comment box → click "Post".
+3. Type a comment in the comment box â†’ click "Post".
 4. Verify comment appears in the list with author name and timestamp.
-5. Click "Edit" on the comment → change text → save.
+5. Click "Edit" on the comment â†’ change text â†’ save.
 6. Verify updated text appears.
-7. Click "Delete" → confirm.
+7. Click "Delete" â†’ confirm.
 8. Verify comment is removed from the list.
 ```
 
@@ -680,7 +680,7 @@ End-to-end tests using Playwright that verify the full user flow through the bro
 1. As owner: create a job, create a candidate, create an application.
 2. Navigate to activity log page.
 3. Verify entries appear: "created job", "created candidate", "created application".
-4. Click filter by resourceType=job → only job entries shown.
+4. Click filter by resourceType=job â†’ only job entries shown.
 ```
 
 ### E2E-COLLAB-003: Member permission restrictions
@@ -689,7 +689,7 @@ End-to-end tests using Playwright that verify the full user flow through the bro
 1. As owner: create org, create job, invite member@test.com with role=member.
 2. Log in as member.
 3. Verify: can see jobs list, but "New Job" button is hidden.
-4. Navigate to candidates → verify can create a candidate.
+4. Navigate to candidates â†’ verify can create a candidate.
 5. Post a comment on the candidate.
 6. Verify: "Edit" and "Delete" buttons are NOT shown on the comment (usePermission gates them).
 7. Verify: navigating directly to /api/jobs (POST) via fetch returns 403.
@@ -700,8 +700,8 @@ End-to-end tests using Playwright that verify the full user flow through the bro
 ```
 1. Create Org A with job "Alpha".
 2. Create Org B with job "Beta".
-3. Switch to Org A → verify only "Alpha" visible.
-4. Switch to Org B → verify only "Beta" visible.
+3. Switch to Org A â†’ verify only "Alpha" visible.
+4. Switch to Org B â†’ verify only "Beta" visible.
 5. Ensure no data leaks between orgs during switching.
 ```
 
@@ -712,8 +712,8 @@ End-to-end tests using Playwright that verify the full user flow through the bro
 2. Sign up as alice@test.com.
 3. Accept the invitation.
 4. Verify: alice appears in the member list with role=admin.
-5. As alice: create a job → succeeds.
-6. As alice: try to delete the org → fails (admin can't delete org).
+5. As alice: create a job â†’ succeeds.
+6. As alice: try to delete the org â†’ fails (admin can't delete org).
 ```
 
 ---
@@ -727,20 +727,20 @@ A pre-deploy checklist for every PR that touches auth, permissions, or collabora
 - [ ] **Every new API route calls `requirePermission()` as its first line.** No exceptions.
 - [ ] **The `organizationId` used in queries comes from `session.session.activeOrganizationId`**, never from request params/body.
 - [ ] **New permissions are added to `shared/permissions.ts`** and assigned to all three roles explicitly.
-- [ ] **Zod schemas validate all user input** — params, query, body.
+- [ ] **Zod schemas validate all user input** â€” params, query, body.
 - [ ] **UUID format is validated** on all ID parameters (route params and query strings).
-- [ ] **No raw SQL** — all queries use Drizzle's query builder with parameterized values.
-- [ ] **Error responses don't leak internals** — no stack traces, no table names, no connection strings.
+- [ ] **No raw SQL** â€” all queries use Drizzle's query builder with parameterized values.
+- [ ] **Error responses don't leak internals** â€” no stack traces, no table names, no connection strings.
 - [ ] **Mutating routes call `recordActivity()`** after the primary operation.
-- [ ] **New resources have test coverage** for all three roles × all actions in the permission matrix.
+- [ ] **New resources have test coverage** for all three roles Ã— all actions in the permission matrix.
 
 ### Infrastructure Checklist
 
 - [ ] **Rate limiting is enabled** in production (`NODE_ENV === 'production'`).
-- [ ] **HTTPS is enforced** — no plain HTTP in production.
-- [ ] **CORS is configured** — only trusted origins can make requests.
+- [ ] **HTTPS is enforced** â€” no plain HTTP in production.
+- [ ] **CORS is configured** â€” only trusted origins can make requests.
 - [ ] **`BETTER_AUTH_SECRET` is a strong random string** (at least 32 characters).
-- [ ] **Database backups** — activity log is immutable but the database isn't; ensure backups.
+- [ ] **Database backups** â€” activity log is immutable but the database isn't; ensure backups.
 - [ ] **Session cookies are `HttpOnly`, `Secure`, `SameSite=Lax`** (Better Auth defaults).
 - [ ] **`trustedOrigins`** in auth config matches only the actual domain.
 
@@ -771,7 +771,7 @@ const orgA = {
   comment: { body: 'Great candidate!', targetType: 'candidate' },
 }
 
-// Org B ("Beta Inc") — for cross-tenant isolation testing
+// Org B ("Beta Inc") â€” for cross-tenant isolation testing
 const orgB = {
   org:     { name: 'Beta Inc', slug: 'beta-inc' },
   owner:   { email: 'owner-b@test.local', role: 'owner' },
@@ -802,18 +802,19 @@ const multiOrgUser = {
 
 | Priority | Category | Count | Why |
 |----------|----------|-------|-----|
-| **P0 — Critical** | Cross-tenant isolation (IDOR) | 18 tests | Data breach across organizations. |
-| **P0 — Critical** | RBAC enforcement | 30 tests | Privilege escalation. |
-| **P1 — High** | Authentication bypass | 16 tests | Unauthenticated data access. |
-| **P1 — High** | Comment authorization edge cases | 8 tests | Editing/deleting other users' comments. |
-| **P1 — High** | Activity log immutability | 4 tests | Audit trail integrity. |
-| **P2 — Medium** | Input validation | 14 tests | Application errors, potential injection. |
-| **P2 — Medium** | Invitation security | 7 tests | Unauthorized org access. |
-| **P2 — Medium** | Activity log completeness | 17 tests | Missing audit entries. |
-| **P3 — Low** | Race conditions | 4 tests | Data consistency edge cases. |
-| **P3 — Low** | Rate limiting / DoS | 5 tests | Availability under abuse. |
-| **P3 — Low** | Information disclosure | 7 tests | Leaking internal details. |
+| **P0 â€” Critical** | Cross-tenant isolation (IDOR) | 18 tests | Data breach across organizations. |
+| **P0 â€” Critical** | RBAC enforcement | 30 tests | Privilege escalation. |
+| **P1 â€” High** | Authentication bypass | 16 tests | Unauthenticated data access. |
+| **P1 â€” High** | Comment authorization edge cases | 8 tests | Editing/deleting other users' comments. |
+| **P1 â€” High** | Activity log immutability | 4 tests | Audit trail integrity. |
+| **P2 â€” Medium** | Input validation | 14 tests | Application errors, potential injection. |
+| **P2 â€” Medium** | Invitation security | 7 tests | Unauthorized org access. |
+| **P2 â€” Medium** | Activity log completeness | 17 tests | Missing audit entries. |
+| **P3 â€” Low** | Race conditions | 4 tests | Data consistency edge cases. |
+| **P3 â€” Low** | Rate limiting / DoS | 5 tests | Availability under abuse. |
+| **P3 â€” Low** | Information disclosure | 7 tests | Leaking internal details. |
 
 **Total: ~130 test cases** across integration and E2E layers.
 
 Implement P0 tests first. If P0 passes, the system is secure against the most dangerous attacks. P1 and P2 tests should be added before any public release. P3 tests are polish for hardening.
+

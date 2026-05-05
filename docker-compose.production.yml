@@ -1,6 +1,6 @@
-# docker-compose.production.yml
+﻿# docker-compose.production.yml
 #
-# Use this file to run Reqcore with the official pre-built Docker image
+# Use this file to run WWMate with the official pre-built Docker image
 # instead of building from source. No git clone or local build required.
 #
 # Quick start:
@@ -12,14 +12,14 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: reqcore_db
+    container_name: WWMate_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "127.0.0.1:5432:5432" # Postgres — localhost only, never expose publicly
+      - "127.0.0.1:5432:5432" # Postgres â€” localhost only, never expose publicly
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -30,11 +30,11 @@ services:
 
   minio:
     image: minio/minio
-    container_name: reqcore_minio
+    container_name: WWMate_minio
     restart: unless-stopped
     ports:
-      - "127.0.0.1:9000:9000" # S3 API — localhost only, never expose publicly
-      - "127.0.0.1:9001:9001" # MinIO Console → http://localhost:9001
+      - "127.0.0.1:9000:9000" # S3 API â€” localhost only, never expose publicly
+      - "127.0.0.1:9001:9001" # MinIO Console â†’ http://localhost:9001
     environment:
       MINIO_ROOT_USER: ${STORAGE_USER}
       MINIO_ROOT_PASSWORD: ${STORAGE_PASSWORD}
@@ -48,8 +48,8 @@ services:
       retries: 10
 
   app:
-    image: ghcr.io/reqcore-inc/reqcore:latest
-    container_name: reqcore_app
+    image: ghcr.io/WWMate-inc/WWMate:latest
+    container_name: WWMate_app
     restart: unless-stopped
     env_file: .env
     environment:
@@ -66,14 +66,14 @@ services:
     volumes:
       - backups_data:/data/backups
 
-  # Optional DB browser — run with: docker compose -f docker-compose.production.yml --profile tools up
+  # Optional DB browser â€” run with: docker compose -f docker-compose.production.yml --profile tools up
   adminer:
     image: adminer
-    container_name: reqcore_adminer
+    container_name: WWMate_adminer
     restart: unless-stopped
     profiles: [tools]
     ports:
-      - "127.0.0.1:8080:8080" # Adminer → http://localhost:8080
+      - "127.0.0.1:8080:8080" # Adminer â†’ http://localhost:8080
     depends_on:
       db:
         condition: service_healthy
@@ -82,3 +82,4 @@ volumes:
   postgres_data:
   minio_data:
   backups_data:
+

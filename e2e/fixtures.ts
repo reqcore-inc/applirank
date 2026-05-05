@@ -1,7 +1,7 @@
-import { test as base, type Page } from '@playwright/test'
+﻿import { test as base, type Page } from '@playwright/test'
 
 /**
- * Shared test fixtures for Reqcore E2E tests.
+ * Shared test fixtures for WWMate E2E tests.
  *
  * Provides a unique test account per worker so parallel runs
  * won't clash (currently single-worker, but future-proofed).
@@ -99,3 +99,4 @@ export const test = base.extend<Fixtures>({
 })
 
 export { expect } from '@playwright/test'
+

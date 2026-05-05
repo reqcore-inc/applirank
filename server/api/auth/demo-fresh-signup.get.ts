@@ -1,16 +1,16 @@
-/**
- * Demo-aware signup redirect — navigated to directly by the browser (GET).
+﻿/**
+ * Demo-aware signup redirect â€” navigated to directly by the browser (GET).
  *
  * Flow:
- *   marketing site "Use Cloud" → GET /api/auth/demo-fresh-signup → this handler
+ *   marketing site "Use Cloud" â†’ GET /api/auth/demo-fresh-signup â†’ this handler
  *
  * Behaviour:
- *   - No session           → redirect to /auth/sign-up
- *   - Demo account session → sign out, then redirect to /auth/sign-up
- *   - Any other account    → redirect to /dashboard (already logged in)
+ *   - No session           â†’ redirect to /auth/sign-up
+ *   - Demo account session â†’ sign out, then redirect to /auth/sign-up
+ *   - Any other account    â†’ redirect to /dashboard (already logged in)
  *
  * Demo detection uses the user email (liveDemoEmail runtime config,
- * defaults to demo@reqcore.com).
+ * defaults to demo@WWMate.com).
  *
  * Sign-out uses Better Auth's server-side API (`auth.api.signOut` with
  * `asResponse: true`) which bypasses CSRF origin checks, deletes the
@@ -24,13 +24,13 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, '/auth/sign-up')
   }
 
-  const demoEmail = (useRuntimeConfig().public.liveDemoEmail as string) || 'demo@reqcore.com'
+  const demoEmail = (useRuntimeConfig().public.liveDemoEmail as string) || 'demo@WWMate.com'
 
   if (session.user.email !== demoEmail) {
     return sendRedirect(event, '/dashboard')
   }
 
-  // ── Demo session: sign out via Better Auth's server-side API ───
+  // â”€â”€ Demo session: sign out via Better Auth's server-side API â”€â”€â”€
   const signOutResponse = await (auth.api.signOut as Function)({
     headers: event.headers,
     asResponse: true,
@@ -43,3 +43,4 @@ export default defineEventHandler(async (event) => {
 
   return sendRedirect(event, '/auth/sign-up')
 })
+

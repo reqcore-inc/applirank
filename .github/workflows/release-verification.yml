@@ -1,4 +1,4 @@
-name: Release Verification
+﻿name: Release Verification
 
 # Fires after release-please publishes a GitHub Release (which also pushes a
 # `v*` tag and triggers docker-publish.yml). This workflow is the last gate
@@ -11,7 +11,7 @@ name: Release Verification
 #
 #   2. bundle: attach a self-hoster bundle (docker-compose.production.yml
 #      with the image tag pinned + setup.sh) to the GitHub Release so users
-#      can `curl -L .../releases/download/v1.4.0/reqcore-1.4.0.tar.gz` and
+#      can `curl -L .../releases/download/v1.4.0/WWMate-1.4.0.tar.gz` and
 #      get a deterministic, version-locked install.
 
 on:
@@ -55,9 +55,9 @@ jobs:
         run: |
           set -euo pipefail
           sed -i \
-            "s|ghcr.io/reqcore-inc/reqcore:latest|ghcr.io/reqcore-inc/reqcore:${{ steps.tag.outputs.version }}|" \
+            "s|ghcr.io/WWMate-inc/WWMate:latest|ghcr.io/WWMate-inc/WWMate:${{ steps.tag.outputs.version }}|" \
             docker-compose.production.yml
-          grep "ghcr.io/reqcore-inc/reqcore" docker-compose.production.yml
+          grep "ghcr.io/WWMate-inc/WWMate" docker-compose.production.yml
 
       - name: Wait for the published image to be available on GHCR
         run: |
@@ -65,14 +65,14 @@ jobs:
           # docker-publish.yml is triggered by the same tag push, so it may
           # still be running when this job starts. Poll for up to 20 minutes.
           for i in $(seq 60); do
-            if docker manifest inspect "ghcr.io/reqcore-inc/reqcore:${{ steps.tag.outputs.version }}" > /dev/null 2>&1; then
-              echo "✅ Image is available"
+            if docker manifest inspect "ghcr.io/WWMate-inc/WWMate:${{ steps.tag.outputs.version }}" > /dev/null 2>&1; then
+              echo "âœ… Image is available"
               exit 0
             fi
-            echo "  attempt $i/60 — image not yet published, waiting 20s..."
+            echo "  attempt $i/60 â€” image not yet published, waiting 20s..."
             sleep 20
           done
-          echo "❌ Image ghcr.io/reqcore-inc/reqcore:${{ steps.tag.outputs.version }} never appeared"
+          echo "âŒ Image ghcr.io/WWMate-inc/WWMate:${{ steps.tag.outputs.version }} never appeared"
           exit 1
 
       - name: Generate .env via setup.sh
@@ -88,12 +88,12 @@ jobs:
           set -euo pipefail
           for i in $(seq 60); do
             if curl -fs http://localhost:3000 > /dev/null 2>&1; then
-              echo "✅ App reachable"
+              echo "âœ… App reachable"
               exit 0
             fi
             sleep 3
           done
-          echo "❌ App did not become reachable"
+          echo "âŒ App did not become reachable"
           docker compose -f docker-compose.production.yml logs app --tail=200
           exit 1
 
@@ -105,13 +105,13 @@ jobs:
           for i in $(seq 40); do
             logs="$(docker compose -f docker-compose.production.yml logs app || true)"
             if grep -q "Database migrations applied successfully" <<<"$logs" \
-              && grep -q 'S3 bucket "reqcore" is ready' <<<"$logs"; then
-              echo "✅ Migrations + S3 ready messages found (attempt $i)"
+              && grep -q 'S3 bucket "WWMate" is ready' <<<"$logs"; then
+              echo "âœ… Migrations + S3 ready messages found (attempt $i)"
               exit 0
             fi
             sleep 3
           done
-          echo "❌ Required startup messages missing after polling"
+          echo "âŒ Required startup messages missing after polling"
           docker compose -f docker-compose.production.yml logs app
           exit 1
 
@@ -145,18 +145,18 @@ jobs:
       - name: Build version-pinned bundle
         run: |
           set -euo pipefail
-          mkdir -p "bundle/reqcore-${{ steps.tag.outputs.version }}"
-          cp setup.sh "bundle/reqcore-${{ steps.tag.outputs.version }}/"
-          cp SELF-HOSTING.md "bundle/reqcore-${{ steps.tag.outputs.version }}/"
+          mkdir -p "bundle/WWMate-${{ steps.tag.outputs.version }}"
+          cp setup.sh "bundle/WWMate-${{ steps.tag.outputs.version }}/"
+          cp SELF-HOSTING.md "bundle/WWMate-${{ steps.tag.outputs.version }}/"
           # Pin the compose file to the exact released image tag so users
           # who download the bundle get a deterministic install.
           sed \
-            "s|ghcr.io/reqcore-inc/reqcore:latest|ghcr.io/reqcore-inc/reqcore:${{ steps.tag.outputs.version }}|" \
+            "s|ghcr.io/WWMate-inc/WWMate:latest|ghcr.io/WWMate-inc/WWMate:${{ steps.tag.outputs.version }}|" \
             docker-compose.production.yml \
-            > "bundle/reqcore-${{ steps.tag.outputs.version }}/docker-compose.production.yml"
+            > "bundle/WWMate-${{ steps.tag.outputs.version }}/docker-compose.production.yml"
 
-          cat > "bundle/reqcore-${{ steps.tag.outputs.version }}/INSTALL.txt" <<EOF
-          Reqcore ${{ steps.tag.outputs.tag }} — Self-Hoster Bundle
+          cat > "bundle/WWMate-${{ steps.tag.outputs.version }}/INSTALL.txt" <<EOF
+          WWMate ${{ steps.tag.outputs.tag }} â€” Self-Hoster Bundle
 
           1. ./setup.sh
           2. docker compose -f docker-compose.production.yml up -d
@@ -169,14 +169,15 @@ jobs:
           Full guide: SELF-HOSTING.md
           EOF
 
-          tar -czf "reqcore-${{ steps.tag.outputs.version }}.tar.gz" -C bundle "reqcore-${{ steps.tag.outputs.version }}"
-          sha256sum "reqcore-${{ steps.tag.outputs.version }}.tar.gz" > "reqcore-${{ steps.tag.outputs.version }}.tar.gz.sha256"
+          tar -czf "WWMate-${{ steps.tag.outputs.version }}.tar.gz" -C bundle "WWMate-${{ steps.tag.outputs.version }}"
+          sha256sum "WWMate-${{ steps.tag.outputs.version }}.tar.gz" > "WWMate-${{ steps.tag.outputs.version }}.tar.gz.sha256"
 
       - name: Attach bundle to the GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload "${{ steps.tag.outputs.tag }}" \
-            "reqcore-${{ steps.tag.outputs.version }}.tar.gz" \
-            "reqcore-${{ steps.tag.outputs.version }}.tar.gz.sha256" \
+            "WWMate-${{ steps.tag.outputs.version }}.tar.gz" \
+            "WWMate-${{ steps.tag.outputs.version }}.tar.gz.sha256" \
             --clobber
+

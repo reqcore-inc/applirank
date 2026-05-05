@@ -1,18 +1,18 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { envSchema } from '../../server/utils/env'
 
 /**
  * SSO integration readiness tests.
  *
  * End-to-end validation of the SSO configuration pipeline:
- * env vars → auth config → plugin loading → route protection.
+ * env vars â†’ auth config â†’ plugin loading â†’ route protection.
  * Ensures all layers work together correctly.
  */
 
 const baseEnv = {
   DATABASE_URL: 'postgresql://user:pass@localhost:5432/test',
   BETTER_AUTH_SECRET: 'a'.repeat(32),
-  BETTER_AUTH_URL: 'https://app.reqcore.com',
+  BETTER_AUTH_URL: 'https://app.WWMate.com',
   S3_ENDPOINT: 'https://s3.example.com',
   S3_ACCESS_KEY: 'test-key',
   S3_SECRET_KEY: 'test-secret',
@@ -20,7 +20,7 @@ const baseEnv = {
 }
 
 const validOidc = {
-  OIDC_CLIENT_ID: 'reqcore-app',
+  OIDC_CLIENT_ID: 'WWMate-app',
   OIDC_CLIENT_SECRET: 'oidc-secret-value',
   OIDC_DISCOVERY_URL: 'https://auth.example.com/.well-known/openid-configuration',
 }
@@ -33,7 +33,7 @@ describe('SSO + BETTER_AUTH_URL resolution', () => {
     })
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.BETTER_AUTH_URL).toBe('https://app.reqcore.com')
+      expect(result.data.BETTER_AUTH_URL).toBe('https://app.WWMate.com')
     }
   })
 
@@ -77,14 +77,14 @@ describe('SSO with trusted origins', () => {
   it('parses comma separated trusted origins', () => {
     const result = envSchema.safeParse({
       ...baseEnv,
-      BETTER_AUTH_TRUSTED_ORIGINS: 'https://app.reqcore.com, https://cdn.reqcore.com',
+      BETTER_AUTH_TRUSTED_ORIGINS: 'https://app.WWMate.com, https://cdn.WWMate.com',
       ...validOidc,
     })
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.BETTER_AUTH_TRUSTED_ORIGINS).toEqual([
-        'https://app.reqcore.com',
-        'https://cdn.reqcore.com',
+        'https://app.WWMate.com',
+        'https://cdn.WWMate.com',
       ])
     }
   })
@@ -92,13 +92,13 @@ describe('SSO with trusted origins', () => {
   it('filters empty entries from trusted origins', () => {
     const result = envSchema.safeParse({
       ...baseEnv,
-      BETTER_AUTH_TRUSTED_ORIGINS: 'https://app.reqcore.com,,, https://other.com, ',
+      BETTER_AUTH_TRUSTED_ORIGINS: 'https://app.WWMate.com,,, https://other.com, ',
       ...validOidc,
     })
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.BETTER_AUTH_TRUSTED_ORIGINS).toEqual([
-        'https://app.reqcore.com',
+        'https://app.WWMate.com',
         'https://other.com',
       ])
     }
@@ -116,7 +116,7 @@ describe('SSO with trusted origins', () => {
   })
 })
 
-describe('SSO OIDC discovery URL — production hardening', () => {
+describe('SSO OIDC discovery URL â€” production hardening', () => {
   it('accepts Keycloak realm-specific discovery URL', () => {
     const result = envSchema.safeParse({
       ...baseEnv,
@@ -130,7 +130,7 @@ describe('SSO OIDC discovery URL — production hardening', () => {
     const result = envSchema.safeParse({
       ...baseEnv,
       ...validOidc,
-      OIDC_DISCOVERY_URL: 'https://sso.corp.com/application/o/reqcore/.well-known/openid-configuration',
+      OIDC_DISCOVERY_URL: 'https://sso.corp.com/application/o/WWMate/.well-known/openid-configuration',
     })
     expect(result.success).toBe(true)
   })
@@ -296,3 +296,4 @@ describe('SSO resolveBetterAuthUrl edge cases', () => {
     expect(resolveBetterAuthUrl(undefined, undefined)).toBeNull()
   })
 })
+

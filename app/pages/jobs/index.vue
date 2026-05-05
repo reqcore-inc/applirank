@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Search, MapPin, Briefcase, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 definePageMeta({
@@ -20,23 +20,23 @@ const sourceQuery = computed(() => {
 })
 
 useSeoMeta({
-  title: 'Open Positions — Job Board',
+  title: 'Open Positions â€” Job Board',
   description:
-    'Browse open job positions on Reqcore and apply directly. Find your next career opportunity with companies that value transparency.',
-  ogTitle: 'Open Positions — Reqcore Job Board',
+    'Browse open job positions on WWMate and apply directly. Find your next career opportunity with companies that value transparency.',
+  ogTitle: 'Open Positions â€” WWMate Job Board',
   ogDescription:
     'Browse open job positions and apply directly. Powered by the open-source ATS you actually own.',
   ogType: 'website',
-  ogImage: '/reqcore-banner-github.jpeg',
+  ogImage: '/WWMate-banner-github.jpeg',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'Open Positions — Reqcore Job Board',
+  twitterTitle: 'Open Positions â€” WWMate Job Board',
   twitterDescription:
     'Browse open job positions and apply directly.',
 })
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Query state
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const page = ref(1)
 const searchInput = ref('')
@@ -75,9 +75,9 @@ const jobs = computed(() => data.value?.data ?? [])
 const total = computed(() => data.value?.total ?? 0)
 const totalPages = computed(() => Math.ceil(total.value / 20))
 
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // i18n-aware display helpers
-// ─────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const { locale } = useI18n()
 
 const typeLabels: Record<string, string> = {
@@ -122,7 +122,7 @@ function formatDate(dateStr: string) {
         <input
           v-model="searchInput"
           type="text"
-          placeholder="Search jobs by title or location…"
+          placeholder="Search jobs by title or locationâ€¦"
           class="w-full rounded-lg border border-surface-300 dark:border-surface-700 pl-9 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-900 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors"
         />
       </div>
@@ -141,7 +141,7 @@ function formatDate(dateStr: string) {
 
     <!-- Loading state -->
     <div v-if="fetchStatus === 'pending'" class="text-center py-16 text-surface-400">
-      Loading positions…
+      Loading positionsâ€¦
     </div>
 
     <!-- Error state -->
@@ -243,3 +243,4 @@ function formatDate(dateStr: string) {
     </div>
   </div>
 </template>
+

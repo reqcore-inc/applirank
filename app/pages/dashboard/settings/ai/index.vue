@@ -1,6 +1,6 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 /**
- * Settings → AI
+ * Settings â†’ AI
  *
  * Lists every saved AI configuration as a card. Adding/editing now happens on
  * dedicated pages (`./new` and `./[id]`) for a calmer, less dense experience.
@@ -13,7 +13,7 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'AI Configuration — Reqcore',
+  title: 'AI Configuration â€” WWMate',
   description: 'Configure AI providers and models for the chatbot and candidate analysis.',
 })
 
@@ -61,7 +61,7 @@ const { data: providers } = useFetch<Record<string, ProviderInfo>>('/api/ai-conf
 const configs = computed(() => configsData.value ?? [])
 const isLoading = computed(() => configsStatus.value === 'pending' && configs.value.length === 0)
 
-// ── Per-row actions ──
+// â”€â”€ Per-row actions â”€â”€
 const togglingDefaultId = ref<string | null>(null)
 const togglingPurpose = ref<'chatbot' | 'analysis' | null>(null)
 async function setDefault(c: AiConfigRow, purpose: 'chatbot' | 'analysis') {
@@ -128,7 +128,7 @@ function providerLabel(key: string): string {
   return providers.value?.[key]?.name ?? key
 }
 function formatPrice(p: number | null): string {
-  if (p == null) return '—'
+  if (p == null) return 'â€”'
   return `$${p.toFixed(2)}`
 }
 </script>
@@ -172,7 +172,7 @@ function formatPrice(p: number | null): string {
     <!-- Loading -->
     <div v-else-if="isLoading" class="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-8 text-center text-sm text-surface-500">
       <Loader2 class="size-5 animate-spin mx-auto mb-2 text-surface-400" />
-      Loading configurations…
+      Loading configurationsâ€¦
     </div>
 
     <!-- Empty state -->
@@ -324,3 +324,4 @@ function formatPrice(p: number | null): string {
     </p>
   </div>
 </template>
+

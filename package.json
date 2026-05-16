@@ -90,8 +90,9 @@
     "unhead": ">=2.1.11",
     "uuid": ">=14.0.0",
     "fast-xml-builder": ">=1.2.0",
-    "kysely": ">=0.28.17",
+    "kysely": "0.28.17",
     "simple-git": ">=3.36.0",
-    "protobufjs": ">=8.3.0"
+    "protobufjs": "8.3.0",
+    "rollup-plugin-visualizer": "6.0.3"
   }
 }
